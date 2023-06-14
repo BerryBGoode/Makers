@@ -68,7 +68,7 @@
                     </span>
                     <div action="" class="form-2 w-70 flex wp sp-bet">
                         <label for="clave">Contraseña</label>
-                        <input type="password" class="form-control" id="clave" minlength="10" v-model="model.cliente.clave"
+                        <input type="password" class="form-control" id="clave" maxlength="15" minlength="10" v-model="model.cliente.clave"
                             readonly>
                     </div>
                 </div>

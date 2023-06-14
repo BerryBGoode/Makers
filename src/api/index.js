@@ -4,7 +4,7 @@ const EXPRESS = require('express');
 const CORS = require('cors');
 
 // requerir las rutas para clientes
-const clientesRoutes = require('./routes/clientes.routes');
+const CLIENTESROUTES = require('./routes/clientes.routes');
 
 // instanciando express
 const APP = EXPRESS();
@@ -18,7 +18,7 @@ APP.use(CORS());
 APP.use(EXPRESS.json());
 
 // usar las rutas
-APP.use('/api/clientes', clientesRoutes);
+APP.use('/api/clientes', CLIENTESROUTES);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {

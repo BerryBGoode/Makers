@@ -7,9 +7,9 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar consulta
-        const clientes = await POOL.query('SELECT * FROM clientes');
+        const CLIENTES = await POOL.query('SELECT * FROM clientes');
         // verificar el estado
-        if (res.status(200)) res.json(clientes.rows)
+        if (res.status(200)) res.json(CLIENTES.rows)
     } catch (e) {
         console.error(e.message);
     }
@@ -29,7 +29,7 @@ const store = async (req, res) => {
             // función
             (err, result) => {
                 // verificar sí existe error
-                if (err) throw err.message;
+                // if (err) throw err.message;
                 // sino enviar estado exitoso
                 res.status(201).send('Cliente agregado' + 'INSERT INTO clientes(nombres, apellidos, dui, telefono, correo, clave, id_estado_usuario_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)'
                     + [nombres, apellidos, dui, telefono, correo, clave, estado]);

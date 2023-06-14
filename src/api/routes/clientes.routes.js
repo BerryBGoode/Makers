@@ -1,4 +1,4 @@
-// importar enrutador de express
+// requerir enrutador de express
 const { Router } = require('express');
 // importar métodos con las transferencias SQL
 const { get, store, one, change, destroy } = require('../queries/clientes');

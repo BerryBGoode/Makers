@@ -116,7 +116,7 @@
 <script>
 // importar axios para hacer las peticiones
 import axios from 'axios';
-
+// exportando componente
 export default {
     name: 'clientes',
     data() {
@@ -132,12 +132,21 @@ export default {
     // definir método aquí
     methods: {
         // método para obtener los clientes
-        obtenerClientes() {
+        async obtenerClientes() {
             // hacer la petición con promesas
+            //#region 
             axios.get('http://localhost:3000/api/clientes/')
                 .then(res => { this.clientes = res.data; })
                 .catch(e => { console.error(e) })
+            //#endregion
 
+            // Se puede hacer así con async-await
+            //#region 
+            // const CLIENTES = await axios.get('http://localhost:3000/api/clientes/')
+            // if (CLIENTES.data) {
+            //     this.clientes = CLIENTES.data
+            // }
+            //#endregion
         },
         // metodo para eliminar el cliente seleccionado
         eliminarCliente(idcliente) {
