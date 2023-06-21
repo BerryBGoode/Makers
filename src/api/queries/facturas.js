@@ -13,9 +13,9 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar consulta
-        const EMPLEADOS = await POOL.query('SELECT * FROM facturas');
+        const FACTURAS = await POOL.query('SELECT * FROM facturas');
         // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(EMPLEADOS.rows);
+        if (res.status(200)) res.json(FACTURAS.rows);
     } catch (error) {
         console.error(error);
     }
@@ -27,9 +27,9 @@ const get = async (req, res) => {
 const getDuiEmpleado = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT dui FROM empleados');
+        const EMPLEADOS = await POOL.query('SELECT dui FROM empleados');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(SUCURSALES.rows);
+        if (res.status(200)) res.json(EMPLEADOS.rows);
     } catch (error) {
         console.error(error);
     }
@@ -43,7 +43,7 @@ const getDuiEmpleado = async (req, res) => {
 const getDirección = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT id_sucursal FROM sucursales');
+        const SUCURSALES = await POOL.query('SELECT id_sucursal, direccion FROM sucursales');
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(SUCURSALES.rows);
     } catch (error) {
@@ -53,15 +53,15 @@ const getDirección = async (req, res) => {
 
 
 
-  /**
- * Método  para obtener los datos del Empleado por su DUI
- */
+/**
+* Método  para obtener los datos del Empleado por su DUI
+*/
 const getObtenerEmpleados = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT nombres, apellidos FROM Empleados WHERE dui = ?');
+        const EMPLEADOS = await POOL.query('SELECT nombres, apellidos FROM Empleados WHERE dui = ?');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(SUCURSALES.rows);
+        if (res.status(200)) res.json(EMPLEADOS.rows);
     } catch (error) {
         console.error(error);
     }
@@ -81,7 +81,7 @@ const store = (req, res) => {
         const { fecha, hora } = req.body;
         // realizar query o insert y enviarle los parametros
         POOL.query('INSERT INTO ordenes(fecha, estado, id_orden, id_cliente) VALUES ($1,$2, $3, $4)',
-            [ fecha, hora], (err, result) => {
+            [fecha, hora], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
@@ -91,7 +91,7 @@ const store = (req, res) => {
                 }
                 res.status(201).send('factura agregada');
                 // verificar estado satisfactorio
-                // res.status(201).send('Empleado agregado')
+                // res.status(201).send('Factura agregada')
             })
     } catch (error) {
         console.log(error)
@@ -104,17 +104,17 @@ const store = (req, res) => {
 
 
 /**
- * Método para actualizar los datos de la orden
+ * Método para actualizar los datos de la factura
  */
 const change = (req, res) => {
     try {
         // obtener id 
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDFACTURA = parseInt(req.params.id);
         // obtener los datos enviados del frontend
-        const { fecha, estado } = req.body;
+        const { fecha, estado, idcliente } = req.body;
         // realizar transacción sql
         POOL.query('UPDATE orden SET fecha = $1, estado = $2, id_cliente = $3, WHERE id_orden = $4',
-            [fecha, estado, dui, planilla, IDORDEN],
+            [fecha, estado, dui, idcliente, IDFACTURA],
             (err, result) => {
                 // verificar sí ha y un error
                 if (err) {
@@ -134,12 +134,12 @@ const change = (req, res) => {
 
 
 /**
- * Método para eliminar la orden seleccionada
+ * Método para eliminar la factura seleccionada
  */
 const destroy = async (req, res) => {
     try {
-        // obtener el idorden
-        const IDEMPLEADO = parseInt(req.params.id);
+        // obtener el idFacturas
+        const IDFACTURA = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         await POOL.query('DELETE FROM facturas WHERE id_factura = $1', [IDFACTURA], (err, resul) => {
             // verificar sí hay un error
@@ -165,4 +165,4 @@ const destroy = async (req, res) => {
 
 
 // exportación de modulos
-module.exports = { get,  getDuiEmpleado, getDirección, getObtenerEmpleados , change, destroy, store }
+module.exports = { get, getDuiEmpleado, getDirección, getObtenerEmpleados, change, destroy, store }

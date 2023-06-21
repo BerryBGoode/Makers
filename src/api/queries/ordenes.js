@@ -12,28 +12,27 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar consulta
-        const EMPLEADOS = await POOL.query('SELECT * FROM ordenes');
+        const ORDENES = await POOL.query('SELECT * FROM ordenes');
         // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(EMPLEADOS.rows);
+        if (res.status(200)) res.json(ORDENES.rows);
     } catch (error) {
         console.error(error);
     }
 }
 
 /**
- * Método para obtener el dui de un cliente
+ * Método para obtener el dui de un clientes
  */
 const getClienteDui = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT dui FROM clientes');
+        const CLIENTES = await POOL.query('SELECT dui FROM clientes');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(SUCURSALES.rows);
+        if (res.status(200)) res.json(CLIENTES.rows);
     } catch (error) {
         console.error(error);
     }
 }
-
 
 
   /**
@@ -42,13 +41,16 @@ const getClienteDui = async (req, res) => {
 const getObtenerClientes = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE dui = ?');
+        const CLIENTES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE dui = ?');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(SUCURSALES.rows);
+        if (res.status(200)) res.json(CLIENTES.rows);
     } catch (error) {
         console.error(error);
     }
 }
+
+
+
 
 
 
@@ -61,7 +63,7 @@ const store = (req, res) => {
     let status = '';
     try {
         // obtener los datos del req
-        const { fecha, hora } = req.body;
+        const { fecha, hora  } = req.body;
         // realizar query o insert y enviarle los parametros
         POOL.query('INSERT INTO ordenes(fecha, estado, id_orden, id_cliente) VALUES ($1,$2, $3, $4)',
             [ fecha, hora], (err, result) => {
@@ -74,16 +76,12 @@ const store = (req, res) => {
                 }
                 res.status(201).send('orden agregada');
                 // verificar estado satisfactorio
-                // res.status(201).send('Empleado agregado')
+                // res.status(201).send('Orden agregada')
             })
     } catch (error) {
         console.log(error)
     }
 }
-
-
-
-
 
 
 /**
@@ -92,7 +90,7 @@ const store = (req, res) => {
 const change = (req, res) => {
     try {
         // obtener id 
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDORDEN = parseInt(req.params.id);
         // obtener los datos enviados del frontend
         const { fecha, estado } = req.body;
         // realizar transacción sql
@@ -116,13 +114,14 @@ const change = (req, res) => {
 
 
 
+
 /**
  * Método para eliminar la orden seleccionada
  */
 const destroy = async (req, res) => {
     try {
         // obtener el idorden
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDORDEN = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         await POOL.query('DELETE FROM ordenes WHERE id_orden = $1', [IDORDEN], (err, resul) => {
             // verificar sí hay un error
