@@ -1,5 +1,8 @@
 // requiriendo la pool con los attrs de la conexión
 const POOL = require('../db');
+const encrypt = require('../helpers/encrypt');
+// requerir de ecryptador
+const ENCRYPT = require('../helpers/encrypt');
 
 /**
  * req: información que viene del frontend
@@ -77,7 +80,7 @@ const store = (req, res) => {
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
         // realizar query o insert y enviarle los parametros
         POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
+            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {

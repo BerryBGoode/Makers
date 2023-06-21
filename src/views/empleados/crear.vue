@@ -33,7 +33,7 @@
                         info.
                         Personal
                     </span>
-                    <form action="" class="form-2 w-70">
+                    <div class="form-2 w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
@@ -60,7 +60,7 @@
                                     v-model="this.model.empleado.telefono">
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <hr>
                 <div class="form-data mb-9vh">
@@ -68,7 +68,7 @@
                         Especificaciones
                     </span>
 
-                    <form action="" class="form-2 w-70">
+                    <div class="form-2 w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="sucursales" class="form-label">Sucursal</label>
@@ -125,10 +125,10 @@
                             </div>
                             <div class="mb-3 input-container width-35">
                                 <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave">
+                                <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"  maxlength="15" minlength="10">
                             </div>
                         </div>
-                    </form>
+                    </div>
 
                 </div>
                 <hr>
