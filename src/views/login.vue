@@ -13,10 +13,28 @@
 .wrap {
     flex-wrap: wrap;
 }
-.children-form{
+
+.children-form {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 9px;
+}
+
+.href-makers {
+    color: #909090;
+}
+
+.buttons-login{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.func{
+    gap: 50px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
 }
 @media screen and (max-width: 725px) {
     .login {
@@ -54,7 +72,13 @@
 
                 </div>
                 <div class="row-6 p-3 w-50 func">
-                    <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png" alt="Logo">
+                    <div class="img-fun align-center">
+                        <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png" alt="Logo">
+                    </div>
+                    <div class="buttons-login">
+                        <button type="submit" class="btn btn-makers w-100">Iniciar Sesión</button>
+                        <a href="" class="href-makers">Restablecer contraseña</a>
+                    </div>
                 </div>
             </div>
         </form>
