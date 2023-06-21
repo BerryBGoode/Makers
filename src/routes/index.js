@@ -53,6 +53,9 @@ import config from '../views/configuracion.vue';
 
 // 404
 import notfound from '../views/404.vue';
+
+import App from '../App.vue';
+
 // intancia del enrutador
 const ROUTER = createRouter({
     // configuración del historial dentro de la ejecucción
@@ -68,11 +71,6 @@ const ROUTER = createRouter({
         // nombre del componente importado
         // inicio
         //#region 
-        {
-            name: 'dashboard',
-            path: '/dashboard',
-            component: dashboard
-        },
         // servicios
         {
             name: 'servicios',
@@ -261,7 +259,14 @@ const ROUTER = createRouter({
         {
             path: '/:pathMatch(.*)*',
             component: notfound
+        },
+        {
+            name: 'index',
+            path: '/',
+            component: dashboard
+            
         }
+
     ]
 })
 

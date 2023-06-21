@@ -39,40 +39,55 @@ main {
 .h-100 {
     height: 100%;
 }
-
 </style>
 
 <!-- espacio para las plantillas -->
 <template>
-    <aside>
-        <!-- sidebar component -->
-        <sidebar />
-    </aside>
-    <main>
-        <div class="container container-main">
-            <!-- división entre buscador -->
-            <div class="container container-top">
-                <buscador />
-                <cuenta />
+    <template v-if="token">
+        <aside>
+            <!-- sidebar component -->
+            <sidebar />
+        </aside>
+        <main>
+            <div class="container container-main">
+                <!-- división entre buscador -->
+                <div class="container container-top">
+                    <buscador />
+                    <cuenta />
+                </div>
+                <div class="content container">
+                    <RouterView />
+                </div>
             </div>
-            <div class="content container">
-                <RouterView />
-            </div>
-        </div>
-    </main>
+        </main>
+    </template>
+    <template v-else>
+        <login />
+    </template>
 </template>
+
 
 <!-- setup solo se utiliza en el componente principal,
   para comprimir el código, porque es el que almacena más contenido
 -->
-<script setup>
+<script>
 // componente sidebar
 import sidebar from "./components/sidebar.vue";
 // componente buscador
 import buscador from "./components/buscador.vue";
 // coomponente de la cuenta
 import cuenta from "./components/cuenta.vue";
+import login from "./views/login.vue";
 // importando componentes para enrutar
 import { RouterLink, RouterView } from "vue-router";
 // espacio para importar componentes hijos
+export default {
+    components: { sidebar, buscador, cuenta, RouterLink, RouterView, login },
+    data() {
+        return {
+            token: false
+        }
+    }
+
+}
 </script>

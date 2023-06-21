@@ -189,6 +189,7 @@ export default {
                             estado: 1
                         }
                         console.log(res)
+                        alert(res.data)
                         // recireccionar a la vista principal
                         if (res.status === 201) this.$router.push('/clientes');
                     })

@@ -22,7 +22,6 @@ const get = async (req, res) => {
  * res, respuesta del servidor
  */
 const store = (req, res) => {
-    let e;
     try {
         // asignar a un arreglo los valores del req
         const { nombres, apellidos, dui, telefono, correo, clave, estado } = req.body;
@@ -33,10 +32,10 @@ const store = (req, res) => {
             (err, result) => {
                 // verificar sí existe error
                 if (err) {
-                    e = err.message;
+                    res.json({ error: err.message });
                 }
-                // enviar error síno msg existoro
-                res.status(201).send(e || 'Cliente agregado');
+                // sino enviar estado exitoso
+                res.status(201).send('Cliente agregado');
             })
     } catch (error) {
         console.error(error);

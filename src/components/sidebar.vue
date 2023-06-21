@@ -76,7 +76,7 @@ export default {
         return {
             // lista con las optiones que puede acceder el usuario
             options: [
-                { option: "Inicio", route: "/dashboard" },
+                { option: "Inicio", route: "/" },
                 { option: "Servicios", route: "/servicios" },
                 { option: "Productos", route: "/productos" },
                 { option: "Clientes", route: "/clientes" },
