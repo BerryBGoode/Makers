@@ -23,8 +23,8 @@
                                     v-if="dui.length > 0" v-model="this.model.ordenes.dui">
                                     <option selected disabled>Seleccionar</option>
                                    <!-- recorrer los datos de clientes -->
-                                    <option v-for="(dui, i) in clientes" :key="i" :value="dui.id_clientes">{{
-                                        dui.dui }}</option>
+                                    <option v-for="(clientes, i) in clientes" :key="i" :value="dui.id_clientes">{{
+                                        clientes.dui }}</option>
                                 </select>
                            <!-- sino existe el dui del cliente -->
                                 <select class="form-select mb-3" name="error" v-else>
@@ -39,8 +39,8 @@
                                     v-if="nombres.length > 0" v-model="this.model.clientes.nombres">
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los dato del nombre del cliente -->
-                                    <option v-for="(nombres, i) in clientes" :key="i" :value="cargo.id_clientes">{{
-                                        cargo.cargo }}</option>
+                                    <option v-for="(nombres, i) in nombres" :key="i" :value="nombres.id_clientes">{{
+                                        clientes.nombres }}</option>
                                 </select>
                               <!-- sino existe ningun nombre -->
                               <select class="form-select mb-3" name="error" v-else>
@@ -54,8 +54,8 @@
                                     v-if="apellidos.length > 0" v-model="this.model.clientes.apellidos">
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los dato del nombre del cliente -->
-                                    <option v-for="(apellidos, i) in clientes" :key="i" :value="cargo.id_clientes">{{
-                                        cargo.cargo }}</option>
+                                    <option v-for="(apellidos, i) in apellidos" :key="i" :value="apellidos.id_clientes">{{
+                                        clientes.apellidos }}</option>
                                 </select>
                               <!-- sino existe ningun apellido-->
                               <select class="form-select mb-3" name="error" v-else>
@@ -92,6 +92,8 @@
     </div>
 </template>
 <script>
+import cli from 'nodemon/lib/cli';
+
 
 
 
