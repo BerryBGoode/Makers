@@ -206,3 +206,5 @@ FROM detalle_ordenes d
 INNER JOIN servicios s ON s.id_servicio = d.id_servicio
 
 -- modificar la longitud de la clave del empleado y cliente a 80
+-- validar que dui sea unico 
+ALTER TABLE empleados ADD CONSTRAINT chk_dui_empleado UNIQUE (dui)

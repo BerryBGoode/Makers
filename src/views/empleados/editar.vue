@@ -254,7 +254,8 @@ export default {
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
+                        this.msg = res.data.error;
+                        
                         // console.log(res.data)
                     }
                     // cuando si se realizo la tarea deceada y se creo algo 

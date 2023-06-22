@@ -24,18 +24,19 @@
     color: #909090;
 }
 
-.buttons-login{
+.buttons-login {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.func{
+.func {
     gap: 50px;
     display: flex;
     justify-content: space-evenly;
     flex-direction: column;
 }
+
 @media screen and (max-width: 725px) {
     .login {
         flex-direction: column;
@@ -57,26 +58,28 @@
                     <div class="children-form">
                         <div class="mb-3">
                             <label for="dui" class="form-label">DUI</label>
-                            <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui">
+                            <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui" required>
                         </div>
                         <div class="mb-3">
                             <label for="correo" class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo">
+                            <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="clave" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                maxlength="15" minlength="10">
+                                maxlength="15" minlength="10" required>
                         </div>
                     </div>
 
                 </div>
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
-                        <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png" alt="Logo">
+                        <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png"
+                            alt="Logo">
                     </div>
                     <div class="buttons-login">
-                        <button type="submit" class="btn btn-makers w-100">Iniciar Sesión</button>
+                        <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
                         <a href="" class="href-makers">Restablecer contraseña</a>
                     </div>
                 </div>

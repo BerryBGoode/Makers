@@ -73,8 +73,7 @@ const getCargos = async (req, res) => {
  * Método para crear un empleado
  */
 const store = (req, res) => {
-    let msg = '';
-    let status = '';
+    let msg, er = '';
     try {
         // obtener los datos del req
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
@@ -84,16 +83,29 @@ const store = (req, res) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
                     // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
+                    // return;                    
+
+                } else {
+                    msg = 'Empleado agregado';
                 }
-                res.status(201).send('Empleado agregado');
+
+                res.status(201).send(msg);
+
                 // verificar estado satisfactorio
                 // res.status(201).send('Empleado agregado')
             })
-    } catch (error) {
-        console.log(error)
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({ error: e });
     }
 }
 
@@ -132,12 +144,22 @@ const change = (req, res) => {
             (err, result) => {
                 // verificar sí ha y un error
                 if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Empleado agregado';
                 }
-                res.status(201).send('Empleado modificado');
+
+                res.status(201).send(msg);
             }
         )
     } catch (error) {
