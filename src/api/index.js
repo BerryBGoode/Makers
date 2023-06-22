@@ -1,3 +1,5 @@
+// requerir de las variables de entorno
+require('dotenv').config();
 // importar y asignar modulo para trabajar
 const EXPRESS = require('express');
 // importar o requerir cors para habilitar permisos en las peticiones

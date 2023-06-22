@@ -1,8 +1,8 @@
 // requiriendo la pool con los attrs de la conexión
 const POOL = require('../db');
-const encrypt = require('../helpers/encrypt');
 // requerir de ecryptador
-const ENCRYPT = require('../helpers/encrypt');
+const encrypt = require('../helpers/encrypt');
+
 
 /**
  * req: información que viene del frontend

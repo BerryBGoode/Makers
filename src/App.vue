@@ -85,7 +85,13 @@ export default {
     components: { sidebar, buscador, cuenta, RouterLink, RouterView, login },
     data() {
         return {
-            token: false
+            auth: true,
+            token: true
+
+        }
+    },
+    methods: {
+        getToken(){
 
         }
     }

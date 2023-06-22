@@ -37,9 +37,10 @@
     flex-direction: column;
 }
 
-.msg{
+.msg {
     position: absolute;
 }
+
 @media screen and (max-width: 725px) {
     .login {
         flex-direction: column;
@@ -58,7 +59,7 @@
         <form class="container p-5 login-container" @submit.prevent="checkEmpleado">
             <span class="msg">{{ msg }}</span>
             <div class="col h-100 flex wrap login">
-                <div class="row-6 p-3 w-50 form align-center">                    
+                <div class="row-6 p-3 w-50 form align-center">
                     <div class="children-form">
                         <div class="mb-3">
                             <label for="dui" class="form-label">DUI</label>
@@ -80,9 +81,9 @@
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
                         <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png"
-                        alt="Logo">
+                            alt="Logo">
                     </div>
-                    
+
                     <div class="buttons-login">
                         <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
                         <a href="" class="href-makers">Restablecer contraseña</a>
@@ -107,6 +108,10 @@ export default {
                     correo: '',
                     clave: '',
                     dui: ''
+                },
+                auth: {
+                    state: '',
+                    token: '',                    
                 }
             },
             msg: ''
@@ -115,17 +120,23 @@ export default {
     methods: {
         // método para buscar a un empleado con esos datos
         checkEmpleado() {
+            // limpiar mensaje
+            this.msg = '';
             // validar datos vacios
             if (!this.model.empleado.correo && !this.model.empleado.clave && !this.model.empleado.dui) {
                 this.msg = 'No se permite campos vacíos';
-            }else{
+            } else {
                 // realizar petición
                 axios.post('http://localhost:3000/api/auth', this.model.empleado)
                     .then(res => {
-                        console.log(res)
+                        // verificar estado de autenticación
+                        if (!res.data.auth) this.msg = res.data.msg;
+                        else this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                        console.log(res.data.token)
+                        console.log(this.model.auth)
                     })
                     .catch(e => {
-                        console.log(e)
+                        alert(e)
                     })
             }
         }
