@@ -11,6 +11,8 @@ const EMPLEADOSROUTES = require('./routes/empleados.routes');
 const PRODUCTOS_SUCURALES = require('./routes/productos_sucursales.routes');
 // requerir de las rutas de detalle_orden
 const DETALLE = require('./routes/detalles.routes');
+// requerir de las rutas de login
+const LOGIN = require('./routes/login.routes');
 
 // instanciando express
 const APP = EXPRESS();
@@ -28,8 +30,9 @@ APP.use('/api/clientes', CLIENTESROUTES);
 APP.use('/api/empleados', EMPLEADOSROUTES);
 APP.use('/api/sucursales/productos', PRODUCTOS_SUCURALES);
 APP.use('/api/ordenes/detalles', DETALLE)
+APP.use('/api/auth', LOGIN);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {
-    console.log('server in port '+APP.get('port'));
+    console.log('server in port ' + APP.get('port'));
 })

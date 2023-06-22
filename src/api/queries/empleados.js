@@ -133,6 +133,7 @@ const one = async (req, res) => {
  * Método para actualizar los datos del empleado seleccionado
  */
 const change = (req, res) => {
+    let msg, er = '';
     try {
         // obtener id 
         const IDEMPLEADO = parseInt(req.params.id);
@@ -149,8 +150,10 @@ const change = (req, res) => {
                         // enviar error el cliente
                         er = 'Dato unico ya registrado';
                     } else {
+                        // sino el error no es un dato duplicado
                         er = err.message;
                     }
+                    // enviar cualquier tipo de error identificado
                     res.json({ error: er });
                     // sí es ejecuta esto, el status 201 no se enviará
                     // return;                    

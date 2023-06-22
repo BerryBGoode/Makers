@@ -13,9 +13,22 @@ const validateUsuario = async (req, res) => {
         // obtener los datos
         const { dui, correo, clave } = req.body;
         // realizar consulta y enviando parametros
-        const USUARIO = await POOL.query('SELECT clave FROM empleados WHERE dui = $1 AND correo = $2',
-            [dui, correo, compareSync()])
+        const CLAVE = await POOL.query('SELECT clave FROM empleados WHERE dui = $1 AND correo = $2',
+            [dui, correo])
+        // obtener la clave de la db
+        let clave_db = CLAVE.rows[0];
+        // método para compara claves
+        const compare = (client, db) => {
+            return (compareSync(client, db))
+        }
+        // comparar la clave de la db con la ingresada
+        (compare(clave, clave_db.clave)) ? console.log('Usuario loggeado') : console.log('Usuario o contraseña incorrecta')
+        
+        console.log(clave_db.clave)
     } catch (error) {
-
+        console.log(error)
     }
 }
+
+// exportar modulos
+module.exports = { validateUsuario };
