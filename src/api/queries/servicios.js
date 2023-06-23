@@ -36,4 +36,30 @@ const get = async (req, res) => {
     }
 }
 
-module.exports = { get, getServicios }
+/**
+ * Método para agregar un servicio
+ */
+const store = (req, res) => {
+    try {
+        let estado = 1;
+        // obtener los datos de la petición
+        const { tipo, nombre, descripcion, precio, existencias } = req.body;
+        // realizar query
+        POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
+            [tipo, descripcion, precio, existencias, estado, nombre],
+            (err, result) => {
+                // verificar sí hubo un error
+                if (err) {
+                    res.json({ error: err.message });
+                    return
+                }
+                res.status(201).send('Producto agregado')
+            })
+    } catch (error) {
+        console.log(error)
+        // enviar mensaje al cliente
+        res.status(500).send('Surgio un problema en el servidor')
+    }
+}
+
+module.exports = { get, getServicios, store }
