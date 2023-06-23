@@ -93,6 +93,9 @@ export default {
             axios.get('http://localhost:3000/api/horarios/')
                 .then(res => this.horarios = res.data)
                 .catch(e => { alert(e); console.log(e) });
+        },
+        eliminarHorario(horario){
+            
         }
     },
     mounted() {
