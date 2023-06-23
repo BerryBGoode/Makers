@@ -47,6 +47,7 @@ import editarEmpleado from '../views/empleados/editar.vue';
 import editarProductoSucursal from '../views/sucursales/productos/editar.vue';
 import editarDetalle from '../views/ordenes/detalle/editar.vue';
 import editarProducto from '../views/productos/editar.vue';
+import editarServicio from '../views/servicios/editar.vue';
 //#endregion
 
 // configuración
@@ -251,6 +252,11 @@ const ROUTER = createRouter({
             name: 'editarProducto',
             path: '/productos/editar/:id',
             component: editarProducto
+        },
+        {
+            name: 'editarServicio',
+            path: '/servicios/editar/:id',
+            component: editarServicio
         },
 
         // configuración

@@ -105,7 +105,14 @@ const change = (req, res) => {
                 // verificar sí hubo un problema
                 if (err) {
 
-                    res.json({ error: err.message });
+                    // verificar sí no se puede eliminar porque tiene datos dependientes                
+                    if (err.code === '23503') {
+                        e = 'No se puede modificar o eliminar debido a pedidos asociados'
+                    } else {
+                        e = err.message
+                    }
+                    // retornar el error
+                    res.json({ error: e });
                     return;
                 }
                 res.status(201).send('Producto modificado');
@@ -130,7 +137,7 @@ const destroy = (req, res) => {
             if (err) {
                 // verificar sí no se puede eliminar porque tiene datos dependientes                
                 if (err.code === '23503') {
-                    e = 'No se puede eliminar debido a pedidos asociados'
+                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
                 } else {
                     e = err.message
                 }
@@ -146,4 +153,4 @@ const destroy = (req, res) => {
     }
 }
 
-module.exports = { get, one, store, change, destroy };
+module.exports = { get, one, store, change, destroy, producto };
