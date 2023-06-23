@@ -57,11 +57,7 @@ const change = (req, res) => {
                 if (err) {
 
                     // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    if (err.code === '23503') {
-                        e = 'No se puede modificar o eliminar debido a pedidos asociados'
-                    } else {
-                        e = err.message
-                    }
+                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
                     // retornar el error
                     res.json({ error: e });
                     return;
@@ -74,4 +70,28 @@ const change = (req, res) => {
     }
 }
 
-module.exports = { store, one, change }
+/**
+ * Metodo para eliminar un horario, que es el enviado en la url
+ */
+const destroy = (req, res) => {
+    try {
+        // obtener el id del horario
+        const ID = parseInt(req.params.id);
+        // realizar query
+        POOL.query('DELETE FROM horarios WHERE id_horario = $1', [ID], (err, result) => {
+            // verificar sí hubo un problema
+            if (err) {
+
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
+                // retornar el error
+                res.json({ error: e });
+                return;
+            }
+            res.status(201).send('Horario eliminado');
+        })
+    } catch (error) {
+
+    }
+}
+module.exports = { store, one, change, destroy }

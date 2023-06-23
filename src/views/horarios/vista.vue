@@ -1,5 +1,5 @@
 <style scoped>
-.data{
+.data {
     gap: 8px;
 }
 </style>
@@ -20,8 +20,8 @@
                     <div class="row fila">
                         <div class="col-md-5">
                             <h5 class="card-title bold mb-1">{{ horario.inicio }} AM - {{ horario.cierre }} PM</h5>
-                            
-                            
+
+
                         </div>
                         <div class="col-md-4">
                             <!-- <span>{{ servicio.tipo_servicio }}</span> -->
@@ -94,8 +94,19 @@ export default {
                 .then(res => this.horarios = res.data)
                 .catch(e => { alert(e); console.log(e) });
         },
-        eliminarHorario(horario){
-            
+        eliminarHorario(horario) {
+            // esperar confirmación del usuario
+            if (confirm('Desea eliminar el horario?')) {
+                axios.delete('http://localhost:3000/api/horarios/' + horario)
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+
+                        // cargar
+                        this.getHorarios();
+                    })
+                    .catch(e => { alert(e); console.log(e) })
+            }
         }
     },
     mounted() {
