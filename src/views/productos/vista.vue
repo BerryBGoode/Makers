@@ -14,8 +14,6 @@
             </router-link>
         </div>
         <hr>
-        <!-- aquí cargar los clientes -->
-        <!-- verificar sí hay clientes -->
         <div class="data p-2" v-if="productos.length > 0">
             <!-- recorrer los clientes encontrados -->
 
