@@ -62,4 +62,22 @@ const store = (req, res) => {
     }
 }
 
-module.exports = { get, getServicios, store }
+/**
+ * Método para obtener los datos del registro especificado 
+ */
+const one = async (req, res) => {
+    try {
+        // obtener el id 
+        const ID = parseInt(req.params.id);
+        // realizar query
+        const SERVICIO = await POOL.query('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = $1', [ID])
+        // verificar sí el resultado es el esperado para enviar los datos
+        if(res.status(200)) res.send(SERVICIO.rows[0]);
+    } catch (error) {
+        console.log(error);
+        // enviar mensaje de error al cliente
+        res.status(500).send('Surgio un problema en el servidor');
+    }
+}
+
+module.exports = { get, getServicios, store, one }

@@ -93,7 +93,7 @@ export default {
         }
     },
     methods: {
-        getServicios() {
+        getTiposServicios() {
             axios.get('http://localhost:3000/api/servicios/tipos')
                 .then(res => this.tipos = res.data)
                 .catch(e => console.log(e));
@@ -124,7 +124,7 @@ export default {
         }
     },
     mounted() {
-        this.getServicios();
+        this.getTiposServicios();
     }
 }
 
