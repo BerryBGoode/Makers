@@ -43,7 +43,8 @@ main {
 
 <!-- espacio para las plantillas -->
 <template>
-    <template v-if="token">
+    <!-- verificar sí existen una cookie de autenticación -->
+    <template v-if="$cookies.get('auth')">
         <aside>
             <!-- sidebar component -->
             <sidebar />
@@ -80,21 +81,22 @@ import cuenta from "./components/cuenta.vue";
 import login from "./views/login.vue";
 // importando componentes para enrutar
 import { RouterLink, RouterView } from "vue-router";
+
+import VueCookies from 'vue-cookies';
 // espacio para importar componentes hijos
 export default {
     components: { sidebar, buscador, cuenta, RouterLink, RouterView, login },
     data() {
         return {
             auth: true,
-            token: true
+            token: false
 
         }
     },
     methods: {
-        getToken(){
+        
+    },
 
-        }
-    }
 
 }
 </script>

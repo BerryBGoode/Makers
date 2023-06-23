@@ -33,11 +33,13 @@ const validateUsuario = async (req, res) => {
             // obtener id del empleado
             const EMPLEADO = await POOL.query('SELECT id_empleado, nombres FROM empleados WHERE dui = $1 AND correo = $2 AND clave = $3', [dui, correo, clave_db.clave])
             // crar token, enviando idempleado y texto secreto encryptado en md5 para mayor seguridad del sistema
-            token = jwt.sign(EMPLEADO.rows[0].id_empleado, process.env.secret)
-            // retornar estado de autenticación
+            token = jwt.sign(EMPLEADO.rows[0].id_empleado, process.env.secret, {algorithm: 'HS512'})
+            // retornar estado d{e autenticación
             auth = true;
             // retornar mensaje
             msg = 'Bienvenido ' + EMPLEADO.rows[0].nombres;
+            // setear token a la cookie
+            res.cookie('token', token, { httpOnly: true });
         }
         else {
             // retornar mensaje

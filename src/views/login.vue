@@ -94,12 +94,17 @@
     </section>
 </template>
 <script>
+// importar axios para hacer peticiones
 import axios from 'axios';
+// importar para configurar rutas
+import { createRouter, createWebHistory } from 'vue-router'
+// importar componente a reenviar
+import App from '../App.vue';
+import dashboard from './dashboard.vue';
 
 export default {
     // nombre del componente
     name: "login",
-
     // método que retorna el componente
     data() {
         return {
@@ -111,10 +116,18 @@ export default {
                 },
                 auth: {
                     state: '',
-                    token: '',                    
+                    token: '',
                 }
             },
-            msg: ''
+            msg: '',
+            router: createRouter({
+                history: createWebHistory(),
+                routes: [
+                    { path: '/', component: dashboard }
+
+                ]
+            })
+
         }
     },
     methods: {
@@ -132,15 +145,23 @@ export default {
                         // verificar estado de autenticación
                         if (!res.data.auth) this.msg = res.data.msg;
                         else this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                        console.log(res.data.token)
-                        console.log(this.model.auth)
+                        // creando token
+                        this.crearCookie(res.data.token)
                     })
                     .catch(e => {
                         alert(e)
                     })
             }
+        },
+        crearCookie(token) {
+            // creando cookie
+            this.$cookies.set('auth', token, { experies: '1d' });
+            // redireccionando
+            this.router.push('/src/App.vue')
         }
-    }
+    },
+
+
 }
 
 </script>
