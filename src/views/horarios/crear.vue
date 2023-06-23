@@ -1,3 +1,8 @@
+<style>
+.mb-52vh{
+    margin-bottom: 52vh;
+}
+</style>
 <template>
     <div class="container servicios component-servicio component-render">
         <div class="top">
@@ -7,7 +12,7 @@
         </div>
         <hr>
         <div class="container agg-servicio">
-            <div class="form-data mb-50vh">
+            <div class="form-data mb-52vh">
                 <form action="" class="form-1">
                     <div class="load">
                         <div class="mb-3 flex-col input-container">
