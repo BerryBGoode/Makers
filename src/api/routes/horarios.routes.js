@@ -1,14 +1,19 @@
 // requerir de el enrutador de express
 const { Router } = require('express');
 // requerir de los métodos para realizar queries
-const { get } = require('../queries/horarios');
+const { store, one, change, destroy } = require('../queries/horarios');
+const { getHorarios } = require('../queries/empleados');
+
 
 // instanciando en enrutador
 const HORARIOS = Router();
 
 // definiendo rutas o endpoints
-HORARIOS.get('/', get);
-
+HORARIOS.get('/', getHorarios);
+HORARIOS.post('/', store);
+HORARIOS.get('/:id', one);
+HORARIOS.put('/:id', change);
+HORARIOS.delete('/:id', destroy)
 // exportando objeto con las rutas
 module.exports = HORARIOS;
 
