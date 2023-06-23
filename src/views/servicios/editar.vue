@@ -66,7 +66,7 @@
                     <router-link to="/servicios" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
             </div>
         </form>
@@ -86,7 +86,6 @@ export default {
                 nombre: '',
                 descripcion: '',
                 precio: '',
-                existencias: 1,
             },
             tipos: [],
             msg: ''
@@ -98,12 +97,24 @@ export default {
                 .then(res => this.tipos = res.data)
                 .catch(e => console.log(e));
         },
+        getServicio(){
+            axios.get('http://localhost:3000/api/servicios/' + this.$route.params.id)
+                .then(res => {
+                    this.servicio = {
+                        nombre: res.data.nombre_servicio,
+                        descripcion: res.data.descripcion,
+                        tipo: res.data.id_tipo_servicio,
+                        precio: res.data.precio
+                    }
+                })
+                .catch(e => {alert(e); console.log(e)})
+        },
         modificarServicio() {
             // validar datos 
-            if (this.servicio.descripcion && this.servicio.existencias && this.servicio.nombre &&
+            if (this.servicio.descripcion && this.servicio.nombre &&
                 this.servicio.precio && (this.servicio.tipo !== 'Seleccionar')) {
                 // realizar petición
-                axios.post('http://localhost:3000/api/servicios/', this.servicio)
+                axios.put('http://localhost:3000/api/servicios/'+this.$route.params.id, this.servicio)
                     .then(res => {
                         alert(res.data);
                         // limpiar campos
@@ -122,18 +133,7 @@ export default {
                 this.msg = 'No se permiten campos vacíos'
             }
         },
-        getServicio(){
-            axios.get('http://localhost:3000/api/servicios/' + this.$route.params.id)
-                .then(res => {
-                    this.servicio = {
-                        nombre: res.data.nombre_servicio,
-                        descripcion: res.data.descripcion,
-                        tipo: res.data.id_tipo_servicio,
-                        precio: res.data.precio
-                    }
-                })
-                .catch(e => {alert(e); console.log(e)})
-        }
+
     },
     mounted() {
         this.getTiposServicios();

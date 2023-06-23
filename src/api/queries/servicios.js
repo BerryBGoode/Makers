@@ -72,7 +72,7 @@ const one = async (req, res) => {
         // realizar query
         const SERVICIO = await POOL.query('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = $1', [ID])
         // verificar sí el resultado es el esperado para enviar los datos
-        if(res.status(200)) res.send(SERVICIO.rows[0]);
+        if (res.status(200)) res.send(SERVICIO.rows[0]);
     } catch (error) {
         console.log(error);
         // enviar mensaje de error al cliente
@@ -80,4 +80,37 @@ const one = async (req, res) => {
     }
 }
 
-module.exports = { get, getServicios, store, one }
+/**
+ * Método para actualizar los datos del servicio recibido
+ */
+const change = (req, res) => {
+    try {
+        // obtener el id del registro
+        const ID = parseInt(req.params.id);
+        // obtener los datos de la petición
+        const { tipo, nombre, descripcion, precio } = req.body;
+        // realizar actualización
+        POOL.query('UPDATE servicios SET descripcion = $1, precio = $2, id_tipo_servicio = $3, nombre_servicio = $4 WHERE id_servicio = $5',
+            [descripcion, precio, tipo, nombre, ID], (err, result) => {
+                // verificar sí hubo un problema
+                if (err) {
+
+                    // verificar sí no se puede eliminar porque tiene datos dependientes                
+                    if (err.code === '23503') {
+                        e = 'No se puede modificar o eliminar debido a pedidos asociados'
+                    } else {
+                        e = err.message
+                    }
+                    // retornar el error
+                    res.json({ error: e });
+                    return;
+                }
+                res.status(201).send('Servicio modificado');
+            })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
+    }
+}
+
+module.exports = { get, getServicios, store, one, change }
