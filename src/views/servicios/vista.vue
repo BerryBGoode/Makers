@@ -150,8 +150,20 @@ export default {
                 .then(res => this.servicios = res.data)
                 .catch(e => alert(e));
         },
-        eliminarServicio(servicio){
+        eliminarServicio(servicio) {
+            // verificar sí el usuario lo decea eliminar
+            if (confirm('Desea eliminar este servicio?')) {
+                // realizar petición
+                axios.delete('http://localhost:3000/api/servicios/' + servicio)
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
 
+                        // cargar
+                        this.getServicios();
+                    })
+                    .catch(e => { alert(e); console.log(e)})
+            }
         }
     },
     mounted() {

@@ -113,4 +113,33 @@ const change = (req, res) => {
     }
 }
 
-module.exports = { get, getServicios, store, one, change }
+/**
+ * Método para eliminar un servicio
+ */
+const destroy = (req, res) => {
+    try {
+        // obtener id del servicio
+        const ID = parseInt(req.params.id);
+        // realizar query
+        POOL.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
+            // verificar sí ocurre un error
+            if (err) {
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                if (err.code === '23503') {
+                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
+                } else {
+                    e = err.message
+                }
+                // retornar el error
+                res.json({ error: e });
+                return;
+            }
+            res.status(201).send('Producto eliminado');
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
+    }
+}
+
+module.exports = { get, getServicios, store, one, change, destroy }

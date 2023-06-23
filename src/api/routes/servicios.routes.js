@@ -1,7 +1,7 @@
 // requerir del enrutador de express
 const { Router } = require('express');
 // métodos con los queries
-const { get, getServicios, store, one, change } = require('../queries/servicios')
+const { get, getServicios, store, one, change, destroy } = require('../queries/servicios')
 
 // instanciar interface
 const SERVICIO = Router();
@@ -11,6 +11,7 @@ SERVICIO.get('/tipos', getServicios)
 SERVICIO.post('/', store)
 SERVICIO.get('/:id', one);
 SERVICIO.put('/:id', change);
+SERVICIO.delete('/:id', destroy);
 // exportar la instancia de la interface
 module.exports = SERVICIO;
 
