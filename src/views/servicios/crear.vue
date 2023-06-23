@@ -28,18 +28,33 @@
             <div class="form-data mb-40vh">
                 <form action="" class="form-1">
                     <div class="load">
-                        <div class="mb-3 input-container">
+                        <div class="mb-3 input-container-3">
                             <label for="nombre" class="form-label">Nombre</label>
-                            <input v-model="servicio.nombre" type="text" class="form-control" @focus="ValidityState" id="nombre">
+                            <input v-model="servicio.nombre" type="text" class="form-control" @focus="ValidityState"
+                                id="nombre">
                         </div>
-                        <div class="mb-3 input-container">
+                        <div class="mb-3 input-container-3">
                             <label for="precio" class="form-label">Precio</label>
                             <input v-model="servicio.precio" type="text" class="form-control" id="precio">
+                        </div>
+                        <div class="mb-3 input-container-3">
+                            <label for="" class="form-label">Tipo de servicio</label>
+                            <!-- caso donde existan más de 0 tipos de servicios -->
+                            <select class="form-select mb-3" v-if="tipos.length > 0" v-model="servicio.tipo"
+                                @change="cargarServicios" id="tipoServicio">
+                                <option selected disabled>Seleccionar</option>
+                                <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio" class="option"
+                                    v-text="tipo.tipo_servicio"></option>
+                            </select>
+                            <!-- caso default-->
+                            <select class="form-select mb-3" v-else>
+                                <option selected>No se encontraron tipos de servicio</option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
-                        <input  v-model="servicio.descripcion" type="text" class="form-control" id="descripcion">
+                        <input v-model="servicio.descripcion" type="text" class="form-control" id="descripcion">
                     </div>
                 </form>
                 <hr>
@@ -55,21 +70,34 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
+
 // definir componente 
 export default {
     name: "crearServicio",
-    data () {
+    data() {
         return {
-            servicio : {
+            servicio: {
                 // entidades de la tabla, que se modificarán desde los inputs
-                tipo : 1,
-                nombre : '',
-                descripcion : '',
-                precio : '',
-                existencias : 1,
-                estado : 1
-            }
+                tipo: 'Seleccionar',
+                nombre: '',
+                descripcion: '',
+                precio: '',
+                existencias: 1,
+                estado: 1
+            },
+            tipos: []
+        }       
+    },
+    methods : {
+        getServicios(){
+            axios.get('http://localhost:3000/api/servicios/tipos')
+                .then(res => this.tipos = res.data)
+                .catch(e => console.log(e));
         }
+    },
+    mounted() {
+        this.getServicios();
     }
 }
 

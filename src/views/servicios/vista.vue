@@ -73,8 +73,10 @@
     <!-- </div> -->
 </template>
 <script>
+import axios from 'axios'
 export default {
-    name: 'servicios'
+    name: 'servicios',
+
 }
 
 </script>

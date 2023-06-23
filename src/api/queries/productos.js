@@ -146,4 +146,4 @@ const destroy = (req, res) => {
     }
 }
 
-module.exports = { get, one, store, change, destroy };
+module.exports = { get, one, store, change, destroy, producto };
