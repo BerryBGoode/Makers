@@ -46,10 +46,13 @@ const store = async (req, res) => {
         // verificar sí se obtuvo
         if (tipo) {
             // obtener los datos de la petición
-            const { descripcion, precio, existencias, estado, nombre } = req.body;
+            const { descripcion, precio, existencias, nombre } = req.body;
+            console.log(req.body)
+            console.log(tipo)
+            console.log(estado)
             // realizar query o inserción y enviadole los parametros
-            POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio)',
-                [tipo, descripcion, precio, existencias, existencias, estado, nombre],
+            POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
+                [tipo, descripcion, precio, existencias, estado, nombre],
                 (err, result) => {
                     // verificar sí hubo un error
                     if (err) {
