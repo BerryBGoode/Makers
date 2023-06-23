@@ -8,8 +8,8 @@
     bottom: 0;
 }
 
-.mb-40vh {
-    margin-bottom: 40vh;
+.mb-39vh {
+    margin-bottom: 39vh;
 }
 
 .form-1 {
@@ -25,7 +25,7 @@
         </div>
         <hr>
         <div class="container agg-servicio">
-            <div class="form-data mb-40vh">
+            <div class="form-data mb-39vh">
                 <form action="" class="form-1">
                     <div class="load">
                         <div class="mb-3 input-container-3">

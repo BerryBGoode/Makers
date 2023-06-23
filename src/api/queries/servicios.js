@@ -14,7 +14,7 @@ const getServicios = async (req, res) => {
         // realizar query
         const TIPOS = await POOL.query('SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = $1', [producto])
         // verificar sí la respuesta es la esperada
-        if(res.status(200)) res.send(TIPOS.rows);
+        if (res.status(200)) res.send(TIPOS.rows);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -26,10 +26,14 @@ const getServicios = async (req, res) => {
  */
 const get = async (req, res) => {
     try {
-        
+        // realizar query
+        const SERVICIOS = await POOL.query('SELECT * FROM servicios_view')
+        // verificar sí el resultado es el esperado para retornar los datos
+        if (res.status(200)) res.send(SERVICIOS.rows);
     } catch (error) {
         console.log(error)
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
-module.exports = { get, getServicios}
+module.exports = { get, getServicios }
