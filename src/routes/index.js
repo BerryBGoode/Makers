@@ -46,6 +46,7 @@ import editarCliente from '../views/clientes/editar.vue';
 import editarEmpleado from '../views/empleados/editar.vue';
 import editarProductoSucursal from '../views/sucursales/productos/editar.vue';
 import editarDetalle from '../views/ordenes/detalle/editar.vue';
+import editarProducto from '../views/productos/editar.vue';
 //#endregion
 
 // configuración
@@ -53,6 +54,9 @@ import config from '../views/configuracion.vue';
 
 // 404
 import notfound from '../views/404.vue';
+
+import App from '../App.vue';
+
 // intancia del enrutador
 const ROUTER = createRouter({
     // configuración del historial dentro de la ejecucción
@@ -68,11 +72,6 @@ const ROUTER = createRouter({
         // nombre del componente importado
         // inicio
         //#region 
-        {
-            name: 'dashboard',
-            path: '/dashboard',
-            component: dashboard
-        },
         // servicios
         {
             name: 'servicios',
@@ -248,7 +247,11 @@ const ROUTER = createRouter({
             path: '/ordenes/:id/detalles/editar/:detalle',
             component: editarDetalle
         },
-
+        {
+            name: 'editarProducto',
+            path: '/productos/editar/:id',
+            component: editarProducto
+        },
 
         // configuración
         {
@@ -261,7 +264,14 @@ const ROUTER = createRouter({
         {
             path: '/:pathMatch(.*)*',
             component: notfound
+        },
+        {
+            name: 'index',
+            path: '/',
+            component: dashboard
+            
         }
+
     ]
 })
 

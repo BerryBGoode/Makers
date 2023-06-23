@@ -14,12 +14,16 @@ import ROUTER from './routes';
 // componente nativo de cors (depencia)
 import cors from 'cors';
 
+import VueCookies from 'vue-cookies';
+
 // instancia del componente
 const APP = createApp(App)
 
 APP.use(cors);
 // usar el enrutado
 APP.use(ROUTER);
+// usando vue-cookies, cada cookie durará 1 día
+APP.use(VueCookies, { expires: '1d'});
 
 // montar lo recuperado del componente principal
 // al contenedor con id="app"

@@ -9,19 +9,27 @@
     "serve": "nodemon src/api/index.js"
   },
   "dependencies": {
-    "axios": "^1.4.0", 
+    "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.0",
     "nodemon": "^2.0.22",
     "pg": "^8.11.0",
     "postgres": "^3.3.5",
     "sweetalert2": "^11.7.12",
     "vue": "^3.3.2",
-    "vue-router": "^4.2.2"
+    "vue-cookies": "^1.8.3",
+    "vue-router": "^4.2.2",
+    "vue3-cookies": "^1.0.6"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
     "@vitejs/plugin-vue": "^4.2.3",
     "vite": "^4.3.5"
   }

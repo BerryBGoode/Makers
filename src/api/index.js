@@ -1,7 +1,11 @@
+// requerir de las variables de entorno
+require('dotenv').config();
 // importar y asignar modulo para trabajar
 const EXPRESS = require('express');
 // importar o requerir cors para habilitar permisos en las peticiones
 const CORS = require('cors');
+// requerir dependencia para manejar las cookies
+const COOKIE = require('cookie-parser')
 
 // requerir las rutas para clientes
 const CLIENTESROUTES = require('./routes/clientes.routes');
@@ -11,6 +15,10 @@ const EMPLEADOSROUTES = require('./routes/empleados.routes');
 const PRODUCTOS_SUCURALES = require('./routes/productos_sucursales.routes');
 // requerir de las rutas de detalle_orden
 const DETALLE = require('./routes/detalles.routes');
+// requerir de las rutas de login
+const LOGIN = require('./routes/login.routes');
+// requerir de las rutas de productos
+const PRODUCTOS = require('./routes/productos.routes');
 
 // instanciando express
 const APP = EXPRESS();
@@ -20,6 +28,8 @@ APP.set('port', process.env.PORT || 3000);
 
 // habilitar cors para los permisos
 APP.use(CORS());
+// habilitar cookie-parser 
+APP.use(COOKIE());
 // convertir a json las respuestas del servidor
 APP.use(EXPRESS.json());
 
@@ -28,8 +38,10 @@ APP.use('/api/clientes', CLIENTESROUTES);
 APP.use('/api/empleados', EMPLEADOSROUTES);
 APP.use('/api/sucursales/productos', PRODUCTOS_SUCURALES);
 APP.use('/api/ordenes/detalles', DETALLE)
+APP.use('/api/productos', PRODUCTOS);
+APP.use('/api/auth', LOGIN);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {
-    console.log('server in port '+APP.get('port'));
+    console.log('server in port ' + APP.get('port'));
 })

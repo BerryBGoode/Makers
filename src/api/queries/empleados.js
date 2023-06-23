@@ -1,5 +1,8 @@
 // requiriendo la pool con los attrs de la conexión
 const POOL = require('../db');
+// requerir de ecryptador
+const encrypt = require('../helpers/encrypt');
+
 
 /**
  * req: información que viene del frontend
@@ -70,27 +73,39 @@ const getCargos = async (req, res) => {
  * Método para crear un empleado
  */
 const store = (req, res) => {
-    let msg = '';
-    let status = '';
+    let msg, er = '';
     try {
         // obtener los datos del req
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
         // realizar query o insert y enviarle los parametros
         POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
+            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
                     // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
+                    // return;                    
+
+                } else {
+                    msg = 'Empleado agregado';
                 }
-                res.status(201).send('Empleado agregado');
+
+                res.status(201).send(msg);
+
                 // verificar estado satisfactorio
                 // res.status(201).send('Empleado agregado')
             })
-    } catch (error) {
-        console.log(error)
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({ error: e });
     }
 }
 
@@ -118,6 +133,7 @@ const one = async (req, res) => {
  * Método para actualizar los datos del empleado seleccionado
  */
 const change = (req, res) => {
+    let msg, er = '';
     try {
         // obtener id 
         const IDEMPLEADO = parseInt(req.params.id);
@@ -129,12 +145,24 @@ const change = (req, res) => {
             (err, result) => {
                 // verificar sí ha y un error
                 if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        // sino el error no es un dato duplicado
+                        er = err.message;
+                    }
+                    // enviar cualquier tipo de error identificado
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Empleado agregado';
                 }
-                res.status(201).send('Empleado modificado');
+
+                res.status(201).send(msg);
             }
         )
     } catch (error) {

@@ -33,34 +33,35 @@
                         info.
                         Personal
                     </span>
-                    <form action="" class="form-2 w-70">
+                    <div class="form-2 w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" v-model="this.model.empleado.nombres" class="form-control" id="nombres">
+                                <input type="text" v-model="this.model.empleado.nombres" class="form-control" id="nombres" required>
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="apellidos" class="form-label">Apellidos</label>
                                 <input type="text" class="form-control" v-model="this.model.empleado.apellidos"
-                                    id="apellidos">
+                                    id="apellidos" required>
                             </div>
                         </div>
                         <div class="load">
                             <div class="mb-3 input-container-3">
                                 <label for="dui" class="form-label">DUI</label>
-                                <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui">
+                                <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo">
+                                <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo"
+                                    required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono"
-                                    v-model="this.model.empleado.telefono">
+                                <input type="text" class="form-control" id="telefono" v-model="this.model.empleado.telefono"
+                                    required>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <hr>
                 <div class="form-data mb-9vh">
@@ -68,13 +69,13 @@
                         Especificaciones
                     </span>
 
-                    <form action="" class="form-2 w-70">
+                    <div class="form-2 w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="sucursales" class="form-label">Sucursal</label>
                                 <!-- verifiacr sí existen sucursales recuperadas -->
                                 <select class="form-select mb-3" aria-label="Default select example" id="sucursales"
-                                    v-if="sucursales.length > 0" v-model="this.model.empleado.sucursal">
+                                    v-if="sucursales.length > 0" v-model="this.model.empleado.sucursal" required>
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los datos de las sucursales -->
                                     <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
@@ -89,7 +90,7 @@
                                 <label for="cargos" class="form-label">Cargo</label>
                                 <!-- verifiacr sí existen sucursales recuperadas -->
                                 <select class="form-select mb-3" aria-label="Default select example" id="cargos"
-                                    v-if="cargos.length > 0" v-model="this.model.empleado.cargo">
+                                    v-if="cargos.length > 0" v-model="this.model.empleado.cargo" required>
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los datos de las sucursales -->
                                     <option v-for="(cargo, i) in cargos" :key="i" :value="cargo.id_cargo">{{
@@ -106,7 +107,7 @@
                                 <label for="horario" class="form-label">Horarios</label>
                                 <!-- verificar sí existen horarios -->
                                 <select class="form-select mb-3" aria-label="Default select example" id="horario"
-                                    v-if="horarios.length > 0" v-model="this.model.empleado.horario">
+                                    v-if="horarios.length > 0" v-model="this.model.empleado.horario" required>
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los hotarios encontrados -->
                                     <option v-for="(horario, i) in horarios" :key="i" :value="horario.id_horario">
@@ -120,15 +121,16 @@
                             </div>
                             <div class="mb-3 input-container width-35">
                                 <label for="planilla" class="form-label">Planilla</label>
-                                <input type="text" class="form-control" id="planilla"
-                                    v-model="this.model.empleado.planilla">
+                                <input type="text" class="form-control" id="planilla" v-model="this.model.empleado.planilla"
+                                    required>
                             </div>
                             <div class="mb-3 input-container width-35">
                                 <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave">
+                                <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
+                                    maxlength="15" minlength="10" required>
                             </div>
                         </div>
-                    </form>
+                    </div>
 
                 </div>
                 <hr>
@@ -220,8 +222,7 @@ export default {
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                        // console.log(res.data)
+                        this.msg = res.data.error;                        
                     }
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
@@ -243,7 +244,7 @@ export default {
                         alert('Empleado agregado')
                         this.$router.push('/empleados');
                     }
-                    // console.log(res)
+                    console.log(res)                    
 
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/empleados');

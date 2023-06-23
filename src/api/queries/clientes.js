@@ -1,5 +1,7 @@
 // requerir el modulo con los attrs de la conexión
 const POOL = require('../db');
+// requerir del encryptador
+const encrypt = require('../helpers/encrypt');
 
 // método para obtener los clientes
 // req (obtiene parametros en la consulta)
@@ -19,22 +21,21 @@ const get = async (req, res) => {
  * req, datos enviados del front
  * res, respuesta del servidor
  */
-const store = async (req, res) => {
+const store = (req, res) => {
     try {
         // asignar a un arreglo los valores del req
         const { nombres, apellidos, dui, telefono, correo, clave, estado } = req.body;
         // preparando query con los datos
         POOL.query('INSERT INTO clientes(nombres, apellidos, dui, telefono, correo, clave, id_estado_usuario_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)'
-            , [nombres, apellidos, dui, telefono, correo, clave, estado],
+            , [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado],
             // función
             (err, result) => {
                 // verificar sí existe error
-                if (err){
-                    res.json({error: err.message});
-                } 
+                if (err) {
+                    res.json({ error: err.message });
+                }
                 // sino enviar estado exitoso
-                res.status(201).send('Cliente agregado' + 'INSERT INTO clientes(nombres, apellidos, dui, telefono, correo, clave, id_estado_usuario_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)'
-                    + [nombres, apellidos, dui, telefono, correo, clave, estado]);
+                res.status(201).send('Cliente agregado');
             })
     } catch (error) {
         console.error(error);
@@ -65,7 +66,7 @@ const one = async (req, res) => {
  * req, datos del front
  * res, respuesta del servidor
  */
-const change = async (req, res) => {
+const change = (req, res) => {
     try {
         // convertir a entero el id recibido de la ruta 
         const IDCLIENTE = parseInt(req.params.id);
@@ -78,7 +79,7 @@ const change = async (req, res) => {
             (err, results) => {
                 // verificar sí hay un error
                 if (err) {
-                    res.json({error: err.message});
+                    res.json({ error: err.message });
                 }
                 res.status(201).send('Cliente modificado' + 'UPDATE clientes SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, id_estado_usuario_cliente = $6' +
                     [nombres, apellidos, dui, telefono, correo, estado]);
@@ -105,7 +106,7 @@ const destroy = (req, res) => {
             if (err) {
                 // quebrar o detener y retornar msg-error
                 // throw err.message;
-                res.json({error: err.message});
+                res.json({ error: err.message });
             }
 
             // enviando estado del proceso y mensaje

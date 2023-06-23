@@ -204,3 +204,7 @@ SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, d.descuento, d.cantidad, 
 		d.cantidad * s.precio as subtotal, d.id_orden
 FROM detalle_ordenes d
 INNER JOIN servicios s ON s.id_servicio = d.id_servicio
+
+-- modificar la longitud de la clave del empleado y cliente a 80
+-- validar que dui sea unico 
+ALTER TABLE empleados ADD CONSTRAINT chk_dui_empleado UNIQUE (dui)
