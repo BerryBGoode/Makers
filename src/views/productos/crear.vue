@@ -93,10 +93,21 @@ export default {
                         // verificar q no venga ningún error
                         if (res.status === 201) {
                             alert(res.data);
+                            // limpiar campos
+                            this.producto = {
+                                // entidades de la tabla, que se modificarán desde los inputs
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: '',
+
+                            }
+                            // redireccionar
+                            this.$router.push('/productos')
                         }
-                        console.log(res.data)                            
+                        console.log(res.data)
                     })
-                    .catch(e => {console.log(e)});
+                    .catch(e => { console.log(e) });
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }

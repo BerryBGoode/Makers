@@ -26,7 +26,7 @@
         </div>
         <hr>
         <div class="container">
-            <form @submit.prevent="agregarProducto">
+            <form @submit.prevent="modificarProducto">
                 <div class="form-data mb-40vh">
                     <div class="form-1">
                         <div class="load">
@@ -58,7 +58,7 @@
                     <router-link to="/productos" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
 
             </form>
@@ -86,7 +86,7 @@ export default {
     methods: {
         getProducto() {
             // realizar petición            
-            axios.get('http://localhost:3000/api/productos/'+this.$route.params.id)
+            axios.get('http://localhost:3000/api/productos/' + this.$route.params.id)
                 .then(res => {
                     // cargar los datos
                     this.producto = {
@@ -97,22 +97,33 @@ export default {
                     }
                 })
                 .catch(e => console.log(e))
-        
+
         },
         modificarProducto() {
 
             // verificar sí no hay campos vacíos
             if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/productos', this.producto)
+                axios.put('http://localhost:3000/api/productos/' + this.$route.params.id, this.producto)
                     .then(res => {
                         // verificar q no venga ningún error
                         if (res.status === 201) {
                             alert(res.data);
+                            // limpiar campos
+                            this.producto = {
+                                // entidades de la tabla, que se modificarán desde los inputs
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: '',
+
+                            }
+                            // redireccionar
+                            this.$router.push('/productos')
                         }
-                        console.log(res.data)                            
+                        console.log(res.data)
                     })
-                    .catch(e => {console.log(e)});
+                    .catch(e => { console.log(e) });
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }
