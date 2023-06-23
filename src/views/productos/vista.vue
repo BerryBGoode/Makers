@@ -1,6 +1,6 @@
 <!-- scoped significa q solo se aplicará a este componente -->
 <style scoped>
-.data{
+.data {
     gap: 5px;
 }
 </style>
@@ -27,10 +27,10 @@
                             <span class="card-text mb-0 smaller">{{ producto.precio }}</span>
                             <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
                             <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
-                        </div>            
+                        </div>
                         <div class="col-md-4">
-                            <span>{{ producto.existencias}}</span>
-                        </div>            
+                            <span>{{ producto.existencias }}</span>
+                        </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
                                 <router-link :to="{ path: '/productos/editar/' + producto.id_servicio }">
@@ -50,8 +50,8 @@
                                     </svg>
                                 </router-link>
 
-                                <svg  width="40" height="40" class="button"
-                                    viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg @click.prevent="eliminarProducto(producto.id_servicio)" width="40" height="40"
+                                    class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -101,6 +101,22 @@ export default {
             axios.get('http://localhost:3000/api/productos/')
                 .then(res => this.productos = res.data)
                 .catch(e => alert(e));
+        },
+        eliminarProducto(producto) {
+            // esperar confirmación
+            if (confirm('Desea eliminar este producto?')) {
+                // realizar petición
+                axios.delete('http://localhost:3000/api/productos/' + producto)
+                    .then(res => {
+
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+
+                        // cargar
+                        this.getProductos();
+                    })
+                    .catch(e => { alert(e) })
+            }
         }
     },
     mounted() {

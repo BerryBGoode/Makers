@@ -46,7 +46,7 @@ const store = async (req, res) => {
         // verificar sí se obtuvo
         if (tipo) {
             // obtener los datos de la petición
-            const { descripcion, precio, existencias, nombre } = req.body;            
+            const { descripcion, precio, existencias, nombre } = req.body;
             // realizar query o inserción y enviadole los parametros
             POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
                 [tipo, descripcion, precio, existencias, estado, nombre],
@@ -73,7 +73,7 @@ const store = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener el id del tipo servicio producto        
-        let tipo = await producto();        
+        let tipo = await producto();
         if (tipo) {
             // obtener el id del producto por medio de la url
             const ID = parseInt(req.params.id);
@@ -104,6 +104,7 @@ const change = (req, res) => {
             (err, result) => {
                 // verificar sí hubo un problema
                 if (err) {
+
                     res.json({ error: err.message });
                     return;
                 }
@@ -119,6 +120,7 @@ const change = (req, res) => {
  * Método para eliminar el producto enviado por la url
  */
 const destroy = (req, res) => {
+    let e;
     try {
         // obtener el id del registro por la url de la petición
         const ID = parseInt(req.params.id);
@@ -126,8 +128,14 @@ const destroy = (req, res) => {
         POOL.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
             // verificar errores
             if (err) {
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                if (err.code === '23503') {
+                    e = 'No se puede eliminar debido a pedidos asociados'
+                } else {
+                    e = err.message
+                }
                 // retornar el error
-                res.json({ error: err.message });
+                res.json({ error: e });
                 return;
             }
             res.status(201).send('Producto eliminado');
