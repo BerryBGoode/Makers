@@ -33,7 +33,7 @@
                         </div>            
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <!-- <router-link :to="{ path: '/clientes/editar/' + cliente.id_cliente }"> -->
+                                <router-link :to="{ path: '/productos/editar/' + producto.id_servicio }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -48,7 +48,7 @@
                                             stroke="white" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
-                                <!-- </router-link> -->
+                                </router-link>
 
                                 <svg  width="40" height="40" class="button"
                                     viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -46,10 +46,7 @@ const store = async (req, res) => {
         // verificar sí se obtuvo
         if (tipo) {
             // obtener los datos de la petición
-            const { descripcion, precio, existencias, nombre } = req.body;
-            console.log(req.body)
-            console.log(tipo)
-            console.log(estado)
+            const { descripcion, precio, existencias, nombre } = req.body;            
             // realizar query o inserción y enviadole los parametros
             POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
                 [tipo, descripcion, precio, existencias, estado, nombre],
@@ -76,12 +73,12 @@ const store = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener el id del tipo servicio producto        
-        let tipo = await producto();
+        let tipo = await producto();        
         if (tipo) {
             // obtener el id del producto por medio de la url
             const ID = parseInt(req.params.id);
             // realizar consulta
-            const PRODUCTO = await POOL.query('SELECT descripcion, precio, existencias, nombre_servicio WHERE id_tipo_servicio $1 AND id_servicio = $2',
+            const PRODUCTO = await POOL.query('SELECT descripcion, precio, existencias, nombre_servicio FROM servicios WHERE id_tipo_servicio = $1 AND id_servicio = $2',
                 [tipo, ID]);
             // verificar estado satisfactorio, para enviar los datos
             if (res.status(200)) res.send(PRODUCTO.rows[0]);
