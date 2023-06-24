@@ -19,16 +19,26 @@
     flex-wrap: wrap;
     align-content: stretch;
 }
+.buttons-top{
+    width: 15%;
+    display: flex;
+    justify-content: space-around;
+}
 </style>
 <template>
     <!-- <div class="main"> -->
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Productos</span>
-            <router-link :to="{ path: '/sucursales/' + this.$route.params.id + '/productos/crear' }" type="button"
-                class="btn btn-makers">
-                Agregar
-            </router-link>
+            <div class="buttons-top">
+                <router-link to="/sucursales" type="button" class="btn btn-makers">
+                    Volver
+                </router-link>
+                <router-link :to="{ path: '/sucursales/' + this.$route.params.id + '/productos/crear' }" type="button"
+                    class="btn btn-makers">
+                    Agregar
+                </router-link>
+            </div>
         </div>
         <hr>
         <!-- aquí cargar los empleados -->

@@ -21,6 +21,7 @@ const LOGIN = require('./routes/login.routes');
 const PRODUCTO = require('./routes/productos.routes');
 const SERVICIO = require('./routes/servicios.routes');
 const HORARIOS = require('./routes/horarios.routes')
+const SUCURSALES = require('./routes/sucursales.routes');
 
 // instanciando express
 const APP = EXPRESS();
@@ -44,6 +45,7 @@ APP.use('/api/productos', PRODUCTO);
 APP.use('/api/servicios', SERVICIO);
 APP.use('/api/auth', LOGIN);
 APP.use('/api/horarios', HORARIOS);
+APP.use('/api/sucursales', SUCURSALES);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {
