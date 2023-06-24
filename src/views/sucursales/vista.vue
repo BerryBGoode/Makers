@@ -1,8 +1,9 @@
 <style scoped>
-.more-info{
+.more-info {
     justify-content: center;
 }
-.btn-table{
+
+.btn-table {
     background: #231F1E;
 }
 </style>
@@ -29,8 +30,9 @@
                             <p class="card-text mb-0 smaller"> {{ sucursal.nit }} </p>
                         </div>
                         <div class="col-md-1 more-info">
-                            
-                            <router-link class="btn btn-makers btn-table" :to="{ path: '/sucursales/'+sucursal.id_sucursal+'/productos'}">
+
+                            <router-link class="btn btn-makers btn-table"
+                                :to="{ path: '/sucursales/' + sucursal.id_sucursal + '/productos' }">
                                 Productos
                             </router-link>
                         </div>
@@ -55,7 +57,7 @@
                                 </router-link>
 
 
-                                <svg @click.prevent="eliminarSucursal(sucursal.id_empleado)" width="40" height="40"
+                                <svg @click.prevent="eliminarSucursal(sucursal.id_sucursal)" width="40" height="40"
                                     class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
@@ -85,7 +87,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        
+
         <div class="data p-2" v-else>
             <span class="bold">
                 Cargando...
@@ -106,12 +108,27 @@ export default {
     },
     methods: {
         // método para cargar las 
-        getSucursales(){
+        getSucursales() {
             axios.get('http://localhost:3000/api/sucursales/')
-                .then(res => {this.sucursales = res.data})
+                .then(res => { this.sucursales = res.data })
+                .catch(e => { alert(e); console.log(e) })
         },
-        eliminarSucursal(sucursal){
-
+        eliminarSucursal(sucursal) {
+            // esperar confirmación
+            if (confirm('Desea eliminar esta sucursal?')) {
+                axios.delete('http://localhost:3000/api/sucursales/'+sucursal)
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        console.log(res)
+                        // cargar
+                        this.getSucursales();
+                    })
+                    .catch(e => {
+                        alert(e);
+                        console.log(e)
+                    })
+            }
         }
     },
     mounted() {

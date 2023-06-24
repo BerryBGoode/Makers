@@ -102,7 +102,38 @@ const change = (req, res) => {
             })
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
-module.exports = { get, store, one, change }
+
+
+/**
+ * Método para eliminar una sucursal, según el parametro de la url
+ */
+const destroy = (req, res) => {
+    try {
+        // obtener id
+        const ID = parseInt(req.params.id);
+        // realizar delete
+        POOL.query('DELETE FROM sucursales WHERE id_sucursal = $1', [ID], (err, result) => {
+            // verificar sí hubo un error                                
+            if (err) {
+
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
+                // retornar el error
+                res.json({ error: e });
+                return;
+
+            } else {
+                msg = 'Sucursal eliminada';
+            }
+
+            res.status(201).send(msg);
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
+    }
+}
+module.exports = { get, store, one, change, destroy }
