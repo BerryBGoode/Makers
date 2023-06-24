@@ -1,28 +1,42 @@
-<style>
-
-</style>
+<style></style>
 
 <template>
-    <span>{{text}}</span>
+    <aside>
+        <!-- sidebar component -->
+        <sidebar />
+    </aside>
+    <main>
+        <div class="container container-main">
+            <!-- división entre buscador -->
+            <div class="container container-top">
+                <buscador />
+                <cuenta />
+            </div>
+            <div class="content container">
+                <RouterView />
+            </div>
+        </div>
+    </main>
 </template>
 <script>
 // componente sidebar
-import sidebar from "../components/sidebar.vue";
+import sidebar from '../components/sidebar.vue';
 // componente buscador
 import buscador from "../components/buscador.vue";
 // coomponente de la cuenta
 import cuenta from "../components/cuenta.vue";
-import login from "../views/login.vue";
+import { RouterLink, RouterView } from "vue-router";
 // exportar componente hijo
-export default  {
+export default {
     // nombre del componente
-    name : "dashboard",
+    name: "dashboard",
+    components: { sidebar, buscador, cuenta },
     // props que pudiera recibir el componente
-    props : {},
+    props: {},
     // método que retorna el componente
-    data () {
+    data() {
         return {
-            text : 'Dashboard de inicio'
+            text: 'Dashboard de inicio'
         }
     }
 }

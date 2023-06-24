@@ -58,7 +58,7 @@ import config from '../views/configuracion.vue';
 // 404
 import notfound from '../views/404.vue';
 
-import App from '../App.vue';
+import inicio from '../views/inicio.vue';
 
 // intancia del enrutador
 const ROUTER = createRouter({
@@ -286,8 +286,12 @@ const ROUTER = createRouter({
         {
             name: 'index',
             path: '/',
-            component: dashboard
-            
+            component: inicio
+        },
+        {
+            name: 'inicio',
+            path: '/inicio',
+            component: inicio
         }
 
     ]

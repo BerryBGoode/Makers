@@ -99,8 +99,10 @@ import axios from 'axios';
 // importar para configurar rutas
 import { createRouter, createWebHistory } from 'vue-router'
 // importar componente a reenviar
-import App from '../App.vue';
+import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
+
+
 
 export default {
     // nombre del componente
@@ -123,7 +125,8 @@ export default {
             router: createRouter({
                 history: createWebHistory(),
                 routes: [
-                    { path: '/', component: dashboard }
+                    { path: '/', component: dashboard },
+                    { path: '/inicio', component: inicio }
 
                 ]
             })
@@ -154,10 +157,17 @@ export default {
             }
         },
         crearCookie(token) {
+            
             // creando cookie
             this.$cookies.set('auth', token, { experies: '1d' });
-            // redireccionando
-            this.router.push('/src/App.vue')
+            // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
+            // componente realiza y el dato
+            this.$emit('getCookie', this.$cookies.get('auth'))
+            // this.router.push('/inicio')
+
+            //     // this.router.push('/inicio')
+            //     // this.$route.paths('/')            
+
         }
     },
 
