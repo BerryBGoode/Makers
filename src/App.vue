@@ -44,7 +44,7 @@ main {
 <!-- espacio para las plantillas -->
 <template>
     <!-- verificar sí existen una cookie de autenticación -->
-    <template v-if="$cookies.get('auth')">
+    <template v-if="token">
         <aside>
             <!-- sidebar component -->
             <sidebar />
@@ -89,7 +89,7 @@ export default {
     data() {
         return {
             auth: true,
-            token: false
+            token: true
 
         }
     },
