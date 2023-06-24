@@ -83,23 +83,23 @@ export default {
         getReservaciones() {
             //realizar la petición
             axios.get('http://localhost:3000/api/reservaciones/')
-            .then(res => this.reservaciones = res.data)
-            .catch(e => alert(e));
+                .then(res => this.reservaciones = res.data)
+                .catch(e => alert(e));
         },
         eliminarReservacion(reservacion) {
             // esperar confirmación
             if (confirm('Desea eliminar la reservación? Una vez eliminada no podrá recuperarla')) {
                 //realizar petición
                 axios.delete('http://localhost:3000/api/reservaciones/' + reservacion)
-                .then(res => {
+                    .then(res => {
 
-                    //verificar errores
-                    (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        //verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
 
-                    //cargar
-                    this.getReservaciones();
-                })
-                .catch(e => {alert(e) })
+                        //cargar
+                        this.getReservaciones();
+                    })
+                    .catch(e => { alert(e) })
             }
         }
     },
