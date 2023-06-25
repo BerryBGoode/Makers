@@ -1,4 +1,4 @@
-// requerir el modulo de postgres
+// requerir el modulo de postgres y con pool le decimos que él va a poder hacer los queries
 const POOL = require('pg').Pool;
 
 // definir attrs para la conexión

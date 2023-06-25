@@ -34,6 +34,8 @@
     color: white;
     text-decoration: none;
     /* cursor: pointer; */
+    width: 100%;
+    display: block;
 }
 
 .logo-sidebar {
@@ -56,7 +58,7 @@
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">
                 <!-- 
               <span class="item">{{ item }}</span> -->
-                <i>icon</i>
+                <!-- <i>icon</i> -->
                 <router-link class="item" :to="item.route">{{ item.option }} </router-link>
             </li>
         </ul>
@@ -67,22 +69,20 @@
 // importando componentes para enrutar
 import { RouterLink, RouterView } from "vue-router";
 // funcionalidades del componente
-export default {
-    // recibe props o parametros
-    props: {},
+export default {    
     // nombre del componente
     name: "sidebar",
     data() {
         return {
             // lista con las optiones que puede acceder el usuario
             options: [
-                { option: "Inicio", route: "/dashboard" },
+                { option: "Inicio", route: "/inicio" },
                 { option: "Servicios", route: "/servicios" },
                 { option: "Productos", route: "/productos" },
                 { option: "Clientes", route: "/clientes" },
                 { option: "Empleados", route: "/empleados" },
                 { option: "Reservaciones", route: "/reservaciones" },
-                { option: "Facturas", route: "/facturas" },
+                { option: "Ordenes", route: "/ordenes" },
                 { option: "Sucursales", route: "/sucursales" },
                 { option: "Horarios", route: "/horarios" },
             ],

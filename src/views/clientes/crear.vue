@@ -67,7 +67,7 @@
                     </span>
                     <div action="" class="form-2 w-70 flex wp sp-bet">
                         <label for="clave">Contraseña</label>
-                        <input type="password" class="form-control" id="clave" minlength="10" maxlength="15" v-model="model.cliente.clave"
+                        <input type="password" class="form-control" id="clave" maxlength="15" minlength="10" v-model="model.cliente.clave"
                             required>
                     </div>
                 </div>
@@ -87,6 +87,7 @@
 <script>
 // importando axios para hacer peticiones
 import axios from 'axios';
+
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
 
@@ -189,6 +190,7 @@ export default {
                             estado: 1
                         }
                         console.log(res)
+                        alert(res.data)
                         // recireccionar a la vista principal
                         if (res.status === 201) this.$router.push('/clientes');
                     })

@@ -1,10 +1,16 @@
 <style>
-.clientes {
+.data {
     display: flex;
     flex-direction: column;
     gap: 2vh;
     height: 85%;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+.card-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cliente {
@@ -44,12 +50,17 @@
             </router-link>
         </div>
         <hr>
+
+        <!-- verificar sí se encontraron datos al buscar-->    
+        <div class="data p-2" v-if="buscador_c.length === 0">
+            <span>No se encontraron datos</span>
+        </div>
         <!-- aquí cargar los clientes -->
         <!-- verificar sí hay clientes -->
-        <div class="clientes p-2" v-if="clientes.length > 0">
+        <div class="data p-2" v-if="clientes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(cliente, i) in clientes" :key="i">
+            <div class="card" v-for="(cliente, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -61,7 +72,7 @@
                         <div class="col-md-1">
                             <span>consumo</span>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 card-buttons">
                             <div class="buttons">
                                 <router-link :to="{ path: '/clientes/editar/' + cliente.id_cliente }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
@@ -79,9 +90,9 @@
                                             stroke-linejoin="round" />
                                     </svg>
                                 </router-link>
-                                
-                                <svg @click="eliminarCliente(cliente.id_cliente)" width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
+
+                                <svg @click="eliminarCliente(cliente.id_cliente)" width="40" height="40" class="button"
+                                    viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -103,14 +114,13 @@
                 </div>
             </div>
 
-
         </div>
-        <!-- si no hay clientes encontrados -->
-        <div class="clientes p-2" v-else>
+        <div class="data p-2" v-else-if="clientes.length === 0">
             <span class="bold">
-                Cargando...
+                No se encontraron existencias
             </span>
-        </div>
+        </div>    
+
     </div>
 </template>
 <script>
@@ -119,47 +129,88 @@ import axios from 'axios';
 // exportando componente
 export default {
     name: 'clientes',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
             // arreglo con los clientes
-            clientes: []
+            clientes: [],
+            buscador_c: [],
+            // configuración para enviar el token de acceso en las peticiones
+            config: {
+                headers: {
+                    authorization: this.$cookies.get('auth')
+                }
+            }
         }
     },
     // mounted se llaman los métodos que se quiere ejecutar en el load 
     mounted() {
         this.obtenerClientes();
+        this.buscador_c = this.clientes;
     },
     // definir método aquí
     methods: {
         // método para obtener los clientes
         async obtenerClientes() {
             // hacer la petición con promesas
-            //#region 
-            axios.get('http://localhost:3000/api/clientes/')
-                .then(res => { this.clientes = res.data; })
-                .catch(e => { console.error(e) })
-            //#endregion
-
-            // Se puede hacer así con async-await
-            //#region 
-            // const CLIENTES = await axios.get('http://localhost:3000/api/clientes/')
-            // if (CLIENTES.data) {
-            //     this.clientes = CLIENTES.data
-            // }
-            //#endregion
+            axios.get('http://localhost:3000/api/clientes/', this.config)            
+                .then(res => {
+                    // obtener los datos
+                    if (res.status === 200) {
+                        this.clientes = res.data;
+                        this.buscador_c = res.data                        
+                    }
+                    if (res.status === 401) {
+                        alert(res.data.error)
+                    }
+                })
+                .catch(e => { console.error(e); })
         },
         // metodo para eliminar el cliente seleccionado
         eliminarCliente(idcliente) {
             // esperar confirmación
-            axios.delete('http://localhost:3000/api/clientes/'+idcliente)
-            .then(
-                res=> { 
-                    // mandar alerta
-                    alert(res.data),
-                    // recargar los clientes
-                    this.obtenerClientes();
-                }    
-            )
+            if (confirm('Desea eliminar a este cliente?')) {
+                axios.delete('http://localhost:3000/api/clientes/' + idcliente)
+                    .then(
+                        res => {
+                            // mandar alerta
+                            alert(res.data),
+                                // recargar los clientes
+                                this.obtenerClientes();
+                        }
+                    )
+                    .catch(e => alert(e));
+            }
+        },
+        buscador(dato) {
+            // declarar un objeto que contenga los datos filtrados del arreglo donde estan los clientes
+            const clientes = this.clientes.filter((item) => {
+                // retornar algo sí el resultado coincide con el valor enviado del watch
+                return (
+                    item.nombres.toLowerCase().indexOf(dato) !== -1 || item.apellidos.toLowerCase().indexOf(dato) !== -1 ||
+                    item.correo.toLowerCase().indexOf(dato) !== -1 || item.dui.toLowerCase().indexOf(dato) !== -1 ||
+                    item.telefono.toLowerCase().indexOf(dato) !== -1
+                );
+            });
+            // asignar los registros encontrados al arreglo que los muestra
+            this.buscador_c = clientes;
+        },
+    },
+    watch: {
+        // se ejecuta cada ves que cambia un valor de texto en el buscador
+        datos(now) {
+            // obtener los datos enviados del padre para hacer busqueda
+            // verificar sí no viene vació para cargar los datos sin filtro 
+            //      sí el texto del bucador no tiene nada, cargar los datos normalmente
+            //      síno realizar método de busqueda
+            (now.trim() === '') ? this.buscador_c = this.clientes : this.buscador(now)
+            // this.obtenerClientes();
+
+            // realizar busqueda 
         }
     }
 }

@@ -39,40 +39,76 @@ main {
 .h-100 {
     height: 100%;
 }
-
 </style>
 
 <!-- espacio para las plantillas -->
 <template>
-    <aside>
-        <!-- sidebar component -->
-        <sidebar />
-    </aside>
-    <main>
-        <div class="container container-main">
-            <!-- división entre buscador -->
-            <div class="container container-top">
-                <buscador />
-                <cuenta />
-            </div>
-            <div class="content container">
-                <RouterView />
-            </div>
-        </div>
-    </main>
+    <!-- verificar sí no existen una autenticación -->
+    <template v-if="!auth">
+        <!-- getCookie es evento donde se enviando datos al componente padre -->
+        <login @getCookie="validateCookie" />
+    </template>
+    <template v-else>
+        <dashboard />
+    </template>
 </template>
+
 
 <!-- setup solo se utiliza en el componente principal,
   para comprimir el código, porque es el que almacena más contenido
 -->
-<script setup>
-// componente sidebar
-import sidebar from "./components/sidebar.vue";
-// componente buscador
-import buscador from "./components/buscador.vue";
-// coomponente de la cuenta
-import cuenta from "./components/cuenta.vue";
-// importando componentes para enrutar
-import { RouterLink, RouterView } from "vue-router";
+<script>
+import cookies from 'vue-cookies';
+import dashboard from './views/dashboard.vue';
+import login from './views/login.vue'
 // espacio para importar componentes hijos
+export default {
+    name: 'app',
+    components: { dashboard, login },
+    data() {
+        return {
+            auth: '',
+        }
+    },
+    methods: {
+        // método del evento del login para evaluar 
+        // cuando se crea la cookie
+        validateCookie() {
+            this.auth = true;
+        },
+        // método para evaludar sí existe un cookie en el evento padre
+        // así ir verificando y actualizar el valor de la cookie cuando exista
+        checkCookie() {
+            // obtener el valor de la cookie para autenticación
+            const COOKIE = this.getCookie('auth');
+            // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
+            // de login o dashboard, síno tiene valor le asignará null para mostrar login
+            this.auth = COOKIE !== null;
+        },
+        // método para obtener el valor de la cookie
+        getCookie(cookie) {
+            return this.$cookies.get(cookie);
+        }
+    },
+    mounted() {
+        // verificar sí existe una cookie cuando cargue el componente         
+        this.checkCookie();
+    },
+    watch: {
+        // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
+        // para así identificar que vista mostrar
+        auth(now) {
+            // verificar sí el valor fue modificado
+            if (now) {
+                // volver a verificar sí existe la cookie cada 20segundos
+                setInterval(() => {
+                    this.checkCookie();
+                }, 10)
+                // setTimeout(() => {
+                //     this.checkCookie();
+                // }, 10);
+            }
+        }
+    }
+}
 </script>

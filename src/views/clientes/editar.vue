@@ -200,6 +200,7 @@ export default {
                             clave: '',
                             estado: 1
                         }
+                        alert(res.data)
                         console.log(res)
                         // recireccionar a la vista principal
                         if (res.status === 201) this.$router.push('/clientes');
