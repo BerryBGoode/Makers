@@ -139,7 +139,13 @@ export default {
         return {
             // arreglo con los clientes
             clientes: [],
-            buscador_c: []
+            buscador_c: [],
+            // configuración para enviar el token de acceso en las peticiones
+            config: {
+                headers: {
+                    authorization: this.$cookies.get('auth')
+                }
+            }
         }
     },
     // mounted se llaman los métodos que se quiere ejecutar en el load 
@@ -152,11 +158,16 @@ export default {
         // método para obtener los clientes
         obtenerClientes() {
             // hacer la petición con promesas
-            axios.get('http://localhost:3000/api/clientes/')
+            axios.get('http://localhost:3000/api/clientes/', this.config)            
                 .then(res => {
                     // obtener los datos
-                    this.clientes = res.data;
-                    this.buscador_c = res.data
+                    if (res.status === 200) {
+                        this.clientes = res.data;
+                        this.buscador_c = res.data                        
+                    }
+                    if (res.status === 401) {
+                        alert(res.data.error)
+                    }
                 })
                 .catch(e => { console.error(e); })
         },

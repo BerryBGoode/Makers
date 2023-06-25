@@ -101,9 +101,12 @@ export default {
             // verificar sí el valor fue modificado
             if (now) {
                 // volver a verificar sí existe la cookie cada 20segundos
-                setTimeout(() => {
+                setInterval(() => {
                     this.checkCookie();
-                }, 25000);
+                }, 10)
+                // setTimeout(() => {
+                //     this.checkCookie();
+                // }, 10);
             }
         }
     }

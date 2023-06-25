@@ -147,10 +147,12 @@ export default {
                     .then(res => {
                         // verificar estado de autenticación
                         if (!res.data.auth) this.msg = res.data.msg;
-                        else this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
                         // creando token
-                        this.crearCookie(res.data.token)
-                        this.msg = res.data.msg
+                        if (res.data.auth !== false) {                            
+                            this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                            this.crearCookie(res.data.token)
+                            this.msg = res.data.msg
+                        }
                     })
                     .catch(e => {
                         alert(e)
