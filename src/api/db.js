@@ -4,7 +4,7 @@ const POOL = require('pg').Pool;
 // definir attrs para la conexión
 const DB = new POOL({
     user : 'postgres', 
-    password : '123', //modificar esta propiedad
+    password : 'alvaradolira', //modificar esta propiedad
     database : 'makers',
     port : 5432,
     host : 'localhost' 

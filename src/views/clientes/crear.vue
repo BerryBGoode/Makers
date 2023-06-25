@@ -87,6 +87,7 @@
 <script>
 // importando axios para hacer peticiones
 import axios from 'axios';
+
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
 
