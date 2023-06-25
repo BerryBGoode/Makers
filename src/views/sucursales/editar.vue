@@ -13,10 +13,11 @@
             <h5 class="bold">
                 Sucursal
             </h5>
+            <span>{{ msg }}</span>
         </div>
         <hr>
         <div class="container agg-servicio">
-            <form @submit.prevent="agregarSucursal">
+            <form @submit.prevent="modificarSucursal">
                 <div class="form-data mb-30vh">
                     <div class="form-1">
                         <div class="mb-3">
@@ -56,7 +57,7 @@
                     <router-link to="/sucursales" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
             </form>
         </div>
@@ -81,17 +82,14 @@ export default {
         }
     },
     methods: {
-        agregarSucursal() {
-            // validar que la hora tenga lógica
-            if (this.sucursal.inicio > this.sucursal.cierre) {
-                this.msg = 'Horario ilogico'
-            }
+        modificarSucursal() {            
             // validar campos vacíos
             if (this.sucursal.direccion && this.sucursal.nit && this.sucursal.nrc && this.sucursal.tel &&
                 this.sucursal.inicio && this.sucursal.cierre && (this.sucursal.inicio < this.sucursal.cierre)) {
                 // realizar petición
-                axios.post('http://localhost:3000/api/sucursales/', this.sucursal)
+                axios.put('http://localhost:3000/api/sucursales/'+this.$route.params.id, this.sucursal)
                     .then(res => {
+                        console.log(res)
                         if (res.data.error) {
                             alert(res.data.error)
                             console.log(res.data.error)
@@ -101,12 +99,42 @@ export default {
                         }
 
                     })
+                    .catch(e => {alert(e); console.log(e)})
             }
             else this.msg = 'No se permiten campos vacíos'
-
-
-
+            // validar que la hora tenga lógica
+            if (this.sucursal.inicio > this.sucursal.cierre) {
+                this.msg = 'Horario ilogico'             
+            }
+        },
+        // método para obtener los datos de una sucursal
+        getSucursal() {
+            // realizar petición
+            
+            axios.get('http://localhost:3000/api/sucursales/'+ this.$route.params.id)
+                .then(res => {
+                    console.log(res.data);
+                    const SUCURSAL = res.data;
+                    let horario = SUCURSAL.horario.split(' - ');
+                    let h_inicio = horario[0].split(' ')[0];
+                    let h_cierre = horario[1].split(' ')[0];
+                    this.sucursal = {
+                        inicio: h_inicio,
+                        cierre: h_cierre,
+                        nit: SUCURSAL.nit,
+                        nrc: SUCURSAL.nrc,
+                        direccion: SUCURSAL.direccion,
+                        tel: SUCURSAL.telefono
+                    }
+                })
+                .catch(e => {
+                    alert(e);
+                    console.log(e)
+                })
         }
+    },
+    mounted(){
+        this.getSucursal();
     }
 }
 

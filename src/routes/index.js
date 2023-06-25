@@ -47,6 +47,9 @@ import editarEmpleado from '../views/empleados/editar.vue';
 import editarProductoSucursal from '../views/sucursales/productos/editar.vue';
 import editarDetalle from '../views/ordenes/detalle/editar.vue';
 import editarProducto from '../views/productos/editar.vue';
+import editarServicio from '../views/servicios/editar.vue';
+import editarHorario from '../views/horarios/editar.vue';
+import editarSucursal from '../views/sucursales/editar.vue'
 //#endregion
 
 // configuración
@@ -55,7 +58,7 @@ import config from '../views/configuracion.vue';
 // 404
 import notfound from '../views/404.vue';
 
-import App from '../App.vue';
+import inicio from '../views/inicio.vue';
 
 // intancia del enrutador
 const ROUTER = createRouter({
@@ -252,6 +255,21 @@ const ROUTER = createRouter({
             path: '/productos/editar/:id',
             component: editarProducto
         },
+        {
+            name: 'editarServicio',
+            path: '/servicios/editar/:id',
+            component: editarServicio
+        },
+        {
+            name: 'editarHorarios',
+            path: '/horarios/editar/:id',
+            component: editarHorario
+        },
+        {
+            name: 'editarSucursal',
+            path: '/sucursales/editar/:id',
+            component: editarSucursal
+        },
 
         // configuración
         {
@@ -268,8 +286,12 @@ const ROUTER = createRouter({
         {
             name: 'index',
             path: '/',
-            component: dashboard
-            
+            component: inicio
+        },
+        {
+            name: 'inicio',
+            path: '/inicio',
+            component: inicio
         }
 
     ]

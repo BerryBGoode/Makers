@@ -13,7 +13,7 @@
         </div>
         <hr>
         <div class="container agg-servicio">
-            <form @submit.prevent="agregarHorario">
+            <form @submit.prevent="modificarHorario">
                 <div class="form-data mb-52vh">
                     <div action="" class="form-1">
                         <div class="load">
@@ -57,11 +57,21 @@ export default {
         }
     },
     methods: {
-        agregarHorario() {
+        getHorario() {
+            axios.get('http://localhost:3000/api/horarios/' + this.$route.params.id)
+                .then(res => {
+                    // cargar los datos
+                    this.msg = '';
+                    this.horario = res.data
+
+                })
+                .catch(e => {alert(e); console.log(e)})
+        },
+        modificarHorario() {
             // verificar que el horario de inicio sea menor al de cierre y que ambos tengan algún valor
             if (this.horario.inicio < this.horario.cierre && (this.horario.inicio && this.horario.cierre)) {
                 // realizar petición
-                axios.post('http://localhost:3000/api/horarios/', this.horario)
+                axios.put('http://localhost:3000/api/horarios/'+ this.$route.params.id, this.horario)
                     .then(res => {
                         // verificar síno hay errores
                         if (!res.data.error) {
@@ -70,16 +80,19 @@ export default {
                                 inicio: '',
                                 cierre: '',
                             },
-                            this.msg = '';
+                                this.msg = '';
                             this.$router.push('/horarios');
                         }
                     })
-                    .catch(e => {alert(e); console.log(e)});
+                    .catch(e => { alert(e); console.log(e) });
 
             } else {
                 this.msg = 'Horario ilogico';
             }
         }
+    },
+    mounted() {
+        this.getHorario();
     }
 }
 

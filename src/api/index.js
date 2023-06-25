@@ -18,7 +18,10 @@ const DETALLE = require('./routes/detalles.routes');
 // requerir de las rutas de login
 const LOGIN = require('./routes/login.routes');
 // requerir de las rutas de productos
-const PRODUCTOS = require('./routes/productos.routes');
+const PRODUCTO = require('./routes/productos.routes');
+const SERVICIO = require('./routes/servicios.routes');
+const HORARIOS = require('./routes/horarios.routes')
+const SUCURSALES = require('./routes/sucursales.routes');
 
 // instanciando express
 const APP = EXPRESS();
@@ -38,8 +41,11 @@ APP.use('/api/clientes', CLIENTESROUTES);
 APP.use('/api/empleados', EMPLEADOSROUTES);
 APP.use('/api/sucursales/productos', PRODUCTOS_SUCURALES);
 APP.use('/api/ordenes/detalles', DETALLE)
-APP.use('/api/productos', PRODUCTOS);
+APP.use('/api/productos', PRODUCTO);
+APP.use('/api/servicios', SERVICIO);
 APP.use('/api/auth', LOGIN);
+APP.use('/api/horarios', HORARIOS);
+APP.use('/api/sucursales', SUCURSALES);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {

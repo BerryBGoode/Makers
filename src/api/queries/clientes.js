@@ -7,14 +7,21 @@ const encrypt = require('../helpers/encrypt');
 // req (obtiene parametros en la consulta)
 // res (retorna valor según resultado)
 const get = async (req, res) => {
-    try {
-        // realizar consulta
-        const CLIENTES = await POOL.query('SELECT * FROM clientes');
-        // verificar el estado
-        if (res.status(200)) res.json(CLIENTES.rows)
-    } catch (e) {
-        console.error(e.message);
+    if(req.headers.authorization){
+        try { 
+            // realizar consulta
+            const CLIENTES = await POOL.query('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes');
+            // verificar el estado
+            if (res.status(200)) res.json(CLIENTES.rows)
+        } catch (e) {
+            console.error(e.message);
+            res.status(500).json('Surgio un problema en el servidor')
+        }
+
+    }else{
+        res.status(401).json({error: 'Debe iniciar sesión antes'})
     }
+
 }
 
 /** Método para guardar datos del cliente
