@@ -150,6 +150,7 @@ export default {
                         else this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
                         // creando token
                         this.crearCookie(res.data.token)
+                        this.msg = res.data.msg
                     })
                     .catch(e => {
                         alert(e)
@@ -157,16 +158,12 @@ export default {
             }
         },
         crearCookie(token) {
-            
+
             // creando cookie
             this.$cookies.set('auth', token, { experies: '1d' });
             // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
             // componente realiza y el dato
             this.$emit('getCookie', this.$cookies.get('auth'))
-            // this.router.push('/inicio')
-
-            //     // this.router.push('/inicio')
-            //     // this.$route.paths('/')            
 
         }
     },

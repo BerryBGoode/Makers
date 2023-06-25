@@ -9,11 +9,11 @@
         <div class="container container-main">
             <!-- división entre buscador -->
             <div class="container container-top">
-                <buscador />
+                <buscador @getBuscar="validateBuscar" />
                 <cuenta />
             </div>
             <div class="content container">
-                <RouterView />
+                <RouterView :datos="datos.toLowerCase()" />
             </div>
         </div>
     </main>
@@ -36,7 +36,15 @@ export default {
     // método que retorna el componente
     data() {
         return {
-            text: 'Dashboard de inicio'
+            text: 'Dashboard de inicio',
+            datos: ''
+        }
+    },
+    methods: {
+        // metodo para asignar el valor de la prop a enviar el valor recibido del buscador
+        validateBuscar(now) {
+            // enviar datos el componente de la vista
+            this.datos = now
         }
     }
 }

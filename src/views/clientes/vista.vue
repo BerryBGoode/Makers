@@ -7,7 +7,7 @@
     overflow-y: auto;
 }
 
-.card-buttons{
+.card-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,12 +50,17 @@
             </router-link>
         </div>
         <hr>
+
+        <!-- verificar sí se encontraron datos al buscar-->    
+        <div class="data p-2" v-if="buscador_c.length === 0">
+            <span>No se encontraron datos</span>
+        </div>
         <!-- aquí cargar los clientes -->
         <!-- verificar sí hay clientes -->
         <div class="data p-2" v-if="clientes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(cliente, i) in clientes" :key="i">
+            <div class="card" v-for="(cliente, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -109,44 +114,38 @@
                 </div>
             </div>
 
-
         </div>
         <div class="data p-2" v-else-if="clientes.length === 0">
             <span class="bold">
                 No se encontraron existencias
             </span>
-        </div>
-        <!-- si no hay clientes encontrados -->
-        <div class="data p-2" v-else>
-            <span class="bold">
-                Cargando...
-            </span>
-        </div>
+        </div>    
+
     </div>
 </template>
 <script>
 // importar axios para hacer las peticiones
 import axios from 'axios';
-import toast from '../../components/toast.vue';
+
 
 export default {
     name: 'clientes',
-    // componentes hijos a utilizar
-    components: {
-        toast
+    props: {
+        datos: {
+            type: String
+        }
     },
     data() {
         return {
             // arreglo con los clientes
             clientes: [],
-            msg: 'msg',
-            title: 'title-toast',
-            type: 'success',
+            buscador_c: []
         }
     },
     // mounted se llaman los métodos que se quiere ejecutar en el load 
     mounted() {
         this.obtenerClientes();
+        this.buscador_c = this.clientes;
     },
     // definir método aquí
     methods: {
@@ -154,9 +153,12 @@ export default {
         obtenerClientes() {
             // hacer la petición con promesas
             axios.get('http://localhost:3000/api/clientes/')
-                .then(res => { this.clientes = res.data; })
+                .then(res => {
+                    // obtener los datos
+                    this.clientes = res.data;
+                    this.buscador_c = res.data
+                })
                 .catch(e => { console.error(e); })
-
         },
         // metodo para eliminar el cliente seleccionado
         eliminarCliente(idcliente) {
@@ -170,10 +172,36 @@ export default {
                                 // recargar los clientes
                                 this.obtenerClientes();
                         }
-                    )            
+                    )
                     .catch(e => alert(e));
             }
         },
+        buscador(dato) {
+            // declarar un objeto que contenga los datos filtrados del arreglo donde estan los clientes
+            const clientes = this.clientes.filter((item) => {
+                // retornar algo sí el resultado coincide con el valor enviado del watch
+                return (
+                    item.nombres.toLowerCase().indexOf(dato) !== -1 || item.apellidos.toLowerCase().indexOf(dato) !== -1 ||
+                    item.correo.toLowerCase().indexOf(dato) !== -1 || item.dui.toLowerCase().indexOf(dato) !== -1 ||
+                    item.telefono.toLowerCase().indexOf(dato) !== -1
+                );
+            });
+            // asignar los registros encontrados al arreglo que los muestra
+            this.buscador_c = clientes;
+        },
+    },
+    watch: {
+        // se ejecuta cada ves que cambia un valor de texto en el buscador
+        datos(now) {
+            // obtener los datos enviados del padre para hacer busqueda
+            // verificar sí no viene vació para cargar los datos sin filtro 
+            //      sí el texto del bucador no tiene nada, cargar los datos normalmente
+            //      síno realizar método de busqueda
+            (now.trim() === '') ? this.buscador_c = this.clientes : this.buscador(now)
+            // this.obtenerClientes();
+
+            // realizar busqueda 
+        }
     }
 }
 

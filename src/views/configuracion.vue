@@ -69,8 +69,9 @@
 
             </div>
             <hr>
-            <div class="buttons-reservacion form-data">
-                <button type="button" class="btn btn-makers">Agregar</button>
+            <div class="buttons-reservacion form-data">                
+                <button type="button" class="btn btn-makers">Cerrar sesión</button>
+                <button type="button" class="btn btn-makers">Agregar cambios</button>
             </div>
         </div>
     </div>
