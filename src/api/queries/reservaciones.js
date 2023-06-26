@@ -168,9 +168,20 @@ const destroy = async (req, res) => {
         //obtener el idreser del parametro de la ruta
         const idreser = parseInt(req.params.id);
         //resalizar consulta, se envia un array con los parametros y método para capturar error
-        POOL.query('DELET FROM reservaciones WHERE id_reservacion = $1', [idreser], (err, result) => {
-            //enviando estado del proceso y mensaje 
-            res.status(201).send('Reservación eliminada correctamente' + 'DELET FROM reservaciones WHERE id_reservacion = $1' + [idreser]);
+        POOL.query('DELETE FROM reservaciones WHERE id_reservacion = $1', [idreser], (err, result) => {
+            // verificar sí ocurre un error
+            if (err) {
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                if (err.code === '23503') {
+                    e = 'No se puede modificar o eliminar debido a datos asociados'
+                } else {
+                    e = err.message
+                }
+                // retornar el error
+                res.json({ error: e });
+                return;
+            }
+            res.status(201).send('Producto eliminado');
         })
     } catch (error) {
         //capturar error
