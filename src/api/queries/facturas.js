@@ -106,11 +106,6 @@ const store = (req, res) => {
     }
 }
 
-
-
-
-
-
 /**
  * Método para actualizar los datos de la factura
  */
@@ -119,19 +114,30 @@ const change = (req, res) => {
         // obtener id 
         const IDFACTURA = parseInt(req.params.id);
         // obtener los datos enviados del frontend
-        const { fecha, estado, idcliente } = req.body;
+        // obtener los datos del req
+        const {  empleado, sucursal, estado } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE orden SET fecha = $1, estado = $2, id_cliente = $3, WHERE id_orden = $4',
-            [fecha, estado, dui, idcliente, IDFACTURA],
+        POOL.query('UPDATE facturas SET id_sucursal = $1, id_empleado = $2, estado = $3 WHERE id_factura = $4',
+            [sucursal, empleado, estado, IDFACTURA],
             (err, result) => {
-                // verificar sí ha y un error
+                // verificar sí hubo un error                                
                 if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Sucursal modificada';
                 }
-                res.status(201).send('factura modificada');
+
+                res.status(201).send(msg);
             }
         )
     } catch (error) {
@@ -139,8 +145,22 @@ const change = (req, res) => {
     }
 }
 
-
-
+/**
+ * Método para obtener los datos de una factura
+ */
+const one = async (req, res) => {
+    try {
+        // obtener id de parametro de la petición
+        const ID = parseInt(req.params.id);
+        // realizar query
+        const FACTURA = await POOL.query('SELECT f.id_factura, f.id_sucursal, f.id_empleado, f.estado, f.id_orden, e.nombres, e.apellidos FROM facturas f INNER JOIN empleados e ON e.id_empleado = f.id_empleado WHERE id_factura = $1', [ID])
+        // verificar sí el resultado es el esperado
+        if (res.status(200)) res.send(FACTURA.rows[0]);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
+    }
+}
 /**
  * Método para eliminar la factura seleccionada
  */
@@ -150,15 +170,25 @@ const destroy = async (req, res) => {
         const IDFACTURA = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         await POOL.query('DELETE FROM facturas WHERE id_factura = $1', [IDFACTURA], (err, resul) => {
-            // verificar sí hay un error
+            // verificar sí hubo un error                                
             if (err) {
-                // obtener mensaje
-                res.json({ error: err.message });
-                // retornar
-                return;
+
+                if (err.code === '23505') {
+                    // enviar error el cliente
+                    er = 'Dato unico ya registrado';
+                } else {
+                    er = err.message;
+                }
+                res.json({ error: er });
+                // sí es ejecuta esto, el status 201 no se enviará
+                // return;                    
+
+            } else {
+                msg = 'Factura eliminada';
             }
+
             // mandar mensaje sí no hay errores
-            res.status(201).send('factura Eliminada');
+            res.status(201).send(msg);
         })
     } catch (error) {
         console.log(error);
@@ -173,4 +203,4 @@ const destroy = async (req, res) => {
 
 
 // exportación de modulos
-module.exports = { get, getDuiEmpleado, getDirección, getObtenerEmpleados, change, destroy, store }
+module.exports = { get, getDuiEmpleado, getDirección, getObtenerEmpleados, change, destroy, store, one }
