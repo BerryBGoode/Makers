@@ -46,14 +46,14 @@ const store = async (req, res) => {
     req, datos de la petición
     res, respuesta del servidor
 */
-const  one = async (req, res) =>  {
+const  one = async (req, res) =>  {    
     try {
         //se obtiene el id de  la reservacion de los  parametros de la url
         const  idreser = parseInt(req.params.id);
         //se realiza la consulta
         const reservarcion = POOL.query('SELECT * FROM reservaciones WHERE id_reservacion = $1', [idreser])
-        //si el proceso es correcto, se retorna el resultado de la consulta en json
-        if(res.status(200)) {res.json((await reservarcion).rows)  } 
+        //si el proceso es correcto, se retorna el resultado de la consulta en json        
+        if(res.status(200)) res.json((await reservarcion).rows)  
     } catch (error) {
         console.error(error);
     }
@@ -65,7 +65,7 @@ const  one = async (req, res) =>  {
     res, respuesta del servidor
 */
 
-const change = async  (res, res) => {
+const change = async  (req, res) => {
     try {
         //convertir a valor entero el id recibido de la ruta
         const idreser = parseInt(req.params.id);

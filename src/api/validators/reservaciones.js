@@ -12,7 +12,7 @@ const horaExpresionRegular = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
 //verificar dato por dato según lo que se desee
 
 //validacion con fecha
-function validarFecha(fecha) {
+const validarFecha = fecha => {
     if (fechaExpresionRegular.test(fecha)) {
         console.log("La fecha es válida.");
         // Continúa con el procesamiento de los datos recibidos del servidor
@@ -22,7 +22,7 @@ function validarFecha(fecha) {
     }
 }
 
-function validarHora(hora) {
+const validarHora = hora => {
     if (horaExpresionRegular.test(hora)) {
         console.log("La hora es válida.");
         // Continúa con el procesamiento de los datos recibidos del servidor
@@ -31,4 +31,5 @@ function validarHora(hora) {
         // Realiza alguna acción en caso de que la hora no sea válida
     }
 }
+
 

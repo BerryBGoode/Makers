@@ -16,82 +16,90 @@
     margin-bottom: 40vh !important;
 }
 </style>
+
 <template>
-    <div class="container servicios component-servicio component-render">
+    <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
-                Reservaciones
+                Reservación
             </h5>
-            <span>{{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="modificarReservacion">
-            <div class="container">
-                <div class="form-data mb-40vh">
-                    <div class="form-1">
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="fecha" class="form-label">Fecha</label>
-                                <input type="date" class="form-control" id="fecha" v-model="this.model.reservacion.fecha">
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="hora" class="form-label">Hora</label>
-                                <input type="time" class="form-control" id="hora" v-model="this.model.reservacion.hora">
-                            </div>
+        <div class="container">
+            <div class="form-data">
+                <span class="bold">
+                    Cliente
+                </span>
+                <form action="" class="form-2">
+                    <label for="">DUI</label>
+                    <select class="form-select mb-3" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" @focus="ValidityState" id="nombres"
+                                v-model="cliente.nombre" readonly>
+                        </div>
+                        <div class="mb-3 input-container">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
                         </div>
                     </div>
-                </div>
-                <hr>
-                <div class="form-data mb-9vh">
-                    <span class="bold">
-                        Especificaciones
-                    </span>
-
-                    <form action="" class="form-2 w-70">
-                        <div class="load">
-                            <div class="mb-3-input-container">
-                                <label for="cliente" class="form-label">Cliente</label>
-                                <!-- Verificar si existen clientes -->
-                                <select class="form-select mb-3" aria-label="Default select example" id="clientes"
-                                    v-if="clientes.length > 0" v-model="this.model.reservacion.cliente">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los datos de los clientes -->
-                                    <option v-for="(cliente, i) in clientes" :key="i" :value="cliente.id_cliente">{{
-                                        cliente.nombre
-                                    }}</option>
-                                </select>
-                                <!-- si no existen clientes -->
-                                <select class="form-select mb-3" name="error" v-else>
-                                    <option selected> No se encontraron clientes </option>
-                                </select>
-                            </div>
-                            <div class="mb-3-input-container">
-                                <label for="empleado" class="form-label">Empleado</label>
-                                <!-- Verificar si existen empleados -->
-                                <select class="form-select mb-3" aria-label="Default select example" id="enpleados"
-                                    v-if="empleados.length > 0" v-model="this.model.reservacion.empleado">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los datos de los empleados -->
-                                    <option v-for="(empleado, i) in empleados" :key="i" :value="empleado.id_empleado">{{
-                                        empleado.nombre }}</option>
-                                </select>
-                                <!-- si no existen empleados -->
-                                <select class="form-select mb-3" name="error" v-else>
-                                    <option selected> No se encontraron empleados </option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <hr>
-                <div class="buttons-reservacion form-data">
-                    <router-link to="/reservaciones" class="btn btn-makers">
-                        Cancelar
-                    </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
-                </div>
+                </form>
             </div>
-        </form>
+            <hr>
+            <div class="form-data">
+                <span class="bold">
+                    Empleado
+                </span>
+                <form action="" class="form-2">
+                    <label for="">DUI</label>
+                    <select class="form-select mb-3" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" id="nombres" v-model="cliente.nombre" readonly>
+                        </div>
+                        <div class="mb-3 input-container">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr>
+            <div class="form-data">
+                <span class="bold">
+                    Reservación
+                </span>
+                <form action="" class="form-2 flex wp sp-bet">
+                    <div class="mb-3 flex-col input-container">
+                        <label for="">Fecha</label>
+                        <input type="date" name="" id="" class="form-control">
+                    </div>
+                    <div class="mb-3 flex-col input-container">
+                        <label for="">Hora</label>
+                        <input type="time" name="" id="" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <hr>
+            <div class="buttons-reservacion form-data">
+                <router-link to="/reservaciones" class="btn btn-makers">
+                    Cancelar
+                </router-link>
+                <button type="button" class="btn btn-makers">Agregar</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -116,7 +124,23 @@ export default {
                 }
             },
             //mostrar el mensaje
-            msg: ''
+            msg: '',
+            cliente: {
+                id: '',
+                nombre: '',
+                apellido: ''
+            },
+            // obj con datos del empleado
+            empleado: {
+                id: '',
+                nombre: '',
+                apellido: ''
+            },
+            // obj con datos de la reservación
+            reservacion: {
+                fecha: '',
+                hora: ''
+            }
         }
     },
     mounted() {
@@ -125,7 +149,7 @@ export default {
         //cargar empleados
         this.cargarEmpleados();
         //cargar reservación solicitada para obtener parametro id de la url
-        this.getReservacion(this.$route.param.id);
+        this.getReservacion(this.$route.params.id);
     },
     methods: {
         //método para obtener los clientes

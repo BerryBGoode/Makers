@@ -94,126 +94,85 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
-                Empleado
+                Reservación
             </h5>
-            <span>{{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="crearReser">
-
-            <div class="container">
-                <div class="form-data">
-                    <span class="bold">
-                        info.
-                        Personal
-                    </span>
-                    <form action="" class="form-2 w-70">
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" v-model="this.model.empleado.nombres" class="form-control" id="nombres">
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" v-model="this.model.empleado.apellidos"
-                                    id="apellidos">
-                            </div>
+        <div class="container">
+            <div class="form-data">
+                <span class="bold">
+                    Cliente
+                </span>
+                <form action="" class="form-2">
+                    <label for="">DUI</label>
+                    <select class="form-select mb-3" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" @focus="ValidityState" id="nombres"
+                                v-model="cliente.nombre" readonly>
                         </div>
-                        <div class="load">
-                            <div class="mb-3 input-container-3">
-                                <label for="dui" class="form-label">DUI</label>
-                                <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui">
-                            </div>
-                            <div class="mb-3 input-container-3">
-                                <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo">
-                            </div>
-                            <div class="mb-3 input-container-3">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono"
-                                    v-model="this.model.empleado.telefono">
-                            </div>
+                        <div class="mb-3 input-container">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
                         </div>
-                    </form>
-                </div>
-                <hr>
-                <div class="form-data mb-9vh">
-                    <span class="bold">
-                        Especificaciones
-                    </span>
-
-                    <form action="" class="form-2 w-70">
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="sucursales" class="form-label">Sucursal</label>
-                                <!-- verifiacr sí existen sucursales recuperadas -->
-                                <select class="form-select mb-3" aria-label="Default select example" id="sucursales"
-                                    v-if="sucursales.length > 0" v-model="this.model.empleado.sucursal">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los datos de las sucursales -->
-                                    <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                                        sucursal.direccion }}</option>
-                                </select>
-                                <!-- sino existen sucursales -->
-                                <select class="form-select mb-3" name="error" v-else>
-                                    <option selected>No se encontraron sucursales</option>
-                                </select>
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="cargos" class="form-label">Cargo</label>
-                                <!-- verifiacr sí existen sucursales recuperadas -->
-                                <select class="form-select mb-3" aria-label="Default select example" id="cargos"
-                                    v-if="cargos.length > 0" v-model="this.model.empleado.cargo">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los datos de las sucursales -->
-                                    <option v-for="(cargo, i) in cargos" :key="i" :value="cargo.id_cargo">{{
-                                        cargo.cargo }}</option>
-                                </select>
-                                <!-- sino existen sucursales -->
-                                <select class="form-select mb-3" name="error" v-else>
-                                    <option selected>No se encontraron sucursales</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="load">
-                            <div class="mb-3 input-container width-auto">
-                                <label for="horario" class="form-label">Horarios</label>
-                                <!-- verificar sí existen horarios -->
-                                <select class="form-select mb-3" aria-label="Default select example" id="horario"
-                                    v-if="horarios.length > 0" v-model="this.model.empleado.horario">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los hotarios encontrados -->
-                                    <option v-for="(horario, i) in horarios" :key="i" :value="horario.id_horario">
-                                        {{ horario.inicio }} - {{ horario.cierre }}
-
-                                    </option>
-                                </select>
-                                <select class="mb-3 form-select" v-else>
-                                    <option>No se encontraron horarios</option>
-                                </select>
-                            </div>
-                            <div class="mb-3 input-container width-35">
-                                <label for="planilla" class="form-label">Planilla</label>
-                                <input type="text" class="form-control" id="planilla"
-                                    v-model="this.model.empleado.planilla">
-                            </div>
-                            <div class="mb-3 input-container width-35">
-                                <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="clave" readonly>
-                            </div>
-                        </div>
-                    </form>
-
-                </div>
-                <hr>
-                <div class="buttons-reservacion form-data">
-                    <router-link to="/empleados" class="btn btn-makers">
-                        Cancelar
-                    </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
-                </div>
+                    </div>
+                </form>
             </div>
-        </form>
+            <hr>
+            <div class="form-data">
+                <span class="bold">
+                    Empleado
+                </span>
+                <form action="" class="form-2">
+                    <label for="">DUI</label>
+                    <select class="form-select mb-3" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" id="nombres" v-model="cliente.nombre" readonly>
+                        </div>
+                        <div class="mb-3 input-container">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr>
+            <div class="form-data">
+                <span class="bold">
+                    Reservación
+                </span>
+                <form action="" class="form-2 flex wp sp-bet">
+                    <div class="mb-3 flex-col input-container">
+                        <label for="">Fecha</label>
+                        <input type="date" name="" id="" class="form-control">
+                    </div>
+                    <div class="mb-3 flex-col input-container">
+                        <label for="">Hora</label>
+                        <input type="time" name="" id="" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <hr>
+            <div class="buttons-reservacion form-data">
+                <router-link to="/reservaciones" class="btn btn-makers">
+                    Cancelar
+                </router-link>
+                <button type="button" class="btn btn-makers">Agregar</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -240,9 +199,9 @@ export default {
                 }
             },
             //mostrar el mensaje
-            msg: ''
+            msg: '',
 
-            /* obj con datos del cliente
+            // obj con datos del cliente
             cliente: {
                 id: '',
                 nombre: '',
@@ -257,7 +216,8 @@ export default {
             // obj con datos de la reservación
             reservacion: {
                 fecha: '',
-                hora: ''*/
+                hora: ''
+            }
         }
     },
     mounted() {
@@ -294,30 +254,30 @@ export default {
             //validar datos
             //realizar petición y enviar datos
             axios.post('http://localhost:3000/api/reservaciones', this.model.reservacion)
-            .then(res => {
-                //cuando exista el error 400 es que no realizó lo que se debía
-                if (res.data.error) {
-                    this.msg = res.data.error;
-                }
-                //cuando si se realizó la tarea deseada y se creó algo
-                //201 es usado en método post y put
-                if (res.status === 201 && !res.data.error) {
-                    //limpiar valores
-                    this.model.reservacion = {
-                        fecha: '',
-                        hora: '',
-                        cliente: 'Seleccionar',
-                        empleado: 'Seleccionar',
+                .then(res => {
+                    //cuando exista el error 400 es que no realizó lo que se debía
+                    if (res.data.error) {
+                        this.msg = res.data.error;
                     }
-                    //redireccionar
-                    alert('Reservación agregada correctamente')
-                    this.$router.push('/reservaciones');
-                }
-                console.log(res)
+                    //cuando si se realizó la tarea deseada y se creó algo
+                    //201 es usado en método post y put
+                    if (res.status === 201 && !res.data.error) {
+                        //limpiar valores
+                        this.model.reservacion = {
+                            fecha: '',
+                            hora: '',
+                            cliente: 'Seleccionar',
+                            empleado: 'Seleccionar',
+                        }
+                        //redireccionar
+                        alert('Reservación agregada correctamente')
+                        this.$router.push('/reservaciones');
+                    }
+                    console.log(res)
 
-                //si la respuesta es la esperada, redireccionará a la vista principal
-            })
-            .catch(e =>  { alert(e) });
+                    //si la respuesta es la esperada, redireccionará a la vista principal
+                })
+                .catch(e => { alert(e) });
         }
     }
 }

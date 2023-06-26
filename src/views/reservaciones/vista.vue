@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <router-link :to="{ path: '/reservaciones/editar' + reservacion.id_reservacion }">
+                                <router-link :to="{ path: '/reservaciones/editar/' + reservacion.id_reservacion }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
