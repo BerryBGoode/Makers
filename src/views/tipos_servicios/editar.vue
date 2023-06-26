@@ -9,10 +9,10 @@
             <h5 class="bold">
                 Tipo de servicio
             </h5>
-            <span> {{  msg }}</span>
+            <span> {{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="agregar" class="container agg-servicio">
+        <form @submit.prevent="modificar" class="container agg-servicio">
             <div class="form-data mb-50vh">
                 <form action="" class="form-1">
                     <div class="mb-3">
@@ -47,11 +47,11 @@ export default {
         }
     },
     methods: {
-        agregar() {
+        modificar() {
             if (!onlyLtrs(this.tipos.tipo)) {
                 this.msg = 'Solo se permiten letras'
-            }else{
-                axios.post('http://localhost:3000/api/tipos/', this.tipos)
+            } else {
+                axios.put('http://localhost:3000/api/tipos/' + this.$route.params.id, this.tipos)
                     .then(res => {
                         alert(res.data);
                         this.$router.push('/servicios/tipos');
@@ -60,7 +60,23 @@ export default {
                         console.log(e)
                     })
             }
+        },
+        getTipo() {
+
+            // obtener de la ruta el parametro llamada id
+            axios.get('http://localhost:3000/api/tipos/' + this.$route.params.id)
+                .then(res => {
+                    this.tipos = {
+                        tipo: res.data.tipo_servicio
+                    }
+                })
+                .catch(e => {
+                    console.log(e)
+                })
         }
+    },
+    mounted() {
+        this.getTipo();
     }
 }
 

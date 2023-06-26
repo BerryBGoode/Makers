@@ -236,3 +236,5 @@ LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
 -- WHERE f.id_factura IS NOT NULL 
 GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombres, c.apellidos, c.dui
 ORDER BY o.id_orden ASC
+
+ALTER TABLE tipos_servicios ADD CONSTRAINT u_tipo UNIQUE (tipo_servicio)

@@ -26,6 +26,7 @@ const RESERVACIONES = require('./routes/reservaciones.routes')
 const ORDENES = require('./routes/ordenes.routes');
 const FACTURAS = require('./routes/facturas.routes')
 const CARGOS = require('./routes/cargos.routes');
+const TIPOS = require('./routes/tipos_servicios.routes')
 
 
 // instanciando express
@@ -55,6 +56,7 @@ APP.use('/api/sucursales', SUCURSALES);
 APP.use('/api/ordenes', ORDENES);
 APP.use('/api/facturas', FACTURAS);
 APP.use('/api/cargos', CARGOS); 
+APP.use('/api/tipos', TIPOS)
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {
