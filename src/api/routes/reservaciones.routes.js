@@ -1,7 +1,7 @@
 //importar enrutador de express
 const { Router } = require('express');
 //importar métodos con las  transferencias SQL
-const { get, store, one, change, destroy } = require('../queries/reservaciones');
+const { get, store, one, change, destroy, getCliente, getDuiCli, getDuiEmp, getEmpleado } = require('../queries/reservaciones');
 
 
 //instanciar router
@@ -9,6 +9,10 @@ const RESERVACIONES = Router();
 //Obtener los datos
 RESERVACIONES.get('/', get);
 //guardar datos
+RESERVACIONES.get('/clientes', getDuiCli);
+RESERVACIONES.get('/clientes/:id', getCliente)
+RESERVACIONES.get('/empleados', getDuiEmp);
+RESERVACIONES.get('/empleados/:id', getEmpleado)
 RESERVACIONES.post('/', store);
 //obtener reservacion según id
 RESERVACIONES.get('/:id', one);

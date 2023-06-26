@@ -1,3 +1,8 @@
+<style>
+.column{
+    flex-direction: column;
+}
+</style>
 <template>
     <div class="container servicios component-servicio">
         <div class="top">
@@ -15,9 +20,21 @@
             <div class="card" v-for="(reservacion, i) in reservaciones" :key="i">
                 <div class="card-body">
                     <div class="row fila">
-                        <div class="col-md-6">
-                            <span class="card-text mb-0 smaller">{{ reservacion.fecha }}</span>
+                        <div class="col-md-2">
+                            <h5 class="card-title bold mb-1">{{ reservacion.fecha }}</h5>
                             <span class="card-text mb-0 smaller">{{ reservacion.hora }}</span>
+                            <!-- <p class="card-text mb-0 smaller">{{ servicio.descripcion }} </p> -->
+                            <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
+                        </div>
+                        <div class="col-md-3 flex column">
+                            <span>{{ reservacion.cliente_n }}</span>
+                            <span>{{ reservacion.cliente_a }}</span>
+                            <span>{{ reservacion.cliente_d }}</span>
+                        </div>
+                        <div class="col-md-3 flex column">
+                            <span>{{ reservacion.empleado_n }}</span>
+                            <span>{{ reservacion.empleado_a }}</span>
+                            <span>{{ reservacion.empleado_d }}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">

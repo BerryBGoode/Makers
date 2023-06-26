@@ -1,5 +1,5 @@
 <style>
-.info-orden{
+.info-orden {
     margin-bottom: 26.5vh;
 }
 </style>
@@ -18,49 +18,49 @@
                 </span>
                 <form action="" class="form-2">
                     <label for="">DUI</label>
-                     <!-- verificar sí existe dui del cliente -->
-                    <select class="form-select mb-3" aria-label="Default select example" id="clientes"
-                                    v-if="dui.length > 0" v-model="this.model.ordenes.dui">
-                                    <option selected disabled>Seleccionar</option>
-                                   <!-- recorrer los datos de clientes -->
-                                    <option v-for="(clientes, i) in clientes" :key="i" :value="dui.id_clientes">{{
-                                        clientes.dui }}</option>
-                                </select>
-                           <!-- sino existe el dui del cliente -->
-                                <select class="form-select mb-3" name="error" v-else>
-                                    <option selected>No se encontro el dui del cliente</option>
-                                </select>
+                    <!-- verificar sí existe dui del cliente -->
+                    <select class="form-select mb-3" aria-label="Default select example" id="clientes" v-if="dui.length > 0"
+                        v-model="this.model.ordenes.dui">
+                        <option selected disabled>Seleccionar</option>
+                        <!-- recorrer los datos de clientes -->
+                        <option v-for="(clientes, i) in clientes" :key="i" :value="dui.id_clientes">{{
+                            clientes.dui }}</option>
+                    </select>
+                    <!-- sino existe el dui del cliente -->
+                    <select class="form-select mb-3" name="error" v-else>
+                        <option selected>No se encontro el dui del cliente</option>
+                    </select>
 
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="nombres" class="form-label">Nombres</label>
                             <!-- verificar sí existen nombres recuperados -->
                             <select class="form-select mb-3" aria-label="Default select example" id="clientes"
-                                    v-if="nombres.length > 0" v-model="this.model.clientes.nombres">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los dato del nombre del cliente -->
-                                    <option v-for="(nombres, i) in nombres" :key="i" :value="nombres.id_clientes">{{
-                                        clientes.nombres }}</option>
-                                </select>
-                              <!-- sino existe ningun nombre -->
-                              <select class="form-select mb-3" name="error" v-else>
-                                    <option selected>No se encontro el nombre </option>
-                                </select>
+                                v-if="nombres.length > 0" v-model="this.model.clientes.nombres">
+                                <option selected disabled>Seleccionar</option>
+                                <!-- recorrer los dato del nombre del cliente -->
+                                <option v-for="(nombres, i) in nombres" :key="i" :value="nombres.id_clientes">{{
+                                    clientes.nombres }}</option>
+                            </select>
+                            <!-- sino existe ningun nombre -->
+                            <select class="form-select mb-3" name="error" v-else>
+                                <option selected>No se encontro el nombre </option>
+                            </select>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="apellidos" class="form-label">Apellidos</label>
-                           <!-- verificar sí existen apellidos recuperados -->
-                           <select class="form-select mb-3" aria-label="Default select example" id="clientes"
-                                    v-if="apellidos.length > 0" v-model="this.model.clientes.apellidos">
-                                    <option selected disabled>Seleccionar</option>
-                                    <!-- recorrer los dato del nombre del cliente -->
-                                    <option v-for="(apellidos, i) in apellidos" :key="i" :value="apellidos.id_clientes">{{
-                                        clientes.apellidos }}</option>
-                                </select>
-                              <!-- sino existe ningun apellido-->
-                              <select class="form-select mb-3" name="error" v-else>
-                                    <option selected>No se encontro el apellido </option>
-                                </select>
+                            <!-- verificar sí existen apellidos recuperados -->
+                            <select class="form-select mb-3" aria-label="Default select example" id="clientes"
+                                v-if="apellidos.length > 0" v-model="this.model.clientes.apellidos">
+                                <option selected disabled>Seleccionar</option>
+                                <!-- recorrer los dato del nombre del cliente -->
+                                <option v-for="(apellidos, i) in apellidos" :key="i" :value="apellidos.id_clientes">{{
+                                    clientes.apellidos }}</option>
+                            </select>
+                            <!-- sino existe ningun apellido-->
+                            <select class="form-select mb-3" name="error" v-else>
+                                <option selected>No se encontro el apellido </option>
+                            </select>
                         </div>
                     </div>
                 </form>
@@ -92,10 +92,7 @@
     </div>
 </template>
 <script>
-import cli from 'nodemon/lib/cli';
-
-
-
+import axios from 'axios';
 
 // exportar componente
 export default {
@@ -133,7 +130,7 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
-                    .then(res => { this.clientedui = res.data }) // obtener los datos de la petición
+                    .then(res => { this.clientes = res.data; console.log(clientes) }) // obtener los datos de la petición
                     .catch(e => { console.log(e) })
             } catch (error) {
                 console.error(error);
@@ -186,6 +183,6 @@ export default {
 
         }
     }
-} 
+}
 
 </script>
