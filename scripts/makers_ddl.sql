@@ -222,3 +222,17 @@ SELECT r.id_reservacion, r.fecha as fecha, to_char(r.hora, 'HH12:MI') as hora, r
 FROM reservaciones r
 INNER JOIN clientes c ON c.id_cliente = r.id_cliente
 INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+
+ALTER TABLE facturas ADD CONSTRAINT u_orden UNIQUE (id_orden)
+
+ALTER TABLE ordenes ADD CONSTRAINT fk_cliente_orden FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+
+CREATE VIEW ordenes_view AS
+SELECT o.id_orden, to_char(o.fecha, 'yyyy-mm-dd') as fecha, COALESCE(f.id_factura, 0) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+FROM ordenes o
+-- INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+LEFT JOIN facturas f ON o.id_orden = f.id_orden
+LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
+-- WHERE f.id_factura IS NOT NULL 
+GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+ORDER BY o.id_orden ASC

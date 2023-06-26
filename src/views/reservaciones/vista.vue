@@ -4,7 +4,7 @@
 }
 </style>
 <template>
-    <div class="container servicios component-servicio">
+    <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Reservaciones</span>
             <router-link to="/reservaciones/crear" type="button" class="btn btn-makers">

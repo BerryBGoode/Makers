@@ -133,8 +133,8 @@
                     </div>
 
                 </div>
-                <hr>
                 <div class="buttons-reservacion form-data">
+                    <hr>
                     <router-link to="/empleados" class="btn btn-makers">
                         Cancelar
                     </router-link>

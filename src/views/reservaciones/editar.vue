@@ -181,7 +181,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
                     <router-link to="/reservaciones" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
             </form>
         </div>

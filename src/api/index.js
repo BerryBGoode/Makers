@@ -23,7 +23,7 @@ const SERVICIO = require('./routes/servicios.routes');
 const HORARIOS = require('./routes/horarios.routes')
 const SUCURSALES = require('./routes/sucursales.routes');
 const RESERVACIONES = require('./routes/reservaciones.routes')
-
+const ORDENES = require('./routes/ordenes.routes')
 // instanciando express
 const APP = EXPRESS();
 // settenado puerto, enviar un establecido por el sistema 
@@ -48,6 +48,7 @@ APP.use('/api/auth', LOGIN);
 APP.use('/api/horarios', HORARIOS);
 APP.use('/api/reservaciones', RESERVACIONES)
 APP.use('/api/sucursales', SUCURSALES);
+APP.use('/api/ordenes', ORDENES);
 
 // escuchar al servidor
 APP.listen(APP.get('port'), () => {

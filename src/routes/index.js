@@ -51,6 +51,7 @@ import editarServicio from '../views/servicios/editar.vue';
 import editarHorario from '../views/horarios/editar.vue';
 import editarSucursal from '../views/sucursales/editar.vue'
 import editarRervacion from '../views/reservaciones/editar.vue'
+import editarOrden from '../views/ordenes/editar.vue'
 //#endregion
 
 // configuración
@@ -106,12 +107,6 @@ const ROUTER = createRouter({
             path: '/reservaciones',
             component: reservaciones
         },
-        // facturas
-        {
-            name: 'facturas',
-            path: '/facturas',
-            component: facturas
-        },
         // sucursales
         {
             name: 'sucursales',
@@ -152,6 +147,11 @@ const ROUTER = createRouter({
             name: 'detallesOrden',
             path: '/ordenes/:orden/detalles/',
             component: detallesOrden
+        },
+        {
+            name: 'facturas',
+            path: '/ordenes/:id/factura',
+            component: facturas
         },
         //#endregion
 
@@ -212,7 +212,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'crearFactura',
-            path: '/facturas/crear',
+            path: '/ordenes/:id/factura/crear',
             component: crearFactura
         },
         {
@@ -275,6 +275,11 @@ const ROUTER = createRouter({
             name: 'editarRervacion',
             path: '/reservaciones/editar/:id',
             component: editarRervacion
+        },
+        {
+            name: 'editarFactura',
+            path: '/ordenes/editar/:id',
+            component: editarOrden
         },
 
         // configuración

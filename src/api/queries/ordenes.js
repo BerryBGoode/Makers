@@ -12,7 +12,7 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar consulta
-        const ORDENES = await POOL.query('SELECT * FROM ordenes');
+        const ORDENES = await POOL.query('SELECT * FROM ordenes_view');
         // verificar el estado satisfactorio para retornar los datos
         if (res.status(200)) res.json(ORDENES.rows);
     } catch (error) {
@@ -26,7 +26,7 @@ const get = async (req, res) => {
 const getClienteDui = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT dui FROM clientes');
+        const CLIENTES = await POOL.query('SELECT id_cliente, dui FROM clientes');
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(CLIENTES.rows);
     } catch (error) {
@@ -35,13 +35,13 @@ const getClienteDui = async (req, res) => {
 }
 
 
-  /**
- * Método  para obtener los datos del cliente por su DUI
- */
+/**
+* Método  para obtener los datos del cliente por su DUI
+*/
 const getObtenerClientes = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE dui = ?');
+        const CLIENTES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(CLIENTES.rows);
     } catch (error) {
@@ -63,10 +63,11 @@ const store = (req, res) => {
     let status = '';
     try {
         // obtener los datos del req
-        const { fecha, hora  } = req.body;
+        const { fecha, cliente } = req.body;
+        let estado = 1
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO ordenes(fecha, estado, id_orden, id_cliente) VALUES ($1,$2, $3, $4)',
-            [ fecha, hora], (err, result) => {
+        POOL.query('INSERT INTO ordenes(fecha, estado, id_cliente) VALUES ($1,$2, $3)',
+            [fecha, estado, cliente], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
@@ -92,19 +93,25 @@ const change = (req, res) => {
         // obtener id 
         const IDORDEN = parseInt(req.params.id);
         // obtener los datos enviados del frontend
-        const { fecha, estado } = req.body;
+        const { fecha, cliente } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE orden SET fecha = $1, estado = $2, id_cliente = $3, WHERE id_orden = $4',
-            [fecha, estado, dui, planilla, IDORDEN],
+        POOL.query('UPDATE ordenes SET fecha = $1, id_cliente = $2 WHERE id_orden = $3',
+            [fecha, cliente, IDORDEN],
             (err, result) => {
-                // verificar sí ha y un error
+                // verificar sí hubo un error                                
                 if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
+
+                    // verificar sí no se puede eliminar porque tiene datos dependientes                
+                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
+                    // retornar el error
+                    res.json({ error: e });
                     return;
+
+                } else {
+                    msg = 'Sucursal eliminada';
                 }
-                res.status(201).send('Orden modificada');
+
+                res.status(201).send(msg);
             }
         )
     } catch (error) {
@@ -124,15 +131,20 @@ const destroy = async (req, res) => {
         const IDORDEN = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         await POOL.query('DELETE FROM ordenes WHERE id_orden = $1', [IDORDEN], (err, resul) => {
-            // verificar sí hay un error
+            // verificar sí hubo un error                                
             if (err) {
-                // obtener mensaje
-                res.json({ error: err.message });
-                // retornar
+
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
+                // retornar el error
+                res.json({ error: e });
                 return;
+
+            } else {
+                msg = 'Orden eliminada';
             }
-            // mandar mensaje sí no hay errores
-            res.status(201).send('Orden Eliminada');
+
+            res.status(201).send(msg);
         })
     } catch (error) {
         console.log(error);
@@ -140,11 +152,26 @@ const destroy = async (req, res) => {
 }
 
 
-
+/**
+ * Método para obtener los datos de la orden enviada por la url
+ */
+const one = async (req, res) => {
+    try {
+        // obtener id
+        const ID = parseInt(req.params.id);
+        // realizar query
+        const ORDEN = await POOL.query('SELECT * FROM ordenes_view WHERE id_orden = $1', [ID]);
+        // verificar respuesta esperada
+        if (res.status(200)) res.send(ORDEN.rows[0]);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
+    }
+}
 
 
 
 
 
 // exportación de modulos
-module.exports = { get, getClienteDui, getObtenerClientes, change, destroy, store }
+module.exports = { get, getClienteDui, getObtenerClientes, change, destroy, store, one }

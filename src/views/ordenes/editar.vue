@@ -25,7 +25,7 @@
             </h5>
         </div>
         <hr>
-        <form @submit.prevent="crear" class="container relative h-91">
+        <form @submit.prevent="modificar" class="container relative h-91">
             <div class="form-data">
                 <span class="bold">
                     Cliente
@@ -73,7 +73,7 @@
                 <router-link to="/ordenes" class="btn btn-makers">
                     Cancelar
                 </router-link>
-                <button type="submit" class="btn btn-makers">Agregar</button>
+                <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
         </form>
     </div>
@@ -107,10 +107,10 @@ export default {
     mounted() {
         // cargar sucursales
         this.cargarClienteDui();
+        this.getOrden();
     },
     methods: {
         getCliente() {
-            console.log(this.model.ordenes.cliente)
             axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
                 .catch(e => { console.log(e) });
@@ -127,12 +127,25 @@ export default {
                 console.error(error);
             }
         },    
-
+        getOrden() {
+            axios.get('http://localhost:3000/api/ordenes/'+this.$route.params.id)
+                .then(res => {
+                    // cargar datos
+                    this.model.ordenes = {
+                        cliente: res.data.id_cliente,
+                        fecha: res.data.fecha
+                    }  
+                    this.cliente = {
+                        apellidos: res.data.apellidos,
+                        nombres: res.data.nombres
+                    }
+                })
+        },
         // método para agregar una nueva orden
-        crear() {
+        modificar() {
             // validar datos
             // realizar petición y enviando datos
-            axios.post('http://localhost:3000/api/ordenes', this.model.ordenes)
+            axios.put('http://localhost:3000/api/ordenes/'+ this.$route.params.id, this.model.ordenes)
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
@@ -151,7 +164,7 @@ export default {
                             apellidos: 'Seleccionar',
                         }
                         // redireccionar
-                        alert('orden agregada')
+                        alert('Orden modificada')
                         this.$router.push('/ordenes');
                     }
                     // console.log(res)
