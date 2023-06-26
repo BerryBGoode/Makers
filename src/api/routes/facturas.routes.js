@@ -9,7 +9,7 @@ const FACTURAS = Router();
 
 // métodos para hacer acciónes
 FACTURAS.get('/', get);
-FACTURAS.get('/EmpleadoDui',  getDuiEmpleado);
+FACTURAS.get('/empleados',  getDuiEmpleado);
 FACTURAS.get('/sucursales', getDirección);
 FACTURAS.get('/empleados', getObtenerEmpleados);
 FACTURAS.put('/:id', change);

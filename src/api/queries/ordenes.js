@@ -89,6 +89,7 @@ const store = (req, res) => {
  * Método para actualizar los datos de la orden
  */
 const change = (req, res) => {
+    let e;
     try {
         // obtener id 
         const IDORDEN = parseInt(req.params.id);
@@ -126,6 +127,7 @@ const change = (req, res) => {
  * Método para eliminar la orden seleccionada
  */
 const destroy = async (req, res) => {
+    let e;
     try {
         // obtener el idorden
         const IDORDEN = parseInt(req.params.id);

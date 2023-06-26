@@ -75,23 +75,31 @@ const getObtenerEmpleados = async (req, res) => {
  */
 const store = (req, res) => {
     let msg = '';
-    let status = '';
     try {
         // obtener los datos del req
-        const { fecha, hora } = req.body;
+        const { orden, empleado, sucursal, estado } = req.body;
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO ordenes(fecha, estado, id_orden, id_cliente) VALUES ($1,$2, $3, $4)',
-            [fecha, hora], (err, result) => {
+        POOL.query('INSERT INTO facturas(id_orden, id_empleado, id_sucursal, estado) VALUES ($1, $2, $3, $4)',
+            [orden, empleado, sucursal, estado], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
                     // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
+                    // return;                    
+
+                } else {
+                    msg = 'Factura agregada';
                 }
-                res.status(201).send('factura agregada');
-                // verificar estado satisfactorio
-                // res.status(201).send('Factura agregada')
+
+                res.status(201).send(msg);
             })
     } catch (error) {
         console.log(error)

@@ -110,7 +110,7 @@ export default {
     },
     methods: {
         getCliente() {
-            console.log(this.model.ordenes.cliente)
+            
             axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
                 .catch(e => { console.log(e) });

@@ -42,11 +42,20 @@
                             </router-link>
                         </div>
                         <div class="col-md-1 more-info">
-
-                            <router-link class="btn btn-makers btn-table"
-                                :to="{ path: '/ordenes/' + orden.id_orden + '/factura/' }">
-                                Facturas
-                            </router-link>
+                            <!-- crear -->
+                            <div v-if="orden.factura === 0">
+                                <router-link class="btn btn-makers btn-table"
+                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/crear' }">
+                                    Crear
+                                </router-link>
+                            </div>
+                            <!-- editar -->
+                            <div v-else>
+                                <router-link class="btn btn-makers btn-table"
+                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/editar/' + orden.factura }">
+                                    Factura
+                                </router-link>
+                            </div>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
@@ -130,7 +139,7 @@ export default {
                     })
                     .catch(e => {
                         alert(e),
-                        console.log(e)
+                            console.log(e)
                     })
             }
 

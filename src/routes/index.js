@@ -52,6 +52,7 @@ import editarHorario from '../views/horarios/editar.vue';
 import editarSucursal from '../views/sucursales/editar.vue'
 import editarRervacion from '../views/reservaciones/editar.vue'
 import editarOrden from '../views/ordenes/editar.vue'
+import editarFactura from '../views/facturas/editar.vue';
 //#endregion
 
 // configuración
@@ -212,7 +213,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'crearFactura',
-            path: '/ordenes/:id/factura/crear',
+            path: '/ordenes/:orden/factura/crear',
             component: crearFactura
         },
         {
@@ -277,9 +278,14 @@ const ROUTER = createRouter({
             component: editarRervacion
         },
         {
-            name: 'editarFactura',
+            name: 'editarOrden',
             path: '/ordenes/editar/:id',
             component: editarOrden
+        },
+        {
+            name: 'editarFactura',
+            path: '/ordenes/:orden/factura/editar/:id',
+            component: editarFactura
         },
 
         // configuración

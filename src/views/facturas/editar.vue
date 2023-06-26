@@ -1,95 +1,93 @@
-<style>
-.bottoms {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-}
-</style>
 <template>
-    <div class="container servicios component-servicio h-100 relative">
+    <div class="container servicios component-servicio">
         <div class="top">
             <h5 class="bold">
                 Factura
             </h5>
         </div>
         <hr>
-        <form @submit.prevent="crear" class="container">
+        <div class="container">
             <div class="form-data">
                 <span class="bold">
                     Empleado
                 </span>
-                <div class="form-2">
+                <form action="" class="form-2">
                     <label for="clientes" class="form-label">DUI</label>
                     <!-- verificar sí existe dui del cliente -->
                     <select class="form-select mb-3" aria-label="Default select example" id="clientes"
-                        v-model="model.factura.empleado" v-if="empleados.length > 0" @change="getEmpleado">
+                        v-if="clientes.length > 0" v-model="this.model.factura.dui">
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de clientes -->
-                        <option v-for="(empleado, i) in empleados" :key="i" :value="empleado.id_empleado">{{ empleado.dui }}
-                        </option>
+                        <option v-for="(dui, i) in clientes" :key="i" :value="dui.id_clientes">{{
+                            dui.dui }}</option>
                     </select>
-                    <!-- sino existe el dui del empleado -->
+                    <!-- sino existe el dui del cliente -->
                     <select class="form-select mb-3" name="error" v-else>
-                        <option selected>No se encontraron datos</option>
+                        <option selected>No se encontro el dui del cliente</option>
                     </select>
                     <div class="load">
                         <div class="mb-3 input-container">
-                            <label for="nombres" class="form-label">Nombres</label>
-                            <input type="text" class="form-control" id="nombres" v-model="empleado.nombres" readonly>
+                            <label for="clientes" class="form-label">Nombres</label>
+                            <!-- verificar sí existen nombres recuperados -->
+                            <select class="form-select mb-3" aria-label="Default select example" id="clientes"
+                                v-if="clientes.length > 0" v-model="this.model.clientes.nombres">
+                                <option selected disabled>Seleccionar</option>
+                                <!-- recorrer los dato del nombre del cliente -->
+                                <option v-for="(nombres, i) in clientes" :key="i" :value="nombres.id_clientes">{{
+                                    nombres.nombres }}</option>
+                            </select>
+                            <!-- sino existe ningun nombre -->
+                            <select class="form-select mb-3" name="error" v-else>
+                                <option selected>No se encontro el nombre </option>
+                            </select>
                         </div>
                         <div class="mb-3 input-container">
-                            <label for="apellidos" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" id="apellidos" v-model="empleado.apellidos" readonly>
+                            <label for="clientes" class="form-label">Apellidos</label>
+                            <!-- verificar sí existen apellidos recuperados -->
+                            <select class="form-select mb-3" aria-label="Default select example" id="clientes"
+                                v-if="clientes.length > 0" v-model="this.model.clientes.apellidos">
+                                <option selected disabled>Seleccionar</option>
+                                <!-- recorrer los dato del nombre del cliente -->
+                                <option v-for="(apellidos, i) in clientes" :key="i" :value="apellidos.id_clientes">{{
+                                    apellidos.apellidos }}</option>
+                            </select>
+                            <!-- sino existe ningun apellido-->
+                            <select class="form-select mb-3" name="error" v-else>
+                                <option selected>No se encontro el apellido </option>
+                            </select>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
             <hr>
-            <div class="form-data ">
+            <div class="form-data mb-30vh">
                 <span class="bold">
                     Sucursal
                 </span>
-                <div class="form-2 flex wp sp-bet">
+                <form action="" class="form-2 flex wp sp-bet">
                     <label for="dirección" class="form-label">Dirección</label>
                     <!-- verificar sí existe una dirección -->
                     <select class="form-select mb-3" aria-label="Default select example" id="sucursales"
-                        v-if="sucursales.length > 0" v-model="this.model.factura.sucursal">
+                        v-if="sucursales.length > 0" v-model="this.model.facturas.sucursal">
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de la dirección -->
-                        <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                            sucursal.direccion }}</option>
+                        <option v-for="(dirección, i) in sucursales" :key="i" :value="dirección.id_sucursal">{{
+                            dirección.dirección }}</option>
                     </select>
                     <!-- sino existen sucursales -->
                     <select class="form-select mb-3" name="error" v-else>
-                        <option selected>No se encontraron datos</option>
+                        <option selected>No se encontraron ninguna Dirección de una sucursal</option>
                     </select>
-                </div>
+                </form>
             </div>
             <hr>
-            <div class="form-data ">
-                <span class="bold">
-                    info. Factura
-                </span>
-                <div class="form-2 flex wp sp-bet">
-                    <label for="dirección" class="form-label">Estado</label>
-                    <!-- verificar sí existe una dirección -->
-                    <select class="form-select mb-3" aria-label="Default select example" id="sucursales"
-                        v-model="this.model.factura.estado">
-                        <option selected disabled>Seleccionar</option>
-                        <option value="1">Pagada</option>
-                        <option value="2">Pendiente</option>
-
-                    </select>
-                </div>
-            </div>
-            <hr>
-            <div class="buttons-reservacion form-data bottoms">
+            <div class="buttons-reservacion form-data">
                 <router-link to="/ordenes" class="btn btn-makers">
                     Cancelar
                 </router-link>
-                <button type="submit" class="btn btn-makers">Agregar</button>
+                <button type="button" class="btn btn-makers">Agregar</button>
             </div>
-        </form>
+        </div>
     </div>
 </template>
 
@@ -106,18 +104,14 @@ export default {
             // arreglo con info. sucursales
             sucursales: [],
             // arreglo con info. sucursales
-            empleados: [],
-            empleado: {
-                nombres: '',
-                apellidos: ''
-            },
+            clientes: [],
             model: {
                 factura: {
-                    empleado: 'Seleccionar',
+                    dui: 'Seleccionar',
+                    nombres: 'Seleccionar',
+                    apellidos: 'Seleccionar',
+                    Dirección: 'Seleccionar',
                     sucursal: 'Seleccionar',
-                    estado: 'Seleccionar',
-                    orden: this.$route.params.orden
-
                 }
             },
             // mostrarle al cliente mensajes
@@ -125,39 +119,31 @@ export default {
         }
     },
     mounted() {
-
+        // cargar clientes
+        this.cargarClientes();
         // cargar sucursales
         this.cargarSucursales();
-        this.cargarEmpleadoDui();
 
     },
     // métodos del componente
     methods: {
-        // método para obtener el dui del cliente
-        cargarEmpleadoDui() {
+        // método para obtener las sucursales
+        cargarClientes() {
             try {
-                // hacer petición para obtener dui de clientes
-                axios.get('http://localhost:3000/api/reservaciones/empleados')
-                    .then(res => { this.empleados = res.data; }) // obtener los datos de la petición
+                // hacer petición para obtener facturas y clientes
+                axios.get('http://localhost:3000/api/facturas/clientes')
+                    .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
                     .catch(e => { console.log(e) })
-
             } catch (error) {
                 console.error(error);
             }
         },
-        getEmpleado() {
-            console.log(this.model.factura.dui)
-            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
-                .then(res => { this.empleado.nombres = res.data.nombres; this.empleado.apellidos = res.data.apellidos })
-                .catch(e => { console.log(e) });
-
-        },
         // método para obtener la sucursal para la factura
         cargarSucursales() {
             // realizar petición
-            axios.get('http://localhost:3000/api/facturas/sucursales')
+            axios.get('http://localhost:3000/api/facturas/sucursal')
                 // cuando pase todo correctamente
-                .then(res => { this.sucursales = res.data }) // cuando todo salga correcto asignar valores a arreglo
+                .then(res => { this.cargos = res.data }) // cuando todo salga correcto asignar valores a arreglo
                 .catch(e => { console.error(e) }) // mostrar mensaje de error
         },
 
@@ -177,14 +163,15 @@ export default {
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.model.factura = {
-                            empleado: 'Seleccionar',
+                            dui: 'Seleccionar',
+                            nombres: 'Seleccionar',
+                            apellidos: 'Seleccionar',
+                            Direccion: 'Seleccionar',
                             sucursal: 'Seleccionar',
-                            estado: 'Seleccionar',
-
                         }
                         // redireccionar
                         alert('Factura agregada')
-                        this.$router.push('/ordenes');
+                        this.$router.push('/facturas');
                     }
                     // console.log(res)
 
@@ -196,4 +183,9 @@ export default {
         }
     }
 }
+
+
+
+
+
 </script>
