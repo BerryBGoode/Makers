@@ -53,6 +53,7 @@ import editarSucursal from '../views/sucursales/editar.vue'
 import editarRervacion from '../views/reservaciones/editar.vue'
 import editarOrden from '../views/ordenes/editar.vue'
 import editarFactura from '../views/facturas/editar.vue';
+import editarCargo from '../views/cargos/editar.vue';
 //#endregion
 
 // configuración
@@ -236,6 +237,11 @@ const ROUTER = createRouter({
             name: 'editarCliente',
             path: '/clientes/editar/:id',
             component: editarCliente
+        },
+        {
+            name: 'editarCargo',
+            path: '/empleados/cargos/editar/:id',
+            component: editarCargo
         },
         {
             name: 'editarEmpleado',

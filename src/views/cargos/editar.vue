@@ -7,7 +7,7 @@
             <span>{{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="agregar" class="container agg-servicio">
+        <form @submit.prevent="modificar" class="container agg-servicio">
             <div class="form-data mb-50vh">
                 <div class="form-1">
                     <div class="mb-3">
@@ -22,7 +22,7 @@
                 <router-link to="/empleados/cargos" class="btn btn-makers">
                     Cancelar
                 </router-link>
-                <button type="submit" class="btn btn-makers">Agregar</button>
+                <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
         </form>
     </div>
@@ -41,12 +41,15 @@ export default {
             msg: ''
         }
     },
+    mounted(){
+        this.getCargo();
+    },
     methods: {
-        agregar(){
+        modificar(){
             if (!onlyLtrs(this.cargo.cargo)) {
                 this.msg = 'Solo se permiten letras'
             }else{
-                axios.post('http://localhost:3000/api/cargos', this.cargo)
+                axios.put('http://localhost:3000/api/cargos/'+this.$route.params.id, this.cargo)
                     .then(res => {
                         alert(res.data);
                         this.$router.push('/empleados/cargos');
@@ -55,6 +58,17 @@ export default {
                         console.log(e);
                     })
             }
+        },
+        getCargo(){
+            axios.get('http://localhost:3000/api/cargos/'+this.$route.params.id)    
+                .then(res => {
+                    this.cargo = {
+                        cargo: res.data.cargo
+                    }
+                })
+                .catch(e => {
+                    console.log(e)
+                })
         }
     }
     

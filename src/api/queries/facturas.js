@@ -110,6 +110,7 @@ const store = (req, res) => {
  * Método para actualizar los datos de la factura
  */
 const change = (req, res) => {
+    let msg;
     try {
         // obtener id 
         const IDFACTURA = parseInt(req.params.id);
@@ -134,7 +135,7 @@ const change = (req, res) => {
                     // return;                    
 
                 } else {
-                    msg = 'Sucursal modificada';
+                    msg = 'Factura modificada';
                 }
 
                 res.status(201).send(msg);

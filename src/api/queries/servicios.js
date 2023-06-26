@@ -134,7 +134,7 @@ const destroy = (req, res) => {
                 res.json({ error: e });
                 return;
             }
-            res.status(201).send('Producto eliminado');
+            res.status(201).send('Servicio eliminado');
         })
     } catch (error) {
         console.log(error);
