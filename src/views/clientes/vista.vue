@@ -188,7 +188,7 @@ export default {
         },
         buscador(dato) {
             // declarar un objeto que contenga los datos filtrados del arreglo donde estan los clientes
-            const clientes = this.clientes.filter((item) => {
+            const CLIENTES = this.clientes.filter((item) => {
                 // retornar algo sí el resultado coincide con el valor enviado del watch
                 return (
                     item.nombres.toLowerCase().indexOf(dato) !== -1 || item.apellidos.toLowerCase().indexOf(dato) !== -1 ||
@@ -197,7 +197,7 @@ export default {
                 );
             });
             // asignar los registros encontrados al arreglo que los muestra
-            this.buscador_c = clientes;
+            this.buscador_c = CLIENTES;
         },
     },
     watch: {

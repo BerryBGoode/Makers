@@ -7,11 +7,18 @@
             </router-link>
         </div>
         <hr>
+        <!-- vefiícar sí se encontraron datos al buscar -->
+        <div class="data p-2" v-if="buscador_c.length === 0">
+            <!-- recorrer los cargos encontrados -->
+
+            <span>No se encontraron datos</span>
+
+        </div>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="cargos.length > 0">
             <!-- recorrer los cargos encontrados -->
 
-            <div class="card" v-for="(cargo, i) in cargos" :key="i">
+            <div class="card" v-for="(cargo, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -71,10 +78,17 @@
 import axios from 'axios';
 export default {
     name: 'cargos',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
             // arreglo para cargas cargos
-            cargos: []
+            cargos: [],
+            // arreglo que primero tendra los cargos
+            buscador_c: []
         }
     },
     methods: {
@@ -82,6 +96,7 @@ export default {
             axios.get('http://localhost:3000/api/cargos')
                 .then(res => {
                     this.cargos = res.data;
+                    this.buscador_c = res.data;
                 })
                 .catch(e => {
                     console.log(e)
@@ -98,10 +113,36 @@ export default {
                         this.getCargos();
                     })
             }
+        },
+        buscador(dato) {
+            // declarar para que tenga los datos filtrados
+            // filtrar los datos obtenidos en limpio
+            const CARGOS = this.cargos.filter((cargo) => {
+                // retornar los datos que pasen la siguientee condicional
+                return (
+                    // la condicional dice que:
+                    // convertir a minusculas los cargos 
+                    //  y sí conincide algún dato con el ingresado en el buscador que lo retorne
+                    cargo.cargo.toLowerCase().indexOf(dato) !== -1
+                )
+                // asingar el dato filtrado al arreglo que los muestra'
+            });
+            this.buscador_c = CARGOS;
         }
     },
     mounted() {
         this.getCargos();
+        // asignar los cargos a los datos del buscador
+        this.buscador_c = this.cargos;
+    },
+    watch: {
+        // detetar cuando se modifica el dato del input, para ello
+        // tiene que tener el nombre de la var u obj
+        datos(now) {
+            // verificar sí tiene datos vacíos para mostrar los datos con normalidad
+            // sino mostrar los realizar filtro
+            (now.trim() === '') ? this.buscador_c = this.cargos : this.buscador(now)
+        }
     }
 }
 
