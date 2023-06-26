@@ -42,12 +42,16 @@
             </router-link>
         </div>
         <hr>
+        <!-- verificar sí se encontraron datos al buscar-->
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span>No se encontraron datos</span>
+        </div>
         <!-- aquí cargar los empleados -->
         <!-- verificar sí hay empleados -->
         <div class="data p-2" v-if="empleados.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(empleado, i) in empleados" :key="i">
+            <div class="card" v-for="(empleado, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -125,10 +129,13 @@
 import axios from 'axios';
 export default {
     name: 'empleados',
+    props: { datos: { type: String } },
     data() {
         return {
             // arreglo para guardar los empleados
-            empleados: []
+            empleados: [],
+            // arreglo para guardar los datos a buscar
+            buscador: []
         }
     },
     methods: {
@@ -136,7 +143,7 @@ export default {
         getEmpledos() {
             // hacer petición
             axios.get('http://localhost:3000/api/empleados')
-                .then(res => { this.empleados = res.data })
+                .then(res => { this.empleados = res.data; this.buscador = res.data })
                 .catch(e => { alert(e) })
 
         },
@@ -152,14 +159,41 @@ export default {
                         // cargar los empleados
                         this.getEmpledos();
                     })
-                    .catch(e => { alert(e)})
+                    .catch(e => { alert(e) })
             }
-
-
+        },
+        buscar(dato) {
+            // constante con los datos filtrados del arreglo con los empleados (en limipios)
+            const EMPLEADOS = this.empleados.filter((empleado) => {
+                // retornar los datos que pasen la condición
+                return (
+                    // convertir cada dato de los que se puede buscar en minusculas   
+                    // (dato) texto del input
+                    empleado.nombres.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.apellidos.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.direccion.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.dui.indexOf(dato) !== -1 ||
+                    empleado.correo.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.horario.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.planilla.indexOf(dato) !== -1 ||
+                    empleado.cargo.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.telefono.indexOf(dato) !== -1
+                    // parametros por los que se puede buscar
+                )
+            })
+            // asignar esos datos filtrados al arreglo que se muestran en card
+            this.buscador = EMPLEADOS;
         }
     },
     mounted() {
         this.getEmpledos();
+    },
+    watch: {
+        datos(now) {
+            // verificar sí el input esta vacío o tiene espacios para mostrar por defecto
+            // sino, mostrar el filtrado
+            (now.trim() === '') ? this.buscador = this.empleados : this.buscar(now);
+        }
     }
 }
 
