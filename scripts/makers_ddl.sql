@@ -216,7 +216,7 @@ INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
 ORDER BY s.id_servicio ASC
 
 CREATE VIEW reservaciones_view AS
-SELECT r.id_reservacion,to_char(r.fecha, 'dd-mm-yyyy') as fecha, to_char(r.hora, 'HH12:MI') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
+SELECT r.id_reservacion, r.fecha as fecha, to_char(r.hora, 'HH12:MI') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
 		c.apellidos as cliente_a, c.dui as cliente_d,
 		e.nombres as empleado_n, e.apellidos empleado_a, e.dui as empleado_d
 FROM reservaciones r

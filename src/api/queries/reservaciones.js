@@ -118,9 +118,9 @@ const one = async (req, res) => {
         //se obtiene el id de  la reservacion de los  parametros de la url
         const idreser = parseInt(req.params.id);
         //se realiza la consulta
-        const reservarcion = POOL.query('SELECT * FROM reservaciones WHERE id_reservacion = $1', [idreser])
+        const RESERVACION = await POOL.query('SELECT * FROM reservaciones_view WHERE id_reservacion = $1', [idreser])
         //si el proceso es correcto, se retorna el resultado de la consulta en json        
-        if (res.status(200)) res.json((await reservarcion).rows)
+        if (res.status(200)) res.json(RESERVACION.rows)
     } catch (error) {
         console.error(error);
     }
@@ -137,17 +137,18 @@ const change = async (req, res) => {
         //convertir a valor entero el id recibido de la ruta
         const idreser = parseInt(req.params.id);
         //asignar a un arreglo los valores del req
-        const { cliente, empleado, fecha, hora, estado } = req.body;
+        const { cliente, empleado, fecha, hora } = req.body;
         //realuzar transferencia SQL
-        POOL.query('UPDATE reservaciones  SET id_cliente = $1, id_empleado = $2, fecha = $3, hora = $4, id_estado = $5 WHERE id_reservacion = $6',
-            [cliente, empleado, fecha, hora, estado],
+        POOL.query('UPDATE reservaciones SET id_cliente = $1, id_empleado = $2, fecha = $3, hora = $4 WHERE id_reservacion = $5',
+            [cliente, empleado, fecha, hora, idreser],
             //erro debe ir antes que res
             (err, results) => {
-                //vereficar  si existen errores
+                // verificar sí hubo un error
                 if (err) {
-                    res.send(err.message);
+                    res.json({ error: err.message });
+                    return
                 }
-                res.status(201).send('Reservación actualizada' + 'UPDATE reservaciones  SET id_cliente = $1, id_empleado = $2, fecha = $3, hora = $4, id_estado = $5 WHERE id_reservacion = $6' + [cliente, empleado, fecha, hora, estado]);
+                res.status(201).send('Reservación modificada');
             }
         )
     } catch (error) {
