@@ -238,3 +238,125 @@ GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombre
 ORDER BY o.id_orden ASC
 
 ALTER TABLE tipos_servicios ADD CONSTRAINT u_tipo UNIQUE (tipo_servicio)
+
+SELECT * FROM servicios WHERE id_tipo_servicio = 8
+SELECT * FROM tipos_servicios
+
+SELECT * FROM servicios WHERE id_tipo_servicio = (
+	SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = 'Producto'
+)
+
+SELECT * FROM servicios
+
+DROP VIEW productos_view
+
+SELECT *
+FROM servicios_view
+
+CREATE VIEW productos_view AS
+SELECT *
+FROM servicios
+WHERE id_tipo_servicio = (SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = 'Producto')
+ORDER BY id_servicio ASC
+
+CREATE VIEW servicios_view AS
+SELECT s.id_servicio, s.nombre_servicio, s.descripcion, s.precio, tp.tipo_servicio, tp.id_tipo_servicio
+FROM servicios s
+INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
+ORDER BY s.id_servicio ASC
+
+
+DROP VIEW productos_sucursales_view
+
+CREATE VIEW productos_sucursales_view AS
+SELECT s.nombre_servicio, s.id_servicio, s.existencias, ds.cantidad, ds.id_detalle, ds.id_sucursal
+FROM detalles_servicios_sucursales ds
+INNER JOIN servicios s ON s.id_servicio = ds.id_servicio
+
+SELECT * FROM productos_sucursales_view
+
+SELECT * FROM ordenes
+INSERT INTO ordenes(id_cliente, fecha, estado) VALUES (87, '11-04-2023', 1)
+
+SELECT * FROM detalle_ordenes
+
+
+
+DROP VIEW detalle_view
+
+CREATE VIEW detalle_view AS
+SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
+		d.cantidad * s.precio as subtotal, d.id_orden
+FROM detalle_ordenes d
+INNER JOIN servicios s ON s.id_servicio = d.id_servicio
+INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+
+WHERE d.id_orden = 1
+
+SELECT * FROM detalle_view
+INSERT INTO detalle_ordenes(id_servicio, id_orden) VALUES (40, 1)
+
+CREATE VIEW detalle_orden_
+SELECT d.id_detalle, d.id_servicio, d.descuento, d.cantidad, d.id_orden, t.id_tipo_servicio FROM detalle_ordenes d
+INNER JOIN servicios s ON s.id_servicio = d.id_servicio
+INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+
+SELECT * FROM empleados
+SELECT * FROM clientes
+
+SELECT dui, correo, COUNT(*) AS repeticiones
+FROM empleados
+GROUP BY dui, correo
+HAVING COUNT(*) = 2;
+
+ALTER TABLE empleados ADD CONSTRAINT chk_dui_empleado UNIQUE (dui)
+DELETE FROM empleados WHERE id_empleado in (17)
+SELECT * FROM empleados WHERE  dui = '12345278-9' AND correo = 'fernandomena3131@gmail.com' --contraseña 1234567890
+
+SELECT id_horario, CONCAT(to_char(hora_apertura, 'HH12:MI') || ' AM ') as apertura, CONCAT(to_char(hora_cierre, 'HH:12:MI') || ' PM') as cierre
+FROM horarios
+
+SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = 'Producto'
+
+INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($, $2, $3, $4, $5, $6)
+
+SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = 'Producto';
+SELECT telefono, horario, nrc, nit, direccion FROM sucursales
+SELECT id_empleado FROM empleados
+
+SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes
+
+SELECT * FROM reservaciones
+DROP VIEW reservaciones_view
+
+CREATE VIEW reservaciones_view AS
+SELECT r.id_reservacion,to_char(r.fecha, 'yyyy-MM-dd') as fecha, to_char(r.hora, 'HH12:MI') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
+		c.apellidos as cliente_a, c.dui as cliente_d,
+		e.nombres as empleado_n, e.apellidos empleado_a, e.dui as empleado_d
+FROM reservaciones r
+INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+
+ALTER TABLE facturas ADD CONSTRAINT u_orden UNIQUE (id_orden)
+SELECT * FROM ordenes
+
+DROP VIEW ordenes_view
+CREATE VIEW ordenes_view AS
+SELECT o.id_orden, to_char(o.fecha, 'yyyy-mm-dd') as fecha, COALESCE(f.id_factura, 0) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+FROM ordenes o
+-- INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+LEFT JOIN facturas f ON o.id_orden = f.id_orden
+LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
+-- WHERE f.id_factura IS NOT NULL 
+GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+ORDER BY o.id_orden ASC
+
+
+INSERT INTO ordenes(fecha, estado, id_cliente) VALUES (CURRENT_DATE, 1, 104)
+INSERT INTO facturas(id_orden, id_empleado, id_sucursal, estado) VALUES (6, 5, 1, 1)
+
+SELECT f.id_factura, f.id_sucursal, f.id_empleado, f.estado, f.id_orden, e.nombres, e.apellidos FROM facturas f INNER JOIN empleados e ON e.id_empleado = f.id_empleado
+SELECT * FROM tipos_servicios
+
+ALTER TABLE ordenes ADD CONSTRAINT fk_cliente_orden FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+ALTER TABLE tipos_servicios ADD CONSTRAINT u_tipo UNIQUE (tipo_servicio)

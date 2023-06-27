@@ -24,7 +24,7 @@
         <div class="data p-2" v-if="ordenes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(orden, i) in ordenes" :key="i">
+            <div class="card" v-for="(orden, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -113,9 +113,15 @@ import axios from 'axios'
 
 export default {
     name: 'ordenes',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
-            ordenes: []
+            ordenes: [],
+            buscador: []
         }
     },
     methods: {
@@ -124,6 +130,7 @@ export default {
             axios.get('http://localhost:3000/api/ordenes/')
                 .then(res => {
                     this.ordenes = res.data;
+                    this.buscador = res.data;
                 })
                 .catch(e => console.log(e))
         },
@@ -133,7 +140,6 @@ export default {
                     .then(res => {
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
                         // cargar
                         this.getOrdenes();
                     })
@@ -142,12 +148,32 @@ export default {
                             console.log(e)
                     })
             }
-
+        },
+        buscar(dato) {
+            // crear constante que va ahacer igual a los datos en limpio filtrados según los especificado
+            const ORDENES = this.ordenes.filter((orden) => { 
+                return(
+                    // retornar los que cumplan la condición de que cualquier caracter similiar
+                    // con la cadena de texto
+                    orden.nombres.toLowerCase().indexOf(dato) !== -1 || 
+                    orden.apellidos.toLowerCase().indexOf(dato) !== -1 || 
+                    orden.dui.indexOf(dato) !== -1 || orden.fecha.indexOf(dato) !== -1
+                )
+            })
+            // asignar al arreglo
+            this.buscador = ORDENES;
         }
+
     },
     mounted() {
         this.getOrdenes();
     },
+    watch: {
+        datos(now) {
+            // verificar sí el buscador esta vacío 
+            (now.trim() === '') ? this.buscador = this.ordenes : this.buscar(now);
+        }
+    }
 }
 
 </script>
