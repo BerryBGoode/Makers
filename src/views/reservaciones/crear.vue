@@ -247,7 +247,6 @@ export default {
                 .catch(e => { console.log(e)});
         },
         getEmpleado(){
-            console.log(this.empleado.dui)
             axios.get('http://localhost:3000/api/reservaciones/empleados/'+ this.model.reservacion.empleado)
             .then(res => { this.empleado.nombre = res.data.nombres; this.empleado.apellido = res.data.apellidos})
             .catch(e => { console.log(e)})
@@ -259,7 +258,6 @@ export default {
                 axios.get('http://localhost:3000/api/reservaciones/clientes')
                     .then(res => {
                         this.clientes = res.data;
-                        console.log(this.clientes)
                     }) //obtener los datos de la petición
                     .catch(e => { console.log(e) })
             } catch (error) {
@@ -301,7 +299,6 @@ export default {
                         alert('Reservación agregada correctamente')
                         this.$router.push('/reservaciones');
                     }
-                    console.log(res)
 
                     //si la respuesta es la esperada, redireccionará a la vista principal
                 })

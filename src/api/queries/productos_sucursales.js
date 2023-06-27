@@ -12,7 +12,7 @@ const get = async (req, res) => {
         // obtener el id de la sucursal
         const SUCURSAL = parseInt(req.params.id);
         // realizar query
-        const PRODUCTOS = await POOL.query('SELECT * FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL])
+        const PRODUCTOS = await POOL.query('SELECT cantidad, nombre_servicio, id_detalle, id_servicio, id_sucursal FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL])
         // validar el resultado satisfactorio
         if (res.status(200)) res.json(PRODUCTOS.rows);
 

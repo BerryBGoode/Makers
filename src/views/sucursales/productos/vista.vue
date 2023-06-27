@@ -19,7 +19,8 @@
     flex-wrap: wrap;
     align-content: stretch;
 }
-.buttons-top{
+
+.buttons-top {
     width: 15%;
     display: flex;
     justify-content: space-around;
@@ -41,12 +42,17 @@
             </div>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- aquí cargar los empleados -->
         <!-- verificar sí hay empleados -->
         <div class="data p-2" v-if="productos.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(producto, i) in productos" :key="i">
+            <div class="card" v-for="(producto, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -79,8 +85,8 @@
 
 
 
-                                <svg @click.prevent="eliminarDetalle(producto.id_detalle)" width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
+                                <svg @click.prevent="eliminarDetalle(producto.id_detalle)" width="40" height="40"
+                                    class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -122,10 +128,16 @@
 import axios from 'axios'
 export default {
     name: 'productosSucursales',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
             // arreglo para guardar los datos
             productos: [],
+            buscador: []
         }
     },
     // método que se ejecuta cuando cargar la página
@@ -146,6 +158,7 @@ export default {
                 // obtener los datos recuperados
                 .then(res => {
                     this.productos = res.data;
+                    this.buscador = res.data;
                 })
                 // por sí algún error
                 .catch(e => {
@@ -166,6 +179,27 @@ export default {
                     })
                     .catch(e => alert(e));
             }
+        },
+        buscar(dato) {
+            // asignar a una constante los productos en limpio aplicando el filtro
+            const PRODUCTOS = this.productos.filter(producto => {
+                // retornar y asignar a los que pasen la condicíon
+                return (
+                    // algún caracter de cantidad o nombre coincida con el 
+                    // escrito en el buscador
+                    producto.cantidad.toString().indexOf(dato) !== -1 ||
+                    producto.nombre_servicio.toLowerCase().indexOf(dato) !== -1
+                )
+            })
+            this.buscador = PRODUCTOS;
+        }
+    },
+    watch: {
+        datos(now) {
+            // verificar sí esta vació el buscador sin contar espacios 
+            // (.trim() elimina espacios en blanco)
+            // para verificar limpiar el buscador o realizar busqueda
+            (now.trim() === '') ? this.buscador = this.productos : this.buscar(now);
         }
     }
 }

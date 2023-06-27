@@ -2,7 +2,7 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Pedidos de Orden No. {{ orden }}</span>
-            <router-link :to="{ path: '/ordenes/'+orden+'/detalles/crear/' }" type="button" class="btn btn-makers">
+            <router-link :to="{ path: '/ordenes/' + orden + '/detalles/crear/' }" type="button" class="btn btn-makers">
                 Agregar
             </router-link>
         </div>
@@ -12,12 +12,12 @@
         <div class="data p-2" v-if="detalles.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(detalle, i) in detalles" :key="i">
+            <div class="card" v-for="(detalle, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
                             <h5 class="card-title bold mb-1">{{ detalle.nombre_servicio }}</h5>
-                            <p class="card-text mb-0 smaller"> {{ detalle.tipo_servicio }} </p>                            
+                            <p class="card-text mb-0 smaller"> {{ detalle.tipo_servicio }} </p>
                             <p class="card-text mb-0 smaller">{{ detalle.cantidad }} </p>
 
                         </div>
@@ -49,8 +49,8 @@
 
 
 
-                                <svg @click="eliminarDetalle(detalle.id_detalle)" width="40" height="40"
-                                    class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg @click="eliminarDetalle(detalle.id_detalle)" width="40" height="40" class="button"
+                                    viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -91,12 +91,19 @@
 import axios from 'axios';
 export default {
     name: 'detalleOrden',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
             // arreglo para guardar los datos
             detalles: [],
             // obtener id orden actual
-            orden: this.$route.params.orden
+            orden: this.$route.params.orden,
+            // guarda datos en limpio y filtrados
+            buscador: []
         }
     },
     mounted() {
@@ -107,24 +114,45 @@ export default {
         getDetalles() {
             axios.get('http://localhost:3000/api/ordenes/detalles/orden/' + this.$route.params.orden)
                 .then(res => {
-                    console.log(res.data);
+                    this.buscador = res.data;
+
                     this.detalles = res.data;
                 })
                 .catch(e => alert(e));
 
         },
         // método para eliminar pedido o detalle
-        eliminarDetalle(detalle){
+        eliminarDetalle(detalle) {
             // esperar confimración
             if (confirm('Desea eliminar este pedido?')) {
                 // realizar petición
-                axios.delete('http://localhost:3000/api/ordenes/detalles/'+ detalle)
+                axios.delete('http://localhost:3000/api/ordenes/detalles/' + detalle)
                     .then(res => {
                         alert(res.data);
                         this.getDetalles();
-                    })                
+                    })
                     .catch(e => alert(e))
             }
+        },
+        buscar(dato) {
+            // crear un arreglo con los datos que tiene detalle en filtrados según cumplan
+            // alguna condición
+            const DETALLES = this.detalles.filter((detalle) => {
+                // retornar solamente los que cumplan la confición
+                return (
+                    detalle.descuento.indexOf(dato) !== -1 ||
+                    detalle.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
+                    detalle.precio.indexOf(dato) !== -1 || detalle.cantidad.toString().indexOf(dato) !== -1 ||
+                    detalle.subtotal.indexOf(dato) !== -1 || detalle.tipo_servicio.toLowerCase().indexOf(dato) !== -1
+                )
+            })
+            this.buscador = DETALLES;
+        }
+    },
+    watch: {
+        datos(now) {
+            // verificar sí el dato obtenido esta vació o tiene datos
+            (now.trim() === '') ? this.buscador = this.detalles : this.buscar(now);
         }
     }
 }

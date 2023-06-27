@@ -1,5 +1,5 @@
 <style>
-.column{
+.column {
     flex-direction: column;
 }
 </style>
@@ -12,12 +12,17 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- aquí cargar las reservaciones -->
         <!-- verificar si existen reservaciones -->
         <div class="data p-2" v-if="reservaciones.length > 0">
             <!-- recorrer las reservaciones encontradas -->
 
-            <div class="card" v-for="(reservacion, i) in reservaciones" :key="i">
+            <div class="card" v-for="(reservacion, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-2">
@@ -89,10 +94,12 @@ import axios from 'axios';
 // componente para vista
 export default {
     name: 'reservaciones',
+    props: { datos: { type: String } },
     data() {
         return {
             //arreglo vacío para guardar datos
-            reservaciones: []
+            reservaciones: [],
+            buscador: []
         }
     },
     methods: {
@@ -100,7 +107,10 @@ export default {
         getReservaciones() {
             //realizar la petición
             axios.get('http://localhost:3000/api/reservaciones/')
-                .then(res => this.reservaciones = res.data)
+                .then(res => {
+                    this.reservaciones = res.data;
+                    this.buscador = res.data;
+                })
                 .catch(e => alert(e));
         },
         eliminarReservacion(reservacion) {
@@ -118,10 +128,33 @@ export default {
                     })
                     .catch(e => { alert(e) })
             }
+        },
+        buscar(dato) {
+            // guardar en una constante los datos filtrados
+            const RESREVACIONES = this.reservaciones.filter(reservacion => {
+                // retornar los que cumplan las siguientes condiciones
+                return (
+                    reservacion.cliente_a.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.cliente_n.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.cliente_d.indexOf(dato) !== -1 ||
+                    reservacion.empleado_a.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.empleado_n.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.empleado_d.indexOf(dato) !== -1 ||
+                    reservacion.fecha.indexOf(dato) !== -1 ||
+                    reservacion.hora.indexOf(dato) !== -1
+                )
+            })
+            // asignar a los del buscador
+            this.buscador = RESREVACIONES;
         }
     },
     mounted() {
         this.getReservaciones();
+    },
+    watch: {
+        datos(now) {
+            (now.trim() === '') ? this.buscador = this.reservaciones : this.buscar(now);
+        }
     }
 }
 

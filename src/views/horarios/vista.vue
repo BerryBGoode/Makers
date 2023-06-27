@@ -12,6 +12,11 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <div class="data p-2" v-if="horarios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -99,7 +104,7 @@ export default {
         getHorarios() {
             // realizar petición
             axios.get('http://localhost:3000/api/horarios/')
-                .then(res => {this.horarios = res.data; this.buscador = res.data} )
+                .then(res => { this.horarios = res.data; this.buscador = res.data })
                 .catch(e => { alert(e); console.log(e) });
         },
         eliminarHorario(horario) {
@@ -121,7 +126,7 @@ export default {
             const HORARIOS = this.horarios.filter((horario) => {
                 // retornar los que coincidan la letra escrita en el buscador con algún caracter
                 // de la hora inicio y la hora fin
-                return (                    
+                return (
                     horario.inicio.indexOf(dato) !== -1 || horario.cierre.indexOf(dato) !== -1
                 )
             })

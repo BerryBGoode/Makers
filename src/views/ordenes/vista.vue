@@ -20,6 +20,11 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="ordenes.length > 0">
             <!-- recorrer los clientes encontrados -->

@@ -7,11 +7,16 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="tipos.length > 0">
             <!-- recorrer los cargos encontrados -->
 
-            <div class="card" v-for="(tipo, i) in tipos" :key="i">
+            <div class="card" v-for="(tipo, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -72,9 +77,11 @@ import axios from 'axios'
 
 export default {
     name: 'tipos',
+    props: { datos: { type: String } },
     data() {
         return {
-            tipos: []
+            tipos: [],
+            buscador: []
         }
     },
     methods: {
@@ -82,6 +89,7 @@ export default {
             axios.get('http://localhost:3000/api/tipos')
                 .then(res => {
                     this.tipos = res.data;
+                    this.buscador = res.data;
                 })
                 .catch(e => console.log(e));
         },
@@ -96,10 +104,24 @@ export default {
                         this.getTipos();
                     })
             }
+        },
+        buscar(dato) {
+            const TIPOS = this.tipos.filter(tipo => {
+                return (
+                    tipo.tipo_servicio.toLowerCase().indexOf(dato) !== -1
+                )
+            })
+            this.buscador = TIPOS;
         }
     },
     mounted() {
         this.getTipos();
+    },
+    watch: {
+        datos(now) {
+            // verificar sí esta vacío el input
+            (now.trim() === '') ? this.buscador = this.tipos : this.buscar(now); 
+        }
     }
 }
 
