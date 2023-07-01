@@ -16,7 +16,6 @@
 .li-lista {
     list-style: none;
     margin: 10% 0;
-    padding: 5% 0;
     width: 120%;
     border-radius: 7px 0 0 7px;
 }
@@ -36,6 +35,7 @@
     /* cursor: pointer; */
     width: 100%;
     display: block;
+    padding: 5% 0;
 }
 
 .logo-sidebar {

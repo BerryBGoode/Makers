@@ -3,7 +3,7 @@ const { Router } = require('express');
 // importar métodos con las transferencias SQL
 const { store, change, destroy, get, one } = require('../queries/cargos');
 // importar validaciones
-
+const { body } = require('express-validator');
 
 // instanciar router
 const CARGOS = Router();

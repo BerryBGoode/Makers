@@ -135,14 +135,19 @@ export default {
             // arreglo para guardar los empleados
             empleados: [],
             // arreglo para guardar los datos a buscar
-            buscador: []
+            buscador: [],
+            config: {
+                headers: {
+                    authorization: this.$cookies.get('auth')
+                }
+            }
         }
     },
     methods: {
         // método para obtener los empleados
         getEmpledos() {
             // hacer petición
-            axios.get('http://localhost:3000/api/empleados')
+            axios.get('http://localhost:3000/api/empleados', this.config)
                 .then(res => { this.empleados = res.data; this.buscador = res.data })
                 .catch(e => { alert(e) })
 

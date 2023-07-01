@@ -7,6 +7,11 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- aquí cargar los empleados -->
         <!-- verificar sí hay empleados -->
         <div class="data p-2" v-if="detalles.length > 0">

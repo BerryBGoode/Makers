@@ -261,7 +261,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'editarDetalleOrden',
-            path: '/ordenes/:id/detalles/editar/:detalle',
+            path: '/ordenes/:orden/detalles/editar/:detalle',
             component: editarDetalle
         },
         {

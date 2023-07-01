@@ -360,3 +360,34 @@ SELECT * FROM tipos_servicios
 
 ALTER TABLE ordenes ADD CONSTRAINT fk_cliente_orden FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 ALTER TABLE tipos_servicios ADD CONSTRAINT u_tipo UNIQUE (tipo_servicio)
+
+CREATE VIEW empledos_view AS 
+SELECT	e.id_empleado, e.nombres, e.apellidos, e.dui, e.telefono, e.correo, e.planilla, s.direccion, s.id_sucursal, 
+		CONCAT(to_char(h.hora_apertura, 'HH12:MI') || ' - ' || to_char(h.hora_cierre, 'HH12:MI')) as horario, h.id_horario, 
+		c.id_cargo, c.cargo, e.clave
+FROM empleados e
+INNER JOIN sucursales s ON e.id_sucursal = s.id_sucursal
+INNER JOIN horarios h ON e.id_horario = h.id_horario
+INNER JOIN cargos c ON e.id_cargo = c.id_cargo
+ORDER BY e.id_empleado ASC
+
+
+ALTER TABLE empleados ADD COLUMN alias character varying(50) 
+ALTER TABLE clientes ADD COLUMN alias character varying(50) 
+ALTER TABLE clientes ADD CONSTRAINT chk_dui_cliente UNIQUE (dui)
+ALTER TABLE servicios ADD CONSTRAINT chk_servicio UNIQUE (nombre_servicio)
+ALTER TABLE cargos ADD CONSTRAINT chk_cargo UNIQUE (cargo)
+ALTER TABLE sucursales ADD COLUMN nombre character varying(85)
+
+ALTER TABLE detalle_ordenes DROP CONSTRAINT fk_detalle_servicio
+ALTER TABLE detalle_ordenes DROP COLUMN id_servicio
+ALTER TABLE detalle_ordenes ADD COLUMN id_detalle_servicio integer 
+ALTER TABLE detalle_ordenes ADD CONSTRAINT fk_detalle_servicio FOREIGN KEY (id_detalle_servicio) REFERENCES detalles_servicios_sucursales(id_detalle)
+
+CREATE VIEW detalle_view AS
+SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
+		d.cantidad * s.precio as subtotal, d.id_orden
+FROM detalle_ordenes d
+INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
+INNER JOIN servicios s ON s.id_servicio = dts.id_servicio
+INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio

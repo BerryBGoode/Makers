@@ -1,4 +1,5 @@
 // requiriendo la pool con los attrs de la conexión
+const jwt = require('jsonwebtoken');
 const POOL = require('../db');
 // requerir de ecryptador
 const encrypt = require('../helpers/encrypt');
@@ -14,13 +15,21 @@ const encrypt = require('../helpers/encrypt');
  * Método para obtener los empleados
  */
 const get = async (req, res) => {
-    try {
-        // realizar consulta
-        const EMPLEADOS = await POOL.query('SELECT * FROM empledos_view');
-        // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(EMPLEADOS.rows);
-    } catch (error) {
-        console.error(error);
+    // obtener el empleado loggeado
+    const TOKEN = req.headers.authorization;
+    if (TOKEN) {
+        try {
+            // obtener id
+            const ID = jwt.decode(TOKEN)
+            // obtener todos los empleado excepto el loggeados
+            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, direccion, id_sucursal, horario, id_cargo, cargo FROM empledos_view WHERE NOT id_empleado = $1', [ID]);
+            // verificar el estado satisfactorio para retornar los datos
+            if (res.status(200)) res.json(EMPLEADOS.rows);
+        } catch (error) {
+            console.error(error);
+        }
+    } else {
+        res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
 }
 

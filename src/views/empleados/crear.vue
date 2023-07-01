@@ -119,12 +119,12 @@
                                     <option>No se encontraron horarios</option>
                                 </select>
                             </div>
-                            <div class="mb-3 input-container width-35">
+                            <div class="mb-3 width-35 input-container">
                                 <label for="planilla" class="form-label">Planilla</label>
                                 <input type="text" class="form-control" id="planilla" v-model="this.model.empleado.planilla"
                                     required>
                             </div>
-                            <div class="mb-3 input-container width-35">
+                            <div class="mb-3 width-35 input-container">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
                                     maxlength="15" minlength="10" required>

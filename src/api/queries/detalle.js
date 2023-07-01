@@ -1,5 +1,5 @@
 // requerir de la conexión
-const POOL = require('../db');
+const POOL = require('../db'); 
 
 /**
  * Método para obtener los detalles según la orden de la url
