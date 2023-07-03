@@ -12,7 +12,7 @@
                 <div class="form-1">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Cargo</label>
-                        <input type="text" class="form-control" id="nombre" v-model="cargo.cargo" required> 
+                        <input type="text" class="form-control" id="nombre" v-model="cargo.cargo" required>
                     </div>
                 </div>
                 <hr>
@@ -41,26 +41,29 @@ export default {
             msg: ''
         }
     },
-    mounted(){
+    mounted() {
         this.getCargo();
     },
     methods: {
-        modificar(){
+        modificar() {
             if (!onlyLtrs(this.cargo.cargo)) {
                 this.msg = 'Solo se permiten letras'
-            }else{
-                axios.put('http://localhost:3000/api/cargos/'+this.$route.params.id, this.cargo)
+            } else {
+                axios.put('http://localhost:3000/api/cargos/' + this.$route.params.id, this.cargo)
                     .then(res => {
-                        alert(res.data);
-                        this.$router.push('/empleados/cargos');
+                        if (res.data.error) alert(res.data.error)
+                        else {
+                            alert(res.data);
+                            this.$router.push('/empleados/cargos');
+                        }
                     })
                     .catch(e => {
                         console.log(e);
                     })
             }
         },
-        getCargo(){
-            axios.get('http://localhost:3000/api/cargos/'+this.$route.params.id)    
+        getCargo() {
+            axios.get('http://localhost:3000/api/cargos/' + this.$route.params.id)
                 .then(res => {
                     this.cargo = {
                         cargo: res.data.cargo
@@ -71,7 +74,7 @@ export default {
                 })
         }
     }
-    
+
 }
 
 </script>

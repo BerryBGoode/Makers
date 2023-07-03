@@ -2,9 +2,15 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Tipos de servicios</span>
-            <router-link to="/servicios/tipos/crear" type="button" class="btn btn-makers">
-                Agregar
-            </router-link>
+            <div class="buttons-top">
+                <router-link to="/servicios" type="button" class="btn btn-makers">
+                    Volver
+                </router-link>
+                <router-link to="/servicios/tipos/crear" type="button"
+                    class="btn btn-makers">
+                    Agregar
+                </router-link>
+            </div>
         </div>
         <hr>
         <div class="data p-2" v-if="buscador.length === 0">

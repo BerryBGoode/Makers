@@ -1,6 +1,7 @@
 // requerir el modulo con los attrs de la conexión
 const POOL = require('../db');
 
+let msg;
 // metodo para obtener los cargos
 // req (obtiene parametros de consulta)
 // res (retorna valor segun resultado)
@@ -27,12 +28,23 @@ const store = async (req, res) => {
         POOL.query('INSERT INTO cargos(cargo) VALUES ($1)', [cargo],
             // funcion
             (err, result) => {
-                // verificar si existe error
+                // verificar sí hubo un error                                
                 if (err) {
-                    res.json({ error: err.message });
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Servicio agregado';
                 }
-                // sino enviar estado exitoso
-                res.status(201).send('Cargo agregado');
+                res.status(201).send(msg);
 
             })
     } catch (error) {
@@ -69,19 +81,23 @@ const change = (req, res) => {
         const { cargo } = req.body;
         // realizar SQL
         POOL.query('UPDATE cargos SET cargo = $1 WHERE id_cargo = $2', [cargo, ID], (err, result) => {
-            // verificar sí ocurre un error
+            // verificar sí hubo un error                                
             if (err) {
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                if (err.code === '23503') {
-                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
+
+                if (err.code === '23505') {
+                    // enviar error el cliente
+                    er = 'Dato unico ya registrado';
                 } else {
-                    e = err.message
+                    er = err.message;
                 }
-                // retornar el error
-                res.json({ error: e });
-                return;
+                res.json({ error: er });
+                // sí es ejecuta esto, el status 201 no se enviará
+                // return;                    
+
+            } else {
+                msg = 'Servicio agregado';
             }
-            res.status(201).send('Cargo modificado');
+            res.status(201).send(msg); 
         })
     } catch (error) {
         console.log(error);

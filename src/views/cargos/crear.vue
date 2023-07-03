@@ -48,8 +48,13 @@ export default {
             }else{
                 axios.post('http://localhost:3000/api/cargos', this.cargo)
                     .then(res => {
-                        alert(res.data);
-                        this.$router.push('/empleados/cargos');
+                        if (res.data.error) alert(res.data.error)
+                        else{
+                            alert(res.data);
+                            this.$router.push('/empleados/cargos');
+                        }
+                        
+
                     })
                     .catch(e => {
                         console.log(e);
