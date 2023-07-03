@@ -52,7 +52,7 @@
 <template>
     <div class="container-sidebar">
         <div class="logo-sidebar">
-            <img src="./../assets/img/logos/logo_blanco.png" />
+            <img :src="logo" />
         </div>
         <ul class="ul-lista">
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">
@@ -86,6 +86,7 @@ export default {
                 { option: "Sucursales", route: "/sucursales" },
                 { option: "Horarios", route: "/horarios" },
             ],
+            logo: './../src/assets/img/logos/logo_blanco.png'
         };
     },
 };

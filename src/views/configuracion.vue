@@ -1,11 +1,11 @@
 <style>
-.mb-12vh {
-    margin-bottom: 12vh;
+.mb-14vh {
+    margin-bottom: 14vh;
 }
 </style>
 
 <template>
-    <div class="container servicios component-servicio">
+    <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
                 Configuración
@@ -54,23 +54,32 @@
                 </div>
             </div>
             <hr>
-            <div class="form-data mb-12vh">
+            <div class="form-data mb-14vh">
                 <span class="bold">
                     Cuenta
                 </span>
 
                 <div class="form-2 w-70">
 
-                    <div class="mb-3 mb-12-7vh">
-                        <label for="clave">Nueva contraseña</label> <label>*no obligatorio</label>
-                        <input type="password" class="form-control" id="clave" v-model="empleado.clave">
-                    </div>
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="alias" class="form-label">Alias</label>
+                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50"
+                                required>
+                        </div>
+                        <div class="mb-3 input-container">
+                            <label for="clave" class="form-label">Nueva contraseña</label> <label class="form-label">*no
+                                obligatorio</label>
+                            <input type="password" class="form-control" id="clave" v-model="empleado.clave">
+                        </div>
 
+
+                    </div>
                 </div>
 
             </div>
             <hr>
-            <div class="buttons-reservacion form-data">
+            <div class="buttons-reservacion form-data padding-buttons">
                 <button type="button" @click.prevent="cerrarSesion" class="btn btn-makers">Cerrar sesión</button>
                 <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
@@ -93,6 +102,7 @@ export default {
                 telefono: '',
                 correo: '',
                 clave: '',
+                alias: ''
             },
             config: {
                 headers: {
@@ -115,6 +125,7 @@ export default {
                     let empleado = res.data;
                     // asignar
                     this.empleado = {
+                        alias: empleado.alias,
                         nombres: empleado.nombres,
                         apellidos: empleado.apellidos,
                         correo: empleado.correo,
@@ -136,6 +147,7 @@ export default {
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.empleado = {
+                            alias: '',
                             nombres: '',
                             apellidos: '',
                             dui: '',
@@ -144,11 +156,12 @@ export default {
                             clave: '',
                         }
                         // redireccionar
-                        
+
                         this.msg = '';
                         this.$router.push('/');
-                    }
-                    
+                        // emitir info que se modifico algo, a componente de cuenta
+                    }                    
+
                     alert(res.data)
                 })
                 .catch(e => {

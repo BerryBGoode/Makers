@@ -1,21 +1,3 @@
-<style>
-.width-auto {
-    width: auto;
-}
-
-.width-35 {
-    width: 35%;
-}
-
-.input-container-3 {
-    width: 31%;
-}
-
-.mb-9vh {
-    margin-bottom: 9vh;
-}
-</style>
-
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
@@ -125,6 +107,11 @@
                                     required>
                             </div>
                             <div class="mb-3 width-35 input-container">
+                                <label for="alias" class="form-label">Alias</label>
+                                <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                    maxlength="50" required>
+                            </div>
+                            <div class="mb-3 width-35 input-container">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
                                     maxlength="15" minlength="10" required>
@@ -133,8 +120,8 @@
                     </div>
 
                 </div>
-                <div class="buttons-reservacion form-data">
-                    <hr>
+                <hr>
+                <div class="padding-buttons buttons-reservacion form-data">
                     <router-link to="/empleados" class="btn btn-makers">
                         Cancelar
                     </router-link>
@@ -161,6 +148,7 @@ export default {
             model: {
                 empleado: {
                     nombres: '',
+                    alias: '',
                     apellidos: '',
                     dui: '',
                     clave: '',

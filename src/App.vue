@@ -39,13 +39,26 @@ main {
 .h-100 {
     height: 100%;
 }
+
+.load-cards-enter-active {
+    transition: all 0.6s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.load-cards-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.load-cards-enter-from,
+.load-cards-leave-to {
+    transform: translateY(-20px);
+    opacity: 0;
+}
 </style>
 
-<!-- espacio para las plantillas -->
+
 <template>
-    <!-- verificar sí no existen una autenticación -->
     <template v-if="!auth">
-        <!-- getCookie es evento donde se enviando datos al componente padre -->
+
         <login @getCookie="validateCookie" />
     </template>
     <template v-else>
@@ -54,10 +67,10 @@ main {
 </template>
 
 
-<!-- setup solo se utiliza en el componente principal,
-  para comprimir el código, porque es el que almacena más contenido
--->
 <script>
+//  setup solo se utiliza en el componente principal,
+//   para comprimir el código, porque es el que almacena más contenido
+
 import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
 import login from './views/login.vue'

@@ -80,8 +80,7 @@
                 </div>
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
-                        <img src="../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png"
-                            alt="Logo">
+                        <img :src="logo" alt="Logo">
                     </div>
 
                     <div class="buttons-login">
@@ -110,6 +109,7 @@ export default {
     // método que retorna el componente
     data() {
         return {
+            logo: '../src/assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png',
             model: {
                 empleado: {
                     correo: '',
@@ -148,7 +148,7 @@ export default {
                         // verificar estado de autenticación
                         if (!res.data.auth) this.msg = res.data.msg;
                         // creando token
-                        if (res.data.auth !== false) {                            
+                        if (res.data.auth !== false) {
                             this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
                             this.crearCookie(res.data.token)
                             this.msg = res.data.msg

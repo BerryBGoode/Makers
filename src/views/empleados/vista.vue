@@ -42,16 +42,15 @@
             </router-link>
         </div>
         <hr>
-        <!-- verificar sí se encontraron datos al buscar-->
+
         <div class="data p-2" v-if="buscador.length === 0">
             <span>No se encontraron datos</span>
         </div>
-        <!-- aquí cargar los empleados -->
-        <!-- verificar sí hay empleados -->
-        <div class="data p-2" v-if="empleados.length > 0">
-            <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(empleado, i) in buscador" :key="i">
+
+        <div class="data p-2" v-if="buscador.length > 0">
+
+            <div class="card" v-for="empleado in buscador" :key="empleado.id_empleado">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -67,7 +66,7 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <!-- ':' y '{ }' habílitar poder escribir código vue dentro del " " -->
+
                                 <router-link :to="{ path: '/empleados/editar/' + empleado.id_empleado }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -108,25 +107,27 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
+
         <div class="data p-2" v-else-if="empleados.length === 0">
             <span class="bold">
                 No se encontraron existencias
             </span>
         </div>
-        <!-- si no hay clientes encontrados -->
+
         <div class="data p-2" v-else>
             <span class="bold">
                 Cargando...
             </span>
         </div>
+
     </div>
 </template>
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+
+
 export default {
     name: 'empleados',
     props: { datos: { type: String } },

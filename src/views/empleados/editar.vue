@@ -123,6 +123,11 @@
                                 <input type="text" class="form-control" id="planilla"
                                     v-model="this.model.empleado.planilla">
                             </div>
+                            <div class="mb-3 width-35 input-container">
+                                <label for="alias" class="form-label">Alias</label>
+                                <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                    maxlength="50" required>
+                            </div>
                             <div class="mb-3 input-container width-35">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" readonly>
@@ -132,7 +137,7 @@
 
                 </div>
                 <hr>
-                <div class="buttons-reservacion form-data">
+                <div class="padding-buttons buttons-reservacion form-data">
                     <router-link to="/empleados" class="btn btn-makers">
                         Cancelar
                     </router-link>
@@ -167,6 +172,7 @@ export default {
                     correo: '',
                     sucursal: 'Seleccionar',
                     cargo: 'Seleccionar',
+                    alias: '',
                     horario: 'Seleccionar',
                 }
             },
@@ -225,6 +231,7 @@ export default {
                     const EMPLEADO = res.data[0];
                     // asignar a cada uno
                     this.model.empleado = {
+                        alias: EMPLEADO.alias,
                         nombres: EMPLEADO.nombres,
                         apellidos: EMPLEADO.apellidos,
                         dui: EMPLEADO.dui,
@@ -235,7 +242,7 @@ export default {
                         cargo: EMPLEADO.id_cargo,
                         horario: EMPLEADO.id_horario
                     }
-                    console.log(EMPLEADO)
+                    
                 })
                 .catch(e => {
                     // validar empleado inexistente

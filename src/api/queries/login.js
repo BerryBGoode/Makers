@@ -67,7 +67,7 @@ const getConfig = async (req, res) => {
             // obtener id del empleado
             const ID = jwt.decode(TOKEN);
             // realizar query
-            const EMPLEADO = await POOL.query('SELECT nombres, apellidos, dui, telefono, correo  FROM empledos_view WHERE id_empleado = $1', [ID])
+            const EMPLEADO = await POOL.query('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empledos_view WHERE id_empleado = $1', [ID])
             // retornar los datos sí la respuesta es la esperada
             if (res.status(200)) res.send(EMPLEADO.rows[0]);
         } catch (error) {
@@ -90,7 +90,7 @@ const getInfo = async (req, res) => {
             // obtener id del empleado
             const ID = jwt.decode(TOKEN);
             // realizar query
-            const EMPLEADO = await POOL.query('SELECT id_empleado, nombres, apellidos FROM empledos_view WHERE id_empleado = $1', [ID])
+            const EMPLEADO = await POOL.query('SELECT id_empleado, alias FROM empledos_view WHERE id_empleado = $1', [ID])
             // retornar los datos sí la respuesta es la esperada
             if (res.status(200)) res.send(EMPLEADO.rows[0]);
         } catch (error) {
@@ -116,11 +116,11 @@ const change = async (req, res) => {
             // obtener usuario
             const ID = jwt.decode(TOKEN);
             // obtener los datos del cuerpo de la petición
-            let { nombres, apellidos, dui, telefono, correo, clave } = req.body;
+            let { nombres, apellidos, dui, telefono, correo, clave, alias } = req.body;
             // verificar no sí viene clave nueva,  asignar la clave no midificada
             if (!clave) {
-                POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5 WHERE id_empleado = $6',
-                    [nombres, apellidos, dui, telefono, correo, ID], (err, result) => {
+                POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, alias = $6 WHERE id_empleado = $7',
+                    [nombres, apellidos, dui, telefono, correo, alias, ID], (err, result) => {
                         // verificar sí ha y un error
                         if (err) {
 
@@ -148,8 +148,8 @@ const change = async (req, res) => {
                 clave = encrypt(clave);
                 // console.log(clave);
                 // console.log(await getClave(ID));
-                POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, clave = $6 WHERE id_empleado = $7',
-                    [nombres, apellidos, dui, telefono, correo, clave, ID], (err, result) => {
+                POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, clave = $6, alias = $7 WHERE id_empleado = $8',
+                    [nombres, apellidos, dui, telefono, correo, clave, alias, ID], (err, result) => {
                         // verificar sí ha y un error
                         if (err) {
 

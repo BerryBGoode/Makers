@@ -28,7 +28,7 @@
                     d="M23.1636 24.75C23.1636 20.3963 18.8324 16.875 13.4999 16.875C8.1674 16.875 3.83615 20.3963 3.83615 24.75"
                     stroke="#B4B0AF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span>{{ empleado.nombre }} </span>
+            <span>{{ empleado.alias }} </span>
             <span> {{ empleado.apellido }}</span>
         </RouterLink>
     </div>
@@ -62,13 +62,9 @@ export default {
         getEmpleado() {
             // realizar petición
             axios.get('http://localhost:3000/api/auth/', this.config)
-                .then(res => {
-                    // separar en un arreglo los nombres
-                    let nombre = res.data.nombres.split(' ');
-                    let apellido = res.data.apellidos.split(' ')
+                .then(res => {                    
                     this.empleado = {
-                        nombre: nombre[0],
-                        apellido: apellido[0],
+                        alias: res.data.alias,
                         id: res.data.id_empleado
                     }
                 })

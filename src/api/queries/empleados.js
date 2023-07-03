@@ -22,7 +22,7 @@ const get = async (req, res) => {
             // obtener id
             const ID = jwt.decode(TOKEN)
             // obtener todos los empleado excepto el loggeados
-            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, direccion, id_sucursal, horario, id_cargo, cargo FROM empledos_view WHERE NOT id_empleado = $1', [ID]);
+            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, direccion, id_sucursal, horario, id_cargo, cargo, alias FROM empledos_view WHERE NOT id_empleado = $1', [ID]);
             // verificar el estado satisfactorio para retornar los datos
             if (res.status(200)) res.json(EMPLEADOS.rows);
         } catch (error) {
@@ -85,10 +85,10 @@ const store = (req, res) => {
     let msg, er = '';
     try {
         // obtener los datos del req
-        const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
+        const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
+        POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo, alias], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
@@ -147,10 +147,10 @@ const change = (req, res) => {
         // obtener id 
         const IDEMPLEADO = parseInt(req.params.id);
         // obtener los datos enviados del frontend
-        const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
+        const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, planilla = $4, telefono = $5, correo = $6 ,id_sucursal = $7, id_horario = $8, id_cargo = $9 WHERE id_empleado = $10',
-            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, IDEMPLEADO],
+        POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, planilla = $4, telefono = $5, correo = $6 ,id_sucursal = $7, id_horario = $8, id_cargo = $9, alias = $10 WHERE id_empleado = $11',
+            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO],
             (err, result) => {
                 // verificar sí ha y un error
                 if (err) {
