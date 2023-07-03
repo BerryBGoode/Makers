@@ -54,12 +54,13 @@
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
-                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>
+                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>                            
                             <span class="card-text mb-0 smaller">{{ empleado.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ empleado.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ empleado.telefono }} </p>
                         </div>
                         <div class="col-md-6 more-info">
+                            <span class="bold card-title">{{ empleado.alias }}</span>
                             <span>{{ empleado.cargo }}</span>
                             <span>{{ empleado.direccion }}</span>
                             <span>{{ empleado.horario }}</span>

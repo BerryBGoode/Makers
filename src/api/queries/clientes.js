@@ -8,8 +8,8 @@ const encrypt = require('../helpers/encrypt');
 // res (retorna valor según resultado)
 const get = async (req, res) => {
 
-    if(req.headers.authorization){
-        try { 
+    if (req.headers.authorization) {
+        try {
             // realizar consulta
             const CLIENTES = await POOL.query('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes');
             // verificar el estado
@@ -19,8 +19,8 @@ const get = async (req, res) => {
             res.status(500).json('Surgio un problema en el servidor')
         }
 
-    }else{
-        res.status(401).json({error: 'Debe iniciar sesión antes'})
+    } else {
+        res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
 
 }
@@ -106,21 +106,27 @@ const change = (req, res) => {
  * res, respuesta del servidor
  */
 const destroy = (req, res) => {
+    let msg;
     try {
         // console.log(req.params.id)
         // obtener el idcliente del parametro de la ruta
         const IDCLIENTE = parseInt(req.params.id);
         // realizar consulta, enviar un array con los parametros y metodo para capturar error
         POOL.query('DELETE FROM clientes WHERE id_cliente = $1', [IDCLIENTE], (err, result) => {
+            // verificar sí hubo un error                                
             if (err) {
-                // quebrar o detener y retornar msg-error
-                // throw err.message;
-                res.json({ error: err.message });
+
+                // verificar sí no se puede eliminar porque tiene datos dependientes                
+                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a ordenes asociadas' : e = err.message
+                // retornar el error
+                res.json({ error: e });
+                return;
+
+            } else {
+                msg = 'Cliente eliminado';
             }
 
-            // enviando estado del proceso y mensaje
-            res.status(201).send('Cliente eliminado');
-
+            res.status(201).send(msg);
         })
     } catch (error) {
         // capturar error

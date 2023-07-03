@@ -51,7 +51,7 @@
         </div>
         <hr>
 
-        <!-- verificar sí se encontraron datos al buscar-->    
+        <!-- verificar sí se encontraron datos al buscar-->
         <div class="data p-2" v-if="buscador_c.length === 0">
             <span>No se encontraron datos</span>
         </div>
@@ -119,7 +119,7 @@
             <span class="bold">
                 No se encontraron existencias
             </span>
-        </div>    
+        </div>
 
     </div>
 </template>
@@ -157,12 +157,12 @@ export default {
         // método para obtener los clientes
         async obtenerClientes() {
             // hacer la petición con promesas
-            axios.get('http://localhost:3000/api/clientes/', this.config)            
+            axios.get('http://localhost:3000/api/clientes/', this.config)
                 .then(res => {
                     // obtener los datos
                     if (res.status === 200) {
                         this.clientes = res.data;
-                        this.buscador_c = res.data                        
+                        this.buscador_c = res.data
                     }
                     if (res.status === 401) {
                         alert(res.data.error)
@@ -175,15 +175,17 @@ export default {
             // esperar confirmación
             if (confirm('Desea eliminar a este cliente?')) {
                 axios.delete('http://localhost:3000/api/clientes/' + idcliente)
-                    .then(
-                        res => {
-                            // mandar alerta
-                            alert(res.data),
-                                // recargar los clientes
-                                this.obtenerClientes();
-                        }
-                    )
-                    .catch(e => alert(e));
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        console.log(res)
+                        // cargar
+                        this.obtenerClientes();
+                    })
+                    .catch(e => {
+                        alert(e);
+                        console.log(e)
+                    })
             }
         },
         buscador(dato) {

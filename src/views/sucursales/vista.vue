@@ -131,7 +131,6 @@ export default {
                     .then(res => {
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
                         // cargar
                         this.getSucursales();
                     })

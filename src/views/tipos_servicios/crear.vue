@@ -53,8 +53,12 @@ export default {
             }else{
                 axios.post('http://localhost:3000/api/tipos/', this.tipos)
                     .then(res => {
-                        alert(res.data);
-                        this.$router.push('/servicios/tipos');
+                        if (res.data.error) {
+                            alert(res.data.error)
+                        }else{
+                            alert(res.data);
+                            this.$router.push('/servicios/tipos');
+                        }
                     })
                     .catch(e => {
                         console.log(e)

@@ -1,6 +1,7 @@
 // requerir para hacer los queries, (constante)
 const POOL = require('../db');
 
+let msg;
 /**
  * Método para cargar todos los tipos de servicios
  */

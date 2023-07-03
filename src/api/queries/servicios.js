@@ -3,7 +3,7 @@ const POOL = require('../db');
 // requerir de unos métodos de los queries de productos
 const { producto } = require('./productos')
 
-
+let msg;
 /**
  * Método para obtener los tipos de servicios 
  */
@@ -48,12 +48,23 @@ const store = (req, res) => {
         POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
             [tipo, descripcion, precio, existencias, estado, nombre],
             (err, result) => {
-                // verificar sí hubo un error
+                // verificar sí hubo un error                                
                 if (err) {
-                    res.json({ error: err.message });
-                    return
+
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
+                    } else {
+                        er = err.message;
+                    }
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Servicio agregado';
                 }
-                res.status(201).send('Producto agregado')
+                res.status(201).send(msg);
             })
     } catch (error) {
         console.log(error)
@@ -92,20 +103,23 @@ const change = (req, res) => {
         // realizar actualización
         POOL.query('UPDATE servicios SET descripcion = $1, precio = $2, id_tipo_servicio = $3, nombre_servicio = $4 WHERE id_servicio = $5',
             [descripcion, precio, tipo, nombre, ID], (err, result) => {
-                // verificar sí hubo un problema
+                // verificar sí hubo un error                                
                 if (err) {
 
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    if (err.code === '23503') {
-                        e = 'No se puede modificar o eliminar debido a pedidos asociados'
+                    if (err.code === '23505') {
+                        // enviar error el cliente
+                        er = 'Dato unico ya registrado';
                     } else {
-                        e = err.message
+                        er = err.message;
                     }
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
+                    res.json({ error: er });
+                    // sí es ejecuta esto, el status 201 no se enviará
+                    // return;                    
+
+                } else {
+                    msg = 'Servicio modificado';
                 }
-                res.status(201).send('Servicio modificado');
+                res.status(201).send(msg);
             })
     } catch (error) {
         console.log(error);

@@ -18,7 +18,7 @@
     width: 100%;
 }
 
-.form-100{
+.form-100 {
     height: 100%;
 }
 </style>
@@ -111,17 +111,22 @@ export default {
                 // realizar petición
                 axios.post('http://localhost:3000/api/servicios/', this.servicio)
                     .then(res => {
-                        alert(res.data);
-                        // limpiar campos
-                        this.servicio = {
-                            tipo: 'Seleccionar',
-                            nombre: '',
-                            descripcion: '',
-                            precio: '',
-                            existencias: 1,
+
+                        if (res.data.error) {
+                            alert(res.data.error)
+                        } else {
+                            alert(res.data);
+                            // limpiar campos
+                            this.servicio = {
+                                tipo: 'Seleccionar',
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: 1,
+                            }
+                            // redireccionar
+                            this.$router.push('/servicios');
                         }
-                        // redireccionar
-                        this.$router.push('/servicios');
                     })
                     .catch(e => { alert(e); console.log(e) })
             } else {

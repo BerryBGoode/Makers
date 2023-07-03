@@ -116,17 +116,23 @@ export default {
                 // realizar petición
                 axios.put('http://localhost:3000/api/servicios/'+this.$route.params.id, this.servicio)
                     .then(res => {
-                        alert(res.data);
-                        // limpiar campos
-                        this.servicio = {
-                            tipo: 'Seleccionar',
-                            nombre: '',
-                            descripcion: '',
-                            precio: '',
-                            existencias: 1,
+                        console.log(res)
+                        
+                        if (res.data.error) {
+                            alert(res.data.error)
+                        } else {                            
+                            alert(res.data);
+                            // limpiar campos
+                            this.servicio = {
+                                tipo: 'Seleccionar',
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: 1,
+                            }
+                            // redireccionar
+                            this.$router.push('/servicios');
                         }
-                        // redireccionar
-                        this.$router.push('/servicios');
                     })
                     .catch(e => { alert(e); console.log(e) })
             } else {
