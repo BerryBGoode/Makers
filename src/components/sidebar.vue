@@ -52,7 +52,7 @@
 <template>
     <div class="container-sidebar">
         <div class="logo-sidebar">
-            <img :src="logo" />
+            <img :src="logo"  srcset="../assets/img/logos/logo_blanco.png"/>
         </div>
         <ul class="ul-lista">
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">

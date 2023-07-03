@@ -30,7 +30,7 @@ const store = async (req, res) => {
             (err, result) => {
                 // verificar sí hubo un error                                
                 if (err) {
-
+                
                     if (err.code === '23505') {
                         // enviar error el cliente
                         er = 'Dato unico ya registrado';
@@ -97,7 +97,7 @@ const change = (req, res) => {
             } else {
                 msg = 'Servicio agregado';
             }
-            res.status(201).send(msg); 
+            res.status(201).send(msg);
         })
     } catch (error) {
         console.log(error);

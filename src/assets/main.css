@@ -169,6 +169,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     padding: .8% 5% !important;
 }
 
+.mb-17vh {
+    margin-bottom: 17vh !important;
+}
+
 /* estilos por defecto de vue */
 /* #app {
 

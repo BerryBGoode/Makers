@@ -53,9 +53,8 @@ export default {
             } else {
                 axios.put('http://localhost:3000/api/tipos/' + this.$route.params.id, this.tipos)
                     .then(res => {
-                        if (res.data.error) {
-                            alert(res.data.error)
-                        } else {
+                        if (res.data.error) this.msg = res.data.error;
+                        else {
                             alert(res.data);
                             this.$router.push('/servicios/tipos');
                         }

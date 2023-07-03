@@ -112,9 +112,8 @@ export default {
                 axios.post('http://localhost:3000/api/servicios/', this.servicio)
                     .then(res => {
 
-                        if (res.data.error) {
-                            alert(res.data.error)
-                        } else {
+                        if (res.data.error) msg = res.data.error;
+                         else {
                             alert(res.data);
                             // limpiar campos
                             this.servicio = {

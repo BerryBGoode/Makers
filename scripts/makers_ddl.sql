@@ -391,3 +391,10 @@ FROM detalle_ordenes d
 INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
 INNER JOIN servicios s ON s.id_servicio = dts.id_servicio
 INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+
+CREATE VIEW clientes_view AS
+SELECT c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo, count(o.id_orden) as consumo
+FROM clientes c
+LEFT JOIN ordenes o ON o.id_cliente = c.id_cliente
+GROUP BY c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo
+ORDER BY count(o.id_orden) DESC

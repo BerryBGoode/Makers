@@ -2,7 +2,9 @@
 const POOL = require('../db');
 // requerir del encryptador
 const encrypt = require('../helpers/encrypt');
+const { getError } = require('../helpers/errors')
 
+let msg;
 // método para obtener los clientes
 // req (obtiene parametros en la consulta)
 // res (retorna valor según resultado)
@@ -11,7 +13,7 @@ const get = async (req, res) => {
     if (req.headers.authorization) {
         try {
             // realizar consulta
-            const CLIENTES = await POOL.query('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes');
+            const CLIENTES = await POOL.query('SELECT * FROM clientes_view');
             // verificar el estado
             if (res.status(200)) res.json(CLIENTES.rows)
         } catch (e) {
@@ -38,13 +40,19 @@ const store = (req, res) => {
             , [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado],
             // función
             (err, result) => {
-                // verificar sí existe error
 
+                // veficar errores
                 if (err) {
-                    res.json({ error: err.message });
+                    if (err.code) msg = getError(err.code);
+                    res.json({ error: msg });
                 }
+                // verificar sí existe error
                 // sino enviar estado exitoso
-                res.status(201).send('Cliente agregado');
+                else { msg = 'Cliente agregado'; }
+                if (!err) {
+                    res.status(201).send(msg);
+                }
+
             })
     } catch (error) {
         console.error(error);
@@ -86,12 +94,17 @@ const change = (req, res) => {
             [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE],
             // error debe ir primero que res
             (err, results) => {
-                // verificar sí hay un error
+                // veficar errores
                 if (err) {
-                    res.json({ error: err.message });
+                    if (err.code) msg = getError(err.code);
+                    res.json({ error: msg });
                 }
-                res.status(201).send('Cliente modificado' + 'UPDATE clientes SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, id_estado_usuario_cliente = $6' +
-                    [nombres, apellidos, dui, telefono, correo, estado]);
+                // verificar sí existe error
+                // sino enviar estado exitoso
+                else { msg = 'Cliente modificado'; }
+                if (!err) {
+                    res.status(201).send(msg);
+                }
             }
         )
     } catch (error) {
@@ -113,20 +126,18 @@ const destroy = (req, res) => {
         const IDCLIENTE = parseInt(req.params.id);
         // realizar consulta, enviar un array con los parametros y metodo para capturar error
         POOL.query('DELETE FROM clientes WHERE id_cliente = $1', [IDCLIENTE], (err, result) => {
-            // verificar sí hubo un error                                
+
+            // veficar errores
             if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a ordenes asociadas' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-
-            } else {
-                msg = 'Cliente eliminado';
+                if (err.code) msg = getError(err.code);
+                res.json({ error: msg });
             }
-
-            res.status(201).send(msg);
+            // verificar sí existe error
+            // sino enviar estado exitoso
+            else { msg = 'Cliente agregado'; }
+            if (!err) {
+                res.status(201).send(msg);
+            }
         })
     } catch (error) {
         // capturar error

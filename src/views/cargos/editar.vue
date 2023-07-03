@@ -51,7 +51,7 @@ export default {
             } else {
                 axios.put('http://localhost:3000/api/cargos/' + this.$route.params.id, this.cargo)
                     .then(res => {
-                        if (res.data.error) alert(res.data.error)
+                        if (res.data.error) this.msg = res.data.error;
                         else {
                             alert(res.data);
                             this.$router.push('/empleados/cargos');

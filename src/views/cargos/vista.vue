@@ -2,9 +2,15 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Cargos</span>
-            <router-link to="/empleados/cargos/crear" type="button" class="btn btn-makers">
-                Agregar
-            </router-link>
+            <div class="buttons-top">
+                <router-link to="/empleados" type="button" class="btn btn-makers">
+                    Volver
+                </router-link>
+                <router-link to="/empleados/cargos/crear" type="button"
+                    class="btn btn-makers">
+                    Agregar
+                </router-link>
+            </div>  
         </div>
         <hr>
         <!-- vefiícar sí se encontraron datos al buscar -->

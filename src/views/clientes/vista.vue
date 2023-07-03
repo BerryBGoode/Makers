@@ -70,7 +70,8 @@
                             <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p>
                         </div>
                         <div class="col-md-1">
-                            <span>consumo</span>
+                            <span>ordenes: </span>                            
+                            <span class="bold">{{ cliente.consumo}}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
@@ -178,7 +179,6 @@ export default {
                     .then(res => {
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
                         // cargar
                         this.obtenerClientes();
                     })

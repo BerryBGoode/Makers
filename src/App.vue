@@ -39,20 +39,6 @@ main {
 .h-100 {
     height: 100%;
 }
-
-.load-cards-enter-active {
-    transition: all 0.6s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.load-cards-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.load-cards-enter-from,
-.load-cards-leave-to {
-    transform: translateY(-20px);
-    opacity: 0;
-}
 </style>
 
 
