@@ -2,9 +2,14 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Pedidos de Orden No. {{ orden }}</span>
-            <router-link :to="{ path: '/ordenes/' + orden + '/detalles/crear/' }" type="button" class="btn btn-makers">
-                Agregar
-            </router-link>
+            <div class="buttons-top">
+                <router-link to="/ordenes" type="button" class="btn btn-makers">
+                    Volver
+                </router-link>
+                <router-link :to="{ path: '/ordenes/' + orden + '/detalles/crear/' }" type="button" class="btn btn-makers">
+                    Agregar
+                </router-link>
+            </div>
         </div>
         <hr>
         <div class="data p-2" v-if="buscador.length === 0">
@@ -33,7 +38,6 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <!-- ':' y '{ }' habílitar poder escribir código vue dentro del " " -->
                                 <router-link
                                     :to="{ path: '/ordenes/' + this.$route.params.orden + '/detalles/editar/' + detalle.id_detalle }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"

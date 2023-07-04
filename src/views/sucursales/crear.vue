@@ -13,6 +13,7 @@
             <h5 class="bold">
                 Sucursal
             </h5>
+            <span>{{ msg }}</span>
         </div>
         <hr>
         <div class="container agg-servicio">
@@ -23,23 +24,19 @@
                             <label for="direccion" class="form-label">Direccion</label>
                             <input type="text" class="form-control" id="direccion" required v-model="sucursal.direccion">
                         </div>
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="nit" class="form-label">NIT</label>
-                                <input type="text" class="form-control" id="nit" required v-model="sucursal.nit">
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="nrc" class="form-label">NRC</label>
-                                <input type="text" class="form-control" id="nrc" required v-model="sucursal.nrc">
-                            </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" required v-model="sucursal.nombre">
                         </div>
+
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="text" class="form-control" id="telefono" required v-model="sucursal.tel">
                             </div>
                             <div class="mb-3 flex-col input-container">
-                                <label for="hora" class="form-label">Hora</label>
+                                <label for="hora" class="form-label">Horario</label>
                                 <div class="load">
                                     <input type="time" name="" id="apertura" class="form-control w-45" required
                                         v-model="sucursal.inicio">
@@ -64,6 +61,7 @@
 </template>
 <script>
 import axios from 'axios'
+import { onlyLtrs } from '../../validator'
 // definir componente 
 export default {
     name: "crearSucursal",
@@ -71,8 +69,7 @@ export default {
         return {
             sucursal: {
                 direccion: '',
-                nit: '',
-                nrc: '',
+                nombre: '',
                 tel: '',
                 inicio: '',
                 cierre: ''
@@ -82,20 +79,20 @@ export default {
     },
     methods: {
         agregarSucursal() {
+
             // validar que la hora tenga lógica
             if (this.sucursal.inicio > this.sucursal.cierre) {
                 this.msg = 'Horario ilogico'
             }
-            // validar campos vacíos
-            if (this.sucursal.direccion && this.sucursal.nit && this.sucursal.nrc && this.sucursal.tel &&
-                this.sucursal.inicio && this.sucursal.cierre && (this.sucursal.inicio < this.sucursal.cierre)) {
+            else if (this.sucursal.direccion && this.sucursal.tel && onlyLtrs(this.sucursal.nombre) &&
+                this.sucursal.inicio && this.sucursal.cierre) {
                 // realizar petición
                 axios.post('http://localhost:3000/api/sucursales/', this.sucursal)
                     .then(res => {
                         if (res.data.error) {
                             alert(res.data.error)
                             console.log(res.data.error)
-                        } else {
+                        } else {                            
                             alert(res.data);
                             this.$router.push('/sucursales');
                         }

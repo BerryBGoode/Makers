@@ -63,7 +63,7 @@
             <div class="card" v-for="(cliente, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <h5 class="card-title bold mb-1">{{ cliente.nombres }} {{ cliente.apellidos }}</h5>
                             <span class="card-text mb-0 smaller">{{ cliente.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ cliente.dui }} </p>

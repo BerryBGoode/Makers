@@ -377,7 +377,7 @@ ALTER TABLE clientes ADD COLUMN alias character varying(50)
 ALTER TABLE clientes ADD CONSTRAINT chk_dui_cliente UNIQUE (dui)
 ALTER TABLE servicios ADD CONSTRAINT chk_servicio UNIQUE (nombre_servicio)
 ALTER TABLE cargos ADD CONSTRAINT chk_cargo UNIQUE (cargo)
-ALTER TABLE sucursales ADD COLUMN nombre character varying(85)
+ALTER TABLE sucursales ADD COLUMN nombre_sucursal character varying(30) NOT NULL DEFAULT 'Makers'
 
 ALTER TABLE detalle_ordenes DROP CONSTRAINT fk_detalle_servicio
 ALTER TABLE detalle_ordenes DROP COLUMN id_servicio

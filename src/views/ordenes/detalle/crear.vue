@@ -58,7 +58,7 @@
                     <form action="" class="form-1">
                         <div class="load">
                             <div class=" input-container">
-                                <label for="" class="form-label">Tipo de servicio</label>
+                                <label for="" class="form-label">Sucursal</label>
                                 <!-- caso donde existan más de 0 tipos de servicios -->
                                 <select class="form-select mb-3" v-if="tipos.length > 0" v-model="model.tipo.value"
                                     @change="cargarServicios" id="tipoServicio">

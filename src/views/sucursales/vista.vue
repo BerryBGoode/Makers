@@ -29,10 +29,10 @@
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-8">
-                            <h5 class="card-title bold mb-1">{{ sucursal.direccion }}</h5>
+                            <h5 class="card-title bold mb-1">{{ sucursal.nombre_sucursal }}</h5>
+                            <p class="card-text mb-0 smaller"> {{ sucursal.direccion }} </p>
                             <span class="card-text mb-0 smaller">{{ sucursal.horario }}</span>
                             <p class="card-text mb-0 smaller">{{ sucursal.telefono }} </p>
-                            <p class="card-text mb-0 smaller"> {{ sucursal.nrc }} </p>
                             <p class="card-text mb-0 smaller"> {{ sucursal.nit }} </p>
                         </div>
                         <div class="col-md-1 more-info">

@@ -7,7 +7,7 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar query
-        const SUCURSALES = await POOL.query('SELECT * FROM sucursales')
+        const SUCURSALES = await POOL.query('SELECT * FROM sucursales ORDER BY id_sucursal ASC')
         // retornar los datos sí el estado es el esperado
         if (res.status(200)) res.send(SUCURSALES.rows);
     } catch (error) {
@@ -23,10 +23,10 @@ const store = (req, res) => {
     let er, msg;
     try {
         // obtener los datos de la petición
-        const { tel, inicio, cierre, direccion, nit, nrc } = req.body
+        const { tel, inicio, cierre, direccion, nombre } = req.body
         // realizar query 
-        POOL.query('INSERT INTO sucursales(telefono, horario, nrc, nit, direccion) VALUES ($1, $2, $3, $4, $5)',
-            [tel, inicio + ' A.M - ' + cierre + ' P.M', nrc, nit, direccion], (err, result) => {
+        POOL.query('INSERT INTO sucursales(telefono, horario, nombre_sucursal, direccion) VALUES ($1, $2, $3, $4)',
+            [tel, inicio + ' A.M - ' + cierre + ' P.M', nombre, direccion], (err, result) => {
                 // verificar sí hubo un error                                
                 if (err) {
 
@@ -60,7 +60,7 @@ const one = async (req, res) => {
         // obtener el id de la sucursal
         const ID = parseInt(req.params.id);
         // realizar consulta
-        const SUCURSAL = await POOL.query('SELECT telefono, horario, nrc, nit, direccion FROM sucursales WHERE id_sucursal = $1', [ID])
+        const SUCURSAL = await POOL.query('SELECT telefono, horario, nombre_sucursal, direccion FROM sucursales WHERE id_sucursal = $1', [ID])
         // verificar sí la respuesta es la esperada
         if (res.status(200)) res.send(SUCURSAL.rows[0]);
     } catch (error) {
@@ -77,10 +77,10 @@ const change = (req, res) => {
         // obtener el id
         const ID = parseInt(req.params.id);
         // obtener los datos de la petición
-        const { tel, inicio, cierre, direccion, nit, nrc } = req.body;
+        const { tel, inicio, cierre, direccion, nombre } = req.body;
         // realizar query 
-        POOL.query('UPDATE sucursales SET telefono = $1, horario = $2, nrc = $3, nit =$4, direccion = $5 WHERE id_sucursal = $6',
-            [tel, inicio + ' A.M - ' + cierre + ' P.M', nrc, nit, direccion, ID], (err, result) => {
+        POOL.query('UPDATE sucursales SET telefono = $1, horario = $2, nombre_sucursal = $3, direccion = $4 WHERE id_sucursal = $5',
+            [tel, inicio + ' A.M - ' + cierre + ' P.M', nombre, direccion, ID], (err, result) => {
                 // verificar sí hubo un error                                
                 if (err) {
 
