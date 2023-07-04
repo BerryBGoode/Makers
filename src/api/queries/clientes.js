@@ -134,7 +134,7 @@ const destroy = (req, res) => {
             }
             // verificar sí existe error
             // sino enviar estado exitoso
-            else { msg = 'Cliente agregado'; }
+            else { msg = 'Cliente eliminado'; }
             if (!err) {
                 res.status(201).send(msg);
             }

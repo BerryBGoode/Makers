@@ -4,6 +4,8 @@ const POOL = require('../db');
 // requerir de ecryptador
 const encrypt = require('../helpers/encrypt');
 
+const { getError } = require('../helpers/errors')
+let msg;
 
 /**
  * req: información que viene del frontend
@@ -22,7 +24,7 @@ const get = async (req, res) => {
             // obtener id
             const ID = jwt.decode(TOKEN)
             // obtener todos los empleado excepto el loggeados
-            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, direccion, id_sucursal, horario, id_cargo, cargo, alias FROM empledos_view WHERE NOT id_empleado = $1', [ID]);
+            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE NOT id_empleado = $1', [ID]);
             // verificar el estado satisfactorio para retornar los datos
             if (res.status(200)) res.json(EMPLEADOS.rows);
         } catch (error) {
@@ -39,7 +41,7 @@ const get = async (req, res) => {
 const getSucursales = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT id_sucursal, direccion FROM sucursales');
+        const SUCURSALES = await POOL.query('SELECT id_sucursal, nombre_sucursal FROM sucursales');
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(SUCURSALES.rows);
     } catch (error) {
@@ -128,7 +130,7 @@ const one = async (req, res) => {
         // convertirlo a entero, por sí el cliente modifica dato
 
         // esperar la respuesta cuando se haga la consulta
-        const EMPLEADO = await POOL.query('SELECT * FROM empledos_view WHERE id_empleado = $1', [IDEMPLEADO]);
+        const EMPLEADO = await POOL.query('SELECT * FROM empleados_view WHERE id_empleado = $1', [IDEMPLEADO]);
         // verificar si no existe
         // verificar sí el estado es el esperado
         if (res.status(201)) { res.json(EMPLEADO.rows) };
@@ -188,15 +190,17 @@ const destroy = (req, res) => {
         const IDEMPLEADO = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         POOL.query('DELETE FROM empleados WHERE id_empleado = $1', [IDEMPLEADO], (err, resul) => {
-            // verificar sí hay un error
+            // veficar errores
             if (err) {
-                // obtener mensaje
-                res.json({ error: err.message });
-                // retornar
-                return;
+                if (err.code) msg = getError(err.code);
+                res.json({ error: msg });
             }
-            // mandar mensaje sí no hay errores
-            res.status(201).send('Empleado eliminado');
+            // verificar sí existe error
+            // sino enviar estado exitoso
+            else { msg = 'Empleado eliminado'; }
+            if (!err) {
+                res.status(201).send(msg);
+            }
         })
     } catch (error) {
         console.log(error);

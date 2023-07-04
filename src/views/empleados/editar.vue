@@ -78,7 +78,7 @@
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los datos de las sucursales -->
                                     <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                                        sucursal.direccion }}</option>
+                                        sucursal.nombre_sucursal }}</option>
                                 </select>
                                 <!-- sino existen sucursales -->
                                 <select class="form-select mb-3" name="error" v-else>
@@ -207,7 +207,7 @@ export default {
             try {
                 // realizar petición
                 axios.get('http://localhost:3000/api/empleados/horarios')
-                    .then(res => { this.horarios = res.data; console.log(res.data) }) //obtener los datos de la petición
+                    .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
                     .catch(e => { console.log(e) }) // caso de error
             } catch (error) {
                 console.error(error);
@@ -251,6 +251,7 @@ export default {
         },
         // método para modificar los datos del cliente
         modificarEmpleado() {
+            
             // obtener idempleado, del parametro establecido en index de routes del front llamado :'id'
             let idempleado = this.$route.params.id;
             // TODO: validar datos

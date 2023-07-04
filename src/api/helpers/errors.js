@@ -12,7 +12,7 @@ const getError = (err = null) => {
             break;
     
         case '23503':
-            msg = 'No se puede modificar o eliminar debido a pedidos asociados';
+            msg = 'No se puede eliminar debido a que tiene datos asociados';
             break;
         default:
             msg = null;

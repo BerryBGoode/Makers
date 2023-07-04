@@ -67,7 +67,7 @@ const getConfig = async (req, res) => {
             // obtener id del empleado
             const ID = jwt.decode(TOKEN);
             // realizar query
-            const EMPLEADO = await POOL.query('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empledos_view WHERE id_empleado = $1', [ID])
+            const EMPLEADO = await POOL.query('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empleados_view WHERE id_empleado = $1', [ID])
             // retornar los datos sí la respuesta es la esperada
             if (res.status(200)) res.send(EMPLEADO.rows[0]);
         } catch (error) {
@@ -90,7 +90,7 @@ const getInfo = async (req, res) => {
             // obtener id del empleado
             const ID = jwt.decode(TOKEN);
             // realizar query
-            const EMPLEADO = await POOL.query('SELECT id_empleado, alias FROM empledos_view WHERE id_empleado = $1', [ID])
+            const EMPLEADO = await POOL.query('SELECT id_empleado, alias FROM empleados_view WHERE id_empleado = $1', [ID])
             // retornar los datos sí la respuesta es la esperada
             if (res.status(200)) res.send(EMPLEADO.rows[0]);
         } catch (error) {
@@ -179,24 +179,6 @@ const change = async (req, res) => {
 
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
-    }
-}
-
-/**
- * Método para obtener la contraseña del empleado 
- */
-const getClave = async empledo => {
-    try {
-        // realizar query
-        const CLAVE = await POOL.query('SELECT clave FROM empleados WHERE id_empleado = $1', [empledo]);
-        // retornar clave
-        let patron = /"([^"]*)"/;
-        const DB = CLAVE.rows[0].clave;
-        console.log(DB.match(patron))
-        return DB.match(patron);
-    } catch (error) {
-        console.log(error)
-
     }
 }
 

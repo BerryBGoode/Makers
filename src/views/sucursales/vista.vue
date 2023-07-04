@@ -39,7 +39,7 @@
 
                             <router-link class="btn btn-makers btn-table"
                                 :to="{ path: '/sucursales/' + sucursal.id_sucursal + '/productos' }">
-                                Productos
+                                Servicios
                             </router-link>
                         </div>
                         <div class="col-md-2 card-buttons">

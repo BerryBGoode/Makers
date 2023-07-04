@@ -19,7 +19,7 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
-                Producto sucursal
+                Servicio sucursal
             </h5>
             <span>{{ msg }}</span>
         </div>
@@ -28,17 +28,17 @@
             <form @submit.prevent="crear">
                 <div class="form-data mb-24-2vh">
                     <span class="bold">
-                        Producto
+                        Servicio
                     </span>
                     <form action="" class="form-2">
-                        <label for="" class="form-label">Producto</label>
+                        <label for="" class="form-label">Servicio</label>
                         <!-- verifica sí existen productos -->
-                        <select class="form-select mb-3" aria-label="Default select example" v-if="productos.length > 0"
-                            v-model="this.model.producto.producto">
+                        <select class="form-select mb-3" aria-label="Default select example" v-if="servicios.length > 0"
+                            v-model="this.model.servicio.servicio">
                             <option selected disabled>Seleccionar</option>
                             <!-- recorrre los productos encontrados -->
-                            <option v-for="(producto, i) in productos" :key="i" :value="producto.id_servicio">{{
-                                producto.nombre_servicio }}</option>
+                            <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio">{{
+                                servicio.nombre_servicio }}</option>
                         </select>
                         <select class="mb-3 form-select" v-else>
                             <option>No se encontraron productos</option>
@@ -47,7 +47,7 @@
                             <label for="" class="form-label">Cantidad</label>
                             <!-- en max obtener la existencias del producto -->
                             <input type="number" class="form-control" id="" min="1" max=""
-                                v-model="this.model.producto.cantidad">
+                                v-model="this.model.servicio.cantidad">
                         </div>
                     </form>
                 </div>
@@ -74,12 +74,12 @@ export default {
     // funciones que retornará el componente
     data() {
         return {
-            productos: [],
+            servicios: [],
             model: {
-                producto: {
+                servicio: {
                     // sucursal va a ser igual al parametro de la url
                     sucursal: this.$route.params.id,
-                    producto: 'Seleccionar',
+                    servicio: 'Seleccionar',
                     cantidad: ''
                 }
             },
@@ -95,21 +95,21 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/sucursales/productos/productos')
                 .then(res => {
-                    this.productos = res.data;
+                    this.servicios = res.data;
                 })
                 .catch(e => { console.log(e) })
         },
         crear() {
             console.log(this.model.producto)
             // validar datos
-            axios.post('http://localhost:3000/api/sucursales/productos/', this.model.producto)
+            axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
                 .then(res => {
                     // cuando hay un error que no realizo lo que se debía
-                    if (res.data.error) {
+                    if (!res.data.error) {
                         this.msg = 'Error con algún dato enviado';
                         // console.log(res.data)
                     }else{
-                        this.msg = '';
+                        this.msg = res.data.error;
                     }
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put

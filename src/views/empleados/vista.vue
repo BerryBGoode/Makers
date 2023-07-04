@@ -62,7 +62,7 @@
                         <div class="col-md-6 more-info">
                             <span class="bold card-title">{{ empleado.alias }}</span>
                             <span>{{ empleado.cargo }}</span>
-                            <span>{{ empleado.direccion }}</span>
+                            <span>{{ empleado.nombre_sucursal }}</span>
                             <span>{{ empleado.horario }}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
@@ -158,11 +158,11 @@ export default {
         eliminarEmpleado(idempleado) {
             // validar la respuesta del usuario
             if (confirm('Desea eliminar a este empleado?')) {
-                // realizar petición
+                // realizar petición                
                 axios.delete('http://localhost:3000/api/empleados/' + idempleado)
                     .then(res => {
                         // mostrar mensaje
-                        alert(res.data);
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
                         // cargar los empleados
                         this.getEmpledos();
                     })

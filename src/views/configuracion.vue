@@ -80,6 +80,7 @@
             </div>
             <hr>
             <div class="buttons-reservacion form-data padding-buttons">
+                <button type="button" @click="back" class="btn btn-makers">Volver </button>
                 <button type="button" @click.prevent="cerrarSesion" class="btn btn-makers">Cerrar sesión</button>
                 <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
@@ -109,7 +110,8 @@ export default {
                     authorization: this.$cookies.get('auth')
                 }
             },
-            msg: ''
+            msg: '',
+            lastpath: ''
         }
     },
     methods: {
@@ -117,6 +119,11 @@ export default {
             if (confirm('Desea cerrar sesión?')) {
                 this.$cookies.remove('auth');
             }
+        },
+        // método para redireccionar a página anterior
+        back(){
+            // redireccionar a página anterior
+            this.$router.go(-1);
         },
         getEmpleado() {
             axios.get('http://localhost:3000/api/auth/config', this.config)
@@ -170,8 +177,10 @@ export default {
         }
 
     },
-    mounted() {
+    mounted() {        
         this.getEmpleado();
     }
+    
+
 } 
 </script>
