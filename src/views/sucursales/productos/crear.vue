@@ -111,9 +111,8 @@ export default {
                 this.input.stock = this.producto.existencias;
             } else {
                 this.input.read = true;
-
+                this.input.stock = ''
             }
-
         },
         cargarProductos() {
             // realizar petición
@@ -125,9 +124,14 @@ export default {
         },
         crear() {
             this.msg = '';
-            if (this.model.servicio.servicio === 'Seleccionar' || this.model.servicio.cantidad <= 0 || this.model.servicio.cantidad > this.input.stock) {
+            // validar datos
+            if (this.model.servicio.servicio === 'Seleccionar' || (this.input.stock) ? (this.model.servicio.cantidad <= 0) : this.model.servicio.cantidad > this.input.stock) {
                 this.msg = 'Datos invalidos';
-            } else {
+            }
+            else {
+                // verificar sí no hay existencias del producto seleccionado, para asignar por defecto
+                if (!this.input.stock) this.model.servicio.cantidad = 1;
+                console.log(this.model.servicio)
                 // validar datos
                 axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
                     .then(res => {
