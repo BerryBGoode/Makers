@@ -124,32 +124,37 @@ export default {
                 .catch(e => { console.log(e) })
         },
         crear() {
-            // validar datos
-            axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
-                .then(res => {
-                    // cuando hay un error que no realizo lo que se debía
-                    if (!res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                        // console.log(res.data)
-                    } else {
-                        this.msg = res.data.error;
-                    }
-                    // cuando si se realizo la tarea deceada y se creo algo 
-                    // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
-                        // limpiar valores 
-                        this.model.producto = {
-                            cantidad: '',
-                            producto: 'Seleccionar',
+            this.msg = '';
+            if (this.model.servicio.servicio === 'Seleccionar' || this.model.servicio.cantidad <= 0 || this.model.servicio.cantidad > this.input.stock) {
+                this.msg = 'Datos invalidos';
+            } else {
+                // validar datos
+                axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
+                    .then(res => {
+                        // cuando hay un error que no realizo lo que se debía
+                        if (!res.data.error) {
+                            this.msg = 'Error con algún dato enviado';
+                            // console.log(res.data)
+                        } else {
+                            this.msg = res.data.error;
                         }
-                        // redireccionar
-                        alert('Producto agregado')
-                        this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
-                    }
-                })
-                .catch(err => {
-                    alert(err)
-                })
+                        // cuando si se realizo la tarea deceada y se creo algo 
+                        // 201 es usado en método post y put
+                        if (res.status === 201 && !res.data.error) {
+                            // limpiar valores 
+                            this.model.producto = {
+                                cantidad: '',
+                                producto: 'Seleccionar',
+                            }
+                            // redireccionar
+                            alert('Producto agregado')
+                            this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
+                        }
+                    })
+                    .catch(err => {
+                        alert(err)
+                    })
+            }
         }
     }
 }
