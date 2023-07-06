@@ -27,7 +27,7 @@ const get = async (req, res) => {
 const getProductos = async (req, res) => {
     try {
         // realizar consulta
-        const PRODUCTOS = await POOL.query('SELECT id_servicio, nombre_servicio FROM servicios WHERE existencias >= 1')
+        const PRODUCTOS = await POOL.query('SELECT s.id_servicio, tp.tipo_servicio, s.nombre_servicio, s.existencias FROM servicios s INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio WHERE existencias >= 1')
         // verificar estado satisfactorio
         // console.log(res)
         if (res.status(200)) res.json(PRODUCTOS.rows);

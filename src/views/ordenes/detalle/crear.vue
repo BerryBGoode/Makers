@@ -61,7 +61,7 @@
                                 <label for="" class="form-label">Sucursal</label>
                                 <!-- caso donde existan más de 0 tipos de servicios -->
                                 <select class="form-select mb-3" v-if="sucursales.length > 0" v-model="model.sucursal.value"
-                                    @change="cargarSucursales" id="sucursal">
+                                    @change="cargarServicios" id="sucursal">
                                     <option selected disabled>Seleccionar</option>
                                     <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal"
                                         class="option" v-text="sucursal.nombre_sucursal"></option>
@@ -73,20 +73,24 @@
 
                             </div>
                             <div class="input-container">
-                                <label for="" class="form-label">Servicio</label>
-                                <!-- caso donde no sé haya seleccionar tipo de servicio -->
+                                <label for="" class="form-label">Servicio</label>                            
+
                                 <select class="form-select mb-3" v-if="model.sucursal.value === 'Seleccionar'">
-                                    <!-- verificar sí el cliente ha seleccionar un tipo de servicio -->
+                                    <!-- verificar sí el cliente ha seleccionar un tipo de servicio -->                                    
                                     <option selected disabled>Seleccionar</option>
                                 </select>
+
                                 <!-- caso donde se haya selecccionar el tipo de servicio -->
                                 <select class="form-select mb-3" v-if="model.sucursal.value !== 'Seleccionar'"
                                     v-model="model.pedido.servicio">
                                     <!-- verificar sí el cliente ha seleccionar un tipo de servicio -->
                                     <option selected disabled>Seleccionar</option>
-                                    <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio">
+                                    <option selected disabled v-if="servicios <= 0">Sucursal sin servicios</option>
+                                    <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_detalle">
                                         {{ servicio.nombre_servicio }}</option>
                                 </select>
+
+                                <select class="form-select mb-3" v-if="sucursales.leght <= 0"></select>
                             </div>
                         </div>
                     </form>
@@ -105,8 +109,8 @@
                                 <!-- verificar sí ha seleccionado producto -->
                                 <!-- en max obtener la existencias del producto -->
                                 <!-- sí el tipo es producto entonces  se pueda editar-->
-                                <input v-if="model.sucursal.txt === 'Producto'" type="number" class="form-control" id="" min="1"
-                                    max="" v-model="model.pedido.cantidad">
+                                <input v-if="model.sucursal.txt === 'Producto'" type="number" class="form-control" id=""
+                                    min="1" max="" v-model="model.pedido.cantidad">
                                 <input v-else type="number" class="form-control" id="" min="1" max="" readonly
                                     v-model="model.pedido.cantidad">
 
@@ -175,11 +179,11 @@ export default {
             // recear valor texto de select servicio
             this.model.pedido.servicio = 'Seleccionar'
             // obtener el id del tipo
-            this.model.tipo.value = event.target.value;
+            this.model.sucursal.value = event.target.value;
             // obtener el texto del option para evaluar la cantidad
-            this.model.tipo.txt = event.target.options[event.target.selectedIndex].text;
+            this.model.sucursal.txt = event.target.options[event.target.selectedIndex].text;
             // realizar petición
-            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.tipo.value)
+            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value)
                 .then(res => {
                     this.servicios = res.data;
                 })
@@ -188,12 +192,12 @@ export default {
         crearDetalle() {
             // validar datos
             // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
-            if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.tipo.txt !== 'Producto') {
+            if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.sucursal.txt !== 'Producto') {
                 this.model.pedido.cantidad = 1;
                 this.model.pedido.descuento = 0;
             }
 
-            if (!this.model.pedido.cantidad && this.model.tipo.txt !== 'Producto') {
+            if (!this.model.pedido.cantidad && this.model.sucursal.txt !== 'Producto') {
                 this.model.pedido.cantidad = 1;
             }
 

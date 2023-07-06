@@ -34,11 +34,12 @@
                         <label for="" class="form-label">Servicio</label>
                         <!-- verifica sí existen productos -->
                         <select class="form-select mb-3" aria-label="Default select example" v-if="servicios.length > 0"
-                            v-model="this.model.servicio.servicio">
+                            v-model="this.model.servicio.servicio" @change="select">
                             <option selected disabled>Seleccionar</option>
                             <!-- recorrre los productos encontrados -->
-                            <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio">{{
-                                servicio.nombre_servicio }}</option>
+                            <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio"
+                                :data-tipo_servicio="servicio.tipo_servicio" :data-existencias="servicio.existencias">
+                                {{ servicio.nombre_servicio }}</option>
                         </select>
                         <select class="mb-3 form-select" v-else>
                             <option>No se encontraron productos</option>
@@ -46,7 +47,7 @@
                         <div class="mb-3">
                             <label for="" class="form-label">Cantidad</label>
                             <!-- en max obtener la existencias del producto -->
-                            <input type="number" class="form-control" id="" min="1" max=""
+                            <input type="number" class="form-control" min="1" :max="input.stock" :readonly="input.read"
                                 v-model="this.model.servicio.cantidad">
                         </div>
                     </form>
@@ -83,6 +84,13 @@ export default {
                     cantidad: ''
                 }
             },
+            input: {
+                read: true,
+                stock: ''
+            },
+            producto: {
+                existencias: ''
+            },
             msg: ''
         }
     },
@@ -91,6 +99,22 @@ export default {
     },
     // métodos del componente
     methods: {
+        select(event) {
+            // verificar sí el tipo de servicio es producto para habilitar edición
+            // del evento obtengo el valor del dato "custimizado" (tipo_servicio)
+            // cuando se seleccion
+            if (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') {
+                // sí el seleccionado es un producto habilitar la edición
+                this.input.read = false
+                // obtener la cantidad máxima para poner ese límite en ese input
+                this.producto.existencias = event.target.options[event.target.selectedIndex].dataset.existencias
+                this.input.stock = this.producto.existencias;
+            } else {
+                this.input.read = true;
+
+            }
+
+        },
         cargarProductos() {
             // realizar petición
             axios.get('http://localhost:3000/api/sucursales/productos/productos')
@@ -100,7 +124,6 @@ export default {
                 .catch(e => { console.log(e) })
         },
         crear() {
-            console.log(this.model.producto)
             // validar datos
             axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
                 .then(res => {
@@ -108,7 +131,7 @@ export default {
                     if (!res.data.error) {
                         this.msg = 'Error con algún dato enviado';
                         // console.log(res.data)
-                    }else{
+                    } else {
                         this.msg = res.data.error;
                     }
                     // cuando si se realizo la tarea deceada y se creo algo 
@@ -116,12 +139,12 @@ export default {
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.model.producto = {
-                            cantidad: '',                                                
+                            cantidad: '',
                             producto: 'Seleccionar',
                         }
                         // redireccionar
                         alert('Producto agregado')
-                        this.$router.push('/sucursales/'+this.$route.params.id+'/productos');
+                        this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
                     }
                 })
                 .catch(err => {
