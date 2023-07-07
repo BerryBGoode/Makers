@@ -89,7 +89,8 @@ export default {
                 stock: ''
             },
             producto: {
-                existencias: ''
+                existencias: '',
+                tipo: '',
             },
             msg: ''
         }
@@ -110,8 +111,12 @@ export default {
                 this.producto.existencias = event.target.options[event.target.selectedIndex].dataset.existencias
                 this.input.stock = this.producto.existencias;
             } else {
+                // desabilitar
                 this.input.read = true;
+                // limpiar las existencias
                 this.input.stock = ''
+                // asignar valor 1 al servicio
+                this.model.servicio.cantidad = 1;
             }
         },
         cargarProductos() {
@@ -124,8 +129,14 @@ export default {
         },
         crear() {
             this.msg = '';
-            // validar datos
-            if (this.model.servicio.servicio === 'Seleccionar' || (this.input.stock) ? (this.model.servicio.cantidad <= 0) : this.model.servicio.cantidad > this.input.stock) {
+            // validar datos en caso erroneos
+            if (this.model.servicio.servicio === 'Seleccionar' ||
+                (this.input.stock) ?
+                (this.model.servicio.cantidad <= 0)
+                : this.model.servicio.cantidad > this.input.stock ||
+                    (this.producto.tipo !== 'Producto') ?
+                    (this.model.servicio.cantidad !== 1)
+                    : (this.model.servicio.cantidad <= 0 || this.model.servicio.cantidad > this.input.stock)) {
                 this.msg = 'Datos invalidos';
             }
             else {
