@@ -16,24 +16,30 @@
             </router-link>
         </div>
         <hr>
+
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <div class="data p-2" v-if="sucursales.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(sucursal, i) in sucursales" :key="i">
+            <div class="card" v-for="(sucursal, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-8">
-                            <h5 class="card-title bold mb-1">{{ sucursal.direccion }}</h5>
+                            <h5 class="card-title bold mb-1">{{ sucursal.nombre_sucursal }}</h5>
+                            <p class="card-text mb-0 smaller"> {{ sucursal.direccion }} </p>
                             <span class="card-text mb-0 smaller">{{ sucursal.horario }}</span>
                             <p class="card-text mb-0 smaller">{{ sucursal.telefono }} </p>
-                            <p class="card-text mb-0 smaller"> {{ sucursal.nrc }} </p>
                             <p class="card-text mb-0 smaller"> {{ sucursal.nit }} </p>
                         </div>
                         <div class="col-md-1 more-info">
 
                             <router-link class="btn btn-makers btn-table"
                                 :to="{ path: '/sucursales/' + sucursal.id_sucursal + '/productos' }">
-                                Productos
+                                Servicios
                             </router-link>
                         </div>
                         <div class="col-md-2 card-buttons">
@@ -100,27 +106,31 @@ import axios from 'axios'
 // componente para vista
 export default {
     name: 'reservaciones',
+    props: { datos: { type: String } },
     data() {
         return {
             // para cargar las sucursales
-            sucursales: []
+            sucursales: [],
+            buscador: []
         }
     },
     methods: {
         // método para cargar las 
         getSucursales() {
             axios.get('http://localhost:3000/api/sucursales/')
-                .then(res => { this.sucursales = res.data })
+                .then(res => {
+                    this.sucursales = res.data;
+                    this.buscador = res.data;
+                })
                 .catch(e => { alert(e); console.log(e) })
         },
         eliminarSucursal(sucursal) {
             // esperar confirmación
             if (confirm('Desea eliminar esta sucursal?')) {
-                axios.delete('http://localhost:3000/api/sucursales/'+sucursal)
+                axios.delete('http://localhost:3000/api/sucursales/' + sucursal)
                     .then(res => {
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
                         // cargar
                         this.getSucursales();
                     })
@@ -129,10 +139,28 @@ export default {
                         console.log(e)
                     })
             }
+        },
+        buscar(dato) {
+            const SUCURSALES = this.sucursales.filter(sucursal => {
+                return (
+                    sucursal.direccion.toLowerCase().indexOf(dato) !== -1 ||
+                    sucursal.horario.toLowerCase().indexOf(dato) !== -1 ||
+                    sucursal.nit.indexOf(dato) !== -1 || sucursal.nrc.indexOf(dato) !== -1 ||
+                    sucursal.telefono.indexOf(dato) !== -1
+                )
+            })
+            this.buscador = SUCURSALES;
         }
     },
     mounted() {
         this.getSucursales();
+    },
+    watch: {
+        datos(now) {
+            // verificar si el buscador tiene datos vacíos
+            // o tiene datos a buscar
+            (now.trim() === '') ? this.buscador = this.sucursales : this.buscar(now)
+        }
     }
 }
 

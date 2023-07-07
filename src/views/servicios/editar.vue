@@ -97,7 +97,7 @@ export default {
                 .then(res => this.tipos = res.data)
                 .catch(e => console.log(e));
         },
-        getServicio(){
+        getServicio() {
             axios.get('http://localhost:3000/api/servicios/' + this.$route.params.id)
                 .then(res => {
                     this.servicio = {
@@ -107,26 +107,29 @@ export default {
                         precio: res.data.precio
                     }
                 })
-                .catch(e => {alert(e); console.log(e)})
+                .catch(e => { alert(e); console.log(e) })
         },
         modificarServicio() {
             // validar datos 
             if (this.servicio.descripcion && this.servicio.nombre &&
                 this.servicio.precio && (this.servicio.tipo !== 'Seleccionar')) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/servicios/'+this.$route.params.id, this.servicio)
+                axios.put('http://localhost:3000/api/servicios/' + this.$route.params.id, this.servicio)
                     .then(res => {
-                        alert(res.data);
-                        // limpiar campos
-                        this.servicio = {
-                            tipo: 'Seleccionar',
-                            nombre: '',
-                            descripcion: '',
-                            precio: '',
-                            existencias: 1,
+                        if (res.data.error) this.msg = res.data.error;
+                        else {
+                            alert(res.data);
+                            // limpiar campos
+                            this.servicio = {
+                                tipo: 'Seleccionar',
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: 1,
+                            }
+                            // redireccionar
+                            this.$router.push('/servicios');
                         }
-                        // redireccionar
-                        this.$router.push('/servicios');
                     })
                     .catch(e => { alert(e); console.log(e) })
             } else {

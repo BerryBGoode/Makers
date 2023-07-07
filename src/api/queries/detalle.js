@@ -1,5 +1,5 @@
 // requerir de la conexión
-const POOL = require('../db');
+const POOL = require('../db'); 
 
 /**
  * Método para obtener los detalles según la orden de la url
@@ -37,9 +37,10 @@ const getTiposSerivicios = async (req, res) => {
 const getServicios = async (req, res) => {
     try {
         // obtener el tipo de servicio
-        const TIPO = parseInt(req.params.tipo);
+        const SUCURSAL = parseInt(req.params.sucursal);
         // realizar query 
-        const PRODUCTO = await POOL.query('SELECT id_servicio, nombre_servicio, existencias FROM servicios WHERE id_tipo_servicio = $1', [TIPO]);
+        console.log(SUCURSAL)
+        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, existencias FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL]);
         // verificar respuesta satisfactoria
         if (res.status(200)) res.json(PRODUCTO.rows);
     } catch (error) {
@@ -55,7 +56,8 @@ const store = (req, res) => {
         // obtener los datos del frontend
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
-        POOL.query('INSERT INTO detalle_ordenes(id_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
+        console.log(req.body)
+        POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
             [servicio, cantidad, descuento, orden],
             (err, result) => {
                 // verificar sí hubo un error

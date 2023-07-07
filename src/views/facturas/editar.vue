@@ -13,7 +13,7 @@
             </h5>
         </div>
         <hr>
-        <form @submit.prevent="crear" class="container">
+        <form @submit.prevent="modificar" class="container">
             <div class="form-data">
                 <span class="bold">
                     Empleado
@@ -87,7 +87,8 @@
                 <router-link to="/ordenes" class="btn btn-makers">
                     Cancelar
                 </router-link>
-                <button type="submit" class="btn btn-makers">Agregar</button>
+                <button @click="eliminarFactura" type="button" class="btn btn-makers">Eliminar</button>
+                <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
         </form>
     </div>
@@ -129,10 +130,27 @@ export default {
         // cargar sucursales
         this.cargarSucursales();
         this.cargarEmpleadoDui();
-
+        this.getFactura();
     },
     // métodos del componente
     methods: {
+        getFactura() {
+            // realizar petición
+            axios.get('http://localhost:3000/api/facturas/' + this.$route.params.id)
+                .then(res => {
+                    const FACTURA = res.data
+
+                    this.model.factura = {
+                        empleado: FACTURA.id_empleado,
+                        estado: FACTURA.estado,
+                        sucursal: FACTURA.id_sucursal
+                    }
+                    this.empleado = {
+                        nombres: FACTURA.nombres,
+                        apellidos: FACTURA.apellidos
+                    }
+                })
+        },
         // método para obtener el dui del cliente
         cargarEmpleadoDui() {
             try {
@@ -146,7 +164,6 @@ export default {
             }
         },
         getEmpleado() {
-            console.log(this.model.factura.dui)
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
                 .then(res => { this.empleado.nombres = res.data.nombres; this.empleado.apellidos = res.data.apellidos })
                 .catch(e => { console.log(e) });
@@ -162,10 +179,10 @@ export default {
         },
 
         // método para agregar una nueva factura
-        crear() {
+        modificar() {
             // validar datos
             // realizar petición y enviando datos
-            axios.post('http://localhost:3000/api/facturas', this.model.factura)
+            axios.put('http://localhost:3000/api/facturas/' + this.$route.params.id, this.model.factura)
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
@@ -183,7 +200,7 @@ export default {
 
                         }
                         // redireccionar
-                        alert('Factura agregada')
+                        alert('Factura modificada')
                         this.$router.push('/ordenes');
                     }
                     // console.log(res)
@@ -192,7 +209,21 @@ export default {
                     // if (res.status === 201) this.$router.push('/empleados');
                 })
                 .catch(e => { alert(e) });
-
+        },
+        eliminarFactura() {
+            if (confirm('Desea eliminar esta factura?')) {
+                axios.delete('http://localhost:3000/api/facturas/' + this.$route.params.id)
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        console.log(res)
+                        this.$router.push('/ordenes')
+                    })
+                    .catch(e => {
+                        alert(e);
+                        console.log(e)
+                    })
+            }
         }
     }
 }

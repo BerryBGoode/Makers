@@ -1,11 +1,13 @@
 <style>
 .component-render {
     height: 100%;
+    position: relative;
 }
 
 .buttons-servicio {
-    position: relative;
+    position: absolute !important;
     bottom: 0;
+    width: 100%;
 }
 
 .mb-39vh {
@@ -15,9 +17,13 @@
 .form-1 {
     width: 100%;
 }
+
+.form-100 {
+    height: 100%;
+}
 </style>
 <template>
-    <div class="container servicios component-servicio component-render">
+    <div class="container servicios component-servicio component-render relative">
         <div class="top">
             <h5 class="bold">
                 Servicio
@@ -25,7 +31,7 @@
             <span>{{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="agregarServicio">
+        <form class="form-100" @submit.prevent="agregarServicio">
             <div class="container agg-servicio">
                 <div class="form-data mb-39vh">
                     <div action="" class="form-1">
@@ -105,17 +111,21 @@ export default {
                 // realizar petición
                 axios.post('http://localhost:3000/api/servicios/', this.servicio)
                     .then(res => {
-                        alert(res.data);
-                        // limpiar campos
-                        this.servicio = {
-                            tipo: 'Seleccionar',
-                            nombre: '',
-                            descripcion: '',
-                            precio: '',
-                            existencias: 1,
+
+                        if (res.data.error) this.msg = res.data.error;
+                         else {
+                            alert(res.data);
+                            // limpiar campos
+                            this.servicio = {
+                                tipo: 'Seleccionar',
+                                nombre: '',
+                                descripcion: '',
+                                precio: '',
+                                existencias: 1,
+                            }
+                            // redireccionar
+                            this.$router.push('/servicios');
                         }
-                        // redireccionar
-                        this.$router.push('/servicios');
                     })
                     .catch(e => { alert(e); console.log(e) })
             } else {

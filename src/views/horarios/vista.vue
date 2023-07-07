@@ -12,10 +12,15 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <div class="data p-2" v-if="horarios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(horario, i) in horarios" :key="i">
+            <div class="card" v-for="(horario, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -81,9 +86,17 @@
 import axios from 'axios'
 export default {
     name: 'horarios',
+    props: {
+        datos: {
+            type: String
+        }
+    },
     data() {
         return {
-            horarios: []
+            horarios: [],
+            // arreglo para guardar los datos filtrados y en limpio
+            buscador: []
+
         }
     },
     methods: {
@@ -91,7 +104,7 @@ export default {
         getHorarios() {
             // realizar petición
             axios.get('http://localhost:3000/api/horarios/')
-                .then(res => this.horarios = res.data)
+                .then(res => { this.horarios = res.data; this.buscador = res.data })
                 .catch(e => { alert(e); console.log(e) });
         },
         eliminarHorario(horario) {
@@ -107,10 +120,29 @@ export default {
                     })
                     .catch(e => { alert(e); console.log(e) })
             }
+        },
+        buscar(dato) {
+            // declarar constante que almacena los datos filtrados según el arreglo en límpio delos horarios
+            const HORARIOS = this.horarios.filter((horario) => {
+                // retornar los que coincidan la letra escrita en el buscador con algún caracter
+                // de la hora inicio y la hora fin
+                return (
+                    horario.inicio.indexOf(dato) !== -1 || horario.cierre.indexOf(dato) !== -1
+                )
+            })
+            // asignar los filtrados al buscador
+            this.buscador = HORARIOS;
         }
     },
     mounted() {
         this.getHorarios();
+    },
+    // detecta cuando cambia el valor de la prop
+    watch: {
+        datos(now) {
+            // verificar sí el nuevo valor no es vació
+            (now.trim() === '') ? this.buscador = this.horarios : this.buscar(now);
+        }
     }
 }
 

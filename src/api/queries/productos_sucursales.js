@@ -12,7 +12,7 @@ const get = async (req, res) => {
         // obtener el id de la sucursal
         const SUCURSAL = parseInt(req.params.id);
         // realizar query
-        const PRODUCTOS = await POOL.query('SELECT * FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL])
+        const PRODUCTOS = await POOL.query('SELECT cantidad, nombre_servicio, id_detalle, id_servicio, id_sucursal FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL])
         // validar el resultado satisfactorio
         if (res.status(200)) res.json(PRODUCTOS.rows);
 
@@ -27,7 +27,7 @@ const get = async (req, res) => {
 const getProductos = async (req, res) => {
     try {
         // realizar consulta
-        const PRODUCTOS = await POOL.query('SELECT id_servicio, nombre_servicio FROM productos_view WHERE existencias >= 1')
+        const PRODUCTOS = await POOL.query('SELECT s.id_servicio, tp.tipo_servicio, s.nombre_servicio, s.existencias FROM servicios s INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio WHERE existencias >= 1')
         // verificar estado satisfactorio
         // console.log(res)
         if (res.status(200)) res.json(PRODUCTOS.rows);
@@ -39,23 +39,50 @@ const getProductos = async (req, res) => {
 /**
  * Método para agregar producto a una sucursal
  */
-const store = (req, res) => {
-    try {
+const store = async (req, res) => {
+    try {        
         // obtener los datos del frontend
-        const { sucursal, producto, cantidad } = req.body;
-        // realizar transacción SQL
-        POOL.query('INSERT INTO detalles_servicios_sucursales(id_sucursal, id_servicio, cantidad) VALUES ($1, $2, $3)',
-            [sucursal, producto, cantidad], (err, result) => {
-                // verificar error
-                if (err) {
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
-                }
-                res.status(201).send('Producto agregado');
-            })
+        const { sucursal, servicio, cantidad } = req.body;
+        // verificar cantidad con respecto al servicio        
+        if(await compareProductos(servicio, cantidad) === true){
+            // realizar transacción SQL
+            POOL.query('INSERT INTO detalles_servicios_sucursales(id_sucursal, id_servicio, cantidad) VALUES ($1, $2, $3)',
+                [sucursal, servicio, cantidad], (err, result) => {
+                    // verificar error
+                    if (err) {
+                        // sí es ejecuta esto, el status 201 no se enviará
+                        res.json({ error: err.message });
+                        return;
+                    }
+                    res.status(201).send('Producto agregado');
+                })
+        }else{
+            res.json({ error: 'Cantidad máxima superada'})
+        }
     } catch (error) {
         console.log(error);
+    }
+}
+
+/**
+ * Metodo para obtener y evaluar sí la cantidad agregar es más o igual
+ * a las existencias
+ */
+const compareProductos = async (servicio, cantidad) => {
+    try {        
+        // obtener las existencias
+        const SERVICIO = await POOL.query('SELECT existencias, id_tipo_servicio FROM servicios WHERE id_servicio = $1', [servicio])        
+        // obtener el tipo de servicio sea producto
+        const TPRODUCTO = await POOL.query('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = $1', ['Producto']);
+        // verificar sí el tipo de servicio es producto para evaluar cantidad con respecto a las existencias        
+        if (SERVICIO.rows[0].id_tipo_servicio === TPRODUCTO.rows[0].id_tipo_servicio){
+            // comparar sí las existencias son menos o igual4            
+            return (cantidad <= SERVICIO.rows[0].existencias)  
+        }else {            
+            return true;
+        }
+    } catch (error) {
+        console.log(error)
     }
 }
 

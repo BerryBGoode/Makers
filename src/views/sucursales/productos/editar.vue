@@ -19,35 +19,36 @@
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
-                Producto sucursal
+                Servicio sucursal
             </h5>
             <span>{{ msg }}</span>
         </div>
         <hr>
         <div class="container router-view">
-            <form @submit.prevent="modificarProducto">
+            <form @submit.prevent="modificarServicio">
                 <div class="form-data mb-24-2vh">
                     <span class="bold">
-                        Producto
+                        Servicio
                     </span>
                     <form action="" class="form-2">
-                        <label for="" class="form-label">Producto</label>
+                        <label for="" class="form-label">Servicio</label>
                         <!-- verifica sí existen productos -->
-                        <select class="form-select mb-3" aria-label="Default select example" v-if="productos.length > 0"
-                            v-model="this.model.producto.producto">
+                        <select class="form-select mb-3" aria-label="Default select example" v-if="servicios.length > 0"
+                            v-model="this.model.servicio.servicio">
                             <option selected disabled>Seleccionar</option>
                             <!-- recorrre los productos encontrados -->
-                            <option v-for="(producto, i) in productos" :key="i" :value="producto.id_servicio">{{
-                                producto.nombre_servicio }}</option>
+                            <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio"
+                                :data-existencias="servicio.existencias" :data-tipo_servicio="servicio.tipo_servicio">
+                                {{ servicio.nombre_servicio }}</option>
                         </select>
                         <select class="mb-3 form-select" v-else>
-                            <option>No se encontraron productos</option>
+                            <option>No se encontraron servicios</option>
                         </select>
                         <div class="mb-3">
                             <label for="" class="form-label">Cantidad</label>
                             <!-- en max obtener la existencias del producto -->
-                            <input type="number" class="form-control" id="" min="1" max=""
-                                v-model="this.model.producto.cantidad">
+                            <input type="number" class="form-control" :readonly="input.read" min="1" :max="input.stock"
+                                v-model="this.model.servicio.cantidad">
                         </div>
                     </form>
                 </div>
@@ -74,30 +75,62 @@ export default {
     // funciones que retornará el componente
     data() {
         return {
-            productos: [],
+            servicios: [],
             model: {
-                producto: {
+                servicio: {
                     // sucursal va a ser igual al parametro de la url
                     sucursal: this.$route.params.id,
-                    producto: 'Seleccionar',
+                    servicio: 'Seleccionar',
                     cantidad: ''
                 }
+            },
+            input: {
+                stock: '',
+                read: ''
+            },
+            producto: {
+                existencias: '',
+                tipo: ''
+
             },
             msg: ''
         }
     },
     mounted() {
         // llamar aquí los método al cargar la página
-        this.cargarProductos();
+        this.cargarServicios();
         this.cargar(this.$route.params.detalle);
     },
     // métodos del componente
     methods: {
-        cargarProductos() {
+        // método para validar el input según el tipo de servicio
+        select(event) {
+            // verificar sí el servicio seleccionado es un producto
+            // para habilitar unos campos
+            if (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') {
+                // habilitar agregar cantidad
+                this.input.read = false;
+                // asignar la cantidad máxima el input, según las existencias del producto
+                this.producto.existencias = event.target.options[event.target.selectedIndex].dataset.existencias;
+                this.input.stock = this.producto.existencias;
+                this.producto.tipo = 'Producto'
+            } else {
+                // desabilitar edición
+                this.input.read = true;
+                // limpiar la cantidad máxima del input
+                this.input.stock = '';
+                // asignar 1 al servicio
+                this.model.servicio.cantidad = 1;
+                // para verificar después de sí el servicio es un producto
+                // al momento de cargar
+                this.producto.tipo = ''
+            }
+        },
+        cargarServicios() {
             // realizar petición
             axios.get('http://localhost:3000/api/sucursales/productos/productos')
                 .then(res => {
-                    this.productos = res.data;
+                    this.servicios = res.data;
                 })
                 .catch(e => { console.log(e) })
         },
@@ -107,19 +140,29 @@ export default {
                     // cargar los valores
                     // const DETALLE = res.data[0];
                     // console.log(DETALLE);
-                    this.model.producto = {
-                        producto: res.data.id_servicio,
+                    this.model.servicio = {
+                        servicio: res.data.id_servicio,
                         cantidad: res.data.cantidad
                     }
                 })
                 .catch(e => { alert(e) })
         },
         modificarProducto() {
+            this.msg = '';
+            if (this.model.servicio.servicio === 'Seleccionar' ||
+                (this.input.stock) ?
+                (this.model.servicio.cantidad <= 0)
+                : (this.model.servicio.cantidad > this.input.stock) ||
+                    (this.producto.tipo !== 'Producto') ?
+                    (this.model.servicio.cantidad !== 1)
+                    : (this.model.servicio.cantidad <= 0 || this.model.servicio.cantidad > this.input.stock)) {
+                this.msg = 'Datos invalidos';
+            }
             // obtener el id del detalle
             let id = this.$route.params.detalle;
             // validar datos
             // realizar petición
-            axios.put('http://localhost:3000/api/sucursales/productos/' + id, this.model.producto)
+            axios.put('http://localhost:3000/api/sucursales/productos/' + id, this.model.servicio)
                 .then(res => {
                     // verificar errores
                     if (res.data.error) {
@@ -129,17 +172,17 @@ export default {
                     // status = 201 en post y put
                     if (res.status === 201 && !res.data.error) {
                         // limipiar campos
-                        this.model.producto = {
+                        this.model.servicio = {
                             cantidad: '',
-                            producto: 'Seleccionar'
+                            servicio: 'Seleccionar'
                         }
                         // redireccionar
                         alert('Detalle modificado');
                         this.msg = '';
-                        this.$router.push('/sucursales/'+this.$route.params.id+'/productos');
+                        this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
                     }
                 })
-                .catch(err => { alert(err)})
+                .catch(err => { alert(err) })
         }
 
     }

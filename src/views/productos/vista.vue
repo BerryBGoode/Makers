@@ -14,15 +14,20 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <div class="data p-2" v-if="productos.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(producto, i) in productos" :key="i">
+            <div class="card" v-for="(producto, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
                             <h5 class="card-title bold mb-1">{{ producto.nombre_servicio }}</h5>
-                            <span class="card-text mb-0 smaller">{{ producto.precio }}</span>
+                            <span class="card-text mb-0 smaller">{{ '$ ' + producto.precio }}</span>
                             <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
                             <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                         </div>
@@ -86,10 +91,12 @@ import axios from 'axios';
 
 export default {
     name: 'productos',
+    props: { datos: { type: String } },
     data() {
         return {
             // arreglo vacío para guardar datos
-            productos: []
+            productos: [],
+            buscador: []
         }
     },
     methods: {
@@ -97,7 +104,10 @@ export default {
         getProductos() {
             // realizar petición
             axios.get('http://localhost:3000/api/productos/')
-                .then(res => this.productos = res.data)
+                .then(res => {
+                    this.productos = res.data;
+                    this.buscador = res.data;
+                })
                 .catch(e => alert(e));
         },
         eliminarProducto(producto) {
@@ -115,10 +125,32 @@ export default {
                     })
                     .catch(e => { alert(e) })
             }
+        },
+        buscar(dato) {
+            // constante donde se guardan los productos filtrados
+            const PRODUCTOS = this.productos.filter(producto => {
+                // retornar los que cumplan la condición
+
+                return (
+                    producto.descripcion.toLowerCase().indexOf(dato) !== -1 ||
+                    // this.productos.existencias.indexOf(dato) !== -1 ||
+                    producto.existencias.toString().indexOf(dato) !== -1 ||
+                    producto.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
+                    producto.precio.indexOf(dato) !== -1
+                )
+            })
+            // asignar a los datos que se muestran, los filtrados
+            this.buscador = PRODUCTOS;
         }
     },
     mounted() {
         this.getProductos();
+    },
+    watch: {
+        datos(now) {
+            // verificar sí actualmente el componente se encontra con texto ignorando los espacios vacíos
+            (now.trim() === '') ? this.buscador = this.productos : this.buscar(now);
+        }
     }
 }
 

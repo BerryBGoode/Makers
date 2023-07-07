@@ -28,24 +28,53 @@
                     d="M23.1636 24.75C23.1636 20.3963 18.8324 16.875 13.4999 16.875C8.1674 16.875 3.83615 20.3963 3.83615 24.75"
                     stroke="#B4B0AF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span>{{ usuario }}</span>
+            <span>{{ empleado.alias }} </span>
+            <span> {{ empleado.apellido }}</span>
         </RouterLink>
     </div>
 </template>
 <script>
+import axios from 'axios';
 import { RouterLink } from 'vue-router';
 
 // exportación del componente
 export default {
     // nombre del componente
     name: "cuenta",
-    // recibir los datos del usuario
-    props: {},
+    components: { RouterLink },
     // funciones a retornar del componente
     data() {
         return {
-            usuario: "Usuario",
+            empleado: {
+                nombre: '',
+                apellido: '',
+                id: ''
+            },
+            config: {
+                headers: {
+                    authorization: this.$cookies.get('auth')
+                }
+            }
         };
     },
+    methods: {
+        // método para obtener los datos del empleado loggeado
+        getEmpleado() {
+            // realizar petición
+            axios.get('http://localhost:3000/api/auth/', this.config)
+                .then(res => {                    
+                    this.empleado = {
+                        alias: res.data.alias,
+                        id: res.data.id_empleado
+                    }
+                })
+                .catch(e => {
+                    console.log(e)
+                })
+        }
+    },
+    mounted() {
+        this.getEmpleado();
+    }
 };
 </script>

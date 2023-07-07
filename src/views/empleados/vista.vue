@@ -42,28 +42,32 @@
             </router-link>
         </div>
         <hr>
-        <!-- aquí cargar los empleados -->
-        <!-- verificar sí hay empleados -->
-        <div class="data p-2" v-if="empleados.length > 0">
-            <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(empleado, i) in empleados" :key="i">
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span>No se encontraron datos</span>
+        </div>
+
+
+        <div class="data p-2" v-if="buscador.length > 0">
+
+            <div class="card" v-for="empleado in buscador" :key="empleado.id_empleado">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
-                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>
+                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>                            
                             <span class="card-text mb-0 smaller">{{ empleado.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ empleado.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ empleado.telefono }} </p>
                         </div>
                         <div class="col-md-6 more-info">
+                            <span class="bold card-title">{{ empleado.alias }}</span>
                             <span>{{ empleado.cargo }}</span>
-                            <span>{{ empleado.direccion }}</span>
+                            <span>{{ empleado.nombre_sucursal }}</span>
                             <span>{{ empleado.horario }}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <!-- ':' y '{ }' habílitar poder escribir código vue dentro del " " -->
+
                                 <router-link :to="{ path: '/empleados/editar/' + empleado.id_empleado }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -104,39 +108,49 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
+
         <div class="data p-2" v-else-if="empleados.length === 0">
             <span class="bold">
                 No se encontraron existencias
             </span>
         </div>
-        <!-- si no hay clientes encontrados -->
+
         <div class="data p-2" v-else>
             <span class="bold">
                 Cargando...
             </span>
         </div>
+
     </div>
 </template>
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+
+
 export default {
     name: 'empleados',
+    props: { datos: { type: String } },
     data() {
         return {
             // arreglo para guardar los empleados
-            empleados: []
+            empleados: [],
+            // arreglo para guardar los datos a buscar
+            buscador: [],
+            config: {
+                headers: {
+                    authorization: this.$cookies.get('auth')
+                }
+            }
         }
     },
     methods: {
         // método para obtener los empleados
         getEmpledos() {
             // hacer petición
-            axios.get('http://localhost:3000/api/empleados')
-                .then(res => { this.empleados = res.data })
+            axios.get('http://localhost:3000/api/empleados', this.config)
+                .then(res => { this.empleados = res.data; this.buscador = res.data })
                 .catch(e => { alert(e) })
 
         },
@@ -144,22 +158,49 @@ export default {
         eliminarEmpleado(idempleado) {
             // validar la respuesta del usuario
             if (confirm('Desea eliminar a este empleado?')) {
-                // realizar petición
+                // realizar petición                
                 axios.delete('http://localhost:3000/api/empleados/' + idempleado)
                     .then(res => {
                         // mostrar mensaje
-                        alert(res.data);
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
                         // cargar los empleados
                         this.getEmpledos();
                     })
-                    .catch(e => { alert(e)})
+                    .catch(e => { alert(e) })
             }
-
-
+        },
+        buscar(dato) {
+            // constante con los datos filtrados del arreglo con los empleados (en limipios)
+            const EMPLEADOS = this.empleados.filter((empleado) => {
+                // retornar los datos que pasen la condición
+                return (
+                    // convertir cada dato de los que se puede buscar en minusculas   
+                    // (dato) texto del input
+                    empleado.nombres.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.apellidos.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.direccion.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.dui.indexOf(dato) !== -1 ||
+                    empleado.correo.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.horario.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.planilla.indexOf(dato) !== -1 ||
+                    empleado.cargo.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.telefono.indexOf(dato) !== -1
+                    // parametros por los que se puede buscar
+                )
+            })
+            // asignar esos datos filtrados al arreglo que se muestran en card
+            this.buscador = EMPLEADOS;
         }
     },
     mounted() {
         this.getEmpledos();
+    },
+    watch: {
+        datos(now) {
+            // verificar sí el input esta vacío o tiene espacios para mostrar por defecto
+            // sino, mostrar el filtrado
+            (now.trim() === '') ? this.buscador = this.empleados : this.buscar(now);
+        }
     }
 }
 

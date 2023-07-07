@@ -67,16 +67,21 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="servicios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(servicio, i) in servicios" :key="i">
+            <div class="card" v-for="(servicio, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
                             <h5 class="card-title bold mb-1">{{ servicio.nombre_servicio }}</h5>
-                            <span class="card-text mb-0 smaller">{{ servicio.precio }}</span>
+                            <span class="card-text mb-0 smaller"> {{ '$ ' + servicio.precio }}</span>
                             <p class="card-text mb-0 smaller">{{ servicio.descripcion }} </p>
                             <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                         </div>
@@ -139,15 +144,20 @@
 import axios from 'axios'
 export default {
     name: 'servicios',
+    props: { datos: { type: String } },
     data() {
         return {
-            servicios: []
+            servicios: [],
+            buscador: []
         }
     },
     methods: {
         getServicios() {
             axios.get('http://localhost:3000/api/servicios/')
-                .then(res => this.servicios = res.data)
+                .then(res => {
+                    this.servicios = res.data;
+                    this.buscador = res.data
+                })
                 .catch(e => alert(e));
         },
         eliminarServicio(servicio) {
@@ -162,12 +172,33 @@ export default {
                         // cargar
                         this.getServicios();
                     })
-                    .catch(e => { alert(e); console.log(e)})
+                    .catch(e => { alert(e); console.log(e) })
             }
+        },
+        buscar(dato) {
+            // crear un arreglo con los datos filtrados
+            const SERVICIOS = this.servicios.filter(servicio => {
+                // retornar o filtrar los que cumplan la condición
+                return (
+                    servicio.descripcion.toLowerCase().indexOf(dato) !== -1 ||
+                    servicio.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
+                    servicio.precio.indexOf(dato) !== -1 ||
+                    servicio.tipo_servicio.toLowerCase().indexOf(dato) !== -1
+                )
+            })
+            // asignar al buscador
+            this.buscador = SERVICIOS;
         }
     },
     mounted() {
         this.getServicios();
+    },
+    watch: {
+        datos(now) {
+            // verificar sí el nuevo valor tiene datos vacios sin incluir espacios, para limpiar buscador
+            // o realizar busqueda
+            (now.trim() === '') ? this.buscador = this.servicios : this.buscar(now);
+        }
     }
 }
 

@@ -50,6 +50,11 @@ import editarProducto from '../views/productos/editar.vue';
 import editarServicio from '../views/servicios/editar.vue';
 import editarHorario from '../views/horarios/editar.vue';
 import editarSucursal from '../views/sucursales/editar.vue'
+import editarRervacion from '../views/reservaciones/editar.vue'
+import editarOrden from '../views/ordenes/editar.vue'
+import editarFactura from '../views/facturas/editar.vue';
+import editarCargo from '../views/cargos/editar.vue';
+import editarTipo from '../views/tipos_servicios/editar.vue';
 //#endregion
 
 // configuración
@@ -105,12 +110,6 @@ const ROUTER = createRouter({
             path: '/reservaciones',
             component: reservaciones
         },
-        // facturas
-        {
-            name: 'facturas',
-            path: '/facturas',
-            component: facturas
-        },
         // sucursales
         {
             name: 'sucursales',
@@ -151,6 +150,11 @@ const ROUTER = createRouter({
             name: 'detallesOrden',
             path: '/ordenes/:orden/detalles/',
             component: detallesOrden
+        },
+        {
+            name: 'facturas',
+            path: '/ordenes/:id/factura',
+            component: facturas
         },
         //#endregion
 
@@ -211,7 +215,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'crearFactura',
-            path: '/facturas/crear',
+            path: '/ordenes/:orden/factura/crear',
             component: crearFactura
         },
         {
@@ -236,6 +240,16 @@ const ROUTER = createRouter({
             component: editarCliente
         },
         {
+            name: 'editarCargo',
+            path: '/empleados/cargos/editar/:id',
+            component: editarCargo
+        },
+        {
+            name: 'editarTipoServicio',
+            path: '/servicios/tipos/editar/:id',
+            component: editarTipo
+        },
+        {
             name: 'editarEmpleado',
             path: '/empleados/editar/:id',
             component: editarEmpleado
@@ -247,7 +261,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'editarDetalleOrden',
-            path: '/ordenes/:id/detalles/editar/:detalle',
+            path: '/ordenes/:orden/detalles/editar/:detalle',
             component: editarDetalle
         },
         {
@@ -269,6 +283,21 @@ const ROUTER = createRouter({
             name: 'editarSucursal',
             path: '/sucursales/editar/:id',
             component: editarSucursal
+        },
+        {
+            name: 'editarRervacion',
+            path: '/reservaciones/editar/:id',
+            component: editarRervacion
+        },
+        {
+            name: 'editarOrden',
+            path: '/ordenes/editar/:id',
+            component: editarOrden
+        },
+        {
+            name: 'editarFactura',
+            path: '/ordenes/:orden/factura/editar/:id',
+            component: editarFactura
         },
 
         // configuración

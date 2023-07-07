@@ -41,11 +41,10 @@ main {
 }
 </style>
 
-<!-- espacio para las plantillas -->
+
 <template>
-    <!-- verificar sí no existen una autenticación -->
     <template v-if="!auth">
-        <!-- getCookie es evento donde se enviando datos al componente padre -->
+
         <login @getCookie="validateCookie" />
     </template>
     <template v-else>
@@ -54,10 +53,10 @@ main {
 </template>
 
 
-<!-- setup solo se utiliza en el componente principal,
-  para comprimir el código, porque es el que almacena más contenido
--->
 <script>
+//  setup solo se utiliza en el componente principal,
+//   para comprimir el código, porque es el que almacena más contenido
+
 import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
 import login from './views/login.vue'

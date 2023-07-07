@@ -24,16 +24,12 @@
                             <label for="direccion" class="form-label">Direccion</label>
                             <input type="text" class="form-control" id="direccion" required v-model="sucursal.direccion">
                         </div>
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="nit" class="form-label">NIT</label>
-                                <input type="text" class="form-control" id="nit" required v-model="sucursal.nit">
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="nrc" class="form-label">NRC</label>
-                                <input type="text" class="form-control" id="nrc" required v-model="sucursal.nrc">
-                            </div>
+
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" required v-model="sucursal.nombre">
                         </div>
+
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="telefono" class="form-label">Teléfono</label>
@@ -72,8 +68,7 @@ export default {
         return {
             sucursal: {
                 direccion: '',
-                nit: '',
-                nrc: '',
+                nombre: '',
                 tel: '',
                 inicio: '',
                 cierre: ''
@@ -82,12 +77,12 @@ export default {
         }
     },
     methods: {
-        modificarSucursal() {            
+        modificarSucursal() {
             // validar campos vacíos
-            if (this.sucursal.direccion && this.sucursal.nit && this.sucursal.nrc && this.sucursal.tel &&
+            if (this.sucursal.direccion && this.sucursal.nombre && this.sucursal.tel &&
                 this.sucursal.inicio && this.sucursal.cierre && (this.sucursal.inicio < this.sucursal.cierre)) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/sucursales/'+this.$route.params.id, this.sucursal)
+                axios.put('http://localhost:3000/api/sucursales/' + this.$route.params.id, this.sucursal)
                     .then(res => {
                         console.log(res)
                         if (res.data.error) {
@@ -99,30 +94,29 @@ export default {
                         }
 
                     })
-                    .catch(e => {alert(e); console.log(e)})
+                    .catch(e => { alert(e); console.log(e) })
             }
             else this.msg = 'No se permiten campos vacíos'
             // validar que la hora tenga lógica
             if (this.sucursal.inicio > this.sucursal.cierre) {
-                this.msg = 'Horario ilogico'             
+                this.msg = 'Horario ilogico'
             }
         },
         // método para obtener los datos de una sucursal
         getSucursal() {
             // realizar petición
-            
-            axios.get('http://localhost:3000/api/sucursales/'+ this.$route.params.id)
+
+            axios.get('http://localhost:3000/api/sucursales/' + this.$route.params.id)
                 .then(res => {
-                    console.log(res.data);
+                   
                     const SUCURSAL = res.data;
                     let horario = SUCURSAL.horario.split(' - ');
                     let h_inicio = horario[0].split(' ')[0];
                     let h_cierre = horario[1].split(' ')[0];
                     this.sucursal = {
                         inicio: h_inicio,
-                        cierre: h_cierre,
-                        nit: SUCURSAL.nit,
-                        nrc: SUCURSAL.nrc,
+                        nombre: SUCURSAL.nombre_sucursal,
+                        cierre: h_cierre,                    
                         direccion: SUCURSAL.direccion,
                         tel: SUCURSAL.telefono
                     }
@@ -133,7 +127,7 @@ export default {
                 })
         }
     },
-    mounted(){
+    mounted() {
         this.getSucursal();
     }
 }

@@ -16,7 +16,6 @@
 .li-lista {
     list-style: none;
     margin: 10% 0;
-    padding: 5% 0;
     width: 120%;
     border-radius: 7px 0 0 7px;
 }
@@ -36,6 +35,7 @@
     /* cursor: pointer; */
     width: 100%;
     display: block;
+    padding: 5% 0;
 }
 
 .logo-sidebar {
@@ -52,7 +52,7 @@
 <template>
     <div class="container-sidebar">
         <div class="logo-sidebar">
-            <img src="./../assets/img/logos/logo_blanco.png" />
+            <img :src="logo"  srcset="../assets/img/logos/logo_blanco.png"/>
         </div>
         <ul class="ul-lista">
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">
@@ -86,6 +86,7 @@ export default {
                 { option: "Sucursales", route: "/sucursales" },
                 { option: "Horarios", route: "/horarios" },
             ],
+            logo: './../src/assets/img/logos/logo_blanco.png'
         };
     },
 };

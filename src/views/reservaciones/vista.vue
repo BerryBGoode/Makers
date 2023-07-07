@@ -1,5 +1,10 @@
+<style>
+.column {
+    flex-direction: column;
+}
+</style>
 <template>
-    <div class="container servicios component-servicio">
+    <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Reservaciones</span>
             <router-link to="/reservaciones/crear" type="button" class="btn btn-makers">
@@ -7,21 +12,38 @@
             </router-link>
         </div>
         <hr>
+        <div class="data p-2" v-if="buscador.length === 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <!-- aquí cargar las reservaciones -->
         <!-- verificar si existen reservaciones -->
         <div class="data p-2" v-if="reservaciones.length > 0">
             <!-- recorrer las reservaciones encontradas -->
 
-            <div class="card" v-for="(reservacion, i) in reservaciones" :key="i">
+            <div class="card" v-for="(reservacion, i) in buscador" :key="i">
                 <div class="card-body">
                     <div class="row fila">
-                        <div class="col-md-6">
-                            <span class="card-text mb-0 smaller">{{ reservacion.fecha }}</span>
+                        <div class="col-md-2">
+                            <h5 class="card-title bold mb-1">{{ reservacion.fecha }}</h5>
                             <span class="card-text mb-0 smaller">{{ reservacion.hora }}</span>
+                            <!-- <p class="card-text mb-0 smaller">{{ servicio.descripcion }} </p> -->
+                            <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
+                        </div>
+                        <div class="col-md-3 flex column">
+                            <span>{{ reservacion.cliente_n }}</span>
+                            <span>{{ reservacion.cliente_a }}</span>
+                            <span>{{ reservacion.cliente_d }}</span>
+                        </div>
+                        <div class="col-md-3 flex column">
+                            <span>{{ reservacion.empleado_n }}</span>
+                            <span>{{ reservacion.empleado_a }}</span>
+                            <span>{{ reservacion.empleado_d }}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <router-link :to="{ path: '/reservaciones/editar' + reservacion.id_reservacion }">
+                                <router-link :to="{ path: '/reservaciones/editar/' + reservacion.id_reservacion }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -72,10 +94,12 @@ import axios from 'axios';
 // componente para vista
 export default {
     name: 'reservaciones',
+    props: { datos: { type: String } },
     data() {
         return {
             //arreglo vacío para guardar datos
-            reservaciones: []
+            reservaciones: [],
+            buscador: []
         }
     },
     methods: {
@@ -83,7 +107,10 @@ export default {
         getReservaciones() {
             //realizar la petición
             axios.get('http://localhost:3000/api/reservaciones/')
-                .then(res => this.reservaciones = res.data)
+                .then(res => {
+                    this.reservaciones = res.data;
+                    this.buscador = res.data;
+                })
                 .catch(e => alert(e));
         },
         eliminarReservacion(reservacion) {
@@ -101,10 +128,33 @@ export default {
                     })
                     .catch(e => { alert(e) })
             }
+        },
+        buscar(dato) {
+            // guardar en una constante los datos filtrados
+            const RESREVACIONES = this.reservaciones.filter(reservacion => {
+                // retornar los que cumplan las siguientes condiciones
+                return (
+                    reservacion.cliente_a.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.cliente_n.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.cliente_d.indexOf(dato) !== -1 ||
+                    reservacion.empleado_a.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.empleado_n.toLowerCase().indexOf(dato) !== -1 ||
+                    reservacion.empleado_d.indexOf(dato) !== -1 ||
+                    reservacion.fecha.indexOf(dato) !== -1 ||
+                    reservacion.hora.indexOf(dato) !== -1
+                )
+            })
+            // asignar a los del buscador
+            this.buscador = RESREVACIONES;
         }
     },
     mounted() {
         this.getReservaciones();
+    },
+    watch: {
+        datos(now) {
+            (now.trim() === '') ? this.buscador = this.reservaciones : this.buscar(now);
+        }
     }
 }
 

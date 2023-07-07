@@ -1,21 +1,3 @@
-<style>
-.width-auto {
-    width: auto;
-}
-
-.width-35 {
-    width: 35%;
-}
-
-.input-container-3 {
-    width: 31%;
-}
-
-.mb-9vh {
-    margin-bottom: 9vh;
-}
-</style>
-
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
@@ -79,7 +61,7 @@
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los datos de las sucursales -->
                                     <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                                        sucursal.direccion }}</option>
+                                        sucursal.nombre_sucursal }}</option>
                                 </select>
                                 <!-- sino existen sucursales -->
                                 <select class="form-select mb-3" name="error" v-else>
@@ -119,12 +101,17 @@
                                     <option>No se encontraron horarios</option>
                                 </select>
                             </div>
-                            <div class="mb-3 input-container width-35">
+                            <div class="mb-3 width-35 input-container">
                                 <label for="planilla" class="form-label">Planilla</label>
                                 <input type="text" class="form-control" id="planilla" v-model="this.model.empleado.planilla"
                                     required>
                             </div>
-                            <div class="mb-3 input-container width-35">
+                            <div class="mb-3 width-35 input-container">
+                                <label for="alias" class="form-label">Alias</label>
+                                <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                    maxlength="50" required>
+                            </div>
+                            <div class="mb-3 width-35 input-container">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
                                     maxlength="15" minlength="10" required>
@@ -134,7 +121,7 @@
 
                 </div>
                 <hr>
-                <div class="buttons-reservacion form-data">
+                <div class="padding-buttons buttons-reservacion form-data">
                     <router-link to="/empleados" class="btn btn-makers">
                         Cancelar
                     </router-link>
@@ -161,6 +148,7 @@ export default {
             model: {
                 empleado: {
                     nombres: '',
+                    alias: '',
                     apellidos: '',
                     dui: '',
                     clave: '',
@@ -200,7 +188,7 @@ export default {
             try {
                 // realizar petición
                 axios.get('http://localhost:3000/api/empleados/horarios')
-                    .then(res => { this.horarios = res.data; console.log(res.data) }) //obtener los datos de la petición
+                    .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
                     .catch(e => { console.log(e) }) // caso de error
             } catch (error) {
                 console.error(error);
@@ -216,41 +204,48 @@ export default {
         },
         // método para agregar un nuevo empleado
         crear() {
-            // validar datos
-            // realizar petición y enviando datos
-            axios.post('http://localhost:3000/api/empleados', this.model.empleado)
-                .then(res => {
-                    // cuando hay un error 400 que no realizo lo que se debía
-                    if (res.data.error) {
-                        this.msg = res.data.error;                        
-                    }
-                    // cuando si se realizo la tarea deceada y se creo algo 
-                    // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
-                        // limpiar valores 
-                        this.model.empleado = {
-                            nombres: '',
-                            apellidos: '',
-                            dui: '',
-                            clave: '',
-                            planilla: '',
-                            telefono: '',
-                            correo: '',
-                            sucursal: 'Seleccionar',
-                            cargo: 'Seleccionar',
-                            horario: 'Seleccionar',
-                        }
-                        // redireccionar
-                        alert('Empleado agregado')
-                        this.$router.push('/empleados');
-                    }
-                    console.log(res)                    
-
-                    // sí la respuesta fue la esperada, redirección a la vista principal
-                    // if (res.status === 201) this.$router.push('/empleados');
-                })
-                .catch(e => { alert(e) });
-
+            this.msg = '';
+            if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
+                ((this.model.empleado.cargo && this.model.empleado.sucursal && this.model.empleado.horario) !== 'Seleccionar') &&
+                this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo && 
+                this.model.empleado.planilla && this.model.empleado.clave) {
+                    // realizar petición y enviando datos
+                    axios.post('http://localhost:3000/api/empleados', this.model.empleado)
+                        .then(res => {
+                            // cuando hay un error 400 que no realizo lo que se debía
+                            if (res.data.error) {
+                                this.msg = res.data.error;                        
+                            }
+                            // cuando si se realizo la tarea deceada y se creo algo 
+                            // 201 es usado en método post y put
+                            if (res.status === 201 && !res.data.error) {
+                                // limpiar valores 
+                                this.model.empleado = {
+                                    nombres: '',
+                                    apellidos: '',
+                                    dui: '',
+                                    clave: '',
+                                    planilla: '',
+                                    telefono: '',
+                                    correo: '',
+                                    sucursal: 'Seleccionar',
+                                    cargo: 'Seleccionar',
+                                    horario: 'Seleccionar',
+                                }
+                                // redireccionar
+                                alert('Empleado agregado')
+                                this.$router.push('/empleados');
+                            }
+                            console.log(res)                    
+        
+                            // sí la respuesta fue la esperada, redirección a la vista principal
+                            // if (res.status === 201) this.$router.push('/empleados');
+                        })
+                        .catch(e => { alert(e) });
+                
+            }else{
+                this.msg = 'No se permiten campos vacíos';
+            }        
         }
     }
 } 

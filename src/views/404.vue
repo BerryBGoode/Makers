@@ -11,8 +11,6 @@
 export default  {
     // nombre del componente
     name : "404",
-    // props que pudiera recibir el componente
-    props : {},
     // método que retorna el componente
     data () {
         return {

@@ -51,7 +51,7 @@
         </div>
         <hr>
 
-        <!-- verificar sí se encontraron datos al buscar-->    
+        <!-- verificar sí se encontraron datos al buscar-->
         <div class="data p-2" v-if="buscador_c.length === 0">
             <span>No se encontraron datos</span>
         </div>
@@ -63,14 +63,15 @@
             <div class="card" v-for="(cliente, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <h5 class="card-title bold mb-1">{{ cliente.nombres }} {{ cliente.apellidos }}</h5>
                             <span class="card-text mb-0 smaller">{{ cliente.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ cliente.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p>
                         </div>
                         <div class="col-md-1">
-                            <span>consumo</span>
+                            <span>ordenes: </span>                            
+                            <span class="bold">{{ cliente.consumo}}</span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
@@ -119,7 +120,7 @@
             <span class="bold">
                 No se encontraron existencias
             </span>
-        </div>    
+        </div>
 
     </div>
 </template>
@@ -157,12 +158,12 @@ export default {
         // método para obtener los clientes
         async obtenerClientes() {
             // hacer la petición con promesas
-            axios.get('http://localhost:3000/api/clientes/', this.config)            
+            axios.get('http://localhost:3000/api/clientes/', this.config)
                 .then(res => {
                     // obtener los datos
                     if (res.status === 200) {
                         this.clientes = res.data;
-                        this.buscador_c = res.data                        
+                        this.buscador_c = res.data
                     }
                     if (res.status === 401) {
                         alert(res.data.error)
@@ -175,20 +176,21 @@ export default {
             // esperar confirmación
             if (confirm('Desea eliminar a este cliente?')) {
                 axios.delete('http://localhost:3000/api/clientes/' + idcliente)
-                    .then(
-                        res => {
-                            // mandar alerta
-                            alert(res.data),
-                                // recargar los clientes
-                                this.obtenerClientes();
-                        }
-                    )
-                    .catch(e => alert(e));
+                    .then(res => {
+                        // verificar errores
+                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        // cargar
+                        this.obtenerClientes();
+                    })
+                    .catch(e => {
+                        alert(e);
+                        console.log(e)
+                    })
             }
         },
         buscador(dato) {
             // declarar un objeto que contenga los datos filtrados del arreglo donde estan los clientes
-            const clientes = this.clientes.filter((item) => {
+            const CLIENTES = this.clientes.filter((item) => {
                 // retornar algo sí el resultado coincide con el valor enviado del watch
                 return (
                     item.nombres.toLowerCase().indexOf(dato) !== -1 || item.apellidos.toLowerCase().indexOf(dato) !== -1 ||
@@ -197,7 +199,7 @@ export default {
                 );
             });
             // asignar los registros encontrados al arreglo que los muestra
-            this.buscador_c = clientes;
+            this.buscador_c = CLIENTES;
         },
     },
     watch: {

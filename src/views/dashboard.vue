@@ -2,12 +2,11 @@
 
 <template>
     <aside>
-        <!-- sidebar component -->
+
         <sidebar />
     </aside>
     <main>
         <div class="container container-main">
-            <!-- división entre buscador -->
             <div class="container container-top">
                 <buscador @getBuscar="validateBuscar" />
                 <cuenta />

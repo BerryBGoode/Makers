@@ -1,8 +1,11 @@
 // requiriendo la pool con los attrs de la conexión
+const jwt = require('jsonwebtoken');
 const POOL = require('../db');
 // requerir de ecryptador
 const encrypt = require('../helpers/encrypt');
 
+const { getError } = require('../helpers/errors')
+let msg;
 
 /**
  * req: información que viene del frontend
@@ -14,13 +17,21 @@ const encrypt = require('../helpers/encrypt');
  * Método para obtener los empleados
  */
 const get = async (req, res) => {
-    try {
-        // realizar consulta
-        const EMPLEADOS = await POOL.query('SELECT * FROM empledos_view');
-        // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(EMPLEADOS.rows);
-    } catch (error) {
-        console.error(error);
+    // obtener el empleado loggeado
+    const TOKEN = req.headers.authorization;
+    if (TOKEN) {
+        try {
+            // obtener id
+            const ID = jwt.decode(TOKEN)
+            // obtener todos los empleado excepto el loggeados
+            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE NOT id_empleado = $1', [ID]);
+            // verificar el estado satisfactorio para retornar los datos
+            if (res.status(200)) res.json(EMPLEADOS.rows);
+        } catch (error) {
+            console.error(error);
+        }
+    } else {
+        res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
 }
 
@@ -30,7 +41,7 @@ const get = async (req, res) => {
 const getSucursales = async (req, res) => {
     try {
         // realizar consulta
-        const SUCURSALES = await POOL.query('SELECT id_sucursal, direccion FROM sucursales');
+        const SUCURSALES = await POOL.query('SELECT id_sucursal, nombre_sucursal FROM sucursales');
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(SUCURSALES.rows);
     } catch (error) {
@@ -76,10 +87,10 @@ const store = (req, res) => {
     let msg, er = '';
     try {
         // obtener los datos del req
-        const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
+        const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo], (err, result) => {
+        POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo, alias], (err, result) => {
 
                 // verificar sí hubo un error                                
                 if (err) {
@@ -119,7 +130,7 @@ const one = async (req, res) => {
         // convertirlo a entero, por sí el cliente modifica dato
 
         // esperar la respuesta cuando se haga la consulta
-        const EMPLEADO = await POOL.query('SELECT * FROM empledos_view WHERE id_empleado = $1', [IDEMPLEADO]);
+        const EMPLEADO = await POOL.query('SELECT * FROM empleados_view WHERE id_empleado = $1', [IDEMPLEADO]);
         // verificar si no existe
         // verificar sí el estado es el esperado
         if (res.status(201)) { res.json(EMPLEADO.rows) };
@@ -138,10 +149,10 @@ const change = (req, res) => {
         // obtener id 
         const IDEMPLEADO = parseInt(req.params.id);
         // obtener los datos enviados del frontend
-        const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo } = req.body;
+        const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, planilla = $4, telefono = $5, correo = $6 ,id_sucursal = $7, id_horario = $8, id_cargo = $9 WHERE id_empleado = $10',
-            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, IDEMPLEADO],
+        POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, planilla = $4, telefono = $5, correo = $6 ,id_sucursal = $7, id_horario = $8, id_cargo = $9, alias = $10 WHERE id_empleado = $11',
+            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO],
             (err, result) => {
                 // verificar sí ha y un error
                 if (err) {
@@ -179,15 +190,17 @@ const destroy = (req, res) => {
         const IDEMPLEADO = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
         POOL.query('DELETE FROM empleados WHERE id_empleado = $1', [IDEMPLEADO], (err, resul) => {
-            // verificar sí hay un error
+            // veficar errores
             if (err) {
-                // obtener mensaje
-                res.json({ error: err.message });
-                // retornar
-                return;
+                if (err.code) msg = getError(err.code);
+                res.json({ error: msg });
             }
-            // mandar mensaje sí no hay errores
-            res.status(201).send('Empleado eliminado');
+            // verificar sí existe error
+            // sino enviar estado exitoso
+            else { msg = 'Empleado eliminado'; }
+            if (!err) {
+                res.status(201).send(msg);
+            }
         })
     } catch (error) {
         console.log(error);

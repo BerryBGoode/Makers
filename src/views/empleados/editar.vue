@@ -78,7 +78,7 @@
                                     <option selected disabled>Seleccionar</option>
                                     <!-- recorrer los datos de las sucursales -->
                                     <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                                        sucursal.direccion }}</option>
+                                        sucursal.nombre_sucursal }}</option>
                                 </select>
                                 <!-- sino existen sucursales -->
                                 <select class="form-select mb-3" name="error" v-else>
@@ -123,6 +123,11 @@
                                 <input type="text" class="form-control" id="planilla"
                                     v-model="this.model.empleado.planilla">
                             </div>
+                            <div class="mb-3 width-35 input-container">
+                                <label for="alias" class="form-label">Alias</label>
+                                <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                    maxlength="50" required>
+                            </div>
                             <div class="mb-3 input-container width-35">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" readonly>
@@ -132,7 +137,7 @@
 
                 </div>
                 <hr>
-                <div class="buttons-reservacion form-data">
+                <div class="padding-buttons buttons-reservacion form-data">
                     <router-link to="/empleados" class="btn btn-makers">
                         Cancelar
                     </router-link>
@@ -167,6 +172,7 @@ export default {
                     correo: '',
                     sucursal: 'Seleccionar',
                     cargo: 'Seleccionar',
+                    alias: '',
                     horario: 'Seleccionar',
                 }
             },
@@ -201,7 +207,7 @@ export default {
             try {
                 // realizar petición
                 axios.get('http://localhost:3000/api/empleados/horarios')
-                    .then(res => { this.horarios = res.data; console.log(res.data) }) //obtener los datos de la petición
+                    .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
                     .catch(e => { console.log(e) }) // caso de error
             } catch (error) {
                 console.error(error);
@@ -225,6 +231,7 @@ export default {
                     const EMPLEADO = res.data[0];
                     // asignar a cada uno
                     this.model.empleado = {
+                        alias: EMPLEADO.alias,
                         nombres: EMPLEADO.nombres,
                         apellidos: EMPLEADO.apellidos,
                         dui: EMPLEADO.dui,
@@ -235,7 +242,7 @@ export default {
                         cargo: EMPLEADO.id_cargo,
                         horario: EMPLEADO.id_horario
                     }
-                    console.log(EMPLEADO)
+                    
                 })
                 .catch(e => {
                     // validar empleado inexistente
@@ -244,6 +251,7 @@ export default {
         },
         // método para modificar los datos del cliente
         modificarEmpleado() {
+            
             // obtener idempleado, del parametro establecido en index de routes del front llamado :'id'
             let idempleado = this.$route.params.id;
             // TODO: validar datos

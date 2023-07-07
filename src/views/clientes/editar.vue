@@ -3,14 +3,10 @@
     width: 70%;
 }
 
-.mb-15vh {
-    margin-bottom: 15vh;
-}
-
 </style>
 
 <template>
-    <div class="container servicios component-servicio">
+    <div class="container servicios component-servicio h-100">
         <div class="top">
             <h5 class="bold">
                 Cliente
@@ -18,70 +14,66 @@
             <span id="msg">{{ msg }}</span>
         </div>
         <hr>
-        <form method="post" @submit.prevent="validateUpdate">
-            <div class="container">
-                <div class="form-data">
-                    <span class="bold">
-                        info.
-                        Personal
-                    </span>
-                    <div class="form-2 w-70">
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="nombres" v-model="model.cliente.nombres"
-                                    @keyup="validInputText(model.cliente.nombres)" required>
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" id="apellidos" v-model="model.cliente.apellidos"
-                                    @keyup="validInputText(model.cliente.apellidos)" required>
-                            </div>
+        <form class="container h-91" @submit.prevent="validateUpdate">
+            <div class="form-data">
+                <span class="bold">
+                    info.
+                    Personal
+                </span>
+                <div class="form-2 w-70">
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" id="nombres" v-model="model.cliente.nombres"
+                                @keyup="validInputText(model.cliente.nombres)" required>
                         </div>
-                        <label for="dui">DUI</label>
-                        <input type="text" class="form-control" id="dui" v-model="model.cliente.dui">
-                    </div>
-                </div>
-                <hr>
-                <div class="form-data">
-                    <span class="bold">
-                        Contacto
-                    </span>
-                    <div action="" class="form-2 w-70">
-                        <div class="load">
-                            <div class="mb-3 input-container">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono" v-model="model.cliente.telefono"
-                                    required>
-                            </div>
-                            <div class="mb-3 input-container">
-                                <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" v-model="model.cliente.correo">
-                            </div>
+                        <div class="mb-3 input-container">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" v-model="model.cliente.apellidos"
+                                @keyup="validInputText(model.cliente.apellidos)" required>
                         </div>
                     </div>
-                </div>
-                <hr>
-                <div class="form-data mb-15vh">
-                    <span class="bold">
-                        Cuenta
-                    </span>
-                    <div action="" class="form-2 w-70 flex wp sp-bet">
-                        <label for="clave">Contraseña</label>
-                        <input type="password" class="form-control" id="clave" maxlength="15" minlength="10" v-model="model.cliente.clave"
-                            readonly>
-                    </div>
-                </div>
-                <hr>
-                <div class="buttons-reservacion form-data">
-                    <router-link to="/clientes" class="btn btn-makers">
-                        Cancelar
-                    </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
-
+                    <label for="dui">DUI</label>
+                    <input type="text" class="form-control" id="dui" v-model="model.cliente.dui">
                 </div>
             </div>
+            <hr>
+            <div class="form-data">
+                <span class="bold">
+                    Contacto
+                </span>
+                <div action="" class="form-2 w-70">
+                    <div class="load">
+                        <div class="mb-3 input-container">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="telefono" v-model="model.cliente.telefono" required>
+                        </div>
+                        <div class="mb-3 input-container">
+                            <label for="correo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="correo" v-model="model.cliente.correo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="mb-17vh form-data">
+                <span class="bold">
+                    Cuenta
+                </span>
+                <div action="" class="form-2 w-70 flex wp sp-bet">
+                    <label for="clave">Contraseña</label>
+                    <input type="password" class="form-control" id="clave" maxlength="15" minlength="10"
+                        v-model="model.cliente.clave" readonly>
+                </div>
+            </div>
+            <hr>
+            <div class="buttons-reservacion padding-buttons form-data">
+                <router-link to="/clientes" class="btn btn-makers">
+                    Cancelar
+                </router-link>
+                <button type="submit" class="btn btn-makers">Agregar cambios</button>
 
+            </div>
         </form>
     </div>
 </template>
@@ -190,46 +182,46 @@ export default {
                 axios.put('http://localhost:3000/api/clientes/' + this.$route.params.id, this.model.cliente)
                     // sí todo paso de manera correcta
                     .then(res => {
-                        // limpiar modelo con los datos cliente
-                        this.model.cliente = {
-                            nombres: '',
-                            apellidos: '',
-                            dui: '',
-                            telefono: '',
-                            correo: '',
-                            clave: '',
-                            estado: 1
+                        if (res.data.error) this.msg = res.data.error;
+                        else {
+                            // limpiar modelo con los datos cliente
+                            this.model.cliente = {
+                                nombres: '',
+                                apellidos: '',
+                                dui: '',
+                                telefono: '',
+                                correo: '',
+                                clave: '',
+                                estado: 1
+                            }
+                            alert(res.data)
+                            // recireccionar a la vista principal
+                            if (res.status === 201) this.$router.push('/clientes');
                         }
-                        alert(res.data)
-                        console.log(res)
-                        // recireccionar a la vista principal
-                        if (res.status === 201) this.$router.push('/clientes');
                     })
                     .catch(e => { console.error(e) });
                 // limpiar espacio de mensajes de advertencia
             } else {
                 this.msg = 'No se permite datos vacíos';
             }
-
         },
         // método para obtener datos de cliente
         getCliente(cliente) {
-            console.log(cliente)
             // haciendo petión get, enviando el parametro especificado en el .routes.js (idcliente)            
             axios.get('http://localhost:3000/api/clientes/' + cliente).then(res => {
                 // obtener los datos del cliente
                 const CLIENTE = res.data[0];
                 // asignar los datos a lso inputs
                 this.model.cliente = {
-                    nombres : CLIENTE.nombres,
-                    apellidos : CLIENTE.apellidos,
-                    dui : CLIENTE.dui,
-                    telefono : CLIENTE.telefono,
-                    correo : CLIENTE.correo,
-                    clave : CLIENTE.clave,
-                    estado : CLIENTE.estado
+                    nombres: CLIENTE.nombres,
+                    apellidos: CLIENTE.apellidos,
+                    dui: CLIENTE.dui,
+                    telefono: CLIENTE.telefono,
+                    correo: CLIENTE.correo,
+                    clave: CLIENTE.clave,
+                    estado: CLIENTE.estado
                 }
-                
+
             })
         }
     }
