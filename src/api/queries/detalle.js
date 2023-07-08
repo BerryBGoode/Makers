@@ -18,20 +18,6 @@ const get = async (req, res) => {
 }
 
 /**
- * Método para obtener los tipos de servicio
- */
-const getTiposSerivicios = async (req, res) => {
-    try {
-        // realiza la consulta para obtener todos los tipos de servicios
-        const TIPOS = await POOL.query('SELECT * FROM tipos_servicios');
-        // verificar sí la respuesta es satisfactoria
-        if (res.status(200)) res.json(TIPOS.rows);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-/**
  * Método para obtener los servicios según el tipo de servicio
  */
 const getServicios = async (req, res) => {
@@ -39,8 +25,7 @@ const getServicios = async (req, res) => {
         // obtener el tipo de servicio
         const SUCURSAL = parseInt(req.params.sucursal);
         // realizar query 
-        console.log(SUCURSAL)
-        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, existencias FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL]);
+        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, existencias, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
         // verificar respuesta satisfactoria
         if (res.status(200)) res.json(PRODUCTO.rows);
     } catch (error) {
@@ -56,7 +41,6 @@ const store = (req, res) => {
         // obtener los datos del frontend
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
-        console.log(req.body)
         POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
             [servicio, cantidad, descuento, orden],
             (err, result) => {
@@ -145,4 +129,4 @@ const destroy = (req, res) => {
 }
 
 // exportar modulos
-module.exports = { get, getTiposSerivicios, getServicios, store, one, change, destroy };
+module.exports = { get, getServicios, store, one, change, destroy };
