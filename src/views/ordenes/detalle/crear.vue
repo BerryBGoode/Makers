@@ -177,7 +177,7 @@ export default {
                     .then(res => {
                         // verificar error                    
                         if (res.data.error) {
-                            this.msg = 'Error con algún dato enviado';
+                            this.msg = res.data.error;
                         }
                         // verificar sí la tarea se realizo de manera esperada
                         if (res.status === 201 && !res.data.error) {

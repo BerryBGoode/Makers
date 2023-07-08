@@ -212,6 +212,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     background-repeat: no-repeat;
 }
 
+.mb-24-2vh {
+    margin-bottom: 24.2vh;
+}
+
+.router-view {
+    height: 90%;
+    position: relative;
+}
+
+.bottom {
+    position: absolute;
+    bottom: 0;
+    width: 98%;
+}
 
 /* estilos por defecto de vue */
 /* #app {
