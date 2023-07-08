@@ -10,7 +10,7 @@ const get = async (req, res) => {
         // obtener orden
         const ORDEN = parseInt(req.params.orden);
         // realizar consulta
-        const DETALLES = await POOL.query('SELECT * FROM detalle_view WHERE id_orden = $1', [ORDEN]);
+        const DETALLES = await POOL.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
         // verficar estado existoso
         if (res.status(200)) res.json(DETALLES.rows);
     } catch (error) {
@@ -26,7 +26,7 @@ const getServicios = async (req, res) => {
         // obtener el tipo de servicio
         const SUCURSAL = parseInt(req.params.sucursal);
         // realizar query 
-        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, existencias, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
+        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
         // verificar respuesta satisfactoria
         if (res.status(200)) res.json(PRODUCTO.rows);
     } catch (error) {
@@ -75,7 +75,7 @@ const change = async (req, res) => {
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query y enviando parametros
         if (await compareProductosSucursal(servicio, cantidad)) {
-            POOL.query('UPDATE detalle_ordenes SET id_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
+            POOL.query('UPDATE detalle_ordenes SET id_detalle_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
                 // aquí envio parametros
                 [servicio, cantidad, descuento, orden, DETALLE],
                 (err, result) => {
@@ -105,7 +105,7 @@ const one = async (req, res) => {
         // obtener detalle
         const ID = parseInt(req.params.id);
         // realizar consulta
-        const DETALLE = await POOL.query('SELECT * FROM detalle_view WHERE id_detalle = $1', [ID])
+        const DETALLE = await POOL.query('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = $1', [ID])
         // verificar respuesta satisfactoria
         if (res.status(200)) res.json(DETALLE.rows);
     } catch (error) {

@@ -37,7 +37,7 @@
                                 <option selected disabled>Seleccionar</option>
                                 <option selected disabled v-if="servicios <= 0">Sucursal sin servicios</option>
                                 <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_detalle"
-                                    :data-tipo_servicio="servicio.tipo_servicio" :data-existencias="servicio.existencias">
+                                    :data-tipo_servicio="servicio.tipo_servicio" :data-cantidad="servicio.cantidad">
                                     {{ servicio.nombre_servicio }}</option>
                             </select>
 
@@ -50,13 +50,14 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="" class="form-label">Descuento</label>
-                            <input type="number" class="form-control" id="" min="1" :max="100" v-model="model.pedido.descuento">
+                            <input type="number" class="form-control" id="" min="1" :max="100"
+                                v-model="model.pedido.descuento">
 
                         </div>
                         <div class="mb-3 input-container">
                             <label for="" class="form-label">Cantidad</label>
-                            <input type="number" class="form-control" id="" min="1" :max="input.stock" v-model="model.pedido.cantidad"
-                                :readonly="input.read">
+                            <input type="number" class="form-control" id="" min="1" :max="input.stock"
+                                v-model="model.pedido.cantidad" :readonly="input.read">
 
                         </div>
                     </div>
@@ -119,8 +120,8 @@ export default {
             // igualmente verificar sí el tipo de servicio es producto        
             if (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') {
                 // asignar las existencias al input según el producto seleccionado
-                this.input.stock = event.target.options[event.target.selectedIndex].dataset.existencias
-            }else{                            
+                this.input.stock = event.target.options[event.target.selectedIndex].dataset.cantidad
+            } else {
                 // limpiar exitencias
                 this.input.stock = '';
             }
@@ -154,7 +155,8 @@ export default {
             this.msg = '';
             // validar datos, evaluar casos erroneos
             if (this.model.pedido.servicio === 'Seleccionar' || this.model.sucursal.value === 'Seleccionar' ||
-                this.model.pedido.descuento <= -1 || this.model.pedido.cantidad <= -1 || this.model.pedido.cantidad > this.input.stock) {
+                this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
+                this.model.pedido.cantidad <= -1 || this.model.pedido.cantidad > this.input.stock) {
                 this.msg = 'Datos invalidos'
             } else {
 

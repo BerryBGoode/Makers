@@ -28,7 +28,8 @@
                         <div class="col-md-4">
                             <h5 class="card-title bold mb-1">{{ detalle.nombre_servicio }}</h5>
                             <p class="card-text mb-0 smaller"> {{ detalle.tipo_servicio }} </p>
-                            <p class="card-text mb-0 smaller">{{ detalle.cantidad }} </p>
+                            <p class="card-text mb-0 smaller">Cantidad: {{ detalle.cantidad }} </p>
+                            <p class="card-text mb-0 smaller"> {{ detalle.nombre_sucursal }} </p>
 
                         </div>
                         <div class="col-md-6 more-info">
