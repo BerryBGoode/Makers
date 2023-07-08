@@ -1,6 +1,7 @@
 // requerir la pool con los datos de la conexión
 const POOL = require('../db');
 
+const { compareProductos } = require('../helpers/validateHelpers');
 /**
  * req: los datos que trae del lado del cliente al hacer la petición
  * res: la respuesta del servidor
@@ -10,7 +11,7 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // obtener el id de la sucursal
-        const SUCURSAL = parseInt(req.params.id); 
+        const SUCURSAL = parseInt(req.params.id);
         // realizar query 
         const PRODUCTOS = await POOL.query('SELECT cantidad, nombre_servicio, id_detalle, id_servicio, id_sucursal FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_sucursal ASC', [SUCURSAL])
         // validar el resultado satisfactorio
@@ -40,11 +41,11 @@ const getProductos = async (req, res) => {
  * Método para agregar producto a una sucursal
  */
 const store = async (req, res) => {
-    try {        
+    try {
         // obtener los datos del frontend
         const { sucursal, servicio, cantidad } = req.body;
         // verificar cantidad con respecto al servicio        
-        if(await compareProductos(servicio, cantidad) === true){
+        if (await compareProductos(servicio, cantidad) === true) {
             // realizar transacción SQL
             POOL.query('INSERT INTO detalles_servicios_sucursales(id_sucursal, id_servicio, cantidad) VALUES ($1, $2, $3)',
                 [sucursal, servicio, cantidad], (err, result) => {
@@ -56,35 +57,15 @@ const store = async (req, res) => {
                     }
                     res.status(201).send('Producto agregado');
                 })
-        }else{
-            res.json({ error: 'Cantidad máxima superada'})
+        } else {
+            res.json({ error: 'Cantidad máxima superada' })
+            return
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-/**
- * Metodo para obtener y evaluar sí la cantidad agregar es más o igual
- * a las existencias
- */
-const compareProductos = async (servicio, cantidad) => {
-    try {        
-        // obtener las existencias
-        const SERVICIO = await POOL.query('SELECT existencias, id_tipo_servicio FROM servicios WHERE id_servicio = $1', [servicio])        
-        // obtener el tipo de servicio sea producto
-        const TPRODUCTO = await POOL.query('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = $1', ['Producto']);
-        // verificar sí el tipo de servicio es producto para evaluar cantidad con respecto a las existencias        
-        if (SERVICIO.rows[0].id_tipo_servicio === TPRODUCTO.rows[0].id_tipo_servicio){
-            // comparar sí las existencias son menos o igual4            
-            return (cantidad <= SERVICIO.rows[0].existencias)  
-        }else {            
-            return true;
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
 
 /**
  * Método para obtener los datos del registro del producto en la sucursal
@@ -105,24 +86,30 @@ const one = async (req, res) => {
 /**
  * Método para actualizar datos según el registro seleccionado
  */
-const change = (req, res) => {
+const change = async (req, res) => {
     try {
         // obtener detalle de la url
         const DETALLE = parseInt(req.params.id);
         // enviando los datos nuevos
-        const { producto, cantidad } = req.body;
+        const { servicio, cantidad } = req.body;
         // realizar transacción sql,
-        POOL.query('UPDATE detalles_servicios_sucursales SET id_servicio = $1, cantidad = $2 WHERE id_detalle = $3', [producto, cantidad, DETALLE],
-            (err, result) => {
-                // verificar sí hay algún error
-                if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
-                }
-                res.status(201).send('Detalle modificado');
-            })
+        if (await compareProductos(servicio, cantidad)) {
+
+            POOL.query('UPDATE detalles_servicios_sucursales SET id_servicio = $1, cantidad = $2 WHERE id_detalle = $3', [servicio, cantidad, DETALLE],
+                (err, result) => {
+                    // verificar sí hay algún error
+                    if (err) {
+                        // enviar mensaje de error
+                        res.json({ error: err.message });
+                        // retornar
+                        return;
+                    }
+                    res.status(201).send('Detalle modificado');
+                })
+        } else {
+            res.json({ error: 'Cantidad máxima superada'});
+            return
+        }
     } catch (error) {
         console.log(error);
     }
@@ -140,13 +127,13 @@ const destroy = (req, res) => {
             // verificar errores
             if (err) {
                 // enviar mensaje de error
-                res.json({error: err.message});
+                res.json({ error: err.message });
                 // retornar
                 return;
             }
             // mandar mensaje de proceso satisfecho
             res.status(201).send('Detalle eliminado');
-        })     
+        })
     } catch (error) {
         console.log(error);
     }

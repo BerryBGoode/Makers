@@ -1,6 +1,7 @@
 // requerir de la conexión
-const POOL = require('../db'); 
+const POOL = require('../db');
 
+const { compareProductosSucursal } = require('../helpers/validateHelpers');
 /**
  * Método para obtener los detalles según la orden de la url
  */
@@ -36,24 +37,28 @@ const getServicios = async (req, res) => {
 /**
  * Método para agregar un detalle según la orden
  */
-const store = (req, res) => {
+const store = async (req, res) => {
     try {
         // obtener los datos del frontend
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
-        POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
-            [servicio, cantidad, descuento, orden],
-            (err, result) => {
-                // verificar sí hubo un error
-                if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
+        if (await compareProductosSucursal(servicio, cantidad)) {
+            POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
+                [servicio, cantidad, descuento, orden],
+                (err, result) => {
+                    // verificar sí hubo un error
+                    if (err) {
+                        // enviar mensaje de error
+                        res.json({ error: err.message });
+                        // retornar
+                        return;
+                    }
+                    res.status(201).send('Detalle agregado');
                 }
-                res.status(201).send('Detalle agregado');
-            }
-        )
+            )
+        } else {
+            res.json({ error: 'Cantidad máxima superada' })
+        }
     } catch (error) {
         console.log(error);
     }
@@ -62,27 +67,31 @@ const store = (req, res) => {
 /**
  * Método para actualizar los datos según registro seleccionado
  */
-const change = (req, res) => {
+const change = async (req, res) => {
     try {
         // obtener id del detalle
         const DETALLE = parseInt(req.params.id);
         // obtener el cuerpo de datos
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query y enviando parametros
-        POOL.query('UPDATE detalle_ordenes SET id_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
-            // aquí envio parametros
-            [servicio, cantidad, descuento, orden, DETALLE],
-            (err, result) => {
-                // verificar error
-                if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar 
-                    return;
+        if (await compareProductosSucursal(servicio, cantidad)) {
+            POOL.query('UPDATE detalle_ordenes SET id_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
+                // aquí envio parametros
+                [servicio, cantidad, descuento, orden, DETALLE],
+                (err, result) => {
+                    // verificar error
+                    if (err) {
+                        // enviar mensaje de error
+                        res.json({ error: err.message });
+                        // retornar 
+                        return;
+                    }
+                    res.status(201).send('Detalle modificado')
                 }
-                res.status(201).send('Detalle modificado')
-            }
-        )
+            )
+        } else {
+            res.json({ error: 'Cantidad máxima superada' });
+        }
     } catch (error) {
         console.log(error);
     }
@@ -98,7 +107,7 @@ const one = async (req, res) => {
         // realizar consulta
         const DETALLE = await POOL.query('SELECT * FROM detalle_view WHERE id_detalle = $1', [ID])
         // verificar respuesta satisfactoria
-        if(res.status(200)) res.json(DETALLE.rows);
+        if (res.status(200)) res.json(DETALLE.rows);
     } catch (error) {
         console.log(error)
     }
@@ -116,7 +125,7 @@ const destroy = (req, res) => {
             // verifiacar sí hubo un error
             if (err) {
                 // retornar error
-                res.json({ error: err.message});
+                res.json({ error: err.message });
                 // retornar
                 return;
             }
