@@ -1,6 +1,7 @@
 // requerir de la conexión
-const POOL = require('../db'); 
+const POOL = require('../db');
 
+const { compareProductosSucursal } = require('../helpers/validateHelpers');
 /**
  * Método para obtener los detalles según la orden de la url
  */
@@ -9,23 +10,9 @@ const get = async (req, res) => {
         // obtener orden
         const ORDEN = parseInt(req.params.orden);
         // realizar consulta
-        const DETALLES = await POOL.query('SELECT * FROM detalle_view WHERE id_orden = $1', [ORDEN]);
+        const DETALLES = await POOL.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
         // verficar estado existoso
         if (res.status(200)) res.json(DETALLES.rows);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-/**
- * Método para obtener los tipos de servicio
- */
-const getTiposSerivicios = async (req, res) => {
-    try {
-        // realiza la consulta para obtener todos los tipos de servicios
-        const TIPOS = await POOL.query('SELECT * FROM tipos_servicios');
-        // verificar sí la respuesta es satisfactoria
-        if (res.status(200)) res.json(TIPOS.rows);
     } catch (error) {
         console.log(error);
     }
@@ -39,8 +26,7 @@ const getServicios = async (req, res) => {
         // obtener el tipo de servicio
         const SUCURSAL = parseInt(req.params.sucursal);
         // realizar query 
-        console.log(SUCURSAL)
-        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, existencias FROM productos_sucursales_view WHERE id_sucursal = $1', [SUCURSAL]);
+        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
         // verificar respuesta satisfactoria
         if (res.status(200)) res.json(PRODUCTO.rows);
     } catch (error) {
@@ -51,25 +37,28 @@ const getServicios = async (req, res) => {
 /**
  * Método para agregar un detalle según la orden
  */
-const store = (req, res) => {
+const store = async (req, res) => {
     try {
         // obtener los datos del frontend
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
-        console.log(req.body)
-        POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
-            [servicio, cantidad, descuento, orden],
-            (err, result) => {
-                // verificar sí hubo un error
-                if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar
-                    return;
+        if (await compareProductosSucursal(servicio, cantidad)) {
+            POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
+                [servicio, cantidad, descuento, orden],
+                (err, result) => {
+                    // verificar sí hubo un error
+                    if (err) {
+                        // enviar mensaje de error
+                        res.json({ error: err.message });
+                        // retornar
+                        return;
+                    }
+                    res.status(201).send('Detalle agregado');
                 }
-                res.status(201).send('Detalle agregado');
-            }
-        )
+            )
+        } else {
+            res.json({ error: 'Cantidad máxima superada' })
+        }
     } catch (error) {
         console.log(error);
     }
@@ -78,27 +67,31 @@ const store = (req, res) => {
 /**
  * Método para actualizar los datos según registro seleccionado
  */
-const change = (req, res) => {
+const change = async (req, res) => {
     try {
         // obtener id del detalle
         const DETALLE = parseInt(req.params.id);
         // obtener el cuerpo de datos
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query y enviando parametros
-        POOL.query('UPDATE detalle_ordenes SET id_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
-            // aquí envio parametros
-            [servicio, cantidad, descuento, orden, DETALLE],
-            (err, result) => {
-                // verificar error
-                if (err) {
-                    // enviar mensaje de error
-                    res.json({ error: err.message });
-                    // retornar 
-                    return;
+        if (await compareProductosSucursal(servicio, cantidad)) {
+            POOL.query('UPDATE detalle_ordenes SET id_detalle_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
+                // aquí envio parametros
+                [servicio, cantidad, descuento, orden, DETALLE],
+                (err, result) => {
+                    // verificar error
+                    if (err) {
+                        // enviar mensaje de error
+                        res.json({ error: err.message });
+                        // retornar 
+                        return;
+                    }
+                    res.status(201).send('Detalle modificado')
                 }
-                res.status(201).send('Detalle modificado')
-            }
-        )
+            )
+        } else {
+            res.json({ error: 'Cantidad máxima superada' });
+        }
     } catch (error) {
         console.log(error);
     }
@@ -112,9 +105,9 @@ const one = async (req, res) => {
         // obtener detalle
         const ID = parseInt(req.params.id);
         // realizar consulta
-        const DETALLE = await POOL.query('SELECT * FROM detalle_view WHERE id_detalle = $1', [ID])
+        const DETALLE = await POOL.query('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = $1', [ID])
         // verificar respuesta satisfactoria
-        if(res.status(200)) res.json(DETALLE.rows);
+        if (res.status(200)) res.json(DETALLE.rows);
     } catch (error) {
         console.log(error)
     }
@@ -132,7 +125,7 @@ const destroy = (req, res) => {
             // verifiacar sí hubo un error
             if (err) {
                 // retornar error
-                res.json({ error: err.message});
+                res.json({ error: err.message });
                 // retornar
                 return;
             }
@@ -145,4 +138,4 @@ const destroy = (req, res) => {
 }
 
 // exportar modulos
-module.exports = { get, getTiposSerivicios, getServicios, store, one, change, destroy };
+module.exports = { get, getServicios, store, one, change, destroy };

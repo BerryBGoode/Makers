@@ -1,48 +1,3 @@
-<style>
-.mb-36vh {
-    margin-bottom: 36vh;
-}
-
-.align-center {
-    align-self: center;
-}
-
-.switch-options {
-    width: 25%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.form-check-input:checked {
-    background-color: #393534;
-    border-color: #393534;
-}
-
-.form-switch .form-check-input {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-}
-
-.form-check-input:focus {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-    border-color: #b4b0af;
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(84, 84, 84, 0.48);
-}
-
-.form-check-input {
-    background-color: #393534;
-    border-color: #393534;
-}
-
-.makers-switch {
-    background-repeat: no-repeat;
-}
-
-.h-100 {
-    height: 100%;
-}
-</style>
-
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
@@ -58,33 +13,37 @@
                     <form action="" class="form-1">
                         <div class="load">
                             <div class=" input-container">
-                                <label for="" class="form-label">Tipo de servicio</label>
-                                <!-- caso donde existan más de 0 tipos de servicios -->
-                                <select class="form-select mb-3" v-if="tipos.length > 0" v-model="model.tipo.value"
-                                    @change="cargarServicios" id="tipoServicio">
+                                <label for="sucursales" class="form-label">Sucursal</label>
+                                <select class="form-select mb-3" v-if="sucursales.length > 0" v-model="model.sucursal.value"
+                                    @change="cargarServicios" id="sucursales">
                                     <option selected disabled>Seleccionar</option>
-                                    <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio"
-                                        class="option" v-text="tipo.tipo_servicio"></option>
+                                    <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal"
+                                        class="option" v-text="sucursal.nombre_sucursal"></option>
                                 </select>
                                 <!-- caso default-->
                                 <select class="form-select mb-3" v-else>
-                                    <option selected>No se encontraron tipos de servicio</option>
+                                    <option selected>No se encontraron sucursales</option>
                                 </select>
 
                             </div>
                             <div class="input-container">
                                 <label for="" class="form-label">Servicio</label>
                                 <!-- caso donde no sé haya seleccionar tipo de servicio -->
-                                <select class="form-select mb-3" v-if="model.tipo.txt === 'Seleccionar'">
-                                    <!-- verificar sí el cliente ha seleccionar un tipo de servicio -->
+                                <select class="form-select mb-3" v-if="model.sucursal.value === 'Seleccionar'">
+
                                     <option selected disabled>Seleccionar</option>
                                 </select>
-                                <!-- caso donde se haya selecccionar el tipo de servicio -->
-                                <select class="form-select mb-3" v-if="model.tipo.txt !== 'Seleccionar'"
-                                    v-model="model.pedido.servicio">
-                                    <!-- verificar sí el cliente ha seleccionar un tipo de servicio -->
+
+                                <select class="form-select mb-3" v-if="model.sucursal.value !== 'Seleccionar'"
+                                    v-model="model.pedido.servicio" @change="select">
+
                                     <option selected disabled>Seleccionar</option>
-                                    <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio">
+
+                                    <option selected disabled v-if="servicios <= 0">Sucursal sin servicios</option>
+
+                                    <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_detalle"
+                                        :data-existencias="servicio.existencias"
+                                        :data-tipo-servicio="servicio.tipo_servicio">
                                         {{ servicio.nombre_servicio }}</option>
                                 </select>
                             </div>
@@ -102,14 +61,8 @@
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="" class="form-label">Cantidad</label>
-                                <!-- verificar sí ha seleccionado producto -->
-                                <!-- en max obtener la existencias del producto -->
-                                <!-- sí el tipo es producto entonces  se pueda editar-->
-                                <input v-if="model.tipo.txt === 'Producto'" type="number" class="form-control" id="" min="1"
-                                    max="" v-model="model.pedido.cantidad">
-                                <input v-else type="number" class="form-control" id="" min="1" max="" readonly
-                                    v-model="model.pedido.cantidad">
-
+                                <input type="number" class="form-control" id="" min="1" :max="input.stock"
+                                    :readonly="input.read" v-model="model.pedido.cantidad">
                             </div>
                         </div>
                     </form>
@@ -136,11 +89,11 @@ export default {
     data() {
         return {
             // para cargar tipos
-            tipos: [],
+            sucursales: [],
             // cargar servicios
             servicios: [],
             model: {
-                tipo: {
+                sucursal: {
                     value: 'Seleccionar',
                     txt: ''
                 },
@@ -148,23 +101,39 @@ export default {
                     servicio: 'Seleccionar',
                     descuento: '',
                     cantidad: '',
-                    orden: this.$route.params.id
+                    orden: this.$route.params.orden
                 }
+            },
+            input: {
+                stock: '',
+                read: false
             },
             msg: ''
         }
     },
     mounted() {
         this.cargarDetalle();
-        this.cargarTiposServicios();
+        this.cargarSucursales();
     },
     // métodos del componente
     methods: {
+        // método para validar los estados de algunos inputs y valores según el tipo de servicio
+        select(event) {
+            // obtener y verificar sí el tipo de producto para asignar límite
+            // máximo, según las existencias del producto en la sucursal
+            // estos datos se obtienen del DOM
+            (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') ?
+                // asignar cantidad máxima al input según las existencias
+                this.input.stock = event.target.options[event.target.selectedIndex].dataset.existencias
+                :
+                // limpiar las existencias
+                this.input.stock = ''
+        },
         // método para obtener los tipos de servicios
-        cargarTiposServicios() {
-            axios.get('http://localhost:3000/api/ordenes/detalles/tipos')
-                .then(res => { this.tipos = res.data; })
-                .catch(e => alert(e));
+        cargarSucursales() {
+            axios.get('http://localhost:3000/api/empleados/sucursales')
+                .then(res => { this.sucursales = res.data; })
+                .catch(e => console(e));
         },
         // método para obtener los servicios según el tipo 
         cargarServicios(event) {
@@ -172,13 +141,13 @@ export default {
                 // recear valor texto de select servicio
                 this.model.pedido.servicio = 'Seleccionar'
                 // obtener el id del tipo
-                this.model.tipo.value = event.target.value;
+                this.model.sucursal.value = event.target.value;
                 // obtener el texto del option para evaluar la cantidad
-                this.model.tipo.txt = event.target.options[event.target.selectedIndex].text;
-                
+                this.model.sucursal.txt = event.target.options[event.target.selectedIndex].text;
+
             }
             // realizar petición
-            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.tipo.value)
+            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value)
                 .then(res => {
                     this.servicios = res.data;
                 })
@@ -186,45 +155,55 @@ export default {
         },
         // método para modificar los datos (UPDATE)
         modificarDetalle() {
-            console.log(this.$route.params.detalle);
-            // validar datos
-            // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
-            if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.tipo.txt !== 'Producto') {
-                this.model.pedido.cantidad = 1;
-                this.model.pedido.descuento = 0;
-            }
+            this.msg = '';
+            // verificar sí los datos son erroneas
+            if (this.model.pedido.servicio === 'Seleccionar' ||
+                this.model.sucursal.value === 'Seleccionar' || this.model.pedido.descuento <= -1 ||
+                this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
+                this.model.pedido.cantidad <= -1 ||
+                this.model.pedido.cantidad > this.input.stock) {
+                this.msg = 'Datos invalidos';
+            } else {
 
-            if (!this.model.pedido.cantidad && this.model.tipo.txt !== 'Producto') {
-                this.model.pedido.cantidad = 1;
-            }
+                // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
+                if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.sucursal.txt !== 'Producto') {
+                    this.model.pedido.cantidad = 1;
+                    this.model.pedido.descuento = 0;
+                }
 
-            if (!this.model.pedido.descuento) {
-                this.model.pedido.descuento = 0;
-            }
-            // realizar petición enviandole el parametro de iddetalle de la url y los datos
-            console.log(this.$route.params.id + 'b');
-            axios.put('http://localhost:3000/api/ordenes/detalles/' + this.$route.params.detalle, this.model.pedido)
-                .then(res => {
-                    // verificar error                    
-                    if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                    }
-                    // verificar sí la tarea se realizo de manera esperada
-                    if (res.status === 201 && !res.data.error) {
-                        // limipiar campos
-                        this.model.pedido = {
-                            servicio: 'Seleccionar',
-                            descuento: '',
-                            cantidad: '',
-                            orden: this.$route.params.id
+                if (!this.model.pedido.cantidad && this.model.sucursal.txt !== 'Producto') {
+                    this.model.pedido.cantidad = 1;
+                }
+
+                if (!this.model.pedido.descuento) {
+                    this.model.pedido.descuento = 0;
+                }
+                // realizar petición enviandole el parametro de iddetalle de la url y los datos
+                axios.put('http://localhost:3000/api/ordenes/detalles/' + this.$route.params.detalle, this.model.pedido)
+                    .then(res => {
+                        // verificar error                    
+                        if (res.data.error) {
+                            this.msg = res.data.error;
                         }
-                        this.msg = '';
-                        alert(res.data);
-                        // redireccionar
-                        this.$router.push('/ordenes/' + this.$route.params.id + '/detalles');
-                    }
-                })
-                .catch(e => alert(e));
+                        // verificar sí la tarea se realizo de manera esperada
+                        if (res.status === 201 && !res.data.error) {
+                            // limipiar campos
+                            this.model.pedido = {
+                                servicio: 'Seleccionar',
+                                descuento: '',
+                                cantidad: '',
+                                orden: this.$route.params.id
+                            }
+                            this.msg = '';
+                            alert(res.data);
+                            // redireccionar
+                            this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
+                        }
+                    })
+                    .catch(e => alert(e));
+            }
+
+
         },
         // método para obtener los datos apartir del detalle
         cargarDetalle() {
@@ -233,21 +212,21 @@ export default {
                 .then(res => {
                     // obtener los datos
                     const DETALLE = res.data[0];
-                    console.log(DETALLE)
                     // this.cargarServicios(event),
                     // cargar los datos 
-                    this.model.tipo = {
-                        txt: DETALLE.tipo_servicio,
-                        value: DETALLE.id_tipo_servicio
+                    this.model.sucursal = {
+                        txt: DETALLE.nombre_sucursal,
+                        value: DETALLE.id_sucursal
                     };
                     this.model.pedido = {
-                        servicio: DETALLE.id_servicio,
+                        servicio: DETALLE.id_detalle_servicio,
                         descuento: DETALLE.descuento,
                         cantidad: DETALLE.cantidad,
-                        orden: this.$route.params.id
+                        orden: this.$route.params.orden
                     }
+                    this.input.stock = DETALLE.cantidad_servicio
                     this.cargarServicios();
-                })                
+                })
         }
 
     }
