@@ -143,3 +143,143 @@ VALUES(
     '6534d990-1f67-11',
     1
 );
+
+INSERT INTO ordenes(
+    id_orden,
+    id_cliente,
+    fecha,
+    hora,
+    estado
+)
+VALUES
+(UUID(), 'ab52924a-1f69-11', '11-04-2023', '9:00', 2),
+(UUID(), 'ab52924a-1f69-11', '10-04-2023', '14:30', 1),
+(UUID(), 'ab52924a-1f69-11', '03-02-2023', '11:12', 2),
+(UUID(), 'ab529987-1f69-11', '11-02-2023', '8:20', 2),
+(UUID(), 'ab529987-1f69-11', '12-03-2023', '9:40', 1),
+(UUID(), 'ab529987-1f69-11', '12-02-2023', '12:00', 1);
+
+
+INSERT INTO reservaciones(
+	id_reservacion, id_cliente, id_empleado, fecha, hora, estado)
+	VALUES	(UUID(), 'ab4ddc08-1f69-11', '6266344d-1f9c-11','10-04-2023', '14:30', 1),
+			(UUID(), 'ab4ddc08-1f69-11', '6266344d-1f9c-11','03-02-2023', '11:12', 3),
+			(UUID(), 'ab4ddc08-1f69-11', '6266344d-1f9c-11','4-02-2023', '8:20', 2),
+			(UUID(), 'ab4ddc08-1f69-11', '6266344d-1f9c-11','12-03-2023', '9:40', 1),
+			(UUID(), 'ab50a22f-1f69-11', '6266344d-1f9c-11','4-02-2023', '12:00', 1),
+			(UUID(), 'ab50a22f-1f69-11', '627c2b30-1f9c-11','08-03-2023', '15:30', 3),
+			(UUID(), 'ab50a22f-1f69-11', '627c2b30-1f9c-11','2-04-2023', '10:45', 1),
+			(UUID(), 'ab50a0f6-1f69-11', '627c2b30-1f9c-11','2-03-2023', '13:55', 3),
+			(UUID(), 'ab509bf4-1f69-11', '627c2b30-1f9c-11','1-02-2023', '8:30', 2);
+
+
+INSERT INTO facturas(
+    id_factura,
+    id_orden,
+    id_sucursal,
+    id_empleado,
+    estado
+)
+VALUES(
+    UUID(),
+    'd2f02eb5-1f9d-11',
+    'df6f64d8-1f68-11',
+    '6266344d-1f9c-11',
+  	2
+),(
+    UUID(),
+    'd2f317c6-1f9d-11',
+    'df6f64d8-1f68-11',
+	'6266344d-1f9c-11',
+    1
+),(
+	UUID(),
+    'd2f31b21-1f9d-11',
+    'df6f64d8-1f68-11',
+    '6266344d-1f9c-11',
+    1
+),(
+	UUID(),
+    'd2f31c06-1f9d-11',
+    'df6f64d8-1f68-11',
+    '6266344d-1f9c-11',
+    1
+),(
+    UUID(),
+    'd2f31ce9-1f9d-11',
+    'df6f64d8-1f68-11',
+    '627c2b30-1f9c-11',
+    1
+);
+
+INSERT INTO `detalles_servicios_sucursales`(
+    `id_detalle`,
+    `id_sucursal`,
+    `id_servicio`,
+    `cantidad`
+)
+VALUES(
+    UUID(),
+    'df5f7cb9-1f68-11',
+    'b36fb5a9-1f98-11',
+    100
+),(
+	UUID(),
+    'df5f7cb9-1f68-11',
+    'b36fb4d5-1f98-11',
+    100
+),(
+	UUID(),
+    'df6f64d8-1f68-11',
+    'b36fb3ce-1f98-11',
+    50
+),(
+	UUID(),
+    'df6f64d8-1f68-11',
+    'b36fb5a9-1f98-11',
+    100
+), (
+	UUID(),
+    'df6f64d8-1f68-11',
+    'b36fb4d5-1f98-11',
+    50
+);
+
+INSERT INTO `detalles_ordenes`(
+    `id_detalle`,
+    `id_orden`,
+    `id_detalle_servicio`,
+    `descuento`,
+    `cantidad`
+)
+VALUES(
+    '08a0e6fd-1fa2-11ee-b888-8cec4b2d712c',
+    'd2f31d97-1f9d-11',
+    'bbfadcf4-1fa1-11',
+    '0.00',
+    '1'
+),(
+    '08a10a58-1fa2-11ee-b888-8cec4b2d712c',
+    'd2f31b21-1f9d-11',
+    'bbff6b0f-1fa1-11',
+    '0.00',
+    '1'
+),(
+    '08a11ffe-1fa2-11ee-b888-8cec4b2d712c',
+    'd2f31ce9-1f9d-11',
+    'bbff6ca4-1fa1-11',
+    '0.00',
+    '1'
+),(
+    '08a12d8a-1fa2-11ee-b888-8cec4b2d712c',
+    'd2f02eb5-1f9d-11',
+    'bbff6e11-1fa1-11',
+    '0.00',
+    '1'
+),(
+    '08a14022-1fa2-11ee-b888-8cec4b2d712c',
+    'd2f31ce9-1f9d-11',
+    'bbff6ca4-1fa1-11',
+    '5.00',
+    '2'
+)
