@@ -32,7 +32,7 @@ const one = async (req, res) => {
         // formato de hora HH12:mm
         let formato = 'HH12:MI';
         // realizar consulta
-        const HORARIO = await POOL.query('SELECT id_horario, to_char(hora_apertura, $1) as inicio, to_char(hora_cierre, $1) as cierre FROM horarios WHERE id_horario = $2', [formato, ID]); // con * tardo .118 mls
+        const HORARIO = await POOL.query('SELECT * FROM horarios_view WHERE id_horario = $1', [ID]); // con * tardo .118 mls
         // verificar respuesta satisfeca
         if (res.status(200)) res.json(HORARIO.rows[0]);
     } catch (error) {

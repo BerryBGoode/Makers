@@ -139,6 +139,61 @@ CREATE TABLE detalles_ordenes(
     CONSTRAINT chk_cantidad_orden CHECK (cantidad >= 1)
 );
 
--- crear inserciones
+-- crear inserciones in DML
 
 -- vistas
+CREATE VIEW clientes_view AS
+SELECT c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo, count(o.id_orden) as consumo
+FROM clientes c
+LEFT JOIN ordenes o ON o.id_cliente = c.id_cliente
+GROUP BY c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo
+ORDER BY count(o.id_orden) DESC
+
+CREATE VIEW empleados_view AS 
+SELECT e.id_empleado, e.nombres, e.apellidos, e.alias, e.dui, e.telefono, e.correo, e.planilla, s.nombre_sucursal, s.id_sucursal, 
+        CONCAT(time_format(h.hora_apertura, '%l:%i'), ' - ', time_format(h.hora_cierre, '%l:%i')) as horario, h.id_horario, c.id_cargo, c.cargo 
+FROM empleados e 
+INNER JOIN sucursales s ON s.id_sucursal = e.id_sucursal 
+INNER JOIN horarios h ON h.id_horario = e.id_horario 
+INNER JOIN cargos c ON c.id_cargo = e.id_cargo ORDER BY e.id_empleado ASC;
+
+CREATE VIEW productos_sucursales_view AS
+SELECT s.nombre_servicio, s.id_servicio, s.existencias, ds.cantidad, ds.id_detalle, ds.id_sucursal
+FROM detalles_servicios_sucursales ds
+INNER JOIN servicios s ON s.id_servicio = ds.id_servicio
+
+CREATE VIEW detalle_view AS
+SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
+		d.cantidad * s.precio as subtotal, d.id_orden
+FROM detalle_ordenes d
+INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
+INNER JOIN servicios s ON s.id_servicio = dts.id_servicio
+INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+
+CREATE VIEW horarios_view AS
+SELECT h.id_horario, time_format(h.hora_apertura, '%l:%i') as inicio, time_format(h.hora_cierre, '%l:%i') as cierre
+FROM horarios h
+ORDER BY h.id_horario ASC
+
+CREATE VIEW ordenes_view AS
+SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, 0) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+FROM ordenes o
+LEFT JOIN facturas f ON o.id_orden = f.id_orden
+LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
+GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+ORDER BY o.id_orden ASC
+
+CREATE VIEW reservaciones_view AS
+SELECT r.id_reservacion,date_format(r.fecha, '%Y-%m-%d') as fecha, time_format(r.hora, '%l:%i') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
+		c.apellidos as cliente_a, c.dui as cliente_d,
+		e.nombres as empleado_n, e.apellidos empleado_a, e.dui as empleado_d
+FROM reservaciones r
+INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+
+CREATE VIEW servicios_view AS
+SELECT s.id_servicio, s.nombre_servicio, s.descripcion, s.precio, tp.tipo_servicio, tp.id_tipo_servicio
+FROM servicios s
+INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
+ORDER BY s.id_servicio ASC
+
