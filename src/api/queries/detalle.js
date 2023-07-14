@@ -1,8 +1,8 @@
 // requerir de la conexión
-const POOL = require('../db');
+const { mysql, pg } = require('../db');
 
 const { compareProductosSucursal } = require('../helpers/validateHelpers');
-/**
+/** 
  * Método para obtener los detalles según la orden de la url
  */
 const get = async (req, res) => {
@@ -10,7 +10,7 @@ const get = async (req, res) => {
         // obtener orden
         const ORDEN = parseInt(req.params.orden);
         // realizar consulta
-        const DETALLES = await POOL.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
+        const DETALLES = await mysql.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
         // verficar estado existoso
         if (res.status(200)) res.json(DETALLES.rows);
     } catch (error) {

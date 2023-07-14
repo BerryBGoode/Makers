@@ -1,6 +1,6 @@
 // requiriendo la pool con los attrs de la conexión
 const jwt = require('jsonwebtoken');
-const POOL = require('../db');
+const { mysql, pg} = require('../db');
 // requerir de ecryptador
 const encrypt = require('../helpers/encrypt');
 
@@ -22,11 +22,18 @@ const get = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener id
-            const ID = jwt.decode(TOKEN)
+            const ID = jwt.decode(TOKEN)            
             // obtener todos los empleado excepto el loggeados
-            const EMPLEADOS = await POOL.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE NOT id_empleado = $1', [ID]);
+            const EMPLEADOS = mysql.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE NOT id_empleado = $1', [ID], (er, resul, fields) => {
+                if(er) res.json({error: er.message});
+                console.log(resul.solution)
+                console.log(fields)
+                // console.log(EMPLEADOS.)
+
+            });
             // verificar el estado satisfactorio para retornar los datos
-            if (res.status(200)) res.json(EMPLEADOS.rows);
+            // if (res.status(200)) res.json(EMPLEADOS.rows);
+            // console.log(EMPLEADOS.values)
         } catch (error) {
             console.error(error);
         }

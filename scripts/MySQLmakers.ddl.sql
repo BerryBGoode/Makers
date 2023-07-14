@@ -196,4 +196,3 @@ SELECT s.id_servicio, s.nombre_servicio, s.descripcion, s.precio, tp.tipo_servic
 FROM servicios s
 INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
 ORDER BY s.id_servicio ASC
-

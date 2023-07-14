@@ -1,19 +1,41 @@
 // requerir el modulo con los attrs de la conexión
-const POOL = require('../db');
+// const { mysql, pg, execute } = require('../db');
+const { execute } = require('../MySQL');
+
+const { getBinary } = require('../helpers/validateHelpers')
 
 let msg;
 // metodo para obtener los cargos
 // req (obtiene parametros de consulta)
 // res (retorna valor segun resultado)
 const get = async (req, res) => {
-    try {
-        //realizar consulta
-        const CARGOS = await POOL.query('SELECT * FROM cargos');
-        //verificar el estado
-        if (res.status(200)) res.json(CARGOS.rows)
-    } catch (e) {
-        console.error(e.message);
-    }
+
+    // arreglo para guardar los datos a retornar 
+    let data = [];
+    // realizar query
+    execute('SELECT BINARY(id_cargo) AS id_cargo, cargo FROM cargos')
+        .then(response => {
+            // obtener los ids
+            let id = getBinary(response, 'id_cargo');
+            // recorrer los ids encontrados
+            let i = 0;
+            response.forEach(element => {
+                // declarar un objeto para obtener los datos 
+                // y retornar al cliente
+                element = {
+                    // recueperar el id de los binarios convertidos
+                    id_cargo: id[i],
+                    // obtener los cargos obtenidos de la respuesta
+                    cargo: element.cargo
+                }
+                // agregarselo al arreglo con los datos
+                data.push(element);
+                // sumar 1 al ciclo para recorrer todos los datos
+                i++;
+            });
+            if (res.status(200)) res.json(data)
+        })
+        .catch(er => { res.status(500).send(er) });
 }
 
 /** Método para guardar cargos de los empleados
@@ -30,7 +52,7 @@ const store = async (req, res) => {
             (err, result) => {
                 // verificar sí hubo un error                                
                 if (err) {
-                
+
                     if (err.code === '23505') {
                         // enviar error el cliente
                         er = 'Dato unico ya registrado';
@@ -61,7 +83,7 @@ const one = async (req, res) => {
         // obtener el id
         const ID = parseInt(req.params.id);
         // relizar query
-        const CARGO = await POOL.query('SELECT * FROM cargos WHERE id_cargo = $1', [ID]);
+        const CARGO = mysql.query('SELECT * FROM cargos WHERE id_cargo = $1', [ID]);
         // sí la respuesta es la esperada retornar los datos
         if (res.status(200)) res.send(CARGO.rows[0]);
     } catch (error) {

@@ -17,5 +17,12 @@ const encrypt = (clave) => {
     }
 }
 
+/**
+ * Método para convertir el binario de la consulta a binario
+ */
+const convertToBin = (bin) => {
+    return Buffer.from(bin).toString('binary');
+}
+
 // exportar modulo
-module.exports = encrypt;
+module.exports = {encrypt, convertToBin};

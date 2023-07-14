@@ -12,13 +12,6 @@
             </div>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
-        <!-- aquí cargar los empleados -->
-        <!-- verificar sí hay empleados -->
         <div class="data p-2" v-if="detalles.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -89,10 +82,9 @@
                 No se encontraron existencias
             </span>
         </div>
-        <!-- si no hay clientes encontrados -->
-        <div class="data p-2" v-else>
+        <div class="data p-2" v-if="buscador.length === 0 && detalles.length > 0">
             <span class="bold">
-                Cargando...
+                No se encontraron resultados
             </span>
         </div>
     </div>

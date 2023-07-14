@@ -1,5 +1,5 @@
 // requerir el modulo con los attrs de la conexión
-const POOL = require('../db');
+const { pg} = require('../db');
 // requerir del encryptador
 const encrypt = require('../helpers/encrypt');
 const { getError } = require('../helpers/errors')
@@ -13,7 +13,7 @@ const get = async (req, res) => {
     if (req.headers.authorization) {
         try {
             // realizar consulta
-            const CLIENTES = await POOL.query('SELECT * FROM clientes_view');
+            const CLIENTES = await pg.query('SELECT * FROM clientes_view');
             // verificar el estado
             if (res.status(200)) res.json(CLIENTES.rows)
         } catch (e) {

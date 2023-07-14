@@ -43,8 +43,7 @@ main {
 
 
 <template>
-    <template v-if="!auth">
-
+    <template v-if="auth">
         <login @getCookie="validateCookie" />
     </template>
     <template v-else>

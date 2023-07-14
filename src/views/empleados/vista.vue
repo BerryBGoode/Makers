@@ -43,11 +43,6 @@
         </div>
         <hr>
 
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span>No se encontraron datos</span>
-        </div>
-
-
         <div class="data p-2" v-if="buscador.length > 0">
 
             <div class="card" v-for="empleado in buscador" :key="empleado.id_empleado">
@@ -116,9 +111,9 @@
             </span>
         </div>
 
-        <div class="data p-2" v-else>
+        <div class="data p-2" v-if="buscador.length === 0 && empleados.length > 0">
             <span class="bold">
-                Cargando...
+                No se encontraron resultados
             </span>
         </div>
 
