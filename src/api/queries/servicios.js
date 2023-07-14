@@ -1,7 +1,10 @@
 // requerir la mysql con los datos de la conexión
 const { mysql, pg } = require('../db');
-// requerir de unos métodos de los queries de productos
-const { producto } = require('./productos')
+
+// método para ejecutar sentencias en MySQL
+const { execute } = require('../MySQL');
+// método para obtener binarios de los ids
+const { getBinary } = require('../helpers/validateHelpers')
 
 let msg;
 /**
@@ -24,16 +27,37 @@ const getServicios = async (req, res) => {
 /**
  * Método para obtener todos los servicios
  */
-const get = async (req, res) => {
-    try {
-        // realizar query
-        const SERVICIOS = mysql.query('SELECT * FROM servicios_view')
-        // verificar sí el resultado es el esperado para retornar los datos
-        if (res.status(200)) res.send(SERVICIOS.rows);
-    } catch (error) {
-        console.log(error)
-        res.status(500).send('Surgio un problema en el servidor');
-    }
+const get = (req, response) => {
+    // arreglo vacíos para guardar los datos encontrados
+    let data = [];
+    // realizar query
+    let producto = 'Producto';
+    
+    execute('SELECT * FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
+        .then(res => {
+            // obtener ids y convertirlos a binario
+            let id = getBinary(res, 'id_servicio');
+            let id_tipo = getBinary(res, 'id_tipo_servicio');
+            let i = 0;
+            // recorrer las cantidad de datos encontrados
+            res.forEach(element => {
+                // hacer un obj con los datos recuperados
+                element = {
+                    id_servicio: id[i],
+                    nombre_servicio: element.nombre_servicio,
+                    descripcion: element.descripcion,
+                    tipo_servicio: element.tipo_servicio,
+                    id_tipo_servicio: id_tipo[i],
+                    precio: element.precio
+                }                
+                // arregar obj al arreglo de objetos
+                data.push(element);
+                i++;
+            });
+            if(response.status(200)) response.json(data)
+        })
+        // enviar mensaje de error
+        .catch(er => response.status(500).send(er))
 }
 
 /**

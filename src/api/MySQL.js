@@ -9,6 +9,13 @@ const POOL = MySQL.createPool({
     user: 'root'
 })
 
+
+/**
+ * 
+ * @param {*} sql sentece SQL to request 
+ * @param {*} params if the sentences required especific datas
+ * @returns promise with datas of database
+ */
 const execute = (sql, params = null) => {
     // retornar la promesa
     return new Promise((res, rej) => {

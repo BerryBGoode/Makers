@@ -60,6 +60,13 @@ const compareProductosSucursal = async (producto, cantidad) => {
  * método para obtener id en formato binario de
  * los datos obtenidos
  */
+/**
+ * método para obtener id en formato binario
+ * de los datos obtenidos
+ * @param {*} data datos de la respuesta
+ * @param {*} col  campo id en la db
+ * @returns binary
+ */
 const getBinary = (data, col) => {
     let id = [];
     // recorrer los datos obtenidos

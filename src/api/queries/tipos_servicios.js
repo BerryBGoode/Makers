@@ -33,7 +33,6 @@ const get = async (req, response) => {
             if (response.status(200)) response.json(data);
         })
         .catch(er => response.status(500).send(er));
-
 }
 
 /**
