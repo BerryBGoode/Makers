@@ -8,7 +8,7 @@ let msg;
 // metodo para obtener los cargos
 // req (obtiene parametros de consulta)
 // res (retorna valor segun resultado)
-const get = async (req, res) => {
+const get = (req, res) => {
 
     // arreglo para guardar los datos a retornar 
     let data = [];

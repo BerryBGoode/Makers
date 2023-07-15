@@ -63,7 +63,7 @@ const compareProductosSucursal = async (producto, cantidad) => {
 /**
  * método para obtener id en formato binario
  * de los datos obtenidos
- * @param {*} data datos de la respuesta
+ * @param {*} data respuesta con los datos recuperados
  * @param {*} col  campo id en la db
  * @returns binary
  */
