@@ -1,8 +1,11 @@
 // requerir el modulo con los attrs de la conexión
-const { pg} = require('../db');
+const { pg } = require('../db');
 // requerir del encryptador
 const encrypt = require('../helpers/encrypt');
 const { getError } = require('../helpers/errors')
+
+const { execute } = require('../MySQL');
+const { getBinary } = require('../helpers/validateHelpers')
 
 let msg;
 // método para obtener los clientes
@@ -11,15 +14,34 @@ let msg;
 const get = async (req, res) => {
 
     if (req.headers.authorization) {
-        try {
-            // realizar consulta
-            const CLIENTES = await pg.query('SELECT * FROM clientes_view');
-            // verificar el estado
-            if (res.status(200)) res.json(CLIENTES.rows)
-        } catch (e) {
-            console.error(e.message);
-            res.status(500).json('Surgio un problema en el servidor')
-        }
+
+        let data = [];
+        let i = 0;
+        execute('SELECT * FROM clientes_view')
+            .then(ful => {
+                // obtener y convertir a binario ids recuperados
+                let id = getBinary(ful, 'id_cliente');
+
+                // recorrer los valores encontrados
+                ful.forEach(element => {
+                    // asignar objeto con del elemento q se recorrer
+                    element = {
+                        id_cliente: id[i],
+                        nombres: element.nombres,
+                        apellidos: element.apellidos,
+                        correo: element.correo,
+                        dui: element.dui,
+                        telefono: element.telefono,
+                        consumo: element.consumo
+                    }
+
+                    // agregar al arreglo
+                    data.push(element);
+                    i++;
+                });
+                if (res.status(200)) res.json(data);
+            })
+            .catch(rej => res.status(500).json({ error: rej }))
 
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
