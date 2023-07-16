@@ -21,26 +21,6 @@ const mysql = MySQL.createPool({
     user: 'root'
 })
 
-// método para ejecutar sentencia
-const execute = (sql, data = null) => {
 
-    let resp;
-    console.log('DB')
-    try {
-        mysql.query(sql, data, (err, res, fields) => {
-            console.log('response')
-            console.log(err)
-            console.log(res)
-            console.log(fields)
-            resp = res;
-            // console.log(res[0]) 
-        });
-        return resp;
-    } catch (error) {
-        return null;
-    }
-
-
-}
 // exportar modulo con los attrs de la conexión
-module.exports = { pg, execute };
+module.exports = { pg };

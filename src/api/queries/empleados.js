@@ -1,10 +1,11 @@
 // requiriendo la pool con los attrs de la conexión
 const jwt = require('jsonwebtoken');
-const { mysql, pg} = require('../db');
 // requerir de ecryptador
 const encrypt = require('../helpers/encrypt');
 
-const { getError } = require('../helpers/errors')
+const { getError } = require('../helpers/errors');
+const { execute } = require('../MySQL');
+const { getBinary } = require('../helpers/validateHelpers');
 let msg;
 
 /**
@@ -20,23 +21,43 @@ const get = async (req, res) => {
     // obtener el empleado loggeado
     const TOKEN = req.headers.authorization;
     if (TOKEN) {
-        try {
-            // obtener id
-            const ID = jwt.decode(TOKEN)            
-            // obtener todos los empleado excepto el loggeados
-            const EMPLEADOS = mysql.query('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE NOT id_empleado = $1', [ID], (er, resul, fields) => {
-                if(er) res.json({error: er.message});
-                console.log(resul.solution)
-                console.log(fields)
-                // console.log(EMPLEADOS.)
 
-            });
-            // verificar el estado satisfactorio para retornar los datos
-            // if (res.status(200)) res.json(EMPLEADOS.rows);
-            // console.log(EMPLEADOS.values)
-        } catch (error) {
-            console.error(error);
-        }
+        // obtener id
+        const ID = jwt.decode(TOKEN)
+        // guardar los datos recuperados            
+        let data = [];
+        let i = 0;
+        // realizar consulta
+        execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE id_empleado NOT LIKE = ?', [ID])
+            .then(filled => {
+                // convertir ids a binario
+                let id = getBinary(filled, 'id_empleado');
+                let id_sucursal_bin = getBinary(filled, 'id_sucursal');
+                let id_cargo_bin = getBinary(filled, 'id_cargo');
+                // recorrer los datos encontrados
+                filled.forEach(element => {
+                    // asignar nuevos valor al objeto
+                    element = {
+                        id_empleado: id[i],
+                        nombres: element.nombres,
+                        apellidos: element.apellidos,
+                        dui: element.dui,
+                        telefono: element.telefono,
+                        alias: element.alias,
+                        cargo: element.cargo,
+                        id_cargo: id_cargo_bin[i],
+                        nombre_sucursal: element.nombre_sucursal,
+                        id_sucursal: id_sucursal_bin[i],
+                        correo: element.correo,
+                        planilla: element.planilla,
+                        horario: element.horario
+                    }
+                    data.push(element);
+                    i++;
+                });
+                if (res.status(200)) res.json(data);
+            })
+            .catch(rej => res.status(500).json({error: rej}))
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
@@ -47,7 +68,7 @@ const get = async (req, res) => {
  */
 const getSucursales = async (req, res) => {
     try {
-        // realizar consulta
+        // realizar consulta 
         const SUCURSALES = await POOL.query('SELECT id_sucursal, nombre_sucursal FROM sucursales');
         // verificar respuesta satisfactoria, para enviar los datos
         if (res.status(200)) res.json(SUCURSALES.rows);
