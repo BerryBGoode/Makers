@@ -33,7 +33,7 @@ const get = (req, response) => {
     // realizar query
     let producto = 'Producto';
     
-    execute('SELECT * FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
+    execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, tipo_servicio, id_tipo_servicio FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
         .then(res => {
             // obtener ids y convertirlos a binario
             let id = getBinary(res, 'id_servicio');

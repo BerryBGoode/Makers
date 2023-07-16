@@ -14,9 +14,7 @@
         </div>
         <hr>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
-        <div class="data p-2" v-if="cargos.length >= 0">
-            <!-- recorrer los cargos encontrados -->
-
+        <div class="data p-2" v-if="cargos.length >= 0">          
             <div class="card" v-for="(cargo, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
@@ -66,16 +64,17 @@
             </div>
 
         </div>
-        <div class="data p-2" v-else-if="cargos.length === 0">
-            <span class="bold">
-                No se encontraron existencias
-            </span>
-        </div>
         <div class="data p-2" v-if="buscador_c.length === 0 && cargos.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
         </div>
+        <div class="data p-2" v-else-if="cargos.length === 0">
+            <span class="bold">
+                No se encontraron existencias
+            </span>
+        </div>
+
     </div>
 </template>
 <script>
@@ -99,10 +98,8 @@ export default {
         getCargos() {
             axios.get('http://localhost:3000/api/cargos')
                 .then(res => {
-                    console.log(res.data)
                     this.cargos = res.data;
-                    this.buscador_c = res.data;
-                    console.log(this.cargos >= -1)
+                    this.buscador_c = res.data;                    
                 }) 
                 .catch(e => {
                     console.log(e)

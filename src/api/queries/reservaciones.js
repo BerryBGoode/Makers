@@ -1,5 +1,7 @@
 //requiere el módulo con los attrs de la conexión.
+const { execute } = require('../MySQL');
 const POOL = require('../db');
+const { getBinary } = require('../helpers/validateHelpers');
 
 
 /**
@@ -69,14 +71,24 @@ const getDuiEmp = async (req, res) => {
 //req obtiene los parametros en la consulta
 //res retorna valor según resultado
 const get = async (req, res) => {
-    try {
-        //se realiza la consulta
-        const reservaciones = await POOL.query('SELECT * FROM  reservaciones_view');
-        //se verifica el estado
-        if (res.status(200)) res.json(reservaciones.rows)
-    } catch (e) {
-        console.log(e);
-    }
+    let data = [];
+    let i = 0;
+    let ids = {};
+    execute('SELECT id_reservacion, fecha, hora, cliente_n, cliente_a, cliente_d, empleado_n, empleado_a, empleado_d FROM reservaciones_view')
+        .then(filled => {
+            let id = getBinary(filled, 'id_reservacion');
+            filled.forEach(element => {
+                ids = {
+                    id_reservacion: id[i],
+                }
+                Object.assign(element, ids);
+                data.push(element)
+                i++;
+            });
+            console.log(data)
+            if(res.status(200)) res.json(data);
+        })
+        .catch(rej => res.status(500).json({ error: rej }))
 }
 
 /* Método que cuarga los datos de las reservaciones

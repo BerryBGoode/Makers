@@ -28,7 +28,7 @@ const get = async (req, response) => {
     // arreglo vacío para guardar la data
     let data = [];
     // realizar sentencia (una promesa)
-    execute('SELECT * FROM productos_view')
+    execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, existencias, id_tipo_servicio,estado FROM productos_view')
         .then(res => {
             // obtener y convertir a binario
             // los ids recuperados

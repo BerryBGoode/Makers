@@ -183,7 +183,7 @@ export default {
                 return (
                     servicio.descripcion.toLowerCase().indexOf(dato) !== -1 ||
                     servicio.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
-                    servicio.precio.indexOf(dato) !== -1 ||
+                    servicio.precio.indexOf(dato) !== -1||
                     servicio.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
