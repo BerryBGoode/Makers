@@ -31,8 +31,7 @@ const get = async (req, res) => {
                 Object.assign(element, ids);
                 data.push(element);
                 i++
-            });
-            console.log(data)
+            });            
             if (res.status(200)) res.json(data);
         })
         .catch(rej => {

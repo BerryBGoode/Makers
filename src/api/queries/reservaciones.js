@@ -40,7 +40,6 @@ const getCliente = async (req, res) => {
  * Metodo para obtener los nombres del empleados
  */
 const getEmpleado = async (req, res) => {
-
     const ID = req.params.id;
     let data = [];
     execute('SELECT nombres, apellidos FROM empleados WHERE id_empleado = ?', [ID])
@@ -49,7 +48,7 @@ const getEmpleado = async (req, res) => {
             for (let i = 0; i < filled.length; i++) {
                 // agregarlos al arreglo vacíos que retornar los datos
                 data.push(filled[i]);                
-            }
+            }        
             if (res.status(200)) res.json(data);
         })
 
@@ -65,9 +64,14 @@ const getEmpleado = async (req, res) => {
 const getDuiEmp = async (req, res) => {
 
     let data = [];
-    execute('SELECT dui FROM empleados')
+    execute('SELECT dui, id_empleado FROM empleados')
         .then(filled => {
-            for (let i = 0; i < filled.length; i++) {
+            let _empleado = getBinary(filled, 'id_empleado');
+            for (let i = 0; i < filled.length; i++) {                
+                id = {
+                    id_empleado: _empleado[i]
+                }
+                Object.assign(filled[i], id);
                 data.push(filled[i]);
             }
             if (res.status(200)) res.json(data);

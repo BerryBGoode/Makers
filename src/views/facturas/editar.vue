@@ -162,12 +162,14 @@ export default {
                 console.error(error);
             }
         },
-        getEmpleado() {
-            console.log(this.model.factura.empleado)
+        getEmpleado() {            
+            
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
                 .then(res => {
-                    this.empleado.nombres = res.data.nombres;
-                    this.empleado.apellidos = res.data.apellidos
+                    this.empleado.nombres = res.data
+                    // this.empleado.nombres = res.data.nombres;
+                    // this.empleado.apellidos = res.data.apellidos
+                    console.log(res.data)
                 })
                 .catch(e => { console.log(e) });
 

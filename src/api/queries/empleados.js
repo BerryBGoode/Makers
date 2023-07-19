@@ -23,12 +23,12 @@ const get = async (req, res) => {
     if (TOKEN) {
 
         // obtener id
-        const ID = jwt.decode(TOKEN)
+        const ID = encrypt.decodeBase64(jwt.decode(TOKEN))
         // guardar los datos recuperados            
         let data = [];
         let i = 0;
         // realizar consulta
-        execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE id_empleado NOT LIKE = ?', [ID])
+        execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE id_empleado NOT LIKE ?', [ID])
             .then(filled => {
                 // convertir ids a binario
                 let id = getBinary(filled, 'id_empleado');

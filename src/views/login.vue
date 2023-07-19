@@ -151,12 +151,16 @@ export default {
                         if (!res.data.auth) this.msg = res.data.msg;
                         // creando token
                         if (res.data.auth !== false) {
+                            // asginar estado de la autenticación
                             this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                            // crear cookie
                             this.crearCookie(res.data.token)
+                            // mostrar mensaje
                             this.msg = res.data.msg
+                            // redireccionar al inicio
                             this.$router.push(inicio)
                         }
-                    })
+                    }) 
                     .catch(e => {
                         alert(e)
                     })

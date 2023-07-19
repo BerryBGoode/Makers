@@ -1,5 +1,7 @@
 // requerir del pool con los attrs de la conexión
+const { execute } = require('../MySQL');
 const POOL = require('../db');
+const { getBinary } = require('../helpers/validateHelpers');
 
 /**
  * Método para obtener las sucursales
@@ -7,9 +9,19 @@ const POOL = require('../db');
 const get = async (req, res) => {
     try {
         // realizar query
-        const SUCURSALES = await POOL.query('SELECT * FROM sucursales ORDER BY id_sucursal ASC')
+        const SUCURSALES = await execute('SELECT * FROM sucursales ORDER BY id_sucursal ASC')
         // retornar los datos sí el estado es el esperado
-        if (res.status(200)) res.send(SUCURSALES.rows);
+        // if (res.status(200)) res.send(SUCURSALES);
+        let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
+        for (let i = 0; i < SUCURSALES.length; i++) {
+            console.log(SUCURSALES[i]);
+            id = {
+                id_sucursal: _sucursal[i]
+            }
+            Object.assign(SUCURSALES[i], id)            
+        }
+        if(res.status(200)) res.json(SUCURSALES)
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
