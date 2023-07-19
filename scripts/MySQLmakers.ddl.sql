@@ -164,11 +164,12 @@ INNER JOIN servicios s ON s.id_servicio = ds.id_servicio
 
 CREATE VIEW detalle_view AS
 SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
-		d.cantidad * s.precio as subtotal, d.id_orden
-FROM detalle_ordenes d
+		d.cantidad * s.precio as subtotal, d.id_orden, sc.nombre_sucursal
+FROM detalles_ordenes d
 INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
 INNER JOIN servicios s ON s.id_servicio = dts.id_servicio
 INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+INNER JOIN sucursales sc ON sc.id_sucursal = dts.id_sucursal
 
 CREATE VIEW horarios_view AS
 SELECT h.id_horario, time_format(h.hora_apertura, '%l:%i') as inicio, time_format(h.hora_cierre, '%l:%i') as cierre
@@ -196,3 +197,4 @@ SELECT s.id_servicio, s.nombre_servicio, s.descripcion, s.precio, tp.tipo_servic
 FROM servicios s
 INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
 ORDER BY s.id_servicio ASC
+

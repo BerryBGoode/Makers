@@ -40,31 +40,42 @@ const getCliente = async (req, res) => {
  * Metodo para obtener los nombres del empleados
  */
 const getEmpleado = async (req, res) => {
-    try {
-        // obtener ids
-        const ID = parseInt(req.params.id);
-        // realizar consulta
-        const EMPLEADO = await POOL.query('SELECT nombres, apellidos FROM empleados WHERE id_empleado = $1', [ID]);
-        if (res.status(200)) res.send(EMPLEADO.rows[0]);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
-    }
+
+    const ID = req.params.id;
+    let data = [];
+    execute('SELECT nombres, apellidos FROM empleados WHERE id_empleado = ?', [ID])
+        .then(filled => {
+            // recorrer los registros
+            for (let i = 0; i < filled.length; i++) {
+                // agregarlos al arreglo vacíos que retornar los datos
+                data.push(filled[i]);                
+            }
+            if (res.status(200)) res.json(data);
+        })
+
+        .catch(rej => {
+            console.log(rej);
+            res.status(500).send('Surgio un problema en el servidor');
+        })
 }
 
 /**
- * Método para obtener los duis de los empleados
+ * Método para obtener el dui del empleado
  */
 const getDuiEmp = async (req, res) => {
-    try {
-        // realizar query
-        const DUI = await POOL.query('SELECT id_empleado, dui FROM empleados');
-        // sí la respuesta es la esperada retornar los datos
-        if (res.status(200)) res.send(DUI.rows);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
-    }
+
+    let data = [];
+    execute('SELECT dui FROM empleados')
+        .then(filled => {
+            for (let i = 0; i < filled.length; i++) {
+                data.push(filled[i]);
+            }
+            if (res.status(200)) res.json(data);
+        })
+        .catch(rej => {
+            res.status(500).json(rej);
+            console.log(rej)
+        })
 }
 
 //método para obtener reservaciones
@@ -85,8 +96,7 @@ const get = async (req, res) => {
                 data.push(element)
                 i++;
             });
-            console.log(data)
-            if(res.status(200)) res.json(data);
+            if (res.status(200)) res.json(data);
         })
         .catch(rej => res.status(500).json({ error: rej }))
 }

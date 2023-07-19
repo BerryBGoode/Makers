@@ -2,20 +2,32 @@
 const { mysql, pg } = require('../db');
 
 const { compareProductosSucursal } = require('../helpers/validateHelpers');
+
+const { execute } = require('../MySQL');
+
+const { getBinary } = require('../helpers/validateHelpers')
 /** 
  * Método para obtener los detalles según la orden de la url
  */
 const get = async (req, res) => {
-    try {
-        // obtener orden
-        const ORDEN = parseInt(req.params.orden);
-        // realizar consulta
-        const DETALLES = await mysql.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
-        // verficar estado existoso
-        if (res.status(200)) res.json(DETALLES.rows);
-    } catch (error) {
-        console.log(error);
-    }
+    let data = [];
+    let i = 0;
+    const ORDEN = req.params.orden;
+    execute('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, format(precio, 2) as precio, format(subtotal, 2) as subtotal, format(descuento, 2) as descuento, id_detalle  FROM detalle_view WHERE id_orden = ? ORDER BY id_detalle ASC', [ORDEN])
+        .then(filled => {
+            let _detalle = getBinary(filled, 'id_detalle');
+            filled.forEach(element => {
+                ids = {
+                    id_detalle: _detalle[i],
+                }
+                Object.assign(element, ids),
+                    data.push(element);
+                i++;
+            });
+            if (res.status(200)) res.json(data)
+        })
+        .catch(rej => { res.status(500).json({ error: rej }); })
+
 }
 
 /**

@@ -1,6 +1,9 @@
 // requiriendo la pool con los attrs de la conexión
 const POOL = require('../db');
 
+const { execute } = require('../MySQL');
+const { getBinary } = require('../helpers/validateHelpers')
+
 /**
  * req: información que viene del frontend
  * res: respuesta del servidor
@@ -10,15 +13,32 @@ const POOL = require('../db');
  * Método para obtener las ordenes
  */
 const get = async (req, res) => {
-    try {
-        // realizar consulta
-        const ORDENES = await POOL.query('SELECT * FROM ordenes_view');
-        // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(ORDENES.rows);
-    } catch (error) {
-        console.error(error);
-    }
-}
+    let data = [];
+    let i = 0;
+    execute('SELECT * FROM ordenes_view')
+        .then(filled => {
+            // convertir ids a binario
+            let _orden = getBinary(filled, 'id_orden');
+            let _cliente = getBinary(filled, 'id_cliente');
+            let _factura = getBinary(filled, 'factura')
+            filled.forEach(element => {
+                // por cada registro crear un objeto con los is convertidos
+                ids = {
+                    id_orden: _orden[i],
+                    id_cliente: _cliente[i],
+                    factura: _factura[i]
+                }
+                Object.assign(element, ids);
+                data.push(element);
+                i++
+            });
+            console.log(data)
+            if (res.status(200)) res.json(data);
+        })
+        .catch(rej => {
+            res.status(500).json({ error: rej })
+        })
+};
 
 /**
  * Método para obtener el dui de un clientes

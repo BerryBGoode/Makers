@@ -57,7 +57,7 @@
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de la dirección -->
                         <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                            sucursal.direccion }}</option>
+                            sucursal.nombre_sucursal }}</option>
                     </select>
                     <!-- sino existen sucursales -->
                     <select class="form-select mb-3" name="error" v-else>
@@ -157,7 +157,8 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/facturas/sucursales')
                 // cuando pase todo correctamente
-                .then(res => { this.sucursales = res.data }) // cuando todo salga correcto asignar valores a arreglo
+                .then(res => { this.sucursales = res.data 
+                console.log(res.data)}) // cuando todo salga correcto asignar valores a arreglo
                 .catch(e => { console.error(e) }) // mostrar mensaje de error
         },
 

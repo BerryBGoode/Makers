@@ -1,7 +1,7 @@
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
-            <span class="bold">Pedidos de Orden No. {{ orden }}</span>
+            <span class="bold">Pedidos de la Orden </span>
             <div class="buttons-top">
                 <router-link to="/ordenes" type="button" class="btn btn-makers">
                     Volver

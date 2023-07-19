@@ -11,7 +11,7 @@ const encrypt = (clave) => {
         const SALT = bcrypt.genSaltSync(10);
         // hashear contraseña
         return bcrypt.hashSync(clave, SALT);
-        
+
     } catch (error) {
         console.log(error);
     }
@@ -24,5 +24,22 @@ const convertToBin = (bin) => {
     return Buffer.from(bin).toString('binary');
 }
 
+/**
+ * Metodo para convertir a base64
+ */
+const convertToBase64 = (string) => {
+    return Buffer.from(string).toString('base64');
+}
+/**
+ * Metodo para decodificar base64
+ */
+const decodeBase64 = (string) => {
+    const binString = atob(string);
+    return convertToBin(Uint8Array.from(binString, (m) => m.codePointAt(0)));
+}
+
+
+
+
 // exportar modulo
-module.exports = {encrypt, convertToBin};
+module.exports = { encrypt, convertToBin, convertToBase64, decodeBase64 };

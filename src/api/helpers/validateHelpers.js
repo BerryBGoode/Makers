@@ -1,7 +1,7 @@
 // archivo para dar resultado después de aplicar las validaciones del lado del servidor
 const { validationResult } = require('express-validator');
 const POOL = require('../db');
-const { convertToBin } = require('./encrypt')
+const { convertToBin, convertToUtf } = require('./encrypt')
 
 // método para dar resultado después de validar
 const validate = (req, res, next) => {
@@ -56,10 +56,6 @@ const compareProductosSucursal = async (producto, cantidad) => {
     }
 }
 
-/**
- * método para obtener id en formato binario de
- * los datos obtenidos
- */
 /**
  * método para obtener id en formato binario
  * de los datos obtenidos
