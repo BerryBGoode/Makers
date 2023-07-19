@@ -154,6 +154,7 @@ export default {
                             this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
                             this.crearCookie(res.data.token)
                             this.msg = res.data.msg
+                            this.$router.push(inicio)
                         }
                     })
                     .catch(e => {
@@ -169,11 +170,7 @@ export default {
             // componente realiza y el dato
             this.$emit('getCookie', this.$cookies.get('auth'))
 
-        }
-    },
-    mounted(){
-        console.log(logo)
-        console.log(this.model.logo_lc)
+        },        
     }
 
 }

@@ -46,8 +46,7 @@ const validateUsuario = async (req, res) => {
 
             // crear token
             token = await getToken(dui, correo, clave_db)
-            console.log(token);
-            
+            // enviar el estado de la autenticación
             auth = true;
             // setear token a la cookie
             res.cookie('token', token, { httpOnly: true });
