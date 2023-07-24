@@ -51,7 +51,7 @@ const store = async (req, res) => {
         execute('INSERT INTO  cargos(id_cargo, cargo) VALUES (UUID(), ?)', [cargo])
             .then(() => {
                 // enviar mensaje exitoso
-                res.status(200).send('Cargo agregado');
+                res.status(201).send('Cargo agregado');
             }).catch(rej => {
                 res.status(406).send({ error: getError(rej['errno']) });
             })
@@ -99,7 +99,7 @@ const change = (req, res) => {
         // realizar SQL
         execute('UPDATE cargos SET cargo = ? WHERE id_cargo = ?', [cargo, ID])
             .then(() => {
-                res.status(200).send('Cargo modificado');
+                res.status(201).send('Cargo modificado');
             })
             .catch(rej => {
                 res.status(406).send({ error: getError(rej['errno']) });

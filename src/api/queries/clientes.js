@@ -60,7 +60,7 @@ const store = (req, res) => {
         execute('INSERT INTO clientes (id_cliente, nombres, apellidos, dui, telefono, correo, clave, estado) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
             [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado])
             .then(() => {
-                if (res.status(200)) res.send('Cliente agregado');
+                if (res.status(201)) res.send('Cliente agregado');
             }).catch(rej => {
                 res.status(406).send({ error: getError(rej['errno']) });
             })
@@ -86,16 +86,16 @@ const one = async (req, res) => {
             .then(filled => {
                 let _cliente = getBinary(filled, 'id_cliente')
                 for (let i = 0; i < filled.length; i++) {
-                    let id = { 
+                    let id = {
                         id_cliente: _cliente[i]
                     }
-                    Object.assign(filled[i], id)                    
+                    Object.assign(filled[i], id)
                 }
-                if(res.status(200)) res.send(filled[0])
+                if (res.status(200)) res.send(filled[0])
             })
             .catch(rej => {
                 res.status(500).send(getError(rej['errno']));
-            })        
+            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -110,29 +110,22 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // convertir a entero el id recibido de la ruta 
-        const IDCLIENTE = parseInt(req.params.id);
+        const IDCLIENTE = req.params.id;
         // asignar a un arreglo los valores del req
         const { nombres, apellidos, dui, telefono, correo, estado } = req.body;
         // realizar transferencia SQL
-        POOL.query('UPDATE clientes SET nombres = $1, apellidos = $2, dui = $3, telefono = $4, correo = $5, id_estado_usuario_cliente = $6 WHERE id_cliente = $7',
-            [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE],
-            // error debe ir primero que res
-            (err, results) => {
-                // veficar errores
-                if (err) {
-                    if (err.code) msg = getError(err.code);
-                    res.json({ error: msg });
-                }
-                // verificar sí existe error
-                // sino enviar estado exitoso
-                else { msg = 'Cliente modificado'; }
-                if (!err) {
-                    res.status(201).send(msg);
-                }
-            }
-        )
+        execute('UPDATE clientes SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, estado = ? WHERE id_cliente = ?',
+            [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE])
+            .then(() => {
+                // sí la petición fue exitosa mandar mensaje al cliente
+                res.status(201).send('Cliente modificado')
+            }).catch(rej => {
+                // de lo contrario enviar error obtenido del catch
+                res.status(406).send({error: getError(rej['errno'])})
+            })        
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
