@@ -7,11 +7,11 @@ const getError = (err = null) => {
 
     let msg;
     switch (err) {
-        case '23000':
+        case 1062:
             msg = 'Dato unico ya registrado';
             break;
     
-        case '23503':
+        case 1451:
             msg = 'No se puede eliminar debido a que tiene datos asociados';
             break;
         default:

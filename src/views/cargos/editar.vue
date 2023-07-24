@@ -65,14 +65,11 @@ export default {
         },
         getCargo() {
             axios.get('http://localhost:3000/api/cargos/' + this.$route.params.id)
-                .then(res => {                    
-                    console.log(res.data)
-                    // this.model.cargo = res.data.cargo;
+                .then(res => {
                     this.cargo = res.data
-                        
                 })
                 .catch(e => {
-                    console.log(e)
+                    console.log(e);
                 })
         }
     }

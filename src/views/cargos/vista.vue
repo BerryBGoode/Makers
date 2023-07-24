@@ -109,11 +109,15 @@ export default {
             if (confirm('Desea eliminar este cargo?')) {
                 axios.delete('http://localhost:3000/api/cargos/' + cargo)
                     .then(res => {
+                        
                         //verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
 
                         //cargar
                         this.getCargos();
+                    })
+                    .catch(rej => {                                            
+                        if (rej.response.data.error) alert(rej.response.data.error);
                     })
             }
         },

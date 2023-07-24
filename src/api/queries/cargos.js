@@ -65,37 +65,26 @@ const store = async (req, res) => {
  * Método para obtener los datos del cargo selccionado
  */
 const one = async (req, res) => {
-    try {
-        // obtener el id
-        let data = [];
-        const ID = req.params.id;
-        // relizar query
-        execute('SELECT * FROM cargos WHERE id_cargo = ?', [ID])
-            .then(filled => {
-                // convertir a binario los buffer encontrados
-                let _cargo = getBinary(filled, 'id_cargo');
-                // recorrer los registros
-                for (let i = 0; i < filled.length; i++) {
-                    // obj con el id binario
-                    let id = {
-                        id_cargo: _cargo[i]
-                    }
-                    // unir ambos objetos
-                    Object.assign(filled[i], id);
-                    data.push(filled[i]);
+    const ID = req.params.id;
+    // relizar query
+    execute('SELECT * FROM cargos WHERE id_cargo = ?', [ID])
+        .then(filled => {
+            // convertir a binario los buffer encontrados
+            let _cargo = getBinary(filled, 'id_cargo');
+            // recorrer los registros
+            for (let i = 0; i < filled.length; i++) {
+                // obj con el id binario
+                let id = {
+                    id_cargo: _cargo[i]
                 }
-                if(res.status(200)) res.json(data[0]);
-            })
-            .catch(rej => {
-                res.status(500).send(rej);
-            })
-        // const CARGO = mysql.query('SELECT * FROM cargos WHERE id_cargo = $1', [ID]);
-        // // sí la respuesta es la esperada retornar los datos
-        // if (res.status(200)) res.send(CARGO.rows[0]);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
-    }
+                // unir ambos objetos
+                Object.assign(filled[i], id);
+            }
+            if (res.status(200)) res.json(filled[0]);
+        })
+        .catch(rej => {
+            res.status(500).send(rej);
+        })
 }
 
 /**
@@ -104,29 +93,17 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener id del parametro de la url
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos del cuerpo de la petición
         const { cargo } = req.body;
         // realizar SQL
-        POOL.query('UPDATE cargos SET cargo = $1 WHERE id_cargo = $2', [cargo, ID], (err, result) => {
-            // verificar sí hubo un error                                
-            if (err) {
-
-                if (err.code === '23505') {
-                    // enviar error el cliente
-                    er = 'Dato unico ya registrado';
-                } else {
-                    er = err.message;
-                }
-                res.json({ error: er });
-                // sí es ejecuta esto, el status 201 no se enviará
-                // return;                    
-
-            } else {
-                msg = 'Servicio agregado';
-            }
-            res.status(201).send(msg);
-        })
+        execute('UPDATE cargos SET cargo = ? WHERE id_cargo = ?', [cargo, ID])
+            .then(() => {
+                res.status(200).send('Cargo modificado');
+            })
+            .catch(rej => {
+                res.status(406).send({ error: getError(rej['sqlState']) });
+            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -138,23 +115,15 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener el id 
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        POOL.query('DELETE FROM cargos WHERE id_cargo = $1', [ID], (err, result) => {
-            // verificar sí ocurre un error
-            if (err) {
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                if (err.code === '23503') {
-                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
-                } else {
-                    e = err.message
-                }
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Cargo eliminado');
-        })
+        execute('DELETE FROM cargos WHERE id_cargo = ?', [ID])
+            .then(() => {                
+                res.status(200).send('Cargo eliminado');
+            })
+            .catch(rej => {                
+                res.status(406).send({ error: getError(rej['errno']) });
+            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
