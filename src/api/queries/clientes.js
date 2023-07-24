@@ -121,8 +121,8 @@ const change = (req, res) => {
                 res.status(201).send('Cliente modificado')
             }).catch(rej => {
                 // de lo contrario enviar error obtenido del catch
-                res.status(406).send({error: getError(rej['errno'])})
-            })        
+                res.status(406).send({ error: getError(rej['errno']) })
+            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -136,29 +136,20 @@ const change = (req, res) => {
  * res, respuesta del servidor
  */
 const destroy = (req, res) => {
-    let msg;
     try {
-        // console.log(req.params.id)
         // obtener el idcliente del parametro de la ruta
-        const IDCLIENTE = parseInt(req.params.id);
+        const IDCLIENTE = req.params.id;
         // realizar consulta, enviar un array con los parametros y metodo para capturar error
-        POOL.query('DELETE FROM clientes WHERE id_cliente = $1', [IDCLIENTE], (err, result) => {
-
-            // veficar errores
-            if (err) {
-                if (err.code) msg = getError(err.code);
-                res.json({ error: msg });
-            }
-            // verificar sí existe error
-            // sino enviar estado exitoso
-            else { msg = 'Cliente eliminado'; }
-            if (!err) {
-                res.status(201).send(msg);
-            }
-        })
+        execute('DELETE FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
+            .then(() => {
+                res.status(200).send('Cliente eliminado');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej['errno']) + '(ordenes o reservaciones)' });
+            })
     } catch (error) {
         // capturar error
         console.error(error);
+        res.status(500).send('Surgio un problema con el servidor');
     }
 }
 // exportar funciones

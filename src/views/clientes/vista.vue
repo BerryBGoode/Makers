@@ -181,7 +181,7 @@ export default {
                         this.obtenerClientes();
                     })
                     .catch(e => {
-                        alert(e);
+                        alert(e.response.data.error);
                         console.log(e)
                     })
             }
