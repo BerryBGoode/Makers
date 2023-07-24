@@ -11,16 +11,17 @@ const get = async (req, res) => {
         // realizar query
         const SUCURSALES = await execute('SELECT * FROM sucursales ORDER BY id_sucursal ASC')
         // retornar los datos sí el estado es el esperado
-        // if (res.status(200)) res.send(SUCURSALES);
-        let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
-        for (let i = 0; i < SUCURSALES.length; i++) {
-            console.log(SUCURSALES[i]);
-            id = {
-                id_sucursal: _sucursal[i]
+        if (SUCURSALES) {
+            let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
+            for (let i = 0; i < SUCURSALES.length; i++) {
+                console.log(SUCURSALES[i]);
+                id = {
+                    id_sucursal: _sucursal[i]
+                }
+                Object.assign(SUCURSALES[i], id)
             }
-            Object.assign(SUCURSALES[i], id)            
+            if (res.status(200)) res.json(SUCURSALES)
         }
-        if(res.status(200)) res.json(SUCURSALES)
 
     } catch (error) {
         console.log(error);

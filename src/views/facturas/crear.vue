@@ -157,8 +157,10 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/facturas/sucursales')
                 // cuando pase todo correctamente
-                .then(res => { this.sucursales = res.data 
-                console.log(res.data)}) // cuando todo salga correcto asignar valores a arreglo
+                .then(res => {
+                    this.sucursales = res.data
+                    console.log(res.data)
+                }) // cuando todo salga correcto asignar valores a arreglo
                 .catch(e => { console.error(e) }) // mostrar mensaje de error
         },
 

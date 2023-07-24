@@ -57,7 +57,7 @@ const get = async (req, res) => {
                 });
                 if (res.status(200)) res.json(data);
             })
-            .catch(rej => res.status(500).json({error: rej}))
+            .catch(rej => res.status(500).json({ error: rej }))
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
@@ -83,11 +83,22 @@ const getSucursales = async (req, res) => {
 const getHorarios = async (req, res) => {
     try {
         // realizar consulta
-        const HORARIOS = await POOL.query('SELECT * FROM horarios_view'); // con * tardo .118 mls
+        const HORARIOS = await execute('SELECT * FROM horarios_view'); // con * tardo .118 mls
         // verificar respuesta satisfeca
-        if (res.status(200)) res.json(HORARIOS.rows);
+        if (HORARIOS) {
+            let _horario = getBinary(HORARIOS, 'id_horario');
+            for (let i = 0; i < HORARIOS.length; i++) {
+                id = {
+                    id_horario: _horario[i]
+                }
+                Object.assign(HORARIOS[i], id);
+            }
+            if(res.status(200)) res.json(HORARIOS)
+        }
+
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 

@@ -1,6 +1,7 @@
 // requerir el modulo con los attrs de la conexión
 // const { mysql, pg, execute } = require('../db');
 const { execute } = require('../MySQL');
+const { getError } = require('../helpers/errors');
 
 const { getBinary } = require('../helpers/validateHelpers')
 
@@ -12,7 +13,7 @@ const get = (req, res) => {
 
     // arreglo para guardar los datos a retornar 
     let data = [];
-    // realizar query
+    // realizar 4query
     execute('SELECT BINARY(id_cargo) AS id_cargo, cargo FROM cargos')
         .then(response => {
             // obtener los ids
@@ -47,28 +48,36 @@ const store = async (req, res) => {
         // asignar a u arreglo los valores del req
         const { cargo } = req.body;
         // preparando query con los datos
-        POOL.query('INSERT INTO cargos(cargo) VALUES ($1)', [cargo],
-            // funcion
-            (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
+        execute('INSERT INTO  cargos(id_cargo, cargo) VALUES (UUID(), ?)', [cargo])
+        .then(filled => {
+            // enviar mensaje exitoso
+            res.status(200).send('Cargo agregado');
+        }).catch(rej => {
+            res.status(200).send({error: getError(rej['sqlState'])});
+        })
+        // console.log(SQL);
+        // POOL.query('INSERT INTO cargos(cargo) VALUES ($1)', [cargo],
+        //     // funcion
+        //     (err, result) => {
+        //         // verificar sí hubo un error                                
+        //         if (err) {
 
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
+        //             if (err.code === '23505') {
+        //                 // enviar error el cliente
+        //                 er = 'Dato unico ya registrado';
+        //             } else {
+        //                 er = err.message;
+        //             }
+        //             res.json({ error: er });
+        //             // sí es ejecuta esto, el status 201 no se enviará
+        //             // return;                    
 
-                } else {
-                    msg = 'Servicio agregado';
-                }
-                res.status(201).send(msg);
+        //         } else {
+        //             msg = 'Servicio agregado';
+        //         }
+        //         res.status(201).send(msg);
 
-            })
+        //     })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')

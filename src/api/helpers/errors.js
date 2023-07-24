@@ -7,7 +7,7 @@ const getError = (err = null) => {
 
     let msg;
     switch (err) {
-        case '23505':
+        case '23000':
             msg = 'Dato unico ya registrado';
             break;
     
