@@ -1,7 +1,7 @@
 // requerir el modulo con los attrs de la conexión
 const { pg } = require('../db');
 // requerir del encryptador
-const encrypt = require('../helpers/encrypt');
+const { encrypt } = require('../helpers/encrypt');
 const { getError } = require('../helpers/errors')
 
 const { execute } = require('../MySQL');
@@ -14,7 +14,6 @@ let msg;
 const get = async (req, res) => {
 
     if (req.headers.authorization) {
-
         let data = [];
         let i = 0;
         execute('SELECT * FROM clientes_view')
@@ -58,26 +57,17 @@ const store = (req, res) => {
         // asignar a un arreglo los valores del req
         const { nombres, apellidos, dui, telefono, correo, clave, estado } = req.body;
         // preparando query con los datos
-        POOL.query('INSERT INTO clientes(nombres, apellidos, dui, telefono, correo, clave, id_estado_usuario_cliente) VALUES ($1, $2, $3, $4, $5, $6, $7)'
-            , [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado],
-            // función
-            (err, result) => {
-
-                // veficar errores
-                if (err) {
-                    if (err.code) msg = getError(err.code);
-                    res.json({ error: msg });
-                }
-                // verificar sí existe error
-                // sino enviar estado exitoso
-                else { msg = 'Cliente agregado'; }
-                if (!err) {
-                    res.status(201).send(msg);
-                }
-
+        execute('INSERT INTO clientes (id_cliente, nombres, apellidos, dui, telefono, correo, clave, estado) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
+            [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado])
+            .then(() => {
+                if (res.status(200)) res.send('Cliente agregado');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej['errno']) });
             })
+
     } catch (error) {
-        console.error(error);
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
@@ -90,13 +80,25 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener idcliente de los parametros de la url
-        const IDCLIENTE = parseInt(req.params.id);
+        const IDCLIENTE = req.params.id;
         // realizar consulta
-        const CLIENTE = POOL.query('SELECT * FROM clientes WHERE id_cliente = $1', [IDCLIENTE])
-        // sí estuvo correcto el proceso, retorna el resultado de la consulta en json
-        if (res.status(200)) { res.json((await CLIENTE).rows) }
+        execute('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
+            .then(filled => {
+                let _cliente = getBinary(filled, 'id_cliente')
+                for (let i = 0; i < filled.length; i++) {
+                    let id = { 
+                        id_cliente: _cliente[i]
+                    }
+                    Object.assign(filled[i], id)                    
+                }
+                if(res.status(200)) res.send(filled[0])
+            })
+            .catch(rej => {
+                res.status(500).send(getError(rej['errno']));
+            })        
     } catch (error) {
-        console.error(error);
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 

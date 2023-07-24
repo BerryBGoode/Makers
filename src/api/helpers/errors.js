@@ -10,9 +10,11 @@ const getError = (err = null) => {
         case 1062:
             msg = 'Dato unico ya registrado';
             break;
-    
         case 1451:
             msg = 'No se puede eliminar debido a que tiene datos asociados';
+            break;
+        case 1064:
+            msg = 'Error en la sentencia';
             break;
         default:
             msg = null;

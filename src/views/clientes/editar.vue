@@ -2,7 +2,6 @@
 .w-70 {
     width: 70%;
 }
-
 </style>
 
 <template>
@@ -208,21 +207,16 @@ export default {
         // método para obtener datos de cliente
         getCliente(cliente) {
             // haciendo petión get, enviando el parametro especificado en el .routes.js (idcliente)            
-            axios.get('http://localhost:3000/api/clientes/' + cliente).then(res => {
-                // obtener los datos del cliente
-                const CLIENTE = res.data[0];
-                // asignar los datos a lso inputs
-                this.model.cliente = {
-                    nombres: CLIENTE.nombres,
-                    apellidos: CLIENTE.apellidos,
-                    dui: CLIENTE.dui,
-                    telefono: CLIENTE.telefono,
-                    correo: CLIENTE.correo,
-                    clave: CLIENTE.clave,
-                    estado: CLIENTE.estado
-                }
+            axios.get('http://localhost:3000/api/clientes/' + cliente)
+                .then(res => {
+                    this.model.cliente = res.data
+                    // asignar los datos a lso inputs
 
-            })
+
+                })
+                .catch(rej => {
+                    console.log(rej)
+                })
         }
     }
 }

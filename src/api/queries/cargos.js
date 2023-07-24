@@ -53,7 +53,7 @@ const store = async (req, res) => {
                 // enviar mensaje exitoso
                 res.status(200).send('Cargo agregado');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej['sqlState']) });
+                res.status(406).send({ error: getError(rej['errno']) });
             })
     } catch (error) {
         console.log(error);
@@ -102,7 +102,7 @@ const change = (req, res) => {
                 res.status(200).send('Cargo modificado');
             })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej['sqlState']) });
+                res.status(406).send({ error: getError(rej['errno']) });
             })
     } catch (error) {
         console.log(error);

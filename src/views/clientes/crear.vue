@@ -186,9 +186,9 @@ export default {
                                 clave: '',
                                 estado: 1
                             }
+                            this.$router.push('/clientes');
                             alert(res.data)
                             // recireccionar a la vista principal
-                            if (res.status === 201) this.$router.push('/clientes');
                         }
 
                     })
