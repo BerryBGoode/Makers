@@ -49,35 +49,12 @@ const store = async (req, res) => {
         const { cargo } = req.body;
         // preparando query con los datos
         execute('INSERT INTO  cargos(id_cargo, cargo) VALUES (UUID(), ?)', [cargo])
-        .then(filled => {
-            // enviar mensaje exitoso
-            res.status(200).send('Cargo agregado');
-        }).catch(rej => {
-            res.status(200).send({error: getError(rej['sqlState'])});
-        })
-        // console.log(SQL);
-        // POOL.query('INSERT INTO cargos(cargo) VALUES ($1)', [cargo],
-        //     // funcion
-        //     (err, result) => {
-        //         // verificar sí hubo un error                                
-        //         if (err) {
-
-        //             if (err.code === '23505') {
-        //                 // enviar error el cliente
-        //                 er = 'Dato unico ya registrado';
-        //             } else {
-        //                 er = err.message;
-        //             }
-        //             res.json({ error: er });
-        //             // sí es ejecuta esto, el status 201 no se enviará
-        //             // return;                    
-
-        //         } else {
-        //             msg = 'Servicio agregado';
-        //         }
-        //         res.status(201).send(msg);
-
-        //     })
+            .then(() => {
+                // enviar mensaje exitoso
+                res.status(200).send('Cargo agregado');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej['sqlState']) });
+            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -90,11 +67,31 @@ const store = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener el id
-        const ID = parseInt(req.params.id);
+        let data = [];
+        const ID = req.params.id;
         // relizar query
-        const CARGO = mysql.query('SELECT * FROM cargos WHERE id_cargo = $1', [ID]);
-        // sí la respuesta es la esperada retornar los datos
-        if (res.status(200)) res.send(CARGO.rows[0]);
+        execute('SELECT * FROM cargos WHERE id_cargo = ?', [ID])
+            .then(filled => {
+                // convertir a binario los buffer encontrados
+                let _cargo = getBinary(filled, 'id_cargo');
+                // recorrer los registros
+                for (let i = 0; i < filled.length; i++) {
+                    // obj con el id binario
+                    let id = {
+                        id_cargo: _cargo[i]
+                    }
+                    // unir ambos objetos
+                    Object.assign(filled[i], id);
+                    data.push(filled[i]);
+                }
+                if(res.status(200)) res.json(data[0]);
+            })
+            .catch(rej => {
+                res.status(500).send(rej);
+            })
+        // const CARGO = mysql.query('SELECT * FROM cargos WHERE id_cargo = $1', [ID]);
+        // // sí la respuesta es la esperada retornar los datos
+        // if (res.status(200)) res.send(CARGO.rows[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
