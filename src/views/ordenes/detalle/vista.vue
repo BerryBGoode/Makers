@@ -133,7 +133,10 @@ export default {
                         alert(res.data);
                         this.getDetalles();
                     })
-                    .catch(e => alert(e))
+                    .catch(e => {
+                        console.log(e.response)
+                        alert(e.response.data.error)
+                    })
             }
         },
         buscar(dato) {

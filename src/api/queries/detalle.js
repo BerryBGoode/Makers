@@ -158,21 +158,19 @@ const one = async (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener detalle
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        POOL.query('DELETE FROM detalle_ordenes WHERE id_detalle = ?', [ID], (err, result) => {
-            // verifiacar sí hubo un error
-            if (err) {
-                // retornar error
-                res.json({ error: err.message });
-                // retornar
-                return;
-            }
+        execute('DELETE FROM detalles_ordenes WHERE id_detalle = ?', [ID])
             // sí no huviera hubieron errores
-            res.status(201).send('Pedido eliminado');
-        })
+            .then(() => {
+                res.status(201).send('Detalle eliminado')
+            })
+            .catch(rej => {
+                res.status(406).send({error: getError(rej['errno'])})
+            })
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
