@@ -165,7 +165,7 @@ INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio
 
 CREATE VIEW detalle_view AS
 SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
-		d.cantidad * s.precio as subtotal, d.id_orden, sc.nombre_sucursal
+		d.cantidad * s.precio as subtotal, d.id_orden, sc.id_sucursal, sc.nombre_sucursal
 FROM detalles_ordenes d
 INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
 INNER JOIN servicios s ON s.id_servicio = dts.id_servicio

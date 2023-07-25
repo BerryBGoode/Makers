@@ -158,8 +158,6 @@ export default {
                 this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
                 this.model.pedido.cantidad <= -1 || ((this.input.stock) ? this.model.pedido.cantidad > this.input.stock : this.model.pedido.cantidad) >= 1) {
                 this.msg = 'Datos invalidos'
-                console.log(this.model.pedido.cantidad)
-                console.log(this.input.stock)
                 
             } else {
 

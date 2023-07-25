@@ -7,6 +7,7 @@ const { execute } = require('../MySQL');
 
 const { getBinary } = require('../helpers/validateHelpers');
 const { getError } = require('../helpers/errors');
+const DETALLE = require('../routes/detalles.routes');
 /** 
  * Método para obtener los detalles según la orden de la url
  */
@@ -56,7 +57,7 @@ const getServicios = async (req, res) => {
             })
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).send({ error: 'Surgio un problema en el servidor' })
     }
 }
 
@@ -78,12 +79,12 @@ const store = async (req, res) => {
                     console.log(rej)
                     res.status(406).send({ error: getError(rej['errno']) });
                 })
-        }else{
+        } else {
             res.json({ error: 'Cantidad máxima superada' })
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send({error: 'Surgio un problema en el servidor'});
+        res.status(500).send({ error: 'Surgio un problema en el servidor' });
     }
 }
 
@@ -126,13 +127,33 @@ const change = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener detalle
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        const DETALLE = await POOL.query('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = $1', [ID])
-        // verificar respuesta satisfactoria
-        if (res.status(200)) res.json(DETALLE.rows);
+        execute('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = ?', [ID])
+            .then(filled => {
+                if (res.status(200)) {
+                    
+                    // verificar respuesta satisfactoria
+                    let _sucursal = getBinary(filled, 'id_sucursal');
+                    let _detalle_servicio = getBinary(filled, 'id_detalle_servicio')
+    
+                    for (let i = 0; i < filled.length; i++) {
+                        let id = {
+                            id_sucursal: _sucursal[i],
+                            id_detalle_servicio: _detalle_servicio[i]
+                        }
+                        Object.assign(filled[i], id);
+                    }
+                    res.json(filled)
+                }                
+            })
+            .catch(rej => {
+                res.status(500).json({error: getError(rej['errno'])})
+            })
+
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: 'Surgio un problema en el servidor' })
     }
 }
 

@@ -210,10 +210,10 @@ export default {
             // obtener los datos del detalle
             axios.get('http://localhost:3000/api/ordenes/detalles/detalle/' + this.$route.params.detalle)
                 .then(res => {
-                    // obtener los datos
-                    const DETALLE = res.data[0];
+                    // obtener los datos                    
                     // this.cargarServicios(event),
                     // cargar los datos 
+                    const DETALLE = res.data[0];
                     this.model.sucursal = {
                         txt: DETALLE.nombre_sucursal,
                         value: DETALLE.id_sucursal
