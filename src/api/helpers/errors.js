@@ -16,6 +16,9 @@ const getError = (err = null) => {
         case 1064:
             msg = 'Error en la sentencia';
             break;
+        case 1146:
+            msg = 'Entidad especificada inexistente'; 
+            break;
         default:
             msg = null;
             break;

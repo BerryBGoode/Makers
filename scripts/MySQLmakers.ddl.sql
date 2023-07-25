@@ -158,9 +158,10 @@ INNER JOIN horarios h ON h.id_horario = e.id_horario
 INNER JOIN cargos c ON c.id_cargo = e.id_cargo ORDER BY e.id_empleado ASC;
 
 CREATE VIEW productos_sucursales_view AS
-SELECT s.nombre_servicio, s.id_servicio, s.existencias, ds.cantidad, ds.id_detalle, ds.id_sucursal
+SELECT s.nombre_servicio, s.id_servicio, tp.tipo_servicio, s.existencias, ds.cantidad, ds.id_detalle, ds.id_sucursal
 FROM detalles_servicios_sucursales ds
 INNER JOIN servicios s ON s.id_servicio = ds.id_servicio
+INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio
 
 CREATE VIEW detalle_view AS
 SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,

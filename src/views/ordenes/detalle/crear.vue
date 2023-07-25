@@ -156,8 +156,11 @@ export default {
             // validar datos, evaluar casos erroneos
             if (this.model.pedido.servicio === 'Seleccionar' || this.model.sucursal.value === 'Seleccionar' ||
                 this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
-                this.model.pedido.cantidad <= -1 || this.model.pedido.cantidad > this.input.stock) {
+                this.model.pedido.cantidad <= -1 || ((this.input.stock) ? this.model.pedido.cantidad > this.input.stock : this.model.pedido.cantidad) >= 1) {
                 this.msg = 'Datos invalidos'
+                console.log(this.model.pedido.cantidad)
+                console.log(this.input.stock)
+                
             } else {
 
                 // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
@@ -177,6 +180,8 @@ export default {
                 // realizar petición
                 axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido)
                     .then(res => {
+                        console.log('res')
+                        console.log(res)
                         // verificar error                    
                         if (res.data.error) {
                             this.msg = res.data.error;
@@ -196,7 +201,9 @@ export default {
                             this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
                         }
                     })
-                    .catch(e => alert(e));
+                    .catch(e => {                        
+                        alert(e.response.data.error);
+                    });
             }
         }
     }

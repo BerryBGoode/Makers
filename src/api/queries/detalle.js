@@ -5,7 +5,8 @@ const { compareProductosSucursal } = require('../helpers/validateHelpers');
 
 const { execute } = require('../MySQL');
 
-const { getBinary } = require('../helpers/validateHelpers')
+const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
 /** 
  * Método para obtener los detalles según la orden de la url
  */
@@ -36,13 +37,26 @@ const get = async (req, res) => {
 const getServicios = async (req, res) => {
     try {
         // obtener el tipo de servicio
-        const SUCURSAL = parseInt(req.params.sucursal);
+        const SUCURSAL = req.params.sucursal;
         // realizar query 
-        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
-        // verificar respuesta satisfactoria
-        if (res.status(200)) res.json(PRODUCTO.rows);
+        execute('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = ? ORDER BY id_detalle ASC', [SUCURSAL])
+            .then(filled => {
+                let _detalle = getBinary(filled, 'id_detalle');
+                for (let i = 0; i < filled.length; i++) {
+                    let id = {
+                        id_detalle: _detalle[i]
+                    }
+                    // unir ambos objetos
+                    Object.assign(filled[i], id);
+                }
+                if (res.status(200)) res.json(filled)
+            })
+            .catch(rej => {
+                res.status(500).send(rej);
+            })
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
@@ -55,24 +69,21 @@ const store = async (req, res) => {
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
         if (await compareProductosSucursal(servicio, cantidad)) {
-            POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
-                [servicio, cantidad, descuento, orden],
-                (err, result) => {
-                    // verificar sí hubo un error
-                    if (err) {
-                        // enviar mensaje de error
-                        res.json({ error: err.message });
-                        // retornar
-                        return;
-                    }
-                    res.status(201).send('Detalle agregado');
-                }
-            )
-        } else {
+            execute('INSERT INTO detalles_ordenes(id_detalle, id_detalle_servicio, cantidad, descuento, id_orden) VALUES (UUID(), ?, ?, ?, ?)',
+                [servicio, cantidad, descuento, orden])
+                .then(() => {
+                    if (res.status(201)) res.send('Detalle agregado');
+                })
+                .catch(rej => {
+                    console.log(rej)
+                    res.status(406).send({ error: getError(rej['errno']) });
+                })
+        }else{
             res.json({ error: 'Cantidad máxima superada' })
         }
     } catch (error) {
         console.log(error);
+        res.status(500).send({error: 'Surgio un problema en el servidor'});
     }
 }
 

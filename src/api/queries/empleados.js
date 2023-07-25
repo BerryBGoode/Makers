@@ -69,11 +69,19 @@ const get = async (req, res) => {
 const getSucursales = async (req, res) => {
     try {
         // realizar consulta 
-        const SUCURSALES = await POOL.query('SELECT id_sucursal, nombre_sucursal FROM sucursales');
+        const SUCURSALES = await execute('SELECT id_sucursal, nombre_sucursal FROM sucursales');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(SUCURSALES.rows);
+        let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
+        for (let i = 0; i < SUCURSALES.length; i++) {
+            let id = {
+                id_sucursal: _sucursal[i]
+            }
+            Object.assign(SUCURSALES[i], id)            
+        }
+        if (res.status(200)) res.json(SUCURSALES);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
