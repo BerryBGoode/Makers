@@ -177,9 +177,7 @@ export default {
 
                 // realizar petición
                 axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido)
-                    .then(res => {
-                        console.log('res')
-                        console.log(res)
+                    .then(res => {                        
                         // verificar error                    
                         if (res.data.error) {
                             this.msg = res.data.error;

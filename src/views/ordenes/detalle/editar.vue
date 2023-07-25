@@ -200,7 +200,9 @@ export default {
                             this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
                         }
                     })
-                    .catch(e => alert(e));
+                    .catch(e => {                        
+                        alert(e.response.data.error);
+                    });
             }
 
 
@@ -226,6 +228,8 @@ export default {
                     }
                     this.input.stock = DETALLE.cantidad_servicio
                     this.cargarServicios();
+                }).catch(e => {
+                    alert(e.response.data.error);
                 })
         }
 
