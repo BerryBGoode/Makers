@@ -178,7 +178,7 @@ FROM horarios h
 ORDER BY h.id_horario ASC
 
 CREATE VIEW ordenes_view AS
-SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, 0) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, null) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
 FROM ordenes o
 LEFT JOIN facturas f ON o.id_orden = f.id_orden
 LEFT JOIN clientes c ON o.id_cliente = c.id_cliente

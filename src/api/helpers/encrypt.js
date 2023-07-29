@@ -21,7 +21,8 @@ const encrypt = (clave) => {
  * Método para convertir el binario de la consulta a binario
  */
 const convertToBin = (bin) => {
-    return Buffer.from(bin).toString('binary');
+    (bin) ? bin = Buffer.from(bin).toString('binary') : bin = null
+    return bin
 }
 
 /**

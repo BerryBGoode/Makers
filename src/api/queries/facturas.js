@@ -153,34 +153,20 @@ const one = async (req, res) => {
 /**
  * Método para eliminar la factura seleccionada
  */
-const destroy = async (req, res) => {
+const destroy = (req, res) => {
     try {
         // obtener el idFacturas
-        const IDFACTURA = parseInt(req.params.id);
+        const IDFACTURA = req.params.id;
         // realizar transferencia sql o delete en este caso
-        await POOL.query('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA], (err, resul) => {
-            // verificar sí hubo un error                                
-            if (err) {
-
-                if (err.code === '23505') {
-                    // enviar error el cliente
-                    er = 'Dato unico ya registrado';
-                } else {
-                    er = err.message;
-                }
-                res.json({ error: er });
-                // sí es ejecuta esto, el status 201 no se enviará
-                // return;                    
-
-            } else {
-                msg = 'Factura eliminada';
-            }
-
-            // mandar mensaje sí no hay errores
-            res.status(201).send(msg);
-        })
+        execute('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA])
+            .then(() => {
+                res.status(201).send('Factura eliminada');
+            }).catch(rej => {
+                res.status(406).send({error: getError(rej)})
+            })
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 

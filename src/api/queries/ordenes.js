@@ -17,24 +17,26 @@ const get = async (req, res) => {
     let i = 0;
     execute('SELECT * FROM ordenes_view')
         .then(filled => {
+
             // convertir ids a binario
             let _orden = getBinary(filled, 'id_orden');
             let _cliente = getBinary(filled, 'id_cliente');
-            let _factura = getBinary(filled, 'factura')
             filled.forEach(element => {
+
                 // por cada registro crear un objeto con los is convertidos
-                ids = {
+                let ids = {
                     id_orden: _orden[i],
                     id_cliente: _cliente[i],
-                    factura: _factura[i]
+                    factura: getBinary(filled, 'factura')[i]
                 }
                 Object.assign(element, ids);
                 data.push(element);
                 i++
-            });            
+            });
             if (res.status(200)) res.json(data);
         })
         .catch(rej => {
+            console.log(rej)
             res.status(500).json({ error: rej })
         })
 };

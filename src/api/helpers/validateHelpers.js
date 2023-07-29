@@ -62,7 +62,7 @@ const compareProductosSucursal = async (servicio, cantidad) => {
  * método para obtener id en formato binario
  * de los datos obtenidos
  * @param {*} data respuesta con los datos recuperados
- * @param {*} col  campo id en la db
+ * @param {*} col  campo 'Buffer' extraido de la db
  * @returns binary
  */
 const getBinary = (data, col) => {

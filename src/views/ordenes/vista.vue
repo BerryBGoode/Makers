@@ -42,18 +42,19 @@
                             </router-link>
                         </div>
                         <div class="col-md-1 more-info">
-                            <!-- crear -->
-                            <div v-if="orden.factura === 0">
-                                <router-link class="btn btn-makers btn-table"
-                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/crear' }">
-                                    Crear
-                                </router-link>
-                            </div>
+                            
                             <!-- editar -->
-                            <div v-else>
+                            <div v-if="orden.factura">
                                 <router-link class="btn btn-makers btn-table"
                                     :to="{ path: '/ordenes/' + orden.id_orden + '/factura/editar/' + orden.factura }">
                                     Factura
+                                </router-link>
+                            </div>
+                            <!-- crear -->
+                            <div v-else>
+                                <router-link class="btn btn-makers btn-table"
+                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/crear' }">
+                                    Crear
                                 </router-link>
                             </div>
                         </div>
@@ -137,7 +138,7 @@ export default {
                     this.ordenes = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => console.log(e))
+                .catch(e => console.log(e.response.data.error))
         },
         eliminarOrden(orden) {
             if (confirm('Desea eliminar esta orden?')) {
