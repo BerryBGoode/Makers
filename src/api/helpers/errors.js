@@ -7,6 +7,9 @@ const getError = (err = null) => {
 
     let msg;
     switch (err) {
+        case 1054:
+            msg = 'Error al obtener dato especificado'
+            break;
         case 1062:
             msg = 'Dato unico ya registrado';
             break;

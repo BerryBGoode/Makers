@@ -197,12 +197,12 @@ const change = (req, res) => {
         const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar transacción sql
         execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, planilla = ?, telefono = ?, correo = ?, id_sucursal = ?, id_horario = ?, id_cargo = ?, alias = ? WHERE id_empleado = ?',
-        [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO])
+            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO])
             .then(() => {
                 res.status(201).send('Empleado modificado');
             }).catch(rej => {
                 console.log(rej)
-                res.status(406).send({error: getError(rej['errno'])})
+                res.status(406).send({ error: getError(rej['errno']) })
             })
     } catch (error) {
         console.log(error);
@@ -215,23 +215,19 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener el idempleado
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDEMPLEADO = req.params.id;
         // realizar transferencia sql o delete en este caso
-        POOL.query('DELETE FROM empleados WHERE id_empleado = $1', [IDEMPLEADO], (err, resul) => {
-            // veficar errores
-            if (err) {
-                if (err.code) msg = getError(err.code);
-                res.json({ error: msg });
-            }
-            // verificar sí existe error
-            // sino enviar estado exitoso
-            else { msg = 'Empleado eliminado'; }
-            if (!err) {
-                res.status(201).send(msg);
-            }
-        })
+        execute('DELETE FROM empleados WHERE id_empleado = ?', [IDEMPLEADO])
+            .then(() => {
+                res.status(201).send('Empleado eliminado');
+            }).catch(rej => {
+                console.log(rej)
+                res.status(406).send({ error: getError(rej['errno']) })
+            })
+
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 

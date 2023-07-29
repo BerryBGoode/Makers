@@ -161,7 +161,7 @@ export default {
                         // cargar los empleados
                         this.getEmpledos();
                     })
-                    .catch(e => { alert(e) })
+                    .catch(e => { alert(e.response.data.error) })
             }
         },
         buscar(dato) {
