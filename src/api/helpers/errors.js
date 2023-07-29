@@ -19,6 +19,9 @@ const getError = (err = null) => {
         case 1146:
             msg = 'Entidad especificada inexistente'; 
             break;
+        case 1065:
+            msg = 'Consulta vacía';
+            break;
         default:
             msg = null;
             break;

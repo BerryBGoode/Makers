@@ -148,7 +148,7 @@ const store = (req, res) => {
                 res.status(201).send('Empleado agregado')
             })
             .catch(rej => {
-                res.status(406).send({error: getError(rej['errno'])})
+                res.status(406).send({ error: getError(rej['errno']) })
             })
     } catch (e) {
         console.log(e)
@@ -170,13 +170,13 @@ const one = async (req, res) => {
         // verificar si no existe
         // verificar sí el estado es el esperado
         for (let i = 0; i < EMPLEADO.length; i++) {
-            let id = { 
+            let id = {
                 id_empleado: getBinary(EMPLEADO, 'id_empleado')[i],
                 id_sucursal: getBinary(EMPLEADO, 'id_sucursal')[i],
                 id_cargo: getBinary(EMPLEADO, 'id_cargo')[i],
                 id_horario: getBinary(EMPLEADO, 'id_horario')[i]
             }
-            Object.assign(EMPLEADO[i], id);            
+            Object.assign(EMPLEADO[i], id);
         }
         if (res.status(201)) { res.json(EMPLEADO[0]) };
 
@@ -190,38 +190,20 @@ const one = async (req, res) => {
  * Método para actualizar los datos del empleado seleccionado
  */
 const change = (req, res) => {
-    let msg, er = '';
     try {
         // obtener id 
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDEMPLEADO = req.params.id;
         // obtener los datos enviados del frontend
         const { nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE empleados SET nombres = $1, apellidos = $2, dui = $3, planilla = $4, telefono = $5, correo = $6 ,id_sucursal = $7, id_horario = $8, id_cargo = $9, alias = $10 WHERE id_empleado = $11',
-            [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO],
-            (err, result) => {
-                // verificar sí ha y un error
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        // sino el error no es un dato duplicado
-                        er = err.message;
-                    }
-                    // enviar cualquier tipo de error identificado
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Empleado agregado';
-                }
-
-                res.status(201).send(msg);
-            }
-        )
+        execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, planilla = ?, telefono = ?, correo = ?, id_sucursal = ?, id_horario = ?, id_cargo = ?, alias = ? WHERE id_empleado = ?',
+        [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO])
+            .then(() => {
+                res.status(201).send('Empleado modificado');
+            }).catch(rej => {
+                console.log(rej)
+                res.status(406).send({error: getError(rej['errno'])})
+            })
     } catch (error) {
         console.log(error);
     }
