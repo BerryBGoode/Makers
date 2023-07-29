@@ -221,7 +221,6 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).send('Empleado eliminado');
             }).catch(rej => {
-                console.log(rej)
                 res.status(406).send({ error: getError(rej['errno']) })
             })
 
