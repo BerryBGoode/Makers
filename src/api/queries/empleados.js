@@ -76,7 +76,7 @@ const getSucursales = async (req, res) => {
             let id = {
                 id_sucursal: _sucursal[i]
             }
-            Object.assign(SUCURSALES[i], id)            
+            Object.assign(SUCURSALES[i], id)
         }
         if (res.status(200)) res.json(SUCURSALES);
     } catch (error) {
@@ -101,7 +101,7 @@ const getHorarios = async (req, res) => {
                 }
                 Object.assign(HORARIOS[i], id);
             }
-            if(res.status(200)) res.json(HORARIOS)
+            if (res.status(200)) res.json(HORARIOS)
         }
 
     } catch (error) {
@@ -117,11 +117,20 @@ const getHorarios = async (req, res) => {
 const getCargos = async (req, res) => {
     try {
         // realizar consultar
-        const CARGOS = await POOL.query('SELECT * FROM cargos');
-        // verificar el estado de la respuesta para retornar datos
-        if (res.status(200)) res.json(CARGOS.rows);
+        const CARGOS = await execute('SELECT * FROM cargos');
+        if (CARGOS) {
+            let _cargo = getBinary(CARGOS, 'id_cargo');
+            for (let i = 0; i < CARGOS.length; i++) {
+                let id = {
+                    id_cargo: _cargo[i]
+                }
+                Object.assign(CARGOS[i], id);
+            }
+            if (res.status(200)) res.json(CARGOS);
+        }
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
@@ -129,35 +138,17 @@ const getCargos = async (req, res) => {
  * Método para crear un empleado
  */
 const store = (req, res) => {
-    let msg, er = '';
     try {
         // obtener los datos del req
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo, alias], (err, result) => {
-
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Empleado agregado';
-                }
-
-                res.status(201).send(msg);
-
-                // verificar estado satisfactorio
-                // res.status(201).send('Empleado agregado')
+        execute('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo, alias])
+            .then(() => {
+                res.status(201).send('Empleado agregado')
+            })
+            .catch(rej => {
+                res.status(406).send({error: getError(rej['errno'])})
             })
     } catch (e) {
         console.log(e)
@@ -175,13 +166,23 @@ const one = async (req, res) => {
         // convertirlo a entero, por sí el cliente modifica dato
 
         // esperar la respuesta cuando se haga la consulta
-        const EMPLEADO = await POOL.query('SELECT * FROM empleados_view WHERE id_empleado = $1', [IDEMPLEADO]);
+        const EMPLEADO = await execute('SELECT * FROM empleados_view WHERE id_empleado = ?', [IDEMPLEADO]);
         // verificar si no existe
         // verificar sí el estado es el esperado
-        if (res.status(201)) { res.json(EMPLEADO.rows) };
+        for (let i = 0; i < EMPLEADO.length; i++) {
+            let id = { 
+                id_empleado: getBinary(EMPLEADO, 'id_empleado')[i],
+                id_sucursal: getBinary(EMPLEADO, 'id_sucursal')[i],
+                id_cargo: getBinary(EMPLEADO, 'id_cargo')[i],
+                id_horario: getBinary(EMPLEADO, 'id_horario')[i]
+            }
+            Object.assign(EMPLEADO[i], id);            
+        }
+        if (res.status(201)) { res.json(EMPLEADO[0]) };
 
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un error en el servidor');
     }
 }
 

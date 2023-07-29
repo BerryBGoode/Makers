@@ -225,10 +225,9 @@ export default {
         getEmpleado(idempleado) {
             axios.get('http://localhost:3000/api/empleados/' + idempleado)
                 .then(res => {
-                    // cargar los datos
-
+                    // cargar los datos                    
                     // guardar en una constante los datos obtenidos
-                    const EMPLEADO = res.data[0];
+                    const EMPLEADO = res.data;
                     // asignar a cada uno
                     this.model.empleado = {
                         alias: EMPLEADO.alias,
