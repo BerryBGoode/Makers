@@ -5,6 +5,7 @@
  */
 const getError = (err = null) => {
 
+    err = err['errno'];
     let msg;
     switch (err) {
         case 1054:

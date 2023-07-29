@@ -1,6 +1,7 @@
 //requiere el módulo con los attrs de la conexión.
 const { execute } = require('../MySQL');
 const POOL = require('../db');
+const { getError } = require('../helpers/errors');
 const { getBinary } = require('../helpers/validateHelpers');
 
 
@@ -47,14 +48,12 @@ const getEmpleado = async (req, res) => {
             // recorrer los registros
             for (let i = 0; i < filled.length; i++) {
                 // agregarlos al arreglo vacíos que retornar los datos
-                data.push(filled[i]);                
-            }        
+                data.push(filled[i]);
+            }
             if (res.status(200)) res.json(data);
         })
-
         .catch(rej => {
-            console.log(rej);
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).send({ error: getError(rej['errno']) });
         })
 }
 
@@ -67,7 +66,7 @@ const getDuiEmp = async (req, res) => {
     execute('SELECT dui, id_empleado FROM empleados')
         .then(filled => {
             let _empleado = getBinary(filled, 'id_empleado');
-            for (let i = 0; i < filled.length; i++) {                
+            for (let i = 0; i < filled.length; i++) {
                 id = {
                     id_empleado: _empleado[i]
                 }

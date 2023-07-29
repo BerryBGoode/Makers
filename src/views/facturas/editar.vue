@@ -138,17 +138,17 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/facturas/' + this.$route.params.id)
                 .then(res => {
-                    const FACTURA = res.data
+                    console.log(res.data)
                     this.model.factura = {
-                        empleado: FACTURA.id_empleado,
-                        estado: FACTURA.estado,
-                        sucursal: FACTURA.id_sucursal
+                        empleado: res.data.id_empleado,
+                        estado: res.data.estado,
+                        sucursal: res.data.id_sucursal
                     }
                     this.empleado = {
-                        nombres: FACTURA.nombres,
-                        apellidos: FACTURA.apellidos
+                        nombres: res.data.nombres,
+                        apellidos: res.data.apellidos
                     }
-                })
+                }).catch(e => alert(e.response.data.error))
         },
         // método para obtener el dui del cliente
         cargarEmpleadoDui() {
@@ -156,22 +156,22 @@ export default {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/reservaciones/empleados')
                     .then(res => { this.empleados = res.data; }) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { console.log(e.response.data.error) })
 
             } catch (error) {
                 console.error(error);
             }
         },
-        getEmpleado() {            
-            
+        getEmpleado() {
+
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
                 .then(res => {
-                    this.empleado.nombres = res.data
-                    // this.empleado.nombres = res.data.nombres;
-                    // this.empleado.apellidos = res.data.apellidos
-                    console.log(res.data)
+                    this.empleado = {
+                        nombres: res.data[0].nombres,
+                        apellidos: res.data[0].apellidos
+                    }                    
                 })
-                .catch(e => { console.log(e) });
+                .catch(e => { console.log(e.response.data.error) });
 
         },
         // método para obtener la sucursal para la factura
@@ -189,11 +189,7 @@ export default {
             // realizar petición y enviando datos
             axios.put('http://localhost:3000/api/facturas/' + this.$route.params.id, this.model.factura)
                 .then(res => {
-                    // cuando hay un error 400 que no realizo lo que se debía
-                    if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                        // console.log(res.data)
-                    }
+                    console.log(res)
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
                     if (res.status === 201 && !res.data.error) {

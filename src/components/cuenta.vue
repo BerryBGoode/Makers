@@ -62,12 +62,11 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/auth/', this.config)
                 .then(res => {       
-                    console.log(res)             
                     this.empleado.id = res.data.id_empleado;
                     this.empleado.alias = res.data.alias                    
                 })
                 .catch(e => {
-                    console.log(e)
+                    console.log(e.response.data.error)
                 })
         }
     },

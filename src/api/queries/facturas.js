@@ -2,7 +2,8 @@
 const POOL = require('../db');
 
 const { execute } = require('../MySQL')
-const { getBinary } = require('../helpers/validateHelpers')
+const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
 
 /**
  * req: información que viene del frontend
@@ -67,23 +68,6 @@ const getDirección = async (req, res) => {
             res.status(500).send('Surgio un problema en el servidor');
         })
 }
-
-/**
-* Método  para obtener los datos del Empleado por su DUI
-*/
-const getObtenerEmpleados = async (req, res) => {
-    try {
-        // realizar consulta
-        const EMPLEADOS = await POOL.query('SELECT nombres, apellidos FROM Empleados WHERE dui = ?');
-        // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(EMPLEADOS.rows);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-
-
 
 /**
  * Método para crear una factura
@@ -170,16 +154,18 @@ const one = async (req, res) => {
         .then(filled => {
             let _factura = getBinary(filled, 'id_factura'), _sucursal = getBinary(filled, 'id_sucursal'), _empleado = getBinary(filled, 'id_empleado'), _orden = getBinary(filled, 'id_orden');
             for (let i = 0; i < filled.length; i++) {
-                id = {
+                let id = {
                     id_factura: _factura[i],
                     id_sucursal: _sucursal[i],
                     id_empleado: _empleado[i],
                     id_orden: _orden[i],
                 }
-                Object.assign(filled, id)
+                Object.assign(filled[i], id)
                 data.push(filled[i]);
-
-            }
+            }            
+            res.status(200).json(data[0])
+        }).catch(rej => {
+            res.status(500).send({error: getError(rej)})
         })
 }
 /**
@@ -224,4 +210,4 @@ const destroy = async (req, res) => {
 
 
 // exportación de modulos
-module.exports = { get, getDirección, getObtenerEmpleados, change, destroy, store, one }
+module.exports = { get, getDirección, change, destroy, store, one }
