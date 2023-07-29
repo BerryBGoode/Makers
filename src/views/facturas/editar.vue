@@ -138,7 +138,6 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/facturas/' + this.$route.params.id)
                 .then(res => {
-                    console.log(res.data)
                     this.model.factura = {
                         empleado: res.data.id_empleado,
                         estado: res.data.estado,
@@ -209,7 +208,7 @@ export default {
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
         },
         eliminarFactura() {
             if (confirm('Desea eliminar esta factura?')) {

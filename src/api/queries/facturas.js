@@ -109,7 +109,6 @@ const store = (req, res) => {
  * Método para actualizar los datos de la factura
  */
 const change = (req, res) => {
-    let msg;
     try {
         // obtener id 
         const IDFACTURA = parseInt(req.params.id);
@@ -117,31 +116,14 @@ const change = (req, res) => {
         // obtener los datos del req
         const { empleado, sucursal, estado } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE facturas SET id_sucursal = $1, id_empleado = $2, estado = $3 WHERE id_factura = $4',
-            [sucursal, empleado, estado, IDFACTURA],
-            (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Factura modificada';
-                }
-
-                res.status(201).send(msg);
-            }
-        )
+        execute('UPDATE facturas SET id_sucursal = ?, id_empleado = ?, estado = ? WHERE id_factura = ?',
+            [sucursal, empleado, estado, IDFACTURA])
+            .then(() => {
+                res.status(201).send('Factura modificada')
+            }).catch(rej => res.status(406).send({ error: getError(rej) }))
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
@@ -162,10 +144,10 @@ const one = async (req, res) => {
                 }
                 Object.assign(filled[i], id)
                 data.push(filled[i]);
-            }            
+            }
             res.status(200).json(data[0])
         }).catch(rej => {
-            res.status(500).send({error: getError(rej)})
+            res.status(500).send({ error: getError(rej) })
         })
 }
 /**
@@ -176,7 +158,7 @@ const destroy = async (req, res) => {
         // obtener el idFacturas
         const IDFACTURA = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
-        await POOL.query('DELETE FROM facturas WHERE id_factura = $1', [IDFACTURA], (err, resul) => {
+        await POOL.query('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA], (err, resul) => {
             // verificar sí hubo un error                                
             if (err) {
 
