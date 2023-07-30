@@ -112,13 +112,14 @@ export default {
             if (confirm('Desea eliminar el horario?')) {
                 axios.delete('http://localhost:3000/api/horarios/' + horario)
                     .then(res => {
+                        
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
 
                         // cargar
                         this.getHorarios();
                     })
-                    .catch(e => { alert(e); console.log(e) })
+                    .catch(e => { alert(e.response.data.error) })
             }
         },
         buscar(dato) {

@@ -60,7 +60,7 @@ const change = (req, res) => {
             .then(() => {
                 res.status(201).send('Horario modificado');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej) });
+                res.status(406).send({ error: getError(rej) }); 
             })
     } catch (error) {
         console.log(error);
@@ -74,20 +74,14 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener el id del horario
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        POOL.query('DELETE FROM horarios WHERE id_horario = $1', [ID], (err, result) => {
-            // verificar sí hubo un problema
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Horario eliminado');
-        })
+        execute('DELETE FROM horarios WHERE id_horario = ?', [ID])
+            .then(() => {
+                res.status(201).send('Horario eliminado');
+            }).catch(rej => {
+                res.status(406).send({error: getError(rej)})
+            })
     } catch (error) {
 
     }
