@@ -138,7 +138,10 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/reservaciones/empleados')
-                    .then(res => { this.empleados = res.data; }) // obtener los datos de la petición
+                    .then(res => {
+                        // obtener los datos de la petición
+                        this.empleados = res.data;
+                    })
                     .catch(e => { console.log(e) })
 
             } catch (error) {
@@ -146,11 +149,13 @@ export default {
             }
         },
         getEmpleado() {
-            console.log(this.model.factura.dui)
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
-                .then(res => { this.empleado.nombres = res.data.nombres; this.empleado.apellidos = res.data.apellidos })
-                .catch(e => { console.log(e) });
-
+                .then(res => {
+                    console.log(res)
+                    this.empleado.nombres = res.data[0].nombres;
+                    this.empleado.apellidos = res.data[0].apellidos
+                })
+                .catch(e => { console.log(e.response.data.error) });
         },
         // método para obtener la sucursal para la factura
         cargarSucursales() {
@@ -159,9 +164,8 @@ export default {
                 // cuando pase todo correctamente
                 .then(res => {
                     this.sucursales = res.data
-                    console.log(res.data)
                 }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { console.error(e) }) // mostrar mensaje de error
+                .catch(e => { alert(e.response.data.error) }) // mostrar mensaje de error
         },
 
         // método para agregar una nueva factura
@@ -194,7 +198,7 @@ export default {
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         }
     }

@@ -36,7 +36,7 @@
                     <router-link to="/horarios" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
             </form>
         </div>
@@ -62,8 +62,10 @@ export default {
                 .then(res => {
                     // cargar los datos
                     this.msg = '';
-                    this.horario = res.data
+                    this.horario.cierre = res.data.cierre;
+                    this.horario.inicio = res.data.inicio;
 
+                    console.log(this.horario)
                 })
                 .catch(e => {alert(e); console.log(e)})
         },

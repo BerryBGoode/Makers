@@ -1,5 +1,8 @@
 // requerir del pool con los attrs de la conexión
+const { execute } = require('../MySQL');
 const POOL = require('../db');
+const { getError } = require('../helpers/errors');
+const { getBinary } = require('../helpers/validateHelpers');
 
 /**
  * Método para agregar un horario
@@ -9,13 +12,11 @@ const store = (req, res) => {
         // obtener los datos de la petición
         const { inicio, cierre } = req.body;
         // realizar query
-        POOL.query('INSERT INTO horarios(hora_apertura, hora_cierre) VALUES ($1, $2)', [inicio, cierre], (err, result) => {
-            if (err) {
-                res.json({ error: err.message });
-                return;
-            }
-            res.status(201).send('Horario agregado');
-        })
+        execute('INSERT INTO horarios(id_horario, hora_apertura, hora_cierre) VALUES (UUID(), ?, ?)', [inicio, cierre])
+            .then(() => {
+                res.status(201).send('Horario agregado');
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -28,13 +29,17 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener id de los parametros de la url
-        const ID = parseInt(req.params.id);
-        // formato de hora HH12:mm
-        let formato = 'HH12:MI';
+        const ID = req.params.id;        
         // realizar consulta
-        const HORARIO = await POOL.query('SELECT * FROM horarios_view WHERE id_horario = $1', [ID]); // con * tardo .118 mls
+        const HORARIO = await execute('SELECT * FROM horarios_view WHERE id_horario = ?', [ID]); // con * tardo .118 mls
         // verificar respuesta satisfeca
-        if (res.status(200)) res.json(HORARIO.rows[0]);
+        for (let i = 0; i < HORARIO.length; i++) {
+            id = {
+                id_horario: getBinary(HORARIO, 'id_horario')[i]
+            }
+            Object.assign(HORARIO[i], id);            
+        }
+        if (res.status(200)) res.json(HORARIO[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');

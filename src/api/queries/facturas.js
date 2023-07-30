@@ -73,33 +73,15 @@ const getDirección = async (req, res) => {
  * Método para crear una factura
  */
 const store = (req, res) => {
-    let msg = '';
     try {
         // obtener los datos del req
         const { orden, empleado, sucursal, estado } = req.body;
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO facturas(id_orden, id_empleado, id_sucursal, estado) VALUES ($1, $2, $3, $4)',
-            [orden, empleado, sucursal, estado], (err, result) => {
-
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Factura agregada';
-                }
-
-                res.status(201).send(msg);
-            })
+        execute('INSERT INTO facturas(id_factura, id_orden, id_empleado, id_sucursal, estado) VALUES (UUID(), ?, ?, ?, ?)',
+            [orden, empleado, sucursal, estado])
+        .then(() => {
+            res.status(201).send('Factura agregada')
+        }).catch(rej => {res.status(406).send({error: getError(rej)})})
     } catch (error) {
         console.log(error)
     }
@@ -111,7 +93,7 @@ const store = (req, res) => {
 const change = (req, res) => {
     try {
         // obtener id 
-        const IDFACTURA = parseInt(req.params.id);
+        const IDFACTURA = req.params.id;
         // obtener los datos enviados del frontend
         // obtener los datos del req
         const { empleado, sucursal, estado } = req.body;
@@ -162,7 +144,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).send('Factura eliminada');
             }).catch(rej => {
-                res.status(406).send({error: getError(rej)})
+                res.status(406).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);

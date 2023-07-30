@@ -159,7 +159,7 @@ export default {
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/ordenes');
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         }
     }

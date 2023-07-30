@@ -105,7 +105,7 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/horarios/')
                 .then(res => { this.horarios = res.data; this.buscador = res.data })
-                .catch(e => { alert(e); console.log(e) });
+                .catch(e => { alert(e.response.data.error); console.log(e) });
         },
         eliminarHorario(horario) {
             // esperar confirmación del usuario

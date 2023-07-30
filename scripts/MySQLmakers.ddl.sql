@@ -173,7 +173,7 @@ INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
 INNER JOIN sucursales sc ON sc.id_sucursal = dts.id_sucursal
 
 CREATE VIEW horarios_view AS
-SELECT h.id_horario, time_format(h.hora_apertura, '%l:%i') as inicio, time_format(h.hora_cierre, '%l:%i') as cierre
+SELECT h.id_horario, time_format(h.hora_apertura, '%h:%i') as inicio, time_format(h.hora_cierre, '%h:%i') as cierre
 FROM horarios h
 ORDER BY h.id_horario ASC
 

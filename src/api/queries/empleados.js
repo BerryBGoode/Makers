@@ -90,8 +90,9 @@ const getSucursales = async (req, res) => {
  */
 const getHorarios = async (req, res) => {
     try {
+        
         // realizar consulta
-        const HORARIOS = await execute('SELECT * FROM horarios_view'); // con * tardo .118 mls
+        const HORARIOS = await execute(`SELECT id_horario, time_format(inicio, '%l:%i') as inicio, time_format(cierre, '%l:%i') as cierre FROM horarios_view`);
         // verificar respuesta satisfeca
         if (HORARIOS) {
             let _horario = getBinary(HORARIOS, 'id_horario');

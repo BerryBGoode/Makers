@@ -2,7 +2,9 @@
 const POOL = require('../db');
 
 const { execute } = require('../MySQL');
-const { getBinary } = require('../helpers/validateHelpers')
+const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
+const { convertToBin } = require('../helpers/encrypt');
 
 /**
  * req: información que viene del frontend
@@ -13,31 +15,25 @@ const { getBinary } = require('../helpers/validateHelpers')
  * Método para obtener las ordenes
  */
 const get = async (req, res) => {
-    let data = [];
-    let i = 0;
-    execute('SELECT * FROM ordenes_view')
+    execute('SELECT * FROM ordenes_view ORDER BY fecha DESC')
         .then(filled => {
-
             // convertir ids a binario
             let _orden = getBinary(filled, 'id_orden');
             let _cliente = getBinary(filled, 'id_cliente');
-            filled.forEach(element => {
-
+            for (let i = 0; i < filled.length; i++) {
                 // por cada registro crear un objeto con los is convertidos
                 let ids = {
                     id_orden: _orden[i],
                     id_cliente: _cliente[i],
                     factura: getBinary(filled, 'factura')[i]
+
                 }
-                Object.assign(element, ids);
-                data.push(element);
-                i++
-            });
-            if (res.status(200)) res.json(data);
+                Object.assign(filled[i], ids);
+            }
+            if (res.status(200)) res.json(filled);
         })
         .catch(rej => {
-            console.log(rej)
-            res.status(500).json({ error: rej })
+            res.status(500).json({ error: getError(rej) })
         })
 };
 
@@ -47,11 +43,12 @@ const get = async (req, res) => {
 const getClienteDui = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT id_cliente, dui FROM clientes');
+        const CLIENTES = await execute('SELECT id_cliente, dui FROM clientes');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(CLIENTES.rows);
+        if (res.status(200)) res.json(CLIENTES);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
@@ -62,11 +59,12 @@ const getClienteDui = async (req, res) => {
 const getObtenerClientes = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
+        const CLIENTES = await execute('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(CLIENTES.rows);
+        if (res.status(200)) res.json(CLIENTES);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
@@ -80,28 +78,19 @@ const getObtenerClientes = async (req, res) => {
  * Método para crear una orden
  */
 const store = (req, res) => {
-    let msg = '';
-    let status = '';
     try {
         // obtener los datos del req
         const { fecha, cliente } = req.body;
         let estado = 1
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO ordenes(fecha, estado, id_cliente) VALUES ($1,$2, $3)',
-            [fecha, estado, cliente], (err, result) => {
-
-                // verificar sí hubo un error                                
-                if (err) {
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
-                }
-                res.status(201).send('orden agregada');
-                // verificar estado satisfactorio
-                // res.status(201).send('Orden agregada')
-            })
+        execute('INSERT INTO ordenes(id_orden ,fecha, estado, id_cliente) VALUES (UUID(), ?, ?, ?)',
+            [fecha, estado, convertToBin(cliente)])
+            .then(() => {
+                res.status(201).send('Orden agregada')
+            }).catch(rej => {console.log(rej); res.status(406).send({ error: getError(rej) });})
     } catch (error) {
         console.log(error)
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
