@@ -29,7 +29,7 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener id de los parametros de la url
-        const ID = req.params.id;        
+        const ID = req.params.id;
         // realizar consulta
         const HORARIO = await execute('SELECT * FROM horarios_view WHERE id_horario = ?', [ID]); // con * tardo .118 mls
         // verificar respuesta satisfeca
@@ -37,7 +37,7 @@ const one = async (req, res) => {
             id = {
                 id_horario: getBinary(HORARIO, 'id_horario')[i]
             }
-            Object.assign(HORARIO[i], id);            
+            Object.assign(HORARIO[i], id);
         }
         if (res.status(200)) res.json(HORARIO[0]);
     } catch (error) {
@@ -52,22 +52,15 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener id del registro
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos de la petición
         const { inicio, cierre } = req.body;
         // realizar query
-        POOL.query('UPDATE horarios SET hora_apertura = $1, hora_cierre = $2 WHERE id_horario = $3', [inicio, cierre, ID],
-            (err, result) => {
-                // verificar sí hubo un problema
-                if (err) {
-
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
-                }
+        execute('UPDATE horarios SET hora_apertura = ?, hora_cierre = ? WHERE id_horario = ?', [inicio, cierre, ID])
+            .then(() => {
                 res.status(201).send('Horario modificado');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej) });
             })
     } catch (error) {
         console.log(error);
