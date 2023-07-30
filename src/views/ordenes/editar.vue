@@ -1,6 +1,6 @@
 <style>
 .info-orden {
-    margin-bottom: 26.5vh;
+    margin-bottom: 27vh;
 }
 
 .h-91 {

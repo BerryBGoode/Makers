@@ -65,9 +65,9 @@ export default {
                     this.horario.cierre = res.data.cierre;
                     this.horario.inicio = res.data.inicio;
 
-                    console.log(this.horario)
+                  
                 })
-                .catch(e => {alert(e); console.log(e)})
+                .catch(e => {alert(e.response.data.error); console.log(e)})
         },
         modificarHorario() {
             // verificar que el horario de inicio sea menor al de cierre y que ambos tengan algún valor
@@ -86,7 +86,7 @@ export default {
                             this.$router.push('/horarios');
                         }
                     })
-                    .catch(e => { alert(e); console.log(e) });
+                    .catch(e => { alert(e.response.data.error); console.log(e) });
 
             } else {
                 this.msg = 'Horario ilogico';

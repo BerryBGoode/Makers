@@ -1,6 +1,6 @@
 <style>
-.info-orden {
-    margin-bottom: 26.5vh;
+.mb-42vh {
+    margin-bottom: 42vh !important;
 }
 
 .h-91 {
@@ -26,7 +26,7 @@
         </div>
         <hr>
         <form @submit.prevent="crear" class="container relative h-91">
-            <div class="form-data">
+            <div class="form-data mb-42vh">
                 <span class="bold">
                     Cliente
                 </span>
@@ -37,8 +37,8 @@
                         v-if="clientes.length > 0" v-model="this.model.ordenes.cliente">
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de clientes -->
-                        <option v-for="(clientes, i) in clientes" :key="i" 
-                                :value="clientes.id_cliente">{{ clientes.dui }}</option>
+                        <option v-for="(clientes, i) in clientes" :key="i" :value="clientes.id_cliente">{{ clientes.dui }}
+                        </option>
                     </select>
                     <!-- sino existe el dui del cliente -->
                     <select class="form-select mb-3" name="error" v-else>
@@ -56,19 +56,7 @@
                     </div>
                 </div>
             </div>
-            <hr>
-            <div class="form-data info-orden">
-                <span class="bold">
-                    info. Orden
-                </span>
-                <div class="form-2">
-                    <div class="mb-3 flex-col">
-                        <label for="">Fecha</label>
-                        <input type="date" name="" id="" class="form-control" v-model="model.ordenes.fecha">
-                    </div>
-                </div>
-            </div>
-            <hr>
+            <hr>            
             <div class="buttons-reservacion bottom-0 form-data">
                 <router-link to="/ordenes" class="btn btn-makers">
                     Cancelar
@@ -96,7 +84,6 @@ export default {
             },
             model: {
                 ordenes: {
-                    fecha: '',
                     cliente: 'Seleccionar'
                 }
             },
@@ -110,7 +97,7 @@ export default {
     },
     methods: {
         getCliente() {
-            
+
             axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
                 .catch(e => { console.log(e) });
@@ -121,12 +108,12 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
-                    .then(res => { this.clientes = res.data }) // obtener los datos de la petición
+                    .then(res => { this.clientes = res.data; console.log(res.data)}) // obtener los datos de la petición
                     .catch(e => { console.log(e) })
             } catch (error) {
                 console.error(error);
             }
-        },    
+        },
 
         // método para agregar una nueva orden
         crear() {
@@ -144,7 +131,6 @@ export default {
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.model.ordenes = {
-                            fecha: '',
                             hora: '',
                             dui: 'Seleccionar',
                             nombres: 'Seleccionar',

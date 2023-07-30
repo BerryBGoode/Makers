@@ -45,6 +45,13 @@ const getClienteDui = async (req, res) => {
         // realizar consulta
         const CLIENTES = await execute('SELECT id_cliente, dui FROM clientes');
         // verificar respuesta satisfactoria, para enviar los datos
+        for (let i = 0; i < CLIENTES.length; i++) {
+            id = {
+                id_cliente: getBinary(CLIENTES, 'id_cliente')[i]
+            }
+            Object.assign(CLIENTES[i], id);
+
+        }
         if (res.status(200)) res.json(CLIENTES);
     } catch (error) {
         console.error(error);
@@ -68,26 +75,20 @@ const getObtenerClientes = async (req, res) => {
     }
 }
 
-
-
-
-
-
-
 /**
  * Método para crear una orden
  */
 const store = (req, res) => {
     try {
         // obtener los datos del req
-        const { fecha, cliente } = req.body;
+        const { cliente } = req.body;
         let estado = 1
         // realizar query o insert y enviarle los parametros
-        execute('INSERT INTO ordenes(id_orden ,fecha, estado, id_cliente) VALUES (UUID(), ?, ?, ?)',
-            [fecha, estado, convertToBin(cliente)])
+        execute('INSERT INTO ordenes(id_orden ,fecha, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, ?, ?)',
+            [estado, convertToBin(cliente)])
             .then(() => {
                 res.status(201).send('Orden agregada')
-            }).catch(rej => {console.log(rej); res.status(406).send({ error: getError(rej) });})
+            }).catch(rej => { console.log(rej); res.status(406).send({ error: getError(rej) }); })
     } catch (error) {
         console.log(error)
         res.status(500).send('Surgio un problema en el servidor')
@@ -170,11 +171,17 @@ const destroy = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener id
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        const ORDEN = await POOL.query('SELECT * FROM ordenes_view WHERE id_orden = $1', [ID]);
+        const ORDEN = await execute('SELECT dui, nombres, apellidos, fecha, id_cliente FROM ordenes_view WHERE id_orden = ?', [ID]);
         // verificar respuesta esperada
-        if (res.status(200)) res.send(ORDEN.rows[0]);
+        for (let i = 0; i < ORDEN.length; i++) {
+            let id = {
+                id_cliente: getBinary(ORDEN, 'id_cliente')[i]
+            }
+            Object.assign(ORDEN[i], id);
+        }
+        if (res.status(200)) res.send(ORDEN[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
