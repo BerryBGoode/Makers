@@ -1,6 +1,8 @@
 // archivo para dar resultado después de aplicar las validaciones del lado del servidor
 const { validationResult } = require('express-validator');
 const POOL = require('../db');
+const { convertToBin, convertToUtf } = require('./encrypt');
+const { execute } = require('../MySQL');
 
 // método para dar resultado después de validar
 const validate = (req, res, next) => {
@@ -43,17 +45,35 @@ const compareProductos = async (servicio, cantidad) => {
  * Metodo obtener la cantidad o existencias que tiene un producto
  * en una sucursal
  */
-const compareProductosSucursal = async (producto, cantidad) => {
+const compareProductosSucursal = async (servicio, cantidad) => {
     try {
         // obtener la cantidad de existencias que tiene el producto
-        const DETALLE = await POOL.query('SELECT cantidad FROM detalles_servicios_sucursales WHERE id_detalle = $1', [producto]);
+        const DETALLE = await execute('SELECT cantidad FROM detalles_servicios_sucursales WHERE id_detalle = ?', [servicio])
         // comparar la cantidad que tiene en la db, con 
-        // la que se quiere agregar el pedido
-        return (cantidad <= DETALLE.rows[0].cantidad);
+        // la que se quiere agregar el pedido              
+        return (cantidad <= DETALLE[0].cantidad);
+
     } catch (error) {
         console.log(error);
     }
 }
 
+/**
+ * método para obtener id en formato binario
+ * de los datos obtenidos
+ * @param {*} data respuesta con los datos recuperados
+ * @param {*} col  campo 'Buffer' extraido de la db, la col debe existir en el parametro data
+ * @returns binary
+ */
+const getBinary = (data, col) => {
+    let id = [];
+    // recorrer los datos obtenidos
+    data.forEach(element => {
+        // convertir a binario el elemento que se este recorriendo
+        id.push(convertToBin(element[col]));
+    });
+    return id;
+}
+
 // exportar
-module.exports = { validate, compareProductos, compareProductosSucursal };
+module.exports = { validate, compareProductos, compareProductosSucursal, getBinary };

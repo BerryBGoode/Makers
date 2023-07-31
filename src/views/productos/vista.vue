@@ -14,11 +14,6 @@
             </router-link>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
         <div class="data p-2" v-if="productos.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -81,6 +76,11 @@
         <div class="data p-2" v-else-if="productos.length === 0">
             <span class="bold">
                 No se encontraron existencias
+            </span>
+        </div>
+        <div class="data p-2" v-if="buscador.length === 0 && productos.length > 0">
+            <span class="bold">
+                No se encontraron resultados
             </span>
         </div>
     </div>

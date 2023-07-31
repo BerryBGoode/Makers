@@ -1,7 +1,10 @@
-// requerir la pool con los datos de la conexión
-const POOL = require('../db');
-// requerir de unos métodos de los queries de productos
-const { producto } = require('./productos')
+// requerir la mysql con los datos de la conexión
+const { mysql, pg } = require('../db');
+
+// método para ejecutar sentencias en MySQL
+const { execute } = require('../MySQL');
+// método para obtener binarios de los ids
+const { getBinary } = require('../helpers/validateHelpers')
 
 let msg;
 /**
@@ -12,7 +15,7 @@ const getServicios = async (req, res) => {
         // declarar valor diferente al que se espera
         let producto = 'Producto';
         // realizar query
-        const TIPOS = await POOL.query('SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = $1', [producto])
+        const TIPOS = mysql.query('SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = $1', [producto])
         // verificar sí la respuesta es la esperada
         if (res.status(200)) res.send(TIPOS.rows);
     } catch (error) {
@@ -24,16 +27,37 @@ const getServicios = async (req, res) => {
 /**
  * Método para obtener todos los servicios
  */
-const get = async (req, res) => {
-    try {
-        // realizar query
-        const SERVICIOS = await POOL.query('SELECT * FROM servicios_view')
-        // verificar sí el resultado es el esperado para retornar los datos
-        if (res.status(200)) res.send(SERVICIOS.rows);
-    } catch (error) {
-        console.log(error)
-        res.status(500).send('Surgio un problema en el servidor');
-    }
+const get = (req, response) => {
+    // arreglo vacíos para guardar los datos encontrados
+    let data = [];
+    // realizar query
+    let producto = 'Producto';
+    
+    execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, tipo_servicio, id_tipo_servicio FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
+        .then(res => {
+            // obtener ids y convertirlos a binario
+            let id = getBinary(res, 'id_servicio');
+            let id_tipo = getBinary(res, 'id_tipo_servicio');
+            let i = 0;
+            // recorrer las cantidad de datos encontrados
+            res.forEach(element => {
+                // hacer un obj con los datos recuperados
+                element = {
+                    id_servicio: id[i],
+                    nombre_servicio: element.nombre_servicio,
+                    descripcion: element.descripcion,
+                    tipo_servicio: element.tipo_servicio,
+                    id_tipo_servicio: id_tipo[i],
+                    precio: element.precio
+                }                
+                // arregar obj al arreglo de objetos
+                data.push(element);
+                i++;
+            });
+            if(response.status(200)) response.json(data)
+        })
+        // enviar mensaje de error
+        .catch(er => response.status(500).send(er))
 }
 
 /**
@@ -45,7 +69,7 @@ const store = (req, res) => {
         // obtener los datos de la petición
         const { tipo, nombre, descripcion, precio, existencias } = req.body;
         // realizar query
-        POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
+        mysql.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
             [tipo, descripcion, precio, existencias, estado, nombre],
             (err, result) => {
                 // verificar sí hubo un error                                
@@ -81,7 +105,7 @@ const one = async (req, res) => {
         // obtener el id 
         const ID = parseInt(req.params.id);
         // realizar query
-        const SERVICIO = await POOL.query('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = $1', [ID])
+        const SERVICIO = mysql.query('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = $1', [ID])
         // verificar sí el resultado es el esperado para enviar los datos
         if (res.status(200)) res.send(SERVICIO.rows[0]);
     } catch (error) {
@@ -101,7 +125,7 @@ const change = (req, res) => {
         // obtener los datos de la petición
         const { tipo, nombre, descripcion, precio } = req.body;
         // realizar actualización
-        POOL.query('UPDATE servicios SET descripcion = $1, precio = $2, id_tipo_servicio = $3, nombre_servicio = $4 WHERE id_servicio = $5',
+        mysql.query('UPDATE servicios SET descripcion = $1, precio = $2, id_tipo_servicio = $3, nombre_servicio = $4 WHERE id_servicio = $5',
             [descripcion, precio, tipo, nombre, ID], (err, result) => {
                 // verificar sí hubo un error                                
                 if (err) {
@@ -135,7 +159,7 @@ const destroy = (req, res) => {
         // obtener id del servicio
         const ID = parseInt(req.params.id);
         // realizar query
-        POOL.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
+        mysql.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
             // verificar sí ocurre un error
             if (err) {
                 // verificar sí no se puede eliminar porque tiene datos dependientes                

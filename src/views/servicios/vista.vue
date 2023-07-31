@@ -67,11 +67,7 @@
             </router-link>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
+        
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="servicios.length > 0">
             <!-- recorrer los clientes encontrados -->
@@ -137,6 +133,11 @@
                 No se encontraron existencias
             </span>
         </div>
+        <div class="data p-2" v-if="buscador.length === 0 && servicios.length > 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
     </div>
     <!-- </div> -->
 </template>
@@ -182,7 +183,7 @@ export default {
                 return (
                     servicio.descripcion.toLowerCase().indexOf(dato) !== -1 ||
                     servicio.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
-                    servicio.precio.indexOf(dato) !== -1 ||
+                    servicio.precio.indexOf(dato) !== -1||
                     servicio.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })

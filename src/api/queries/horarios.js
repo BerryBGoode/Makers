@@ -1,5 +1,8 @@
 // requerir del pool con los attrs de la conexión
+const { execute } = require('../MySQL');
 const POOL = require('../db');
+const { getError } = require('../helpers/errors');
+const { getBinary } = require('../helpers/validateHelpers');
 
 /**
  * Método para agregar un horario
@@ -9,13 +12,11 @@ const store = (req, res) => {
         // obtener los datos de la petición
         const { inicio, cierre } = req.body;
         // realizar query
-        POOL.query('INSERT INTO horarios(hora_apertura, hora_cierre) VALUES ($1, $2)', [inicio, cierre], (err, result) => {
-            if (err) {
-                res.json({ error: err.message });
-                return;
-            }
-            res.status(201).send('Horario agregado');
-        })
+        execute('INSERT INTO horarios(id_horario, hora_apertura, hora_cierre) VALUES (UUID(), ?, ?)', [inicio, cierre])
+            .then(() => {
+                res.status(201).send('Horario agregado');
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
+
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -28,13 +29,17 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener id de los parametros de la url
-        const ID = parseInt(req.params.id);
-        // formato de hora HH12:mm
-        let formato = 'HH12:MI';
+        const ID = req.params.id;
         // realizar consulta
-        const HORARIO = await POOL.query('SELECT id_horario, to_char(hora_apertura, $1) as inicio, to_char(hora_cierre, $1) as cierre FROM horarios WHERE id_horario = $2', [formato, ID]); // con * tardo .118 mls
+        const HORARIO = await execute('SELECT * FROM horarios_view WHERE id_horario = ?', [ID]); // con * tardo .118 mls
         // verificar respuesta satisfeca
-        if (res.status(200)) res.json(HORARIO.rows[0]);
+        for (let i = 0; i < HORARIO.length; i++) {
+            id = {
+                id_horario: getBinary(HORARIO, 'id_horario')[i]
+            }
+            Object.assign(HORARIO[i], id);
+        }
+        if (res.status(200)) res.json(HORARIO[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -47,22 +52,15 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener id del registro
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos de la petición
         const { inicio, cierre } = req.body;
         // realizar query
-        POOL.query('UPDATE horarios SET hora_apertura = $1, hora_cierre = $2 WHERE id_horario = $3', [inicio, cierre, ID],
-            (err, result) => {
-                // verificar sí hubo un problema
-                if (err) {
-
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
-                }
+        execute('UPDATE horarios SET hora_apertura = ?, hora_cierre = ? WHERE id_horario = ?', [inicio, cierre, ID])
+            .then(() => {
                 res.status(201).send('Horario modificado');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej) }); 
             })
     } catch (error) {
         console.log(error);
@@ -76,20 +74,14 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener el id del horario
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        POOL.query('DELETE FROM horarios WHERE id_horario = $1', [ID], (err, result) => {
-            // verificar sí hubo un problema
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Horario eliminado');
-        })
+        execute('DELETE FROM horarios WHERE id_horario = ?', [ID])
+            .then(() => {
+                res.status(201).send('Horario eliminado');
+            }).catch(rej => {
+                res.status(406).send({error: getError(rej)})
+            })
     } catch (error) {
 
     }

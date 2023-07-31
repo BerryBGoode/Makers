@@ -1,7 +1,7 @@
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
-            <span class="bold">Pedidos de Orden No. {{ orden }}</span>
+            <span class="bold">Pedidos de la Orden </span>
             <div class="buttons-top">
                 <router-link to="/ordenes" type="button" class="btn btn-makers">
                     Volver
@@ -12,13 +12,6 @@
             </div>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
-        <!-- aquí cargar los empleados -->
-        <!-- verificar sí hay empleados -->
         <div class="data p-2" v-if="detalles.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -89,10 +82,9 @@
                 No se encontraron existencias
             </span>
         </div>
-        <!-- si no hay clientes encontrados -->
-        <div class="data p-2" v-else>
+        <div class="data p-2" v-if="buscador.length === 0 && detalles.length > 0">
             <span class="bold">
-                Cargando...
+                No se encontraron resultados
             </span>
         </div>
     </div>
@@ -141,7 +133,10 @@ export default {
                         alert(res.data);
                         this.getDetalles();
                     })
-                    .catch(e => alert(e))
+                    .catch(e => {
+                        console.log(e.response)
+                        alert(e.response.data.error)
+                    })
             }
         },
         buscar(dato) {

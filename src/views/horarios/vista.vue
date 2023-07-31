@@ -12,11 +12,6 @@
             </router-link>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
         <div class="data p-2" v-if="horarios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -80,6 +75,11 @@
                 No se encontraron existencias
             </span>
         </div>
+        <div class="data p-2" v-if="buscador.length === 0 && horarios.length > 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
     </div>
 </template>
 <script>
@@ -105,20 +105,21 @@ export default {
             // realizar petición
             axios.get('http://localhost:3000/api/horarios/')
                 .then(res => { this.horarios = res.data; this.buscador = res.data })
-                .catch(e => { alert(e); console.log(e) });
+                .catch(e => { alert(e.response.data.error); console.log(e) });
         },
         eliminarHorario(horario) {
             // esperar confirmación del usuario
             if (confirm('Desea eliminar el horario?')) {
                 axios.delete('http://localhost:3000/api/horarios/' + horario)
                     .then(res => {
+                        
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
 
                         // cargar
                         this.getHorarios();
                     })
-                    .catch(e => { alert(e); console.log(e) })
+                    .catch(e => { alert(e.response.data.error) })
             }
         },
         buscar(dato) {

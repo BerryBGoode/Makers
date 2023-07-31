@@ -13,17 +13,8 @@
             </div>  
         </div>
         <hr>
-        <!-- vefiícar sí se encontraron datos al buscar -->
-        <div class="data p-2" v-if="buscador_c.length === 0">
-            <!-- recorrer los cargos encontrados -->
-
-            <span>No se encontraron datos</span>
-
-        </div>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
-        <div class="data p-2" v-if="cargos.length > 0">
-            <!-- recorrer los cargos encontrados -->
-
+        <div class="data p-2" v-if="cargos.length >= 0">          
             <div class="card" v-for="(cargo, i) in buscador_c" :key="i">
                 <div class="card-body">
                     <div class="row fila">
@@ -73,11 +64,17 @@
             </div>
 
         </div>
+        <div class="data p-2" v-if="buscador_c.length === 0 && cargos.length > 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
         <div class="data p-2" v-else-if="cargos.length === 0">
             <span class="bold">
                 No se encontraron existencias
             </span>
         </div>
+
     </div>
 </template>
 <script>
@@ -102,8 +99,8 @@ export default {
             axios.get('http://localhost:3000/api/cargos')
                 .then(res => {
                     this.cargos = res.data;
-                    this.buscador_c = res.data;
-                })
+                    this.buscador_c = res.data;                    
+                }) 
                 .catch(e => {
                     console.log(e)
                 })
@@ -111,12 +108,15 @@ export default {
         eliminarCargo(cargo) {
             if (confirm('Desea eliminar este cargo?')) {
                 axios.delete('http://localhost:3000/api/cargos/' + cargo)
-                    .then(res => {
+                    .then(res => {                            
                         //verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
 
                         //cargar
                         this.getCargos();
+                    })
+                    .catch(rej => {                                            
+                        if (rej.response.data.error) alert(rej.response.data.error);
                     })
             }
         },

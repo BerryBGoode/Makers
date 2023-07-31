@@ -1,20 +1,38 @@
 // requerir para hacer los queries, (constante)
 const POOL = require('../db');
-
+// método para ejecutar consultas
+const { execute } = require('../MySQL');
+// método para obtener en binario el id (cargar)
+const { getBinary } = require('../helpers/validateHelpers')
 let msg;
 /**
  * Método para cargar todos los tipos de servicios
  */
-const get = async (req, res) => {
-    try {
-        // query
-        const TIPOS = await POOL.query('SELECT * FROM tipos_servicios');
-        // verificar espera
-        if (res.status(200)) res.send(TIPOS.rows);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
-    }
+const get = async (req, response) => {
+    // arreglo para guardar los datos que se puede retornar
+    let data = [];
+    execute('SELECT * FROM tipos_servicios')
+        .then(res => {
+            // obtener ids en binario
+            let id = getBinary(res, 'id_tipo_servicio')
+            let i = 0;
+            // recorrer los datos encontrados
+            res.forEach(element => {
+                // crear objeto con la col q se esta recorriendo
+                element = {
+                    // obtener id
+                    id_tipo_servicio: id[i],
+                    tipo_servicio: element.tipo_servicio
+                }
+                // arregarlos al arreglo a retornar
+                data.push(element);
+                i++;
+            });
+            // después de recorrer los datos verificar el estado
+            // de la petición
+            if (response.status(200)) response.json(data);
+        })
+        .catch(er => response.status(500).send(er));
 }
 
 /**

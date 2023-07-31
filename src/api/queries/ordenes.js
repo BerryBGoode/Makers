@@ -1,6 +1,11 @@
 // requiriendo la pool con los attrs de la conexión
 const POOL = require('../db');
 
+const { execute } = require('../MySQL');
+const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
+const { convertToBin } = require('../helpers/encrypt');
+
 /**
  * req: información que viene del frontend
  * res: respuesta del servidor
@@ -10,15 +15,27 @@ const POOL = require('../db');
  * Método para obtener las ordenes
  */
 const get = async (req, res) => {
-    try {
-        // realizar consulta
-        const ORDENES = await POOL.query('SELECT * FROM ordenes_view');
-        // verificar el estado satisfactorio para retornar los datos
-        if (res.status(200)) res.json(ORDENES.rows);
-    } catch (error) {
-        console.error(error);
-    }
-}
+    execute('SELECT * FROM ordenes_view ORDER BY fecha DESC')
+        .then(filled => {
+            // convertir ids a binario
+            let _orden = getBinary(filled, 'id_orden');
+            let _cliente = getBinary(filled, 'id_cliente');
+            for (let i = 0; i < filled.length; i++) {
+                // por cada registro crear un objeto con los is convertidos
+                let ids = {
+                    id_orden: _orden[i],
+                    id_cliente: _cliente[i],
+                    factura: getBinary(filled, 'factura')[i]
+
+                }
+                Object.assign(filled[i], ids);
+            }
+            if (res.status(200)) res.json(filled);
+        })
+        .catch(rej => {
+            res.status(500).json({ error: getError(rej) })
+        })
+};
 
 /**
  * Método para obtener el dui de un clientes
@@ -26,11 +43,19 @@ const get = async (req, res) => {
 const getClienteDui = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT id_cliente, dui FROM clientes');
+        const CLIENTES = await execute('SELECT id_cliente, dui FROM clientes');
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(CLIENTES.rows);
+        for (let i = 0; i < CLIENTES.length; i++) {
+            id = {
+                id_cliente: getBinary(CLIENTES, 'id_cliente')[i]
+            }
+            Object.assign(CLIENTES[i], id);
+
+        }
+        if (res.status(200)) res.json(CLIENTES);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
@@ -41,46 +66,32 @@ const getClienteDui = async (req, res) => {
 const getObtenerClientes = async (req, res) => {
     try {
         // realizar consulta
-        const CLIENTES = await POOL.query('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
+        const CLIENTES = await execute('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
         // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(CLIENTES.rows);
+        if (res.status(200)) res.json(CLIENTES);
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
-
-
-
-
-
-
 
 /**
  * Método para crear una orden
  */
 const store = (req, res) => {
-    let msg = '';
-    let status = '';
     try {
         // obtener los datos del req
-        const { fecha, cliente } = req.body;
+        const { cliente } = req.body;
         let estado = 1
         // realizar query o insert y enviarle los parametros
-        POOL.query('INSERT INTO ordenes(fecha, estado, id_cliente) VALUES ($1,$2, $3)',
-            [fecha, estado, cliente], (err, result) => {
-
-                // verificar sí hubo un error                                
-                if (err) {
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    res.json({ error: err.message });
-                    return;
-                }
-                res.status(201).send('orden agregada');
-                // verificar estado satisfactorio
-                // res.status(201).send('Orden agregada')
-            })
+        execute('INSERT INTO ordenes(id_orden ,fecha, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, ?, ?)',
+            [estado, convertToBin(cliente)])
+            .then(() => {
+                res.status(201).send('Orden agregada')
+            }).catch(rej => { console.log(rej); res.status(406).send({ error: getError(rej) }); })
     } catch (error) {
         console.log(error)
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
@@ -89,32 +100,19 @@ const store = (req, res) => {
  * Método para actualizar los datos de la orden
  */
 const change = (req, res) => {
-    let e;
     try {
         // obtener id 
-        const IDORDEN = parseInt(req.params.id);
+        const IDORDEN = req.params.id;
         // obtener los datos enviados del frontend
         const { fecha, cliente } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE ordenes SET fecha = $1, id_cliente = $2 WHERE id_orden = $3',
-            [fecha, cliente, IDORDEN],
-            (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
-
-                } else {
-                    msg = 'Sucursal eliminada';
-                }
-
-                res.status(201).send(msg);
-            }
-        )
+        execute('UPDATE ordenes SET fecha = ?, id_cliente = ? WHERE id_orden = ?',
+            [fecha, cliente, IDORDEN])
+            .then(() => {
+                res.status(201).send('Orden modificada');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej) })
+            })
     } catch (error) {
         console.log(error);
     }
@@ -126,28 +124,18 @@ const change = (req, res) => {
 /**
  * Método para eliminar la orden seleccionada
  */
-const destroy = async (req, res) => {
-    let e;
+const destroy = (req, res) => {
+
     try {
         // obtener el idorden
-        const IDORDEN = parseInt(req.params.id);
+        const IDORDEN = req.params.id;
         // realizar transferencia sql o delete en este caso
-        await POOL.query('DELETE FROM ordenes WHERE id_orden = $1', [IDORDEN], (err, resul) => {
-            // verificar sí hubo un error                                
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-
-            } else {
-                msg = 'Orden eliminada';
-            }
-
-            res.status(201).send(msg);
-        })
+        execute('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN])
+            .then(() => {
+                res.status(201).send('Orden eliminada');
+            }).catch(rej => {
+                res.status(406).send({error: getError(rej)})
+            })
     } catch (error) {
         console.log(error);
     }
@@ -160,11 +148,17 @@ const destroy = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener id
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        const ORDEN = await POOL.query('SELECT * FROM ordenes_view WHERE id_orden = $1', [ID]);
+        const ORDEN = await execute('SELECT dui, nombres, apellidos, fecha, id_cliente FROM ordenes_view WHERE id_orden = ?', [ID]);
         // verificar respuesta esperada
-        if (res.status(200)) res.send(ORDEN.rows[0]);
+        for (let i = 0; i < ORDEN.length; i++) {
+            let id = {
+                id_cliente: getBinary(ORDEN, 'id_cliente')[i]
+            }
+            Object.assign(ORDEN[i], id);
+        }
+        if (res.status(200)) res.send(ORDEN[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');

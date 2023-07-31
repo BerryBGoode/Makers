@@ -20,12 +20,7 @@
             </router-link>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
-        <!-- Apartir de aquí verificar sí hay datos o servicios -->
+        
         <div class="data p-2" v-if="ordenes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -47,18 +42,19 @@
                             </router-link>
                         </div>
                         <div class="col-md-1 more-info">
-                            <!-- crear -->
-                            <div v-if="orden.factura === 0">
-                                <router-link class="btn btn-makers btn-table"
-                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/crear' }">
-                                    Crear
-                                </router-link>
-                            </div>
+                            
                             <!-- editar -->
-                            <div v-else>
+                            <div v-if="orden.factura">
                                 <router-link class="btn btn-makers btn-table"
                                     :to="{ path: '/ordenes/' + orden.id_orden + '/factura/editar/' + orden.factura }">
                                     Factura
+                                </router-link>
+                            </div>
+                            <!-- crear -->
+                            <div v-else>
+                                <router-link class="btn btn-makers btn-table"
+                                    :to="{ path: '/ordenes/' + orden.id_orden + '/factura/crear' }">
+                                    Crear
                                 </router-link>
                             </div>
                         </div>
@@ -111,6 +107,11 @@
                 No se encontraron existencias
             </span>
         </div>
+        <div class="data p-2" v-if="buscador.length === 0 && ordenes.length > 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
     </div>
 </template>
 <script>
@@ -137,7 +138,7 @@ export default {
                     this.ordenes = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => console.log(e))
+                .catch(e => alert(e.response.data.error))
         },
         eliminarOrden(orden) {
             if (confirm('Desea eliminar esta orden?')) {
@@ -149,8 +150,7 @@ export default {
                         this.getOrdenes();
                     })
                     .catch(e => {
-                        alert(e),
-                            console.log(e)
+                        alert(e.response.data.error)                        
                     })
             }
         },

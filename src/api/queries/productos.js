@@ -1,6 +1,9 @@
 // requerir de objeto con la pool de attrs. de la conexión con la db
 const POOL = require('../db');
-
+// método para realizar sentencias en MySQL
+const { execute } = require('../MySQL')
+// método para convertir a binario
+const { getBinary } = require('../helpers/validateHelpers');
 /**
  * Método para obtener tipo de servicio llamado producto
  */
@@ -21,17 +24,37 @@ const producto = async () => {
 /**
  * Método para cargar todos los productos
  */
-const get = async (req, res) => {
-    try {
-        // realizar query a una vista con los productos
-        const PRODUCTOS = await POOL.query('SELECT * FROM productos_view')
-        // retornar los datos sí la respuesta es la esperada
-        if (res.status(200)) res.send(PRODUCTOS.rows);
-    } catch (error) {
-        console.log(error);
-        // enviar respuesta de error en el servidor
-        res.status(500).send('Surgio un problema en el servidor');
-    }
+const get = async (req, response) => {
+    // arreglo vacío para guardar la data
+    let data = [];
+    // realizar sentencia (una promesa)
+    execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, existencias, id_tipo_servicio,estado FROM productos_view')
+        .then(res => {
+            // obtener y convertir a binario
+            // los ids recuperados
+            let id = getBinary(res, 'id_servicio');
+            let id_tipo = getBinary(res, 'id_tipo_servicio');
+            let i = 0;
+            // recorrer los datos recuperados
+            res.forEach(element => {
+                //crear objeto con los datos recuperados
+                // de la sentencia
+                element = {
+                    id_servicio: id[i],
+                    id_tipo_servicio: id_tipo[i],
+                    nombre_servicio: element.nombre_servicio,
+                    descripcion: element.descripcion,
+                    precio: element.precio,
+                    existencias: element.existencias,
+                }
+                // agregar objeto al arreglo
+                data.push(element);
+                i++
+            });
+            // verificar sí estado de la respuesta
+            if (response.status(200)) response.json(data)
+        })
+        .catch(rej => response.status(500).json({ error: rej }));
 }
 
 /**

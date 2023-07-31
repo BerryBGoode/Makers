@@ -17,11 +17,6 @@
         </div>
         <hr>
 
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
         <div class="data p-2" v-if="sucursales.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -44,7 +39,7 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                <!-- ':' y '{ }' habílitar poder escribir código vue dentro del " " -->
+                                
                                 <router-link :to="{ path: '/sucursales/editar/' + sucursal.id_sucursal }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -93,10 +88,9 @@
                 No se encontraron existencias
             </span>
         </div>
-
-        <div class="data p-2" v-else>
+        <div class="data p-2" v-if="buscador.length === 0 && sucursales.length > 0">
             <span class="bold">
-                Cargando...
+                No se encontraron resultados
             </span>
         </div>
     </div>

@@ -80,7 +80,7 @@
                 </div>
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
-                        <img :src="logo" alt="Logo">
+                        <img :src="model.logo_lc" alt="Logo">
                     </div>
 
                     <div class="buttons-login">
@@ -100,17 +100,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 // importar componente a reenviar
 import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
+import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
 
 
 
 export default {
     // nombre del componente
     name: "login",
+    components: {logo},
     // método que retorna el componente
     data() {
-        return {
-            logo: '../src/assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png',
+        return {            
             model: {
+                logo_lc: logo,
                 empleado: {
                     correo: '',
                     clave: '',
@@ -149,11 +151,16 @@ export default {
                         if (!res.data.auth) this.msg = res.data.msg;
                         // creando token
                         if (res.data.auth !== false) {
+                            // asginar estado de la autenticación
                             this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                            // crear cookie
                             this.crearCookie(res.data.token)
+                            // mostrar mensaje
                             this.msg = res.data.msg
+                            // redireccionar al inicio
+                            this.$router.push(inicio)
                         }
-                    })
+                    }) 
                     .catch(e => {
                         alert(e)
                     })
@@ -167,9 +174,8 @@ export default {
             // componente realiza y el dato
             this.$emit('getCookie', this.$cookies.get('auth'))
 
-        }
-    },
-
+        },        
+    }
 
 }
 

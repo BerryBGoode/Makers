@@ -1,21 +1,35 @@
 // requerir de la conexión
-const POOL = require('../db');
+const { mysql, pg } = require('../db');
 
 const { compareProductosSucursal } = require('../helpers/validateHelpers');
-/**
+
+const { execute } = require('../MySQL');
+
+const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
+const DETALLE = require('../routes/detalles.routes');
+/** 
  * Método para obtener los detalles según la orden de la url
  */
 const get = async (req, res) => {
-    try {
-        // obtener orden
-        const ORDEN = parseInt(req.params.orden);
-        // realizar consulta
-        const DETALLES = await POOL.query('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, precio, subtotal, descuento, id_detalle  FROM detalle_view WHERE id_orden = $1 ORDER BY id_detalle ASC', [ORDEN]);
-        // verficar estado existoso
-        if (res.status(200)) res.json(DETALLES.rows);
-    } catch (error) {
-        console.log(error);
-    }
+    let data = [];
+    let i = 0;
+    const ORDEN = req.params.orden;
+    execute('SELECT nombre_servicio, tipo_servicio, cantidad, nombre_sucursal, format(precio, 2) as precio, format(subtotal, 2) as subtotal, format(descuento, 2) as descuento, id_detalle  FROM detalle_view WHERE id_orden = ? ORDER BY id_detalle ASC', [ORDEN])
+        .then(filled => {
+            let _detalle = getBinary(filled, 'id_detalle');
+            filled.forEach(element => {
+                ids = {
+                    id_detalle: _detalle[i],
+                }
+                Object.assign(element, ids),
+                    data.push(element);
+                i++;
+            });
+            if (res.status(200)) res.json(data)
+        })
+        .catch(rej => { res.status(500).json({ error: rej }); })
+
 }
 
 /**
@@ -24,13 +38,26 @@ const get = async (req, res) => {
 const getServicios = async (req, res) => {
     try {
         // obtener el tipo de servicio
-        const SUCURSAL = parseInt(req.params.sucursal);
+        const SUCURSAL = req.params.sucursal;
         // realizar query 
-        const PRODUCTO = await POOL.query('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = $1 ORDER BY id_detalle ASC', [SUCURSAL]);
-        // verificar respuesta satisfactoria
-        if (res.status(200)) res.json(PRODUCTO.rows);
+        execute('SELECT id_detalle, nombre_servicio, cantidad, tipo_servicio FROM productos_sucursales_view WHERE id_sucursal = ? ORDER BY id_detalle ASC', [SUCURSAL])
+            .then(filled => {
+                let _detalle = getBinary(filled, 'id_detalle');
+                for (let i = 0; i < filled.length; i++) {
+                    let id = {
+                        id_detalle: _detalle[i]
+                    }
+                    // unir ambos objetos
+                    Object.assign(filled[i], id);
+                }
+                if (res.status(200)) res.json(filled)
+            })
+            .catch(rej => {
+                res.status(500).send(rej);
+            })
     } catch (error) {
         console.log(error);
+        res.status(500).send({ error: 'Surgio un problema en el servidor' })
     }
 }
 
@@ -43,24 +70,21 @@ const store = async (req, res) => {
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query
         if (await compareProductosSucursal(servicio, cantidad)) {
-            POOL.query('INSERT INTO detalle_ordenes(id_detalle_servicio, cantidad, descuento, id_orden) VALUES ($1, $2, $3, $4)',
-                [servicio, cantidad, descuento, orden],
-                (err, result) => {
-                    // verificar sí hubo un error
-                    if (err) {
-                        // enviar mensaje de error
-                        res.json({ error: err.message });
-                        // retornar
-                        return;
-                    }
-                    res.status(201).send('Detalle agregado');
-                }
-            )
+            execute('INSERT INTO detalles_ordenes(id_detalle, id_detalle_servicio, cantidad, descuento, id_orden) VALUES (UUID(), ?, ?, ?, ?)',
+                [servicio, cantidad, descuento, orden])
+                .then(() => {
+                    if (res.status(201)) res.send('Detalle agregado');
+                })
+                .catch(rej => {
+                    console.log(rej)
+                    res.status(406).send({ error: getError(rej['errno']) });
+                })
         } else {
             res.json({ error: 'Cantidad máxima superada' })
         }
     } catch (error) {
         console.log(error);
+        res.status(500).send({ error: 'Surgio un problema en el servidor' });
     }
 }
 
@@ -70,30 +94,25 @@ const store = async (req, res) => {
 const change = async (req, res) => {
     try {
         // obtener id del detalle
-        const DETALLE = parseInt(req.params.id);
+        const DETALLE = req.params.id;
         // obtener el cuerpo de datos
         const { servicio, cantidad, descuento, orden } = req.body;
         // realizar query y enviando parametros
         if (await compareProductosSucursal(servicio, cantidad)) {
-            POOL.query('UPDATE detalle_ordenes SET id_detalle_servicio = $1, cantidad = $2, descuento = $3, id_orden = $4 WHERE id_detalle = $5',
+            execute('UPDATE detalles_ordenes SET id_detalle_servicio = ?, cantidad = ?, descuento = ?, id_orden = ? WHERE id_detalle = ?',
                 // aquí envio parametros
-                [servicio, cantidad, descuento, orden, DETALLE],
-                (err, result) => {
-                    // verificar error
-                    if (err) {
-                        // enviar mensaje de error
-                        res.json({ error: err.message });
-                        // retornar 
-                        return;
-                    }
-                    res.status(201).send('Detalle modificado')
-                }
-            )
+                [servicio, cantidad, descuento, orden, DETALLE])
+                .then(() => {
+                    if (res.status(201)) res.send('Detalle modificado');
+                }).catch(rej => {
+                    res.status(406).send({ error: getError(rej['errno']) });
+                })
         } else {
             res.json({ error: 'Cantidad máxima superada' });
         }
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
@@ -103,13 +122,33 @@ const change = async (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener detalle
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        const DETALLE = await POOL.query('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = $1', [ID])
-        // verificar respuesta satisfactoria
-        if (res.status(200)) res.json(DETALLE.rows);
+        execute('SELECT nombre_sucursal, id_sucursal, id_detalle_servicio, descuento, cantidad_servicio, cantidad FROM detalle_view WHERE id_detalle = ?', [ID])
+            .then(filled => {
+                if (res.status(200)) {
+
+                    // verificar respuesta satisfactoria
+                    let _sucursal = getBinary(filled, 'id_sucursal');
+                    let _detalle_servicio = getBinary(filled, 'id_detalle_servicio')
+
+                    for (let i = 0; i < filled.length; i++) {
+                        let id = {
+                            id_sucursal: _sucursal[i],
+                            id_detalle_servicio: _detalle_servicio[i]
+                        }
+                        Object.assign(filled[i], id);
+                    }
+                    res.json(filled)
+                }
+            })
+            .catch(rej => {
+                res.status(500).json({ error: getError(rej['errno']) })
+            })
+
     } catch (error) {
         console.log(error)
+        res.status(500).send({ error: 'Surgio un problema en el servidor' })
     }
 }
 
@@ -119,21 +158,19 @@ const one = async (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener detalle
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        POOL.query('DELETE FROM detalle_ordenes WHERE id_detalle = $1', [ID], (err, result) => {
-            // verifiacar sí hubo un error
-            if (err) {
-                // retornar error
-                res.json({ error: err.message });
-                // retornar
-                return;
-            }
+        execute('DELETE FROM detalles_ordenes WHERE id_detalle = ?', [ID])
             // sí no huviera hubieron errores
-            res.status(201).send('Pedido eliminado');
-        })
+            .then(() => {
+                res.status(201).send('Detalle eliminado')
+            })
+            .catch(rej => {
+                res.status(406).send({error: getError(rej['errno'])})
+            })
     } catch (error) {
         console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 

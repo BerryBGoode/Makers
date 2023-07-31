@@ -197,7 +197,7 @@ export default {
                 // hacer petición para obtener sucursales y horarios
                 axios.get('http://localhost:3000/api/empleados/sucursales')
                     .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { alert(e.response.data.error) })
             } catch (error) {
                 console.error(error);
             }
@@ -208,7 +208,7 @@ export default {
                 // realizar petición
                 axios.get('http://localhost:3000/api/empleados/horarios')
                     .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
-                    .catch(e => { console.log(e) }) // caso de error
+                    .catch(e => { alert(e.response.data.error) }) // caso de error
             } catch (error) {
                 console.error(error);
             }
@@ -225,10 +225,9 @@ export default {
         getEmpleado(idempleado) {
             axios.get('http://localhost:3000/api/empleados/' + idempleado)
                 .then(res => {
-                    // cargar los datos
-
+                    // cargar los datos                    
                     // guardar en una constante los datos obtenidos
-                    const EMPLEADO = res.data[0];
+                    const EMPLEADO = res.data;
                     // asignar a cada uno
                     this.model.empleado = {
                         alias: EMPLEADO.alias,
@@ -246,7 +245,7 @@ export default {
                 })
                 .catch(e => {
                     // validar empleado inexistente
-                    alert(e);
+                    alert(e.response.data.error);
                 })
         },
         // método para modificar los datos del cliente
@@ -287,12 +286,8 @@ export default {
                         this.msg = '';
                         this.$router.push('/empleados');
                     }
-                    // console.log(res)
-
-                    // sí la respuesta fue la esperada, redirección a la vista principal
-                    // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error);});
         }
     }
 } 

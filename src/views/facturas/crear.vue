@@ -57,7 +57,7 @@
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de la dirección -->
                         <option v-for="(sucursal, i) in sucursales" :key="i" :value="sucursal.id_sucursal">{{
-                            sucursal.direccion }}</option>
+                            sucursal.nombre_sucursal }}</option>
                     </select>
                     <!-- sino existen sucursales -->
                     <select class="form-select mb-3" name="error" v-else>
@@ -138,7 +138,10 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/reservaciones/empleados')
-                    .then(res => { this.empleados = res.data; }) // obtener los datos de la petición
+                    .then(res => {
+                        // obtener los datos de la petición
+                        this.empleados = res.data;
+                    })
                     .catch(e => { console.log(e) })
 
             } catch (error) {
@@ -146,19 +149,23 @@ export default {
             }
         },
         getEmpleado() {
-            console.log(this.model.factura.dui)
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
-                .then(res => { this.empleado.nombres = res.data.nombres; this.empleado.apellidos = res.data.apellidos })
-                .catch(e => { console.log(e) });
-
+                .then(res => {
+                    console.log(res)
+                    this.empleado.nombres = res.data[0].nombres;
+                    this.empleado.apellidos = res.data[0].apellidos
+                })
+                .catch(e => { console.log(e.response.data.error) });
         },
         // método para obtener la sucursal para la factura
         cargarSucursales() {
             // realizar petición
             axios.get('http://localhost:3000/api/facturas/sucursales')
                 // cuando pase todo correctamente
-                .then(res => { this.sucursales = res.data }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { console.error(e) }) // mostrar mensaje de error
+                .then(res => {
+                    this.sucursales = res.data
+                }) // cuando todo salga correcto asignar valores a arreglo
+                .catch(e => { alert(e.response.data.error) }) // mostrar mensaje de error
         },
 
         // método para agregar una nueva factura
@@ -191,7 +198,7 @@ export default {
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         }
     }

@@ -1,15 +1,15 @@
 // requerir del ruteados para activar los métodos 
 const { Router} = require('express');
 // requerir los métodos de los queries
-const { get,  getDuiEmpleado, getDirección, getObtenerEmpleados , change, destroy, store, one  } = require('../queries/facturas');
-
+const { get, getDirección , change, destroy, store, one  } = require('../queries/facturas');
+const { getDuiEmp } = require('../queries/reservaciones')
 
 // instanciado router
 const FACTURAS = Router();
 
 // métodos para hacer acciónes
 FACTURAS.get('/', get);
-FACTURAS.get('/empleados',  getDuiEmpleado);
+FACTURAS.get('/empleados',  getDuiEmp);
 FACTURAS.get('/sucursales', getDirección);
 FACTURAS.get('/:id', one);
 FACTURAS.put('/:id', change);

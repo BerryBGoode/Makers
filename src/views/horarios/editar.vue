@@ -36,7 +36,7 @@
                     <router-link to="/horarios" class="btn btn-makers">
                         Cancelar
                     </router-link>
-                    <button type="submit" class="btn btn-makers">Agregar</button>
+                    <button type="submit" class="btn btn-makers">Agregar cambios</button>
                 </div>
             </form>
         </div>
@@ -62,10 +62,12 @@ export default {
                 .then(res => {
                     // cargar los datos
                     this.msg = '';
-                    this.horario = res.data
+                    this.horario.cierre = res.data.cierre;
+                    this.horario.inicio = res.data.inicio;
 
+                  
                 })
-                .catch(e => {alert(e); console.log(e)})
+                .catch(e => {alert(e.response.data.error); console.log(e)})
         },
         modificarHorario() {
             // verificar que el horario de inicio sea menor al de cierre y que ambos tengan algún valor
@@ -84,7 +86,7 @@ export default {
                             this.$router.push('/horarios');
                         }
                     })
-                    .catch(e => { alert(e); console.log(e) });
+                    .catch(e => { alert(e.response.data.error); console.log(e) });
 
             } else {
                 this.msg = 'Horario ilogico';

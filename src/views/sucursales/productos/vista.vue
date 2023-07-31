@@ -26,8 +26,7 @@
     justify-content: space-around;
 }
 </style>
-<template>
-    <!-- <div class="main"> -->
+<template>    
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Productos</span>
@@ -41,16 +40,9 @@
                 </router-link>
             </div>
         </div>
-        <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
-        <!-- aquí cargar los empleados -->
-        <!-- verificar sí hay empleados -->
+        <hr>        
         <div class="data p-2" v-if="productos.length > 0">
-            <!-- recorrer los clientes encontrados -->
+            
 
             <div class="card" v-for="(producto, i) in buscador" :key="i">
                 <div class="card-body">
@@ -115,14 +107,13 @@
                 No se encontraron existencias
             </span>
         </div>
-        <!-- si no hay clientes encontrados -->
-        <div class="data p-2" v-else>
+        <div class="data p-2" v-if="buscador.length === 0 && productos.length > 0">
             <span class="bold">
-                Cargando...
+                No se encontraron resultados
             </span>
-        </div>
+        </div>        
     </div>
-    <!-- </div> -->
+    
 </template>
 <script>
 import axios from 'axios'

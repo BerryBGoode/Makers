@@ -50,13 +50,6 @@
             </router-link>
         </div>
         <hr>
-
-        <!-- verificar sí se encontraron datos al buscar-->
-        <div class="data p-2" v-if="buscador_c.length === 0">
-            <span>No se encontraron datos</span>
-        </div>
-        <!-- aquí cargar los clientes -->
-        <!-- verificar sí hay clientes -->
         <div class="data p-2" v-if="clientes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -121,6 +114,11 @@
                 No se encontraron existencias
             </span>
         </div>
+        <div class="data p-2" v-if="buscador_c.length === 0 && clientes.length > 0">
+            <span class="bold">
+                No se encontraron resultados
+            </span>
+        </div>
 
     </div>
 </template>
@@ -183,7 +181,7 @@ export default {
                         this.obtenerClientes();
                     })
                     .catch(e => {
-                        alert(e);
+                        alert(e.response.data.error);
                         console.log(e)
                     })
             }

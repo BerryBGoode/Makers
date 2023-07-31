@@ -45,10 +45,9 @@ export default {
     // funciones a retornar del componente
     data() {
         return {
-            empleado: {
-                nombre: '',
-                apellido: '',
-                id: ''
+            empleado: {            
+                id: '',
+                alias: ''
             },
             config: {
                 headers: {
@@ -62,14 +61,12 @@ export default {
         getEmpleado() {
             // realizar petición
             axios.get('http://localhost:3000/api/auth/', this.config)
-                .then(res => {                    
-                    this.empleado = {
-                        alias: res.data.alias,
-                        id: res.data.id_empleado
-                    }
+                .then(res => {       
+                    this.empleado.id = res.data.id_empleado;
+                    this.empleado.alias = res.data.alias                    
                 })
                 .catch(e => {
-                    console.log(e)
+                    console.log(e.response.data.error)
                 })
         }
     },

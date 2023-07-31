@@ -44,15 +44,12 @@ main {
 
 <template>
     <template v-if="!auth">
-
         <login @getCookie="validateCookie" />
     </template>
     <template v-else>
         <dashboard />
     </template>
 </template>
-
-
 <script>
 //  setup solo se utiliza en el componente principal,
 //   para comprimir el código, porque es el que almacena más contenido

@@ -12,13 +12,7 @@
             </router-link>
         </div>
         <hr>
-        <div class="data p-2" v-if="buscador.length === 0">
-            <span class="bold">
-                No se encontraron resultados
-            </span>
-        </div>
-        <!-- aquí cargar las reservaciones -->
-        <!-- verificar si existen reservaciones -->
+
         <div class="data p-2" v-if="reservaciones.length > 0">
             <!-- recorrer las reservaciones encontradas -->
 
@@ -83,6 +77,11 @@
         <div class="data p-2" v-else-if="reservaciones.length === 0">
             <span class="bold">
                 No se encontraron existencias
+            </span>
+        </div>
+        <div class="data p-2" v-if="buscador.length === 0 && reservaciones.length > 0 ">
+            <span class="bold">
+                No se encontraron resultados
             </span>
         </div>
     </div>
