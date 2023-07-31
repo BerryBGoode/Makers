@@ -125,7 +125,7 @@ export default {
                 .then(res => {
                     this.servicios = res.data;
                 })
-                .catch(e => { console.log(e) })
+                .catch(e => { alert(e.response.data.error) })
         },
         crear() {
             this.msg = '';
@@ -142,16 +142,12 @@ export default {
             else {
                 // verificar sí no hay existencias del producto seleccionado, para asignar por defecto
                 if (!this.input.stock) this.model.servicio.cantidad = 1;
-                console.log(this.model.servicio)
+
                 // validar datos
                 axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
                     .then(res => {
-                        // cuando hay un error que no realizo lo que se debía
-                        if (!res.data.error) {
-                            this.msg = 'Error con algún dato enviado';
-                            // console.log(res.data)
-                        } else {
-                            this.msg = res.data.error;
+                        if (res.data.error) {
+                            this.msg = res.data.error
                         }
                         // cuando si se realizo la tarea deceada y se creo algo 
                         // 201 es usado en método post y put
@@ -167,7 +163,7 @@ export default {
                         }
                     })
                     .catch(err => {
-                        alert(err)
+                        alert(err.response.data.error)
                     })
             }
         }

@@ -30,11 +30,11 @@
                     <span class="bold">
                         Servicio
                     </span>
-                    <form action="" class="form-2">
+                    <div action="" class="form-2">
                         <label for="" class="form-label">Servicio</label>
                         <!-- verifica sí existen productos -->
                         <select class="form-select mb-3" aria-label="Default select example" v-if="servicios.length > 0"
-                            v-model="this.model.servicio.servicio">
+                            v-model="this.model.servicio.servicio" @change="select">
                             <option selected disabled>Seleccionar</option>
                             <!-- recorrre los productos encontrados -->
                             <option v-for="(servicio, i) in servicios" :key="i" :value="servicio.id_servicio"
@@ -50,7 +50,7 @@
                             <input type="number" class="form-control" :readonly="input.read" min="1" :max="input.stock"
                                 v-model="this.model.servicio.cantidad">
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="bottom">
                     <hr>
@@ -107,6 +107,7 @@ export default {
         select(event) {
             // verificar sí el servicio seleccionado es un producto
             // para habilitar unos campos
+            
             if (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') {
                 // habilitar agregar cantidad
                 this.input.read = false;
@@ -114,6 +115,7 @@ export default {
                 this.producto.existencias = event.target.options[event.target.selectedIndex].dataset.existencias;
                 this.input.stock = this.producto.existencias;
                 this.producto.tipo = 'Producto'
+                this.model.servicio.cantidad = ''
             } else {
                 // desabilitar edición
                 this.input.read = true;
@@ -132,7 +134,7 @@ export default {
                 .then(res => {
                     this.servicios = res.data;
                 })
-                .catch(e => { console.log(e) })
+                .catch(e => { alert(e.response.data.error) })
         },
         cargar(detalle) {
             axios.get('http://localhost:3000/api/sucursales/productos/detalle/' + detalle)
@@ -145,9 +147,9 @@ export default {
                         cantidad: res.data.cantidad
                     }
                 })
-                .catch(e => { alert(e) })
+                .catch(e => { alert(e.response.data.error) })
         },
-        modificarProducto() {
+        modificarServicio() {
             this.msg = '';
             if (this.model.servicio.servicio === 'Seleccionar' ||
                 (this.input.stock) ?
@@ -162,11 +164,12 @@ export default {
             let id = this.$route.params.detalle;
             // validar datos
             // realizar petición
+            
             axios.put('http://localhost:3000/api/sucursales/productos/' + id, this.model.servicio)
                 .then(res => {
                     // verificar errores
                     if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado'
+                        this.msg = res.data.error
                     }
                     // verificar sí se realizo la tarea como se deceaba
                     // status = 201 en post y put
@@ -182,7 +185,7 @@ export default {
                         this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
                     }
                 })
-                .catch(err => { alert(err) })
+                .catch(err => { alert(err.response.data.error);  console.log(err)})
         }
 
     }

@@ -168,7 +168,7 @@ export default {
                         // cargar datos
                         this.getProductos(this.$route.params.id);
                     })
-                    .catch(e => alert(e));
+                    .catch(e => alert(e.response.data.error));
             }
         },
         buscar(dato) {
