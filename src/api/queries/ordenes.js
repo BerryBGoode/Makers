@@ -100,32 +100,19 @@ const store = (req, res) => {
  * Método para actualizar los datos de la orden
  */
 const change = (req, res) => {
-    let e;
     try {
         // obtener id 
-        const IDORDEN = parseInt(req.params.id);
+        const IDORDEN = req.params.id;
         // obtener los datos enviados del frontend
         const { fecha, cliente } = req.body;
         // realizar transacción sql
-        POOL.query('UPDATE ordenes SET fecha = $1, id_cliente = $2 WHERE id_orden = $3',
-            [fecha, cliente, IDORDEN],
-            (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
-
-                } else {
-                    msg = 'Sucursal eliminada';
-                }
-
-                res.status(201).send(msg);
-            }
-        )
+        execute('UPDATE ordenes SET fecha = ?, id_cliente = ? WHERE id_orden = ?',
+            [fecha, cliente, IDORDEN])
+            .then(() => {
+                res.status(201).send('Orden modificada');
+            }).catch(rej => {
+                res.status(406).send({ error: getError(rej) })
+            })
     } catch (error) {
         console.log(error);
     }
@@ -143,7 +130,7 @@ const destroy = async (req, res) => {
         // obtener el idorden
         const IDORDEN = parseInt(req.params.id);
         // realizar transferencia sql o delete en este caso
-        await POOL.query('DELETE FROM ordenes WHERE id_orden = $1', [IDORDEN], (err, resul) => {
+        await POOL.query('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN], (err, resul) => {
             // verificar sí hubo un error                                
             if (err) {
 

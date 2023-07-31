@@ -100,7 +100,7 @@ export default {
 
             axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
-                .catch(e => { console.log(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         },
         // método para obtener el dui del cliente
@@ -108,8 +108,8 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
-                    .then(res => { this.clientes = res.data; console.log(res.data)}) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .then(res => { this.clientes = res.data;}) // obtener los datos de la petición
+                    .catch(e => { alert(e.response.data.error) })
             } catch (error) {
                 console.error(error);
             }

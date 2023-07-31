@@ -16,7 +16,7 @@ const get = async (req, res) => {
     if (req.headers.authorization) {
         let data = [];
         let i = 0;
-        execute('SELECT * FROM clientes_view')
+        execute('SELECT * FROM clientes_view ORDER BY id_cliente DESC')
             .then(ful => {
                 // obtener y convertir a binario ids recuperados
                 let id = getBinary(ful, 'id_cliente');

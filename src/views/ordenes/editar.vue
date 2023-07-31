@@ -113,7 +113,7 @@ export default {
         getCliente() {
             axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
-                .catch(e => { console.log(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         },
         // método para obtener el dui del cliente
@@ -122,7 +122,7 @@ export default {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
                     .then(res => { this.clientes = res.data }) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { alert(e.response.data.error) })
             } catch (error) {
                 console.error(error);
             }
@@ -139,7 +139,7 @@ export default {
                         apellidos: res.data.apellidos,
                         nombres: res.data.nombres
                     }
-                })
+                }).catch(e => { alert(e.response.data.error)})
         },
         // método para agregar una nueva orden
         modificar() {
@@ -166,13 +166,9 @@ export default {
                         // redireccionar
                         alert('Orden modificada')
                         this.$router.push('/ordenes');
-                    }
-                    // console.log(res)
-
-                    // sí la respuesta fue la esperada, redirección a la vista principal
-                    // if (res.status === 201) this.$router.push('/ordenes');
+                    }                    
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
 
         }
     }
