@@ -127,7 +127,7 @@ export default {
                             this.$router.push('/servicios');
                         }
                     })
-                    .catch(e => { alert(e); console.log(e) })
+                    .catch(e => { alert(e.response.data.error); console.log(e) })
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }

@@ -13,8 +13,7 @@ const get = async (req, res) => {
         // retornar los datos sí el estado es el esperado
         if (SUCURSALES) {
             let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
-            for (let i = 0; i < SUCURSALES.length; i++) {
-                console.log(SUCURSALES[i]);
+            for (let i = 0; i < SUCURSALES.length; i++) {                
                 id = {
                     id_sucursal: _sucursal[i]
                 }

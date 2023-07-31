@@ -5,19 +5,28 @@ const { mysql, pg } = require('../db');
 const { execute } = require('../MySQL');
 // método para obtener binarios de los ids
 const { getBinary } = require('../helpers/validateHelpers')
+const { getError } = require('../helpers/errors');
 
 let msg;
 /**
  * Método para obtener los tipos de servicios 
  */
-const getServicios = async (req, res) => {
+const getServicios = (req, res) => {
     try {
         // declarar valor diferente al que se espera
         let producto = 'Producto';
         // realizar query
-        const TIPOS = mysql.query('SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = $1', [producto])
-        // verificar sí la respuesta es la esperada
-        if (res.status(200)) res.send(TIPOS.rows);
+        execute('SELECT * FROM tipos_servicios WHERE NOT tipo_servicio = ?', [producto])
+            // verificar sí la respuesta es la esperada
+            .then(tipos => {
+                for (let i = 0; i < tipos.length; i++) {
+                    id = {
+                        id_tipo_servicio: getBinary(tipos, 'id_tipo_servicio')[i]
+                    }
+                    Object.assign(tipos[i], id);
+                }
+                res.status(200).send(tipos);
+            }).catch(rej => { res.status(500).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -32,7 +41,7 @@ const get = (req, response) => {
     let data = [];
     // realizar query
     let producto = 'Producto';
-    
+
     execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, tipo_servicio, id_tipo_servicio FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
         .then(res => {
             // obtener ids y convertirlos a binario
@@ -49,12 +58,12 @@ const get = (req, response) => {
                     tipo_servicio: element.tipo_servicio,
                     id_tipo_servicio: id_tipo[i],
                     precio: element.precio
-                }                
+                }
                 // arregar obj al arreglo de objetos
                 data.push(element);
                 i++;
             });
-            if(response.status(200)) response.json(data)
+            if (response.status(200)) response.json(data)
         })
         // enviar mensaje de error
         .catch(er => response.status(500).send(er))
@@ -69,27 +78,10 @@ const store = (req, res) => {
         // obtener los datos de la petición
         const { tipo, nombre, descripcion, precio, existencias } = req.body;
         // realizar query
-        mysql.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
-            [tipo, descripcion, precio, existencias, estado, nombre],
-            (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Servicio agregado';
-                }
-                res.status(201).send(msg);
-            })
+        execute('INSERT INTO servicios(id_servicio, id_tipo_servicio, descripcion, precio, existencias, estado, nombre_servicio) VALUES (UUID(), ?, ?, ?, ?, ?, ?)',
+            [tipo, descripcion, precio, existencias, estado, nombre])
+            .then(() => { res.status(201).send('Servicio agregado') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error)
         // enviar mensaje al cliente
@@ -103,11 +95,17 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener el id 
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        const SERVICIO = mysql.query('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = $1', [ID])
+        const SERVICIO = await execute('SELECT descripcion, precio, id_tipo_servicio, nombre_servicio FROM servicios WHERE id_servicio = ?', [ID])
+        for (let i = 0; i < SERVICIO.length; i++) {
+            let id = {
+                id_tipo_servicio: getBinary(SERVICIO, 'id_tipo_servicio')[i]
+            }
+            Object.assign(SERVICIO[i], id);
+        }        
         // verificar sí el resultado es el esperado para enviar los datos
-        if (res.status(200)) res.send(SERVICIO.rows[0]);
+        if (res.status(200)) res.send(SERVICIO[0]);
     } catch (error) {
         console.log(error);
         // enviar mensaje de error al cliente
@@ -121,30 +119,15 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener el id del registro
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos de la petición
         const { tipo, nombre, descripcion, precio } = req.body;
         // realizar actualización
-        mysql.query('UPDATE servicios SET descripcion = $1, precio = $2, id_tipo_servicio = $3, nombre_servicio = $4 WHERE id_servicio = $5',
-            [descripcion, precio, tipo, nombre, ID], (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
+        execute('UPDATE servicios SET descripcion = ?, precio = ?, id_tipo_servicio = ?, nombre_servicio = ? WHERE id_servicio = ?',
+            [descripcion, precio, tipo, nombre, ID]).then(() => {
+                res.status(201).send('Servicio modificado')
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
 
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Servicio modificado';
-                }
-                res.status(201).send(msg);
-            })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -157,23 +140,12 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener id del servicio
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar query
-        mysql.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
-            // verificar sí ocurre un error
-            if (err) {
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                if (err.code === '23503') {
-                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
-                } else {
-                    e = err.message
-                }
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Servicio eliminado');
-        })
+        execute('DELETE FROM servicios WHERE id_servicio = ?', [ID])
+            .then(() => {
+                res.status(201).send('Servicio eliminado')
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
