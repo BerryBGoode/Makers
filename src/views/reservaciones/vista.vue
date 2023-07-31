@@ -79,7 +79,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && reservaciones.length > 0 ">
+        <div class="data p-2" v-if="buscador.length === 0 && reservaciones.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -110,7 +110,7 @@ export default {
                     this.reservaciones = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => alert(e));
+                .catch(e => alert(e.response.data.error));
         },
         eliminarReservacion(reservacion) {
             // esperar confirmación
@@ -125,7 +125,7 @@ export default {
                         //cargar
                         this.getReservaciones();
                     })
-                    .catch(e => { alert(e) })
+                    .catch(e => { alert(e.response.data.error) })
             }
         },
         buscar(dato) {
