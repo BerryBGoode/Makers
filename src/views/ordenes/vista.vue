@@ -138,7 +138,7 @@ export default {
                     this.ordenes = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => console.log(e.response.data.error))
+                .catch(e => alert(e.response.data.error))
         },
         eliminarOrden(orden) {
             if (confirm('Desea eliminar esta orden?')) {
@@ -150,8 +150,7 @@ export default {
                         this.getOrdenes();
                     })
                     .catch(e => {
-                        alert(e),
-                            console.log(e)
+                        alert(e.response.data.error)                        
                     })
             }
         },

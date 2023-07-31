@@ -124,28 +124,18 @@ const change = (req, res) => {
 /**
  * Método para eliminar la orden seleccionada
  */
-const destroy = async (req, res) => {
-    let e;
+const destroy = (req, res) => {
+
     try {
         // obtener el idorden
-        const IDORDEN = parseInt(req.params.id);
+        const IDORDEN = req.params.id;
         // realizar transferencia sql o delete en este caso
-        await POOL.query('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN], (err, resul) => {
-            // verificar sí hubo un error                                
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-
-            } else {
-                msg = 'Orden eliminada';
-            }
-
-            res.status(201).send(msg);
-        })
+        execute('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN])
+            .then(() => {
+                res.status(201).send('Orden eliminada');
+            }).catch(rej => {
+                res.status(406).send({error: getError(rej)})
+            })
     } catch (error) {
         console.log(error);
     }
