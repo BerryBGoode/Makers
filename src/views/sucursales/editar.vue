@@ -39,11 +39,12 @@
                                 <label for="hora" class="form-label">Hora</label>
                                 <div class="load">
                                     <input type="time" name="" id="apertura" class="form-control w-45" required
-                                        v-model="sucursal.inicio">
+                                        v-model="sucursal.inicio" placeholder="HH:mm AM/PM">
                                     <input type="time" name="" id="cierre" class="form-control w-45" required
-                                        v-model="sucursal.cierre">
+                                        v-model="sucursal.cierre" aria-placeholder="a" placeholder="HH:mm AM/PM">
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                     <hr>
@@ -60,10 +61,10 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
 // definir componente 
 export default {
-    name: "crearSucursal",
+    name: "crearSucursal",    
     data() {
         return {
             sucursal: {
@@ -73,7 +74,7 @@ export default {
                 inicio: '',
                 cierre: ''
             },
-            msg: ''
+            msg: '',
         }
     },
     methods: {
@@ -84,7 +85,6 @@ export default {
                 // realizar petición
                 axios.put('http://localhost:3000/api/sucursales/' + this.$route.params.id, this.sucursal)
                     .then(res => {
-                        console.log(res)
                         if (res.data.error) {
                             alert(res.data.error)
                             console.log(res.data.error)
@@ -94,7 +94,7 @@ export default {
                         }
 
                     })
-                    .catch(e => { alert(e); console.log(e) })
+                    .catch(e => { alert(e.response.data.error);})
             }
             else this.msg = 'No se permiten campos vacíos'
             // validar que la hora tenga lógica
@@ -108,27 +108,26 @@ export default {
 
             axios.get('http://localhost:3000/api/sucursales/' + this.$route.params.id)
                 .then(res => {
-                   
+
                     const SUCURSAL = res.data;
-                    let horario = SUCURSAL.horario.split(' - ');
-                    let h_inicio = horario[0].split(' ')[0];
-                    let h_cierre = horario[1].split(' ')[0];
+                    // let horario = SUCURSAL.horario.split(' - ');
+                    // let h_inicio = horario[0].split(' ')[0];
+                    // let h_cierre = horario[1].split(' ')[0];                    
                     this.sucursal = {
-                        inicio: h_inicio,
+                        inicio: SUCURSAL.inicio,
                         nombre: SUCURSAL.nombre_sucursal,
-                        cierre: h_cierre,                    
+                        cierre: SUCURSAL.cierre,
                         direccion: SUCURSAL.direccion,
                         tel: SUCURSAL.telefono
                     }
                 })
                 .catch(e => {
-                    alert(e);
-                    console.log(e)
+                    alert(e.response.data.error);
                 })
-        }
+        },        
     },
     mounted() {
-        this.getSucursal();
+        this.getSucursal();                
     }
 }
 

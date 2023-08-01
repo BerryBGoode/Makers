@@ -92,7 +92,7 @@ export default {
                         if (res.data.error) {
                             alert(res.data.error)
                             console.log(res.data.error)
-                        } else {                            
+                        } else {
                             alert(res.data);
                             this.$router.push('/sucursales');
                         }
@@ -100,9 +100,6 @@ export default {
                     })
             }
             else this.msg = 'No se permiten campos vacíos'
-
-
-
         }
     }
 }

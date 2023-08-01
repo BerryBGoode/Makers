@@ -1,6 +1,6 @@
 // requerir del pool con los attrs de la conexión
 const { execute } = require('../MySQL');
-const POOL = require('../db');
+const { getError } = require('../helpers/errors');
 const { getBinary } = require('../helpers/validateHelpers');
 
 /**
@@ -9,18 +9,17 @@ const { getBinary } = require('../helpers/validateHelpers');
 const get = async (req, res) => {
     try {
         // realizar query
-        const SUCURSALES = await execute('SELECT * FROM sucursales ORDER BY id_sucursal ASC')
-        // retornar los datos sí el estado es el esperado
-        if (SUCURSALES) {
-            let _sucursal = getBinary(SUCURSALES, 'id_sucursal')
-            for (let i = 0; i < SUCURSALES.length; i++) {                
-                id = {
-                    id_sucursal: _sucursal[i]
+        execute('SELECT * FROM sucursales_view ORDER BY id_sucursal ASC')
+            // retornar los datos sí el estado es el esperado
+            .then(sucursales => {
+                for (let i = 0; i < sucursales.length; i++) {
+                    id = {
+                        id_sucursal: getBinary(sucursales, 'id_sucursal')[i]
+                    }
+                    Object.assign(sucursales[i], id);
                 }
-                Object.assign(SUCURSALES[i], id)
-            }
-            if (res.status(200)) res.json(SUCURSALES)
-        }
+                res.status(200).send(sucursales)
+            }).catch(rej => { console.log(rej); res.status(500).send({ error: getError(rej) }) })
 
     } catch (error) {
         console.log(error);
@@ -32,32 +31,15 @@ const get = async (req, res) => {
  * Método para agregar una sucursal
  */
 const store = (req, res) => {
-    let er, msg;
     try {
         // obtener los datos de la petición
         const { tel, inicio, cierre, direccion, nombre } = req.body
         // realizar query 
-        POOL.query('INSERT INTO sucursales(telefono, horario, nombre_sucursal, direccion) VALUES ($1, $2, $3, $4)',
-            [tel, inicio + ' A.M - ' + cierre + ' P.M', nombre, direccion], (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Sucursal agregada';
-                }
-
-                res.status(201).send(msg);
-            })
+        execute('INSERT INTO sucursales(telefono, horario, nombre_sucursal, direccion) VALUES (?, ?, ?, ?)',
+            [tel, inicio + ' - ' + cierre, nombre, direccion])
+            .then(() => {
+                res.status(201).send('Sucursal agregada')
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -70,11 +52,14 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener el id de la sucursal
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar consulta
-        const SUCURSAL = await POOL.query('SELECT telefono, horario, nombre_sucursal, direccion FROM sucursales WHERE id_sucursal = $1', [ID])
-        // verificar sí la respuesta es la esperada
-        if (res.status(200)) res.send(SUCURSAL.rows[0]);
+        const SUCURSAL = await execute(`SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(horario, '-', 1), ' ',1 ) as inicio, SUBSTRING_INDEX(SUBSTRING_INDEX(horario, '-', -1), ' ', -1) as cierre, s.id_sucursal, s.telefono, s.nombre_sucursal, s.direccion FROM sucursales s WHERE id_sucursal = ?`, [ID])
+        // verificar sí la respuesta es la esperada                        
+        for (let i = 0; i < SUCURSAL.length; i++) {
+            Object.assign(SUCURSAL[i], { id_sucursal: getBinary(SUCURSAL, 'id_sucursal')[i] });
+        }
+        if (res.status(200)) res.send(SUCURSAL[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -87,30 +72,15 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener el id
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos de la petición
         const { tel, inicio, cierre, direccion, nombre } = req.body;
         // realizar query 
-        POOL.query('UPDATE sucursales SET telefono = $1, horario = $2, nombre_sucursal = $3, direccion = $4 WHERE id_sucursal = $5',
-            [tel, inicio + ' A.M - ' + cierre + ' P.M', nombre, direccion, ID], (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Sucursal modificada';
-                }
-
-                res.status(201).send(msg);
+        execute('UPDATE sucursales SET telefono = ?, horario = ?, nombre_sucursal = ?, direccion = ? WHERE id_sucursal = ?',
+            [tel, inicio + ' - ' + cierre, nombre, direccion, ID])
+            .then(() => { res.status(201).send('Sucursal modificada') })
+            .catch(rej => {
+                res.status(406).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);
@@ -125,24 +95,11 @@ const change = (req, res) => {
 const destroy = (req, res) => {
     try {
         // obtener id
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar delete
-        POOL.query('DELETE FROM sucursales WHERE id_sucursal = $1', [ID], (err, result) => {
-            // verificar sí hubo un error                                
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a empleados asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-
-            } else {
-                msg = 'Sucursal eliminada';
-            }
-
-            res.status(201).send(msg);
-        })
+        execute('DELETE FROM sucursales WHERE id_sucursal = ?', [ID])
+            .then(() => { res.status(201).send('Sucursal eliminada') })
+            .catch(rej => res.status(406).send({ error: getError(rej) }));
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
