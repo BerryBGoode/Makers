@@ -31,8 +31,8 @@ const one = async (req, res) => {
         // obtener id de los parametros de la url
         const ID = req.params.id;
         // realizar consulta
-        const HORARIO = await execute('SELECT * FROM horarios_view WHERE id_horario = ?', [ID]); // con * tardo .118 mls
-        // verificar respuesta satisfeca
+        const HORARIO = await execute(`SELECT id_horario, hora_apertura as inicio, hora_cierre as cierre  FROM horarios WHERE id_horario = ?`, [ID]); // con * tardo .118 mls
+        // verificar respuesta satisfeca        
         for (let i = 0; i < HORARIO.length; i++) {
             id = {
                 id_horario: getBinary(HORARIO, 'id_horario')[i]

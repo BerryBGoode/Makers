@@ -35,7 +35,7 @@ const store = (req, res) => {
         // obtener los datos de la petición
         const { tel, inicio, cierre, direccion, nombre } = req.body
         // realizar query 
-        execute('INSERT INTO sucursales(telefono, horario, nombre_sucursal, direccion) VALUES (?, ?, ?, ?)',
+        execute('INSERT INTO sucursales(id_sucursal, telefono, horario, nombre_sucursal, direccion) VALUES (UUID(), ?, ?, ?, ?)',
             [tel, inicio + ' - ' + cierre, nombre, direccion])
             .then(() => {
                 res.status(201).send('Sucursal agregada')

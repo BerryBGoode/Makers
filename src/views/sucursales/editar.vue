@@ -80,7 +80,7 @@ export default {
     methods: {
         modificarSucursal() {
             // validar campos vacíos
-            if (this.sucursal.direccion && this.sucursal.nombre && this.sucursal.tel &&
+            if ((this.sucursal.direccion !== null) && this.sucursal.nombre && this.sucursal.tel &&
                 this.sucursal.inicio && this.sucursal.cierre && (this.sucursal.inicio < this.sucursal.cierre)) {
                 // realizar petición
                 axios.put('http://localhost:3000/api/sucursales/' + this.$route.params.id, this.sucursal)
