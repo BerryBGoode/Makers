@@ -173,6 +173,7 @@ export default {
             // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
             // componente realiza y el dato
             this.$emit('getCookie', this.$cookies.get('auth'))
+            localStorage.setItem('auth', token)
 
         },        
     }

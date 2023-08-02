@@ -13,6 +13,13 @@ const getDuiCli = async (req, res) => {
         // realizar consulta
         const DUI = await execute('SELECT id_cliente, dui FROM clientes');
         // sí la respuesta es la esperara retoran los datos
+        for (let i = 0; i < DUI.length; i++) {
+            id = {
+                id_cliente: getBinary(DUI, 'id_cliente')[i]
+            }
+            Object.assign(DUI[i], id);
+
+        }
         if (res.status(200)) res.send(DUI);
     } catch (error) {
         console.log(error);
@@ -50,7 +57,7 @@ const getEmpleado = async (req, res) => {
                 // agregarlos al arreglo vacíos que retornar los datos
                 data.push(filled[i]);
             }
-            if (res.status(200)) res.json(data);
+            if (res.status(200)) res.json(data[0]);
         })
         .catch(rej => {
             res.status(500).send({ error: getError(rej['errno']) });
@@ -113,22 +120,14 @@ const store = async (req, res) => {
         //se asigna un arreglo a los valores del req
         const { cliente, empleado, fecha, hora } = req.body;
         let estado = 1;
-        console.log(req.body)
         //preparando query con los datos
-        POOL.query('INSERT INTO reservaciones(id_cliente, id_empleado, fecha, hora, id_estado) VALUES (?, ?, ?, ?, ?)'
-            , [cliente, empleado, fecha, hora, estado],
-            //función
-            (err, result) => {
-                //verificar si existe algún error
-                // verificar sí hubo un error
-                if (err) {
-                    res.json({ error: err.message });
-                    return
-                }
-                res.status(201).send('Reservación agregado')
-            })
+        execute('INSERT INTO reservaciones(id_reservacion, id_cliente, id_empleado, fecha, hora, estado) VALUES (UUID(), ?, ?, ?, ?, ?)'
+            , [cliente, empleado, fecha, hora, estado])
+            .then(() => { res.status(201).send('Reservación agregada') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.error(error);
+        res.status(500).send('Surgio un problema en el servidor');
     }
 }
 
@@ -143,11 +142,20 @@ const one = async (req, res) => {
         //se obtiene el id de  la reservacion de los  parametros de la url
         const idreser = req.params.id;
         //se realiza la consulta
-        const RESERVACION = await execute('SELECT * FROM reservaciones_view WHERE id_reservacion = ?', [idreser])
+        const RESERVACION = await execute(`SELECT id_reservacion, id_cliente, id_empleado, cliente_n, cliente_a, cliente_d, empleado_n, empleado_a, empleado_d, fecha, time_format(hora, '%h:%i') as hora FROM reservaciones_view WHERE id_reservacion = ?`, [idreser])
         //si el proceso es correcto, se retorna el resultado de la consulta en json        
-        if (res.status(200)) res.json(RESERVACION)
+        for (let i = 0; i < RESERVACION.length; i++) {
+            id = {
+                id_reservacion: getBinary(RESERVACION, 'id_reservacion')[i],
+                id_cliente: getBinary(RESERVACION, 'id_cliente')[i],
+                id_empleado: getBinary(RESERVACION, 'id_empleado')[i]
+            }
+            Object.assign(RESERVACION[i], id);
+        }
+        if (res.status(200)) res.json(RESERVACION[0])
     } catch (error) {
         console.error(error);
+        res.status(500).send({ error: 'Surgio un problema en el servidor' });
     }
 }
 
@@ -164,20 +172,13 @@ const change = async (req, res) => {
         //asignar a un arreglo los valores del req
         const { cliente, empleado, fecha, hora } = req.body;
         //realuzar transferencia SQL
-        POOL.query('UPDATE reservaciones SET id_cliente = ?, id_empleado = ?, fecha = ?, hora = ? WHERE id_reservacion = ?',
-            [cliente, empleado, fecha, hora, idreser],
-            //erro debe ir antes que res
-            (err, results) => {
-                // verificar sí hubo un error
-                if (err) {
-                    res.json({ error: err.message });
-                    return
-                }
-                res.status(201).send('Reservación modificada');
-            }
-        )
+        execute('UPDATE reservaciones SET id_cliente = ?, id_empleado = ?, fecha = ?, hora = ? WHERE id_reservacion = ?',
+            [cliente, empleado, fecha, hora, idreser])
+            .then(() => { res.status(201).send('Reservación modificada') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
+        res.status(500).send({ error: 'Surgio un problema en el servidor' });
     }
 }
 
@@ -191,26 +192,15 @@ const change = async (req, res) => {
 const destroy = async (req, res) => {
     try {
         //obtener el idreser del parametro de la ruta
-        const idreser = parseInt(req.params.id);
+        const idreser = req.params.id;
         //resalizar consulta, se envia un array con los parametros y método para capturar error
-        POOL.query('DELETE FROM reservaciones WHERE id_reservacion = ?', [idreser], (err, result) => {
-            // verificar sí ocurre un error
-            if (err) {
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                if (err.code === '23503') {
-                    e = 'No se puede modificar o eliminar debido a datos asociados'
-                } else {
-                    e = err.message
-                }
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Producto eliminado');
-        })
+        execute('DELETE FROM reservaciones WHERE id_reservacion = ?', [idreser])
+            .then(() => { res.status(201).send('Reservación eliminada') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         //capturar error
         console.error(error);
+        res.status(500).send({ error: 'Surgio un problema en el servidor' });
     }
 }
 //exportar funciones

@@ -1,10 +1,10 @@
 // requerir para hacer los queries, (constante)
-const POOL = require('../db');
+const { getError } = require('../helpers/errors');
 // método para ejecutar consultas
 const { execute } = require('../MySQL');
 // método para obtener en binario el id (cargar)
 const { getBinary } = require('../helpers/validateHelpers')
-let msg;
+
 /**
  * Método para cargar todos los tipos de servicios
  */
@@ -43,25 +43,9 @@ const store = (req, res) => {
         // obtener los dato
         const { tipo } = req.body;
         // query
-        POOL.query('INSERT INTO tipos_servicios(tipo_servicio) VALUES ($1)', [tipo], (err, result) => {
-            if (err) {
-
-                if (err.code === '23505') {
-                    // enviar error el cliente
-                    er = 'Dato unico ya registrado';
-                } else {
-                    er = err.message;
-                }
-                res.json({ error: er });
-                // sí es ejecuta esto, el status 201 no se enviará
-                // return;                    
-
-            } else {
-                msg = 'Tipo de servicio agregado';
-            }
-
-            res.status(201).send(msg);
-        })
+        execute('INSERT INTO tipos_servicios(id_tipo_servicio, tipo_servicio) VALUES (UUID(), ?)', [tipo])
+            .then(() => { res.status(201).send('Tipo de servicio agregado') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -74,11 +58,18 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener los id
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos del registro con este
-        const TIPO = await POOL.query('SELECT * FROM tipos_servicios WHERE id_tipo_servicio = $1', [ID])
+        const TIPO = await execute('SELECT * FROM tipos_servicios WHERE id_tipo_servicio = ?', [ID])
         // verificar sí la respuesta es correcta
-        if (res.status(200)) res.send(TIPO.rows[0]);
+        
+        for (let i = 0; i < TIPO.length; i++) {
+            id = {
+                id_tipo_servicio: getBinary(TIPO, 'id_tipo_servicio')[i]
+            }
+            Object.assign(TIPO[i], id);
+        }
+        if (res.status(200)) res.send(TIPO[0]);
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -89,55 +80,28 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         //obtener el id del registro
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         //obtener los datos de la peticion
         const { tipo } = req.body;
 
         //realizar actualizacion
-        POOL.query('UPDATE tipos_servicios SET tipo_servicio = $1 WHERE id_tipo_servicio = $2',
-            [tipo, ID], (err, result) => {
-                // verificar sí hubo un error                                
-                if (err) {
-
-                    if (err.code === '23505') {
-                        // enviar error el cliente
-                        er = 'Dato unico ya registrado';
-                    } else {
-                        er = err.message;
-                    }
-                    res.json({ error: er });
-                    // sí es ejecuta esto, el status 201 no se enviará
-                    // return;                    
-
-                } else {
-                    msg = 'Sucursal modificada';
-                }
-                res.status(201).send(msg);
-            })
+        execute('UPDATE tipos_servicios SET tipo_servicio = ? WHERE id_tipo_servicio = ?', [tipo, ID])
+            .then(() => { res.status(201).send('Tipo de servicio modificado') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
-
+        console.log(error);
+        res.status(500).send('Surgio un problema en el servidor')
     }
 }
 
 const destroy = (req, res) => {
     try {
         //obtener id del tipo servicio
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         //realizar query
-        POOL.query('DELETE FROM tipos_servicios WHERE id_tipo_servicio = $1', [ID], (err, result) => {
-            // verificar sí hubo un error                                                            
-            if (err) {
-
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                (err.code === '23503') ? e = 'No se puede modificar o eliminar debido a servicios asociados' : e = err.message
-                // retornar el error
-                res.json({ error: e });
-                return;
-
-            } else {
-                msg = 'Sucursal eliminada';
-            }
-        })
+        execute('DELETE FROM tipos_servicios WHERE id_tipo_servicio = ?', [ID])
+            .then(() => { res.status(201).send('Tipo de servicio eliminado') })
+            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')

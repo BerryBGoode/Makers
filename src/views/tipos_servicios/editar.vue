@@ -27,7 +27,7 @@
                 <router-link to="/servicios/tipos" class="btn btn-makers">
                     Cancelar
                 </router-link>
-                <button type="submit" class="btn btn-makers">Agregar</button>
+                <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
         </form>
     </div>
@@ -60,7 +60,7 @@ export default {
                         }
                     })
                     .catch(e => {
-                        console.log(e)
+                        alert(e.response.data.error);
                     })
             }
         },
@@ -74,7 +74,7 @@ export default {
                     }
                 })
                 .catch(e => {
-                    console.log(e)
+                    alert(e)
                 })
         }
     },

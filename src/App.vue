@@ -43,7 +43,7 @@ main {
 
 
 <template>
-    <template v-if="!auth">
+    <template v-if="!auth || !storage">
         <login @getCookie="validateCookie" />
     </template>
     <template v-else>
@@ -60,10 +60,11 @@ import login from './views/login.vue'
 // espacio para importar componentes hijos
 export default {
     name: 'app',
-    components: { dashboard, login },
+    components: { dashboard, login, cookies},
     data() {
         return {
             auth: '',
+            storage: '',
         }
     },
     methods: {
@@ -74,21 +75,30 @@ export default {
         },
         // método para evaludar sí existe un cookie en el evento padre
         // así ir verificando y actualizar el valor de la cookie cuando exista
-        checkCookie() {
+        checkTokenCookie() {
             // obtener el valor de la cookie para autenticación
             const COOKIE = this.getCookie('auth');
+            const STORAGE = this.getTokenStorage('auth')
             // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
             // de login o dashboard, síno tiene valor le asignará null para mostrar login
-            this.auth = COOKIE !== null;
+            this.auth = COOKIE  !== null;
+        },
+        chechTokenStorage() {
+            const STORAGE = this.getTokenStorage('auth');
+            this.storage = STORAGE !== null;
         },
         // método para obtener el valor de la cookie
         getCookie(cookie) {
             return this.$cookies.get(cookie);
+        },
+        getTokenStorage(token) {
+            return localStorage.getItem(token)
         }
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
-        this.checkCookie();
+        this.checkTokenCookie();
+        this.chechTokenStorage();
     },
     watch: {
         // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
@@ -98,11 +108,8 @@ export default {
             if (now) {
                 // volver a verificar sí existe la cookie cada 20segundos
                 setInterval(() => {
-                    this.checkCookie();
-                }, 10)
-                // setTimeout(() => {
-                //     this.checkCookie();
-                // }, 10);
+                    this.checkTokenCookie();
+                }, 10)                
             }
         }
     }

@@ -4,6 +4,7 @@ const POOL = require('../db');
 const { execute } = require('../MySQL')
 // método para convertir a binario
 const { getBinary } = require('../helpers/validateHelpers');
+const { getError } = require('../helpers/errors');
 /**
  * Método para obtener tipo de servicio llamado producto
  */
@@ -12,9 +13,15 @@ const producto = async () => {
         // declarar el tipo de servicio que se busca
         let producto = 'Producto';
         // realizar consulta
-        const TIPO = await POOL.query('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = $1', [producto]);
+        const TIPO = await execute('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = ?', [producto]);
         // retornar el id sí la respuesta es la deceada
-        if (TIPO.rows[0]) return TIPO.rows[0].id_tipo_servicio;
+        for (let i = 0; i < TIPO.length; i++) {
+            id = {
+                id_tipo_servicio: getBinary(TIPO, 'id_tipo_servicio')[i]
+            }
+            Object.assign(TIPO[i], id);
+        }
+        if (TIPO[0]) return TIPO[0].id_tipo_servicio;
     } catch (error) {
         console.log(error);
         return false;
@@ -64,24 +71,18 @@ const store = async (req, res) => {
     try {
         // obtener el id del tipo servicio producto        
         let tipo = await producto();
-        // declarar estado activo
+        // declarar estado activo        
         let estado = 1;
         // verificar sí se obtuvo
         if (tipo) {
             // obtener los datos de la petición
             const { descripcion, precio, existencias, nombre } = req.body;
             // realizar query o inserción y enviadole los parametros
-            POOL.query('INSERT INTO servicios(id_tipo_servicio, descripcion, precio, existencias, id_estado_servicio, nombre_servicio) VALUES ($1, $2, $3, $4, $5, $6)',
-                [tipo, descripcion, precio, existencias, estado, nombre],
-                (err, result) => {
-                    // verificar sí hubo un error
-                    if (err) {
-                        res.json({ error: err.message });
-                        return
-                    }
+            execute('INSERT INTO servicios(id_servicio, id_tipo_servicio, descripcion, precio, existencias, estado, nombre_servicio) VALUES (UUID(), ?, ?, ?, ?, ?, ?)',
+                [tipo, descripcion, precio, existencias, estado, nombre])
+                .then(() => {
                     res.status(201).send('Producto agregado')
-                })
-
+                }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
         }
 
     } catch (error) {
@@ -99,12 +100,12 @@ const one = async (req, res) => {
         let tipo = await producto();
         if (tipo) {
             // obtener el id del producto por medio de la url
-            const ID = parseInt(req.params.id);
+            const ID = req.params.id;
             // realizar consulta
-            const PRODUCTO = await POOL.query('SELECT descripcion, precio, existencias, nombre_servicio FROM servicios WHERE id_tipo_servicio = $1 AND id_servicio = $2',
+            const PRODUCTO = await execute('SELECT descripcion, precio, existencias, nombre_servicio FROM servicios WHERE id_tipo_servicio = ? AND id_servicio = ?',
                 [tipo, ID]);
             // verificar estado satisfactorio, para enviar los datos
-            if (res.status(200)) res.send(PRODUCTO.rows[0]);
+            if (res.status(200)) res.send(PRODUCTO[0]);
         }
     } catch (error) {
         console.log(error);
@@ -118,28 +119,15 @@ const one = async (req, res) => {
 const change = (req, res) => {
     try {
         // obtener el id del producto a modificar
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // obtener los datos de la petición
         const { descripcion, precio, existencias, nombre } = req.body;
         // realizar actualización
-        POOL.query('UPDATE servicios SET descripcion = $1, precio = $2, existencias = $3, nombre_servicio = $4 WHERE id_servicio = $5',
-            [descripcion, precio, existencias, nombre, ID],
-            (err, result) => {
-                // verificar sí hubo un problema
-                if (err) {
-
-                    // verificar sí no se puede eliminar porque tiene datos dependientes                
-                    if (err.code === '23503') {
-                        e = 'No se puede modificar o eliminar debido a pedidos asociados'
-                    } else {
-                        e = err.message
-                    }
-                    // retornar el error
-                    res.json({ error: e });
-                    return;
-                }
+        execute('UPDATE servicios SET descripcion = ?, precio = ?, existencias = ?, nombre_servicio = ? WHERE id_servicio = ?',
+            [descripcion, precio, existencias, nombre, ID])
+            .then(() => {
                 res.status(201).send('Producto modificado');
-            })
+            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -150,26 +138,14 @@ const change = (req, res) => {
  * Método para eliminar el producto enviado por la url
  */
 const destroy = (req, res) => {
-    let e;
+    
     try {
         // obtener el id del registro por la url de la petición
-        const ID = parseInt(req.params.id);
+        const ID = req.params.id;
         // realizar sentencia SQL
-        POOL.query('DELETE FROM servicios WHERE id_servicio = $1', [ID], (err, result) => {
-            // verificar errores
-            if (err) {
-                // verificar sí no se puede eliminar porque tiene datos dependientes                
-                if (err.code === '23503') {
-                    e = 'No se puede modificar o eliminar debido a pedidos asociados'
-                } else {
-                    e = err.message
-                }
-                // retornar el error
-                res.json({ error: e });
-                return;
-            }
-            res.status(201).send('Producto eliminado');
-        })
+        execute('DELETE FROM servicios WHERE id_servicio = ?', [ID])
+            .then(() => {res.status(201).send('Producto eliminado')})
+            .catch(rej => {res.status(406).send({error: getError(rej)})})
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');

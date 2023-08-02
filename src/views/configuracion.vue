@@ -118,6 +118,7 @@ export default {
         cerrarSesion() {
             if (confirm('Desea cerrar sesión?')) {
                 this.$cookies.remove('auth');
+                localStorage.removeItem('auth')
             }
         },
         // método para redireccionar a página anterior

@@ -173,7 +173,7 @@ export default {
                         // cargar
                         this.getServicios();
                     })
-                    .catch(e => { alert(e); console.log(e) })
+                    .catch(e => { alert(e.response.data.error); console.log(e) })
             }
         },
         buscar(dato) {

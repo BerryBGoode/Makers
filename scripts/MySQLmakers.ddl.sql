@@ -199,3 +199,16 @@ FROM servicios s
 INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
 ORDER BY s.id_servicio ASC
 
+CREATE VIEW sucursales_view AS
+WITH times AS (
+    SELECT TIME_FORMAT(SUBSTRING_INDEX(horario, '-', 1), '%h:%i') as h_inicio, 
+    TIME_FORMAT(SUBSTRING_INDEX(horario, '-', -1), '%h:%i') as h_cierre, 
+    s.horario 
+    FROM sucursales s
+)
+SELECT s.id_sucursal, s.telefono, 
+	CONCAT(times.h_inicio, ' ', IF(SUBSTRING_INDEX(s.horario, '-', 1) < 12, 'AM', 'PM') ) as inicio,
+    CONCAT(times.h_cierre, ' ', IF(SUBSTRING_INDEX(s.horario, '-', -1) < 12, 'AM', 'PM') )as cierre,
+    s.nombre_sucursal, s.direccion 
+FROM times
+INNER JOIN sucursales s ON s.horario = times.horario

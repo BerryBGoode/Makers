@@ -95,7 +95,7 @@ export default {
                     this.tipos = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => console.log(e));
+                .catch(e => alert(e));
         },
         eliminarTipo(tipo) {
             if (confirm('Desea eliminar este tipo de servicio?')) {
@@ -106,7 +106,7 @@ export default {
                         console.log(res)
                         // cargar
                         this.getTipos();
-                    })
+                    }).catch(e => {alert(e.response.data.error)})
             }
         },
         buscar(dato) {

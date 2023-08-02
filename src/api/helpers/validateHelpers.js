@@ -26,14 +26,26 @@ const validate = (req, res, next) => {
 const compareProductos = async (servicio, cantidad) => {
     try {
         // obtener las existencias
-        const SERVICIO = await POOL.query('SELECT existencias, id_tipo_servicio FROM servicios WHERE id_servicio = $1', [servicio])
+        const SERVICIO = await execute('SELECT existencias, id_tipo_servicio FROM servicios WHERE id_servicio = ?', [servicio])
         // obtener el tipo de servicio sea producto
-        const TPRODUCTO = await POOL.query('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = $1', ['Producto']);
-        // verificar sí el tipo de servicio es producto para evaluar cantidad con respecto a las existencias        
-        if (SERVICIO.rows[0].id_tipo_servicio === TPRODUCTO.rows[0].id_tipo_servicio) {
-            // comparar sí las existencias son menos o igual4            
-            return (cantidad <= SERVICIO.rows[0].existencias)
-        } else {
+        const TPRODUCTO = await execute('SELECT id_tipo_servicio FROM tipos_servicios WHERE tipo_servicio = ?', ['Producto']);
+        // verificar sí el tipo de servicio es producto para evaluar cantidad con respecto a las existencias                
+        for (let i = 0; i < SERVICIO.length; i++) {
+            id = {
+                id_tipo_servicio: getBinary(SERVICIO, 'id_tipo_servicio')[i]
+            }
+            Object.assign(SERVICIO[i], id);
+        }
+        for (let i = 0; i < TPRODUCTO.length; i++) {
+            id = {
+                id_tipo_servicio: getBinary(TPRODUCTO, 'id_tipo_servicio')[i]
+            }
+            Object.assign(TPRODUCTO[i], id);
+        }
+        if (SERVICIO[0].id_tipo_servicio === TPRODUCTO[0].id_tipo_servicio) {
+            // comparar sí las existencias son menos o igual4                                
+            return (cantidad <= SERVICIO[0].existencias)
+        } else {            
             return true;
         }
     } catch (error) {

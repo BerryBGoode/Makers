@@ -26,7 +26,7 @@
                         <div class="col-md-8">
                             <h5 class="card-title bold mb-1">{{ sucursal.nombre_sucursal }}</h5>
                             <p class="card-text mb-0 smaller"> {{ sucursal.direccion }} </p>
-                            <span class="card-text mb-0 smaller">{{ sucursal.horario }}</span>
+                            <span class="card-text mb-0 smaller">{{ sucursal.inicio }} - {{ sucursal.cierre }}</span>
                             <p class="card-text mb-0 smaller">{{ sucursal.telefono }} </p>
                             <p class="card-text mb-0 smaller"> {{ sucursal.nit }} </p>
                         </div>

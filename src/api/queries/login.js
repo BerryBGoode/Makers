@@ -60,7 +60,7 @@ const validateUsuario = async (req, res) => {
         res.status(200).send({ msg, auth, token });
     } else {
         res.status(500).send('Surgio un problema en el servidor');
-    } ß
+    } 
 }
 
 /**
@@ -102,7 +102,7 @@ const getConfig = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener id del empleado
-            const ID = jwt.decode(TOKEN);
+            const ID = decodeBase64(jwt.decode(TOKEN));
             // realizar query
             const EMPLEADO = await execute('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empleados_view WHERE id_empleado = ?', [ID])
             // retornar los datos sí la respuesta es la esperada

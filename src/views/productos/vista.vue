@@ -108,7 +108,7 @@ export default {
                     this.productos = res.data;
                     this.buscador = res.data;
                 })
-                .catch(e => alert(e));
+                .catch(e => alert(e.response.data.error));
         },
         eliminarProducto(producto) {
             // esperar confirmación
@@ -123,7 +123,7 @@ export default {
                         // cargar
                         this.getProductos();
                     })
-                    .catch(e => { alert(e) })
+                    .catch(e => { alert(e.response.data.error) })
             }
         },
         buscar(dato) {

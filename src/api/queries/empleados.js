@@ -6,7 +6,6 @@ const encrypt = require('../helpers/encrypt');
 const { getError } = require('../helpers/errors');
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
-let msg;
 
 /**
  * req: información que viene del frontend

@@ -283,7 +283,7 @@ export default {
             axios.get('http://localhost:3000/api/reservaciones/' + idreservacion)
                 .then(res => {
                     //guardar en una constante los datos obtenidos
-                    const RESERVACION = res.data[0];
+                    const RESERVACION = res.data;
                     //asignar a cada uno
                     this.model.reservacion = {
                         fecha: RESERVACION.fecha,
@@ -299,11 +299,11 @@ export default {
                         nombre: RESERVACION.empleado_n,
                         apellido: RESERVACION.empleado_a
                     }
-                    console.log(RESERVACION)
+
                 })
                 .catch(e => {
                     //validar reservacion inexistente
-                    alert(e);
+                    alert(e.response.data.error);
                 })
         },
         //método para agregar una reservación
@@ -320,7 +320,7 @@ export default {
                     if (res.data.errir) {
                         this.msg = res.data.error;
                     }
-                    console.log(res)
+
                     //cuando si se realizó la tarea deseada y se creó algo
                     //201 es usado en método post y put
                     if (res.status === 201 && !res.data.error) {
@@ -332,12 +332,12 @@ export default {
                             empleado: 'Seleccionar',
                         }
                         //redireccionar
-                        alert('Empleado modificado')
+                        alert(res.data);
                         this.msg = '';
                         this.$router.push('/reservaciones');
                     }
                 })
-                .catch(e => { console.log(e) });
+                .catch(e => { alert(e.response.data.error) });
         }
     }
 }

@@ -105,9 +105,8 @@ export default {
                             // redireccionar
                             this.$router.push('/productos')
                         }
-                        console.log(res.data)
                     })
-                    .catch(e => { console.log(e) });
+                    .catch(e => { alert(e.response.data.error) });
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }

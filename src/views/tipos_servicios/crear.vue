@@ -9,7 +9,7 @@
             <h5 class="bold">
                 Tipo de servicio
             </h5>
-            <span> {{  msg }}</span>
+            <span> {{ msg }}</span>
         </div>
         <hr>
         <form @submit.prevent="agregar" class="container agg-servicio">
@@ -50,17 +50,17 @@ export default {
         agregar() {
             if (!onlyLtrs(this.tipos.tipo)) {
                 this.msg = 'Solo se permiten letras'
-            }else{
+            } else {
                 axios.post('http://localhost:3000/api/tipos/', this.tipos)
                     .then(res => {
                         if (res.data.error) this.msg = res.data.error;
-                        else{
+                        else {
                             alert(res.data);
                             this.$router.push('/servicios/tipos');
                         }
                     })
                     .catch(e => {
-                        console.log(e)
+                        alert(e.response.data.error)
                     })
             }
         }

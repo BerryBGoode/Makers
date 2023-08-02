@@ -204,13 +204,13 @@ export default {
                             empleado: 'Seleccionar',
                         }
                         //redireccionar
-                        alert('Reservación agregada correctamente')
+                        alert(res.data)                        
                         this.$router.push('/reservaciones');
                     }
 
                     //si la respuesta es la esperada, redireccionará a la vista principal
                 })
-                .catch(e => { alert(e) });
+                .catch(e => { alert(e.response.data.error) });
         }
     }
 }

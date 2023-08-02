@@ -84,7 +84,7 @@ export default {
             if (this.sucursal.inicio > this.sucursal.cierre) {
                 this.msg = 'Horario ilogico'
             }
-            else if (this.sucursal.direccion && this.sucursal.tel && onlyLtrs(this.sucursal.nombre) &&
+            else if (this.sucursal.direccion && this.sucursal.tel && this.sucursal.nombre &&
                 this.sucursal.inicio && this.sucursal.cierre) {
                 // realizar petición
                 axios.post('http://localhost:3000/api/sucursales/', this.sucursal)
@@ -92,7 +92,7 @@ export default {
                         if (res.data.error) {
                             alert(res.data.error)
                             console.log(res.data.error)
-                        } else {                            
+                        } else {
                             alert(res.data);
                             this.$router.push('/sucursales');
                         }
@@ -100,9 +100,6 @@ export default {
                     })
             }
             else this.msg = 'No se permiten campos vacíos'
-
-
-
         }
     }
 }
