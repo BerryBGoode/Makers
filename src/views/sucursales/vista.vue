@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                
+
                                 <router-link :to="{ path: '/sucursales/editar/' + sucursal.id_sucursal }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -138,9 +138,10 @@ export default {
             const SUCURSALES = this.sucursales.filter(sucursal => {
                 return (
                     sucursal.direccion.toLowerCase().indexOf(dato) !== -1 ||
-                    sucursal.horario.toLowerCase().indexOf(dato) !== -1 ||
-                    sucursal.nit.indexOf(dato) !== -1 || sucursal.nrc.indexOf(dato) !== -1 ||
-                    sucursal.telefono.indexOf(dato) !== -1
+                    sucursal.cierre.indexOf(dato) !== -1 ||
+                    sucursal.inicio.indexOf(dato) !== -1 ||
+                    sucursal.telefono.indexOf(dato) !== -1 ||
+                    sucursal.nombre_sucursal.toLowerCase().indexOf(dato) !== -1
                 )
             })
             this.buscador = SUCURSALES;

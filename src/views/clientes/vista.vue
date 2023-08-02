@@ -193,7 +193,7 @@ export default {
                 return (
                     item.nombres.toLowerCase().indexOf(dato) !== -1 || item.apellidos.toLowerCase().indexOf(dato) !== -1 ||
                     item.correo.toLowerCase().indexOf(dato) !== -1 || item.dui.toLowerCase().indexOf(dato) !== -1 ||
-                    item.telefono.toLowerCase().indexOf(dato) !== -1
+                    item.telefono.toLowerCase().indexOf(dato) !== -1 || item.consumo.toString().indexOf(dato) !== -1
                 );
             });
             // asignar los registros encontrados al arreglo que los muestra

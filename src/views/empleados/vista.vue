@@ -53,6 +53,7 @@
                             <span class="card-text mb-0 smaller">{{ empleado.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ empleado.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ empleado.telefono }} </p>
+                            <p class="card-text mb-0 smaller"> <span class="bold">$</span>{{ empleado.planilla }} </p>
                         </div>
                         <div class="col-md-6 more-info">
                             <span class="bold card-title">{{ empleado.alias }}</span>
@@ -164,7 +165,7 @@ export default {
                     .catch(e => { alert(e.response.data.error) })
             }
         },
-        buscar(dato) {
+        buscar(dato) {    
             // constante con los datos filtrados del arreglo con los empleados (en limipios)
             const EMPLEADOS = this.empleados.filter((empleado) => {
                 // retornar los datos que pasen la condición
@@ -173,11 +174,11 @@ export default {
                     // (dato) texto del input
                     empleado.nombres.toLowerCase().indexOf(dato) !== -1 ||
                     empleado.apellidos.toLowerCase().indexOf(dato) !== -1 ||
-                    empleado.direccion.toLowerCase().indexOf(dato) !== -1 ||
+                    empleado.nombre_sucursal.toLowerCase().indexOf(dato) !== -1 ||
                     empleado.dui.indexOf(dato) !== -1 ||
                     empleado.correo.toLowerCase().indexOf(dato) !== -1 ||
                     empleado.horario.toLowerCase().indexOf(dato) !== -1 ||
-                    empleado.planilla.indexOf(dato) !== -1 ||
+                    empleado.planilla.toString().indexOf(dato) !== -1 ||
                     empleado.cargo.toLowerCase().indexOf(dato) !== -1 ||
                     empleado.telefono.indexOf(dato) !== -1
                     // parametros por los que se puede buscar
