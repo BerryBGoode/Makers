@@ -43,9 +43,9 @@
         </div>
         <hr>
 
-        <div class="data p-2" v-if="buscador.length > 0">
+        <div class="data p-2" v-if="filters.length > 0">
 
-            <div class="card" v-for="empleado in buscador" :key="empleado.id_empleado">
+            <div class="card" v-for="empleado in filters" :key="empleado.id_empleado">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -112,7 +112,7 @@
             </span>
         </div>
 
-        <div class="data p-2" v-if="buscador.length === 0 && empleados.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && empleados.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -123,22 +123,21 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
-
+import { mapState } from 'vuex';
 
 export default {
     name: 'empleados',
-    props: { datos: { type: String } },
     data() {
         return {
             // arreglo para guardar los empleados
             empleados: [],
             // arreglo para guardar los datos a buscar
-            buscador: [],
+            filters: [],
             config: {
                 headers: {
                     authorization: this.$cookies.get('auth')
                 }
-            }
+            },
         }
     },
     methods: {
@@ -146,7 +145,7 @@ export default {
         getEmpledos() {
             // hacer petición
             axios.get('http://localhost:3000/api/empleados', this.config)
-                .then(res => { this.empleados = res.data; this.buscador = res.data })
+                .then(res => { this.empleados = res.data; this.filters = res.data })
                 .catch(e => { alert(e) })
 
         },
@@ -165,7 +164,7 @@ export default {
                     .catch(e => { alert(e.response.data.error) })
             }
         },
-        buscar(dato) {    
+        buscar(dato) {            
             // constante con los datos filtrados del arreglo con los empleados (en limipios)
             const EMPLEADOS = this.empleados.filter((empleado) => {
                 // retornar los datos que pasen la condición
@@ -185,18 +184,23 @@ export default {
                 )
             })
             // asignar esos datos filtrados al arreglo que se muestran en card
-            this.buscador = EMPLEADOS;
-        }
+            this.filters = EMPLEADOS;            
+        },        
     },
     mounted() {
         this.getEmpledos();
     },
     watch: {
-        datos(now) {
+        buscador() {
             // verificar sí el input esta vacío o tiene espacios para mostrar por defecto
             // sino, mostrar el filtrado
-            (now.trim() === '') ? this.buscador = this.empleados : this.buscar(now);
+            (this.buscador.trim() === '') ? this.filters = this.empleados : this.buscar(this.buscador.toLowerCase());
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador,
+        })
     }
 }
 

@@ -24,7 +24,7 @@
         <div class="data p-2" v-if="ordenes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(orden, i) in buscador" :key="i">
+            <div class="card" v-for="(orden, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -107,7 +107,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && ordenes.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && ordenes.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -116,18 +116,14 @@
 </template>
 <script>
 import axios from 'axios'
+import { mapState } from 'vuex'
 
 export default {
     name: 'ordenes',
-    props: {
-        datos: {
-            type: String
-        }
-    },
     data() {
         return {
             ordenes: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -136,7 +132,7 @@ export default {
             axios.get('http://localhost:3000/api/ordenes/')
                 .then(res => {
                     this.ordenes = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 .catch(e => alert(e.response.data.error))
         },
@@ -166,7 +162,7 @@ export default {
                 )
             })
             // asignar al arreglo
-            this.buscador = ORDENES;
+            this.filters = ORDENES;
         }
 
     },
@@ -174,11 +170,17 @@ export default {
         this.getOrdenes();
     },
     watch: {
-        datos(now) {
-            // verificar sí el buscador esta vacío 
-            (now.trim() === '') ? this.buscador = this.ordenes : this.buscar(now);
+        buscador() {
+            // verificar sí el filters esta vacío 
+            (this.buscador.trim() === '') ? this.filters = this.ordenes : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
+
 }
 
 </script>

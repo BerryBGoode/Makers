@@ -15,7 +15,7 @@
         <div class="data p-2" v-if="detalles.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(detalle, i) in buscador" :key="i">
+            <div class="card" v-for="(detalle, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -82,7 +82,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && detalles.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && detalles.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -91,13 +91,9 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 export default {
-    name: 'detalleOrden',
-    props: {
-        datos: {
-            type: String
-        }
-    },
+    name: 'detalleOrden',    
     data() {
         return {
             // arreglo para guardar los datos
@@ -105,7 +101,7 @@ export default {
             // obtener id orden actual
             orden: this.$route.params.orden,
             // guarda datos en limpio y filtrados
-            buscador: []
+            filters: []
         }
     },
     mounted() {
@@ -116,7 +112,7 @@ export default {
         getDetalles() {
             axios.get('http://localhost:3000/api/ordenes/detalles/orden/' + this.$route.params.orden)
                 .then(res => {
-                    this.buscador = res.data;
+                    this.filters = res.data;
 
                     this.detalles = res.data;
                 })
@@ -151,14 +147,19 @@ export default {
                     detalle.subtotal.indexOf(dato) !== -1 || detalle.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            this.buscador = DETALLES;
+            this.filters = DETALLES;
         }
     },
     watch: {
-        datos(now) {
+        buscador() {
             // verificar sí el dato obtenido esta vació o tiene datos
-            (now.trim() === '') ? this.buscador = this.detalles : this.buscar(now);
+            (this.buscador.trim() === '') ? this.filters = this.detalles : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

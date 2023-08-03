@@ -30,7 +30,8 @@
     "vue": "^3.3.4",
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.2.2",
-    "vue3-cookies": "^1.0.6"
+    "vue3-cookies": "^1.0.6",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.3",

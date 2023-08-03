@@ -12,7 +12,7 @@
                 <cuenta />
             </div>
             <div class="content container">
-                <RouterView :datos="datos.toLowerCase()" />
+                <RouterView />
             </div>
         </div>
     </main>

@@ -15,7 +15,7 @@
         <div class="data p-2" v-if="horarios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(horario, i) in buscador" :key="i">
+            <div class="card" v-for="(horario, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -75,7 +75,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && horarios.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && horarios.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -83,19 +83,16 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import { mapState } from 'vuex';
+
 export default {
-    name: 'horarios',
-    props: {
-        datos: {
-            type: String
-        }
-    },
+    name: 'horarios',    
     data() {
         return {
             horarios: [],
             // arreglo para guardar los datos filtrados y en limpio
-            buscador: []
+            filters: []
 
         }
     },
@@ -104,7 +101,7 @@ export default {
         getHorarios() {
             // realizar petición
             axios.get('http://localhost:3000/api/horarios/')
-                .then(res => { this.horarios = res.data; this.buscador = res.data })
+                .then(res => { this.horarios = res.data; this.filters = res.data })
                 .catch(e => { alert(e.response.data.error); console.log(e) });
         },
         eliminarHorario(horario) {
@@ -125,14 +122,14 @@ export default {
         buscar(dato) {
             // declarar constante que almacena los datos filtrados según el arreglo en límpio delos horarios
             const HORARIOS = this.horarios.filter((horario) => {
-                // retornar los que coincidan la letra escrita en el buscador con algún caracter
+                // retornar los que coincidan la letra escrita en el filters con algún caracter
                 // de la hora inicio y la hora fin
                 return (
                     horario.inicio.indexOf(dato) !== -1 || horario.cierre.indexOf(dato) !== -1
                 )
             })
-            // asignar los filtrados al buscador
-            this.buscador = HORARIOS;
+            // asignar los filtrados al filters
+            this.filters = HORARIOS;
         }
     },
     mounted() {
@@ -140,10 +137,15 @@ export default {
     },
     // detecta cuando cambia el valor de la prop
     watch: {
-        datos(now) {
+        buscador() {
             // verificar sí el nuevo valor no es vació
-            (now.trim() === '') ? this.buscador = this.horarios : this.buscar(now);
+            (this.buscador.trim() === '') ? this.filters = this.horarios : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

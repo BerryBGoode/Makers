@@ -53,7 +53,7 @@
         <div class="data p-2" v-if="clientes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(cliente, i) in buscador_c" :key="i">
+            <div class="card" v-for="(cliente, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -114,7 +114,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador_c.length === 0 && clientes.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && clientes.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -125,19 +125,15 @@
 <script>
 // importar axios para hacer las peticiones
 import axios from 'axios';
+import { mapState } from 'vuex';
 // exportando componente
 export default {
     name: 'clientes',
-    props: {
-        datos: {
-            type: String
-        }
-    },
     data() {
         return {
             // arreglo con los clientes
             clientes: [],
-            buscador_c: [],
+            filters: [],
             // configuración para enviar el token de acceso en las peticiones
             config: {
                 headers: {
@@ -149,7 +145,7 @@ export default {
     // mounted se llaman los métodos que se quiere ejecutar en el load 
     mounted() {
         this.obtenerClientes();
-        this.buscador_c = this.clientes;
+        this.filters = this.clientes;
     },
     // definir método aquí
     methods: {
@@ -161,7 +157,7 @@ export default {
                     // obtener los datos
                     if (res.status === 200) {
                         this.clientes = res.data;
-                        this.buscador_c = res.data
+                        this.filters = res.data
                     }
                     if (res.status === 401) {
                         alert(res.data.error)
@@ -186,7 +182,7 @@ export default {
                     })
             }
         },
-        buscador(dato) {
+        buscar(dato) {
             // declarar un objeto que contenga los datos filtrados del arreglo donde estan los clientes
             const CLIENTES = this.clientes.filter((item) => {
                 // retornar algo sí el resultado coincide con el valor enviado del watch
@@ -197,21 +193,23 @@ export default {
                 );
             });
             // asignar los registros encontrados al arreglo que los muestra
-            this.buscador_c = CLIENTES;
+            this.filters = CLIENTES;
         },
     },
     watch: {
         // se ejecuta cada ves que cambia un valor de texto en el buscador
-        datos(now) {
+        buscador() {
             // obtener los datos enviados del padre para hacer busqueda
             // verificar sí no viene vació para cargar los datos sin filtro 
             //      sí el texto del bucador no tiene nada, cargar los datos normalmente
             //      síno realizar método de busqueda
-            (now.trim() === '') ? this.buscador_c = this.clientes : this.buscador(now)
-            // this.obtenerClientes();
-
-            // realizar busqueda 
+            (this.buscador.trim() === '') ? this.filters = this.clientes : this.buscar(this.buscador)            
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

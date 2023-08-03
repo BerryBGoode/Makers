@@ -15,7 +15,7 @@
         <hr>
         
         <div class="data p-2" v-if="tipos.length > 0">        
-            <div class="card" v-for="(tipo, i) in buscador" :key="i">
+            <div class="card" v-for="(tipo, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -69,7 +69,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && tipos.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && tipos.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -78,14 +78,14 @@
 </template>
 <script>
 import axios from 'axios'
+import { mapState } from 'vuex';
 
 export default {
     name: 'tipos',
-    props: { datos: { type: String } },
     data() {
         return {
             tipos: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -93,7 +93,7 @@ export default {
             axios.get('http://localhost:3000/api/tipos')
                 .then(res => {
                     this.tipos = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 .catch(e => alert(e));
         },
@@ -115,17 +115,22 @@ export default {
                     tipo.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            this.buscador = TIPOS;
+            this.filters = TIPOS;
         }
     },
     mounted() {
         this.getTipos();
     },
     watch: {
-        datos(now) {
+        buscador() {
             // verificar sí esta vacío el input
-            (now.trim() === '') ? this.buscador = this.tipos : this.buscar(now); 
+            (this.buscador.trim() === '') ? this.filters = this.tipos : this.buscar(this.buscador); 
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

@@ -12,7 +12,6 @@ import productos from '../views/productos/vista.vue';
 import clientes from '../views/clientes/vista.vue';
 import empleados from '../views/empleados/vista.vue';
 import reservaciones from '../views/reservaciones/vista.vue';
-import facturas from '../views/facturas/vista.vue';
 import sucursales from '../views/sucursales/vista.vue';
 import horarios from '../views/horarios/vista.vue';
 import tipos from '../views/tipos_servicios/vista.vue';
@@ -150,11 +149,6 @@ const ROUTER = createRouter({
             name: 'detallesOrden',
             path: '/ordenes/:orden/detalles/',
             component: detallesOrden
-        },
-        {
-            name: 'facturas',
-            path: '/ordenes/:id/factura',
-            component: facturas
         },
         //#endregion
 
