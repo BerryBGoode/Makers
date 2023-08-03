@@ -15,7 +15,7 @@
         <hr>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="cargos.length >= 0">          
-            <div class="card" v-for="(cargo, i) in buscador_c" :key="i">
+            <div class="card" v-for="(cargo, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-6">
@@ -64,7 +64,7 @@
             </div>
 
         </div>
-        <div class="data p-2" v-if="buscador_c.length === 0 && cargos.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && cargos.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -79,19 +79,16 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
+
 export default {
-    name: 'cargos',
-    props: {
-        datos: {
-            type: String
-        }
-    },
+    name: 'cargos',    
     data() {
         return {
             // arreglo para cargas cargos
             cargos: [],
             // arreglo que primero tendra los cargos
-            buscador_c: []
+            filters: []
         }
     },
     methods: {
@@ -99,7 +96,7 @@ export default {
             axios.get('http://localhost:3000/api/cargos')
                 .then(res => {
                     this.cargos = res.data;
-                    this.buscador_c = res.data;                    
+                    this.filters = res.data;                    
                 }) 
                 .catch(e => {
                     console.log(e)
@@ -120,7 +117,7 @@ export default {
                     })
             }
         },
-        buscador(dato) {
+        buscar(dato) {
             // declarar para que tenga los datos filtrados
             // filtrar los datos obtenidos en limpio
             const CARGOS = this.cargos.filter((cargo) => {
@@ -133,22 +130,28 @@ export default {
                 )
                 // asingar el dato filtrado al arreglo que los muestra'
             });
-            this.buscador_c = CARGOS;
+            this.filters = CARGOS;
         }
     },
     mounted() {
         this.getCargos();
         // asignar los cargos a los datos del buscador
-        this.buscador_c = this.cargos;
+        this.filters = this.cargos;
     },
     watch: {
         // detetar cuando se modifica el dato del input, para ello
         // tiene que tener el nombre de la var u obj
-        datos(now) {
+        buscador() {
+            
             // verificar sí tiene datos vacíos para mostrar los datos con normalidad
             // sino mostrar los realizar filtro
-            (now.trim() === '') ? this.buscador_c = this.cargos : this.buscador(now)
+            (this.buscador.trim() === '') ? this.filters = this.cargos : this.buscar(this.buscador.toLowerCase())
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador
+        })
     }
 }
 

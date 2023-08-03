@@ -17,7 +17,7 @@
         <div class="data p-2" v-if="productos.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(producto, i) in buscador" :key="i">
+            <div class="card" v-for="(producto, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -78,7 +78,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && productos.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && productos.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -88,15 +88,14 @@
 </template>
 <script>
 import axios from 'axios';
-
+import { mapState } from 'vuex';
 export default {
     name: 'productos',
-    props: { datos: { type: String } },
     data() {
         return {
             // arreglo vacío para guardar datos
             productos: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -106,7 +105,7 @@ export default {
             axios.get('http://localhost:3000/api/productos/')
                 .then(res => {
                     this.productos = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 .catch(e => alert(e.response.data.error));
         },
@@ -140,17 +139,22 @@ export default {
                 )
             })
             // asignar a los datos que se muestran, los filtrados
-            this.buscador = PRODUCTOS;
+            this.filters = PRODUCTOS;
         }
     },
     mounted() {
         this.getProductos();
     },
     watch: {
-        datos(now) {
+        buscador() {
             // verificar sí actualmente el componente se encontra con texto ignorando los espacios vacíos
-            (now.trim() === '') ? this.buscador = this.productos : this.buscar(now);
+            (this.buscador.trim() === '') ? this.filters = this.productos : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

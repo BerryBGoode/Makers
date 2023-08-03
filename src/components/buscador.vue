@@ -47,6 +47,8 @@
     </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
+
 export default {
     name: 'buscador',
     data() {
@@ -56,10 +58,19 @@ export default {
             route: this.$router.currentRoute
         }
     },
+    methods: {
+        // referenciar el acción del store
+        ...mapActions(['actionBuscador']),
+        nuevoEstadoBuscador(estado){
+            // enviar nuevo valor
+            this.actionBuscador(estado)
+        }
+    },
     watch: {
         buscar(now) {
-            // enviar los datos donde está el buscador
-            this.$emit('getBuscar', now)
+            // enviar los datos donde está el buscador            
+            this.nuevoEstadoBuscador(now)
+
         },
         // como route es igual a la ruta actual
         // entonces cada vez que cambie el valor de la ruta necesito limpiar el buscador

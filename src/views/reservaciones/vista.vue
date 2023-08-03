@@ -16,7 +16,7 @@
         <div class="data p-2" v-if="reservaciones.length > 0">
             <!-- recorrer las reservaciones encontradas -->
 
-            <div class="card" v-for="(reservacion, i) in buscador" :key="i">
+            <div class="card" v-for="(reservacion, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-2">
@@ -79,7 +79,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && reservaciones.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && reservaciones.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -89,16 +89,16 @@
 <script>
 //importar el axios
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 // componente para vista
 export default {
     name: 'reservaciones',
-    props: { datos: { type: String } },
     data() {
         return {
             //arreglo vacío para guardar datos
             reservaciones: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -108,7 +108,7 @@ export default {
             axios.get('http://localhost:3000/api/reservaciones/')
                 .then(res => {
                     this.reservaciones = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 .catch(e => alert(e.response.data.error));
         },
@@ -143,17 +143,22 @@ export default {
                     reservacion.hora.indexOf(dato) !== -1
                 )
             })
-            // asignar a los del buscador
-            this.buscador = RESREVACIONES;
+            // asignar a los del filters
+            this.filters = RESREVACIONES;
         }
     },
     mounted() {
         this.getReservaciones();
     },
     watch: {
-        datos(now) {
-            (now.trim() === '') ? this.buscador = this.reservaciones : this.buscar(now);
+        buscador() {
+            (this.buscador.trim() === '') ? this.filters = this.reservaciones : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

@@ -20,7 +20,7 @@
         <div class="data p-2" v-if="sucursales.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(sucursal, i) in buscador" :key="i">
+            <div class="card" v-for="(sucursal, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-8">
@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
-                                
+
                                 <router-link :to="{ path: '/sucursales/editar/' + sucursal.id_sucursal }">
                                     <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -88,7 +88,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && sucursales.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && sucursales.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -96,16 +96,16 @@
     </div>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import { mapState } from 'vuex';
 // componente para vista
 export default {
     name: 'reservaciones',
-    props: { datos: { type: String } },
     data() {
         return {
             // para cargar las sucursales
             sucursales: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -114,7 +114,7 @@ export default {
             axios.get('http://localhost:3000/api/sucursales/')
                 .then(res => {
                     this.sucursales = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 .catch(e => { alert(e); console.log(e) })
         },
@@ -138,23 +138,29 @@ export default {
             const SUCURSALES = this.sucursales.filter(sucursal => {
                 return (
                     sucursal.direccion.toLowerCase().indexOf(dato) !== -1 ||
-                    sucursal.horario.toLowerCase().indexOf(dato) !== -1 ||
-                    sucursal.nit.indexOf(dato) !== -1 || sucursal.nrc.indexOf(dato) !== -1 ||
-                    sucursal.telefono.indexOf(dato) !== -1
+                    sucursal.cierre.indexOf(dato) !== -1 ||
+                    sucursal.inicio.indexOf(dato) !== -1 ||
+                    sucursal.telefono.indexOf(dato) !== -1 ||
+                    sucursal.nombre_sucursal.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            this.buscador = SUCURSALES;
+            this.filters = SUCURSALES;
         }
     },
     mounted() {
         this.getSucursales();
     },
     watch: {
-        datos(now) {
-            // verificar si el buscador tiene datos vacíos
+        buscador() {
+            // verificar si el filters tiene datos vacíos
             // o tiene datos a buscar
-            (now.trim() === '') ? this.buscador = this.sucursales : this.buscar(now)
+            (this.buscador.trim() === '') ? this.filters = this.sucursales : this.buscar(this.buscador)
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

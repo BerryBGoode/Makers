@@ -67,12 +67,12 @@
             </router-link>
         </div>
         <hr>
-        
+
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
         <div class="data p-2" v-if="servicios.length > 0">
             <!-- recorrer los clientes encontrados -->
 
-            <div class="card" v-for="(servicio, i) in buscador" :key="i">
+            <div class="card" v-for="(servicio, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-5">
@@ -133,7 +133,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && servicios.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && servicios.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -142,14 +142,14 @@
     <!-- </div> -->
 </template>
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import { mapState } from 'vuex';
 export default {
     name: 'servicios',
-    props: { datos: { type: String } },
     data() {
         return {
             servicios: [],
-            buscador: []
+            filters: []
         }
     },
     methods: {
@@ -157,7 +157,7 @@ export default {
             axios.get('http://localhost:3000/api/servicios/')
                 .then(res => {
                     this.servicios = res.data;
-                    this.buscador = res.data
+                    this.filters = res.data
                 })
                 .catch(e => alert(e));
         },
@@ -183,23 +183,28 @@ export default {
                 return (
                     servicio.descripcion.toLowerCase().indexOf(dato) !== -1 ||
                     servicio.nombre_servicio.toLowerCase().indexOf(dato) !== -1 ||
-                    servicio.precio.indexOf(dato) !== -1||
+                    servicio.precio.indexOf(dato) !== -1 ||
                     servicio.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            // asignar al buscador
-            this.buscador = SERVICIOS;
+            // asignar al filters
+            this.filters = SERVICIOS;
         }
     },
     mounted() {
         this.getServicios();
     },
     watch: {
-        datos(now) {
-            // verificar sí el nuevo valor tiene datos vacios sin incluir espacios, para limpiar buscador
+        buscador() {
+            // verificar sí el nuevo valor tiene datos vacios sin incluir espacios, para limpiar filters
             // o realizar busqueda
-            (now.trim() === '') ? this.buscador = this.servicios : this.buscar(now);
+            (this.buscador.trim() === '') ? this.filters = this.servicios : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 

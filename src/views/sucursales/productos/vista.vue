@@ -44,7 +44,7 @@
         <div class="data p-2" v-if="productos.length > 0">
             
 
-            <div class="card" v-for="(producto, i) in buscador" :key="i">
+            <div class="card" v-for="(producto, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
@@ -107,7 +107,7 @@
                 No se encontraron existencias
             </span>
         </div>
-        <div class="data p-2" v-if="buscador.length === 0 && productos.length > 0">
+        <div class="data p-2" v-if="filters.length === 0 && productos.length > 0">
             <span class="bold">
                 No se encontraron resultados
             </span>
@@ -117,18 +117,14 @@
 </template>
 <script>
 import axios from 'axios'
+import { mapState } from 'vuex';
 export default {
     name: 'productosSucursales',
-    props: {
-        datos: {
-            type: String
-        }
-    },
     data() {
         return {
             // arreglo para guardar los datos
             productos: [],
-            buscador: []
+            filters: []
         }
     },
     // método que se ejecuta cuando cargar la página
@@ -149,7 +145,7 @@ export default {
                 // obtener los datos recuperados
                 .then(res => {
                     this.productos = res.data;
-                    this.buscador = res.data;
+                    this.filters = res.data;
                 })
                 // por sí algún error
                 .catch(e => {
@@ -177,21 +173,26 @@ export default {
                 // retornar y asignar a los que pasen la condicíon
                 return (
                     // algún caracter de cantidad o nombre coincida con el 
-                    // escrito en el buscador
+                    // escrito en el filters
                     producto.cantidad.toString().indexOf(dato) !== -1 ||
                     producto.nombre_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            this.buscador = PRODUCTOS;
+            this.filters = PRODUCTOS;
         }
     },
     watch: {
-        datos(now) {
-            // verificar sí esta vació el buscador sin contar espacios 
+        buscador() {
+            // verificar sí esta vació el filters sin contar espacios 
             // (.trim() elimina espacios en blanco)
-            // para verificar limpiar el buscador o realizar busqueda
-            (now.trim() === '') ? this.buscador = this.productos : this.buscar(now);
+            // para verificar limpiar el filters o realizar busqueda
+            (this.buscador.trim() === '') ? this.filters = this.productos : this.buscar(this.buscador);
         }
+    },
+    computed: {
+        ...mapState({
+            buscador: state => state.buscador.toLowerCase()
+        })
     }
 }
 
