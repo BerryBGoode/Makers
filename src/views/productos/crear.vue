@@ -12,9 +12,6 @@
     width: 25%;
 }
 
-.mb-40vh {
-    margin-bottom: 40vh !important;
-}
 </style>
 <template>
     <div class="container servicios component-servicio component-render">
@@ -27,7 +24,7 @@
         <hr>
         <div class="container">
             <form @submit.prevent="agregarProducto">
-                <div class="form-data mb-40vh">
+                <div class="form-data ">
                     <div class="form-1">
                         <div class="load">
                             <div class="mb-3 input-container">
@@ -49,6 +46,10 @@
                             <label for="descripcion" class="form-label">Descripción</label>
                             <input v-model="producto.descripcion" type="text" class="form-control" id="descripcion"
                                 required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">Producto</label>
+                            <input class="form-control" type="file" id="formFile" @change="setFile">
                         </div>
                     </div>
                     <hr>
@@ -78,13 +79,18 @@ export default {
                 descripcion: '',
                 precio: '',
                 existencias: '',
+                imagen: ''
 
             },
             msg: ''
         }
     },
     methods: {
+        setFile(e){
+            
+        },
         agregarProducto() {
+            
             // verificar sí no hay campos vacíos
             if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
                 // realizar petición

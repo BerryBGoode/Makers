@@ -64,8 +64,7 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="alias" class="form-label">Alias</label>
-                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50"
-                                required>
+                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50" required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="clave" class="form-label">Nueva contraseña</label> <label class="form-label">*no
@@ -80,8 +79,8 @@
             </div>
             <hr>
             <div class="buttons-reservacion form-data padding-buttons">
-                <button type="button" @click="back" class="btn btn-makers">Volver </button>
                 <button type="button" @click.prevent="cerrarSesion" class="btn btn-makers">Cerrar sesión</button>
+                <button type="button" @click="back" class="btn btn-makers">Volver </button>
                 <button type="submit" class="btn btn-makers">Agregar cambios</button>
             </div>
         </form>
@@ -90,12 +89,14 @@
 
 <script>
 import axios from 'axios'
-import cookies from 'vue-cookies'
+import cookies from 'vue-cookies';
+import { mapState, mapActions } from 'vuex';
 // exportar componente
 export default {
     name: 'configuracion',
     data() {
         return {
+            
             empleado: {
                 nombres: '',
                 apellidos: '',
@@ -111,10 +112,14 @@ export default {
                 }
             },
             msg: '',
-            lastpath: ''
+            lastpath: '',
         }
     },
     methods: {
+        ...mapActions(['actionUsuario']),
+        setUsuario(usuario) {
+            this.actionUsuario(usuario);
+        },
         cerrarSesion() {
             if (confirm('Desea cerrar sesión?')) {
                 this.$cookies.remove('auth');
@@ -122,7 +127,7 @@ export default {
             }
         },
         // método para redireccionar a página anterior
-        back(){
+        back() {
             // redireccionar a página anterior
             this.$router.go(-1);
         },
@@ -131,7 +136,7 @@ export default {
                 .then(res => {
                     // obtener datos
                     let empleado = res.data;
-                    // asignar
+                    // asignar                    
                     this.empleado = {
                         alias: empleado.alias,
                         nombres: empleado.nombres,
@@ -150,12 +155,13 @@ export default {
 
                         // console.log(res.data)
                     }
+                    this.setUsuario(this.empleado.alias)
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.empleado = {
-                            alias: '',
+                            alias: '',  
                             nombres: '',
                             apellidos: '',
                             dui: '',
@@ -168,7 +174,7 @@ export default {
                         this.msg = '';
                         this.$router.push('/');
                         // emitir info que se modifico algo, a componente de cuenta
-                    }                    
+                    }
 
                     alert(res.data)
                 })
@@ -176,12 +182,9 @@ export default {
                     console.log(e);
                 })
         }
-
     },
-    mounted() {        
+    mounted() {
         this.getEmpleado();
-    }
-    
-
+    },    
 } 
 </script>

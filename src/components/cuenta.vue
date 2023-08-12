@@ -36,17 +36,17 @@
 <script>
 import axios from 'axios';
 import { RouterLink } from 'vue-router';
+import { mapState } from 'vuex';
 
 // exportación del componente
 export default {
     // nombre del componente
     name: "cuenta",
-    components: { RouterLink },
+    components: { RouterLink},
     // funciones a retornar del componente
     data() {
         return {
-            empleado: {            
-                id: '',
+            empleado: {
                 alias: ''
             },
             config: {
@@ -61,17 +61,26 @@ export default {
         getEmpleado() {
             // realizar petición
             axios.get('http://localhost:3000/api/auth/', this.config)
-                .then(res => {       
-                    this.empleado.id = res.data.id_empleado;
-                    this.empleado.alias = res.data.alias                    
+                .then(res => {
+                    this.empleado.alias = res.data.alias;                   
                 })
                 .catch(e => {
-                    console.log(e.response.data.error)
-                })
-        }
+                    console.log(e)
+                })                
+        },        
+    },
+    computed: {
+        ...mapState({
+            store: state => state.usuario
+        })
     },
     mounted() {
         this.getEmpleado();
+    },
+    watch: {
+        store(now){
+            this.empleado.alias = now
+        }
     }
 };
 </script>

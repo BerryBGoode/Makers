@@ -21,10 +21,13 @@ const getError = (err = null) => {
             msg = 'Error en la sentencia';
             break;
         case 1146:
-            msg = 'Entidad especificada inexistente'; 
+            msg = 'Entidad especificada inexistente';
             break;
         case 1065:
             msg = 'Consulta vacía';
+            break;
+        case -4078:
+            msg = 'Error al conectar con el servidor de base de datos';
             break;
         default:
             msg = null;

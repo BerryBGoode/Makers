@@ -162,7 +162,7 @@ export default {
                         }
                     }) 
                     .catch(e => {
-                        alert(e)
+                        alert(e.response.data.error)
                     })
             }
         },
