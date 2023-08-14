@@ -19,12 +19,12 @@ const store = createStore({
         },
         /**
          * Método para mutar el estado del nombre de usuario del componente cuenta
-         * @param {*} state 
-         * @param {*} dato 
+         * @param {*} state estado de vuex (usuario) 
+         * @param {*} dato nuevo dato
          */
         setUsuario(state, dato) {
             state.usuario = dato;
-        }
+        },
     },
     actions: {
         /**
@@ -44,8 +44,9 @@ const store = createStore({
         actionUsuario({ commit }, now) {
             // llamar método para mutar el estado
             commit('setUsuario', now)
-        }
-    },    
+        },
+
+    },
 })
 
 // exportando instancia

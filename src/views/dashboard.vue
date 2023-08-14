@@ -1,4 +1,9 @@
-<style></style>
+<style scoped>
+.content {
+    margin-top: 3vh;
+    height: 87vh;
+}
+</style>
 
 <template>
     <aside>

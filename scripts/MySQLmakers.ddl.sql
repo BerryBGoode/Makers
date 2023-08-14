@@ -199,6 +199,7 @@ FROM servicios s
 INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
 ORDER BY s.id_servicio ASC
 
+-- vista que obtiene los de datos de las sucursales y las horas las convierte a formato de 12 hrs con A.M y P.M
 CREATE VIEW sucursales_view AS
 WITH times AS (
     SELECT TIME_FORMAT(SUBSTRING_INDEX(horario, '-', 1), '%h:%i') as h_inicio, 
@@ -212,3 +213,23 @@ SELECT s.id_sucursal, s.telefono,
     s.nombre_sucursal, s.direccion 
 FROM times
 INNER JOIN sucursales s ON s.horario = times.horario
+
+-- Vista para obtener las ventas según año actual, los ordena por meses del año y sí no tiene pone 0
+-- y verifíca sí hay ventas según la año actual y según los meses del año
+CREATE VIEW ventas AS
+SELECT
+    YEAR(meses.fecha) AS anio,
+    MONTH(meses.fecha) AS mes,
+    IFNULL(COUNT(o.id_orden), 0) AS venta
+FROM (
+    SELECT MAKEDATE(YEAR(CURDATE()), 1) + INTERVAL (n - 1) MONTH AS fecha
+    FROM (
+        SELECT 1 AS n UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 
+        UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 
+        UNION SELECT 11 UNION SELECT 12
+    ) AS num
+) AS meses
+LEFT JOIN ordenes o ON YEAR(meses.fecha) = YEAR(o.fecha) AND MONTH(meses.fecha) = MONTH(o.fecha)
+-- agregar where año YEAR(o.fecha) = 'año parametrizado'
+GROUP BY YEAR(meses.fecha), MONTH(meses.fecha)
+ORDER BY YEAR(meses.fecha), MONTH(meses.fecha);
