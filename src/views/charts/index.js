@@ -1,7 +1,16 @@
 import Chart from "chart.js/auto";
 
-export const lineGraph = (dom, x, y, title) => {
+let line;
 
+/**
+ * Método que define la gráfica de tipo lineal, este método define objetos para la configuración 
+ * de la gráfica
+ * @param {*} dom elemento html (canvas (id)) donde cargará la gráfica
+ * @param {*} x elementos en el eje x 
+ * @param {*} y elemento en el eje y, (principal razón de estudio)
+ * @param {*} title titulo de la gráfica
+ */
+export const lineGraph = (dom, x, y, title) => {
     const data = {
         labels: x,
         datasets: [{
@@ -37,8 +46,12 @@ export const lineGraph = (dom, x, y, title) => {
         options: options
     };
 
-    const LINE = new Chart(document.getElementById(dom), config)
+    if (document.getElementById(dom).$chartjs) {
+        line.destroy();
+    }
+    line = new Chart(document.getElementById(dom), config)
 }
+
 
 export const barGraph = () => {
     const labels = [

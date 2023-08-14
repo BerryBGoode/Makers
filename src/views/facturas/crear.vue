@@ -151,9 +151,8 @@ export default {
         getEmpleado() {
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
                 .then(res => {
-                    console.log(res)
-                    this.empleado.nombres = res.data[0].nombres;
-                    this.empleado.apellidos = res.data[0].apellidos
+                    this.empleado.nombres = res.data.nombres;
+                    this.empleado.apellidos = res.data.apellidos
                 })
                 .catch(e => { console.log(e.response.data.error) });
         },
