@@ -26,7 +26,16 @@ const getEmpleado = (req,res) =>   {
         res.status(406).send({ error: getError(rej) })
     })
 }
+
+const getCliente = (req,res) =>   {
+    execute('SELECT * FROM clientes')
+    .then(row =>    {
+        es.status(200).json(rows)  
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+}
    
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, getEmpleado};
+module.exports = { getVentas, getEmpleado, getCliente};
