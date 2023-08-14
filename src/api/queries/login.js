@@ -31,36 +31,41 @@ const validateUsuario = async (req, res) => {
     let auth = false, msg, token, status = '', clave_db;
     // obtener los datos
     const { dui, correo, clave } = req.body;
-    const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ?', [dui, correo])
-    if (CLAVE) {
+    try {
+        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ?', [dui, correo])
+        if (CLAVE) {
 
-        // obtener clave cuando
-        for (let i = 0; i < CLAVE.length; i++) {
-            // obtener la clave
-            clave_db = CLAVE[i]['clave'];
+            // obtener clave cuando
+            for (let i = 0; i < CLAVE.length; i++) {
+                // obtener la clave
+                clave_db = CLAVE[i]['clave'];
+            }
+
+            // compara claves'
+            if (clave_db && compare(clave, clave_db)) {
+                // clave correcta
+                // obtener los datos del empleado encontrado
+
+                // crear token
+                token = await getToken(dui, correo, clave_db)
+                // enviar el estado de la autenticación
+                auth = true;
+                // setear token a la cookie
+                res.cookie('token', token, { httpOnly: true });
+
+            } else {
+                msg = 'Usuario o contraseña incorrecta';
+                auth = false;
+                token = '';
+            }
+            console.log('a')
+            res.status(200).send({ msg, auth, token });
         }
-
-        // compara claves'
-        if (clave_db && compare(clave, clave_db)) {
-            // clave correcta
-            // obtener los datos del empleado encontrado
-
-            // crear token
-            token = await getToken(dui, correo, clave_db)
-            // enviar el estado de la autenticación
-            auth = true;
-            // setear token a la cookie
-            res.cookie('token', token, { httpOnly: true });
-
-        } else {
-            msg = 'Usuario o contraseña incorrecta';
-            auth = false;
-            token = '';
-        }
-        res.status(200).send({ msg, auth, token });
-    } else {
-        res.status(500).send('Surgio un problema en el servidor');
-    } 
+    } catch (error) {
+        console.log('error')
+        console.log(error)
+        res.status(500).send({error: getError(error)})
+    }
 }
 
 /**
@@ -127,23 +132,18 @@ const getInfo = async (req, res) => {
             // obtener id del empleado (deficando base64)
             const ID = decodeBase64(jwt.decode(TOKEN));
             // realizar query
-            const EMPLEADO = await execute('SELECT id_empleado, alias FROM empleados_view WHERE id_empleado = ?', [ID])
-            for (let i = 0; i < EMPLEADO.length; i++) {
-                id = {
-                    id_empleado: getBinary(EMPLEADO,'id_empleado')[i]
-                }
-                Object.assign(EMPLEADO[i], id);                
-            }
-            // retornar los datos sí la respuesta es la esperada
-            if (res.status(200)) res.send(EMPLEADO[0]);
+            execute('SELECT alias FROM empleados_view WHERE id_empleado = ?', [ID])
+                // retornar los datos sí la respuesta es la esperada
+                .then(rows => { res.send(rows[0]); })
+                .catch(rej => { console.log(rej); res.send({ error: getError(rej) }) })
 
         } catch (error) {
             console.log(error);
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).send({ error: 'Surgio un problema en el servidor' });
         }
 
     } else {
-        res.status(401).json({ error: 'Debe iniciar sesión antes' })
+        res.status(401).send({ error: 'Debe iniciar sesión antes' })
     }
 }
 
@@ -157,7 +157,7 @@ const change = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener usuario
-            const ID = jwt.decode(TOKEN);
+            const ID = decodeBase64(jwt.decode(TOKEN));
             // obtener los datos del cuerpo de la petición
             let { nombres, apellidos, dui, telefono, correo, clave, alias } = req.body;
             // verificar no sí viene clave nueva,  asignar la clave no midificada
@@ -167,7 +167,7 @@ const change = async (req, res) => {
                     .then(() => {
                         res.status(201).send('Datos modificados')
                     }).catch(rej => {
-                        res.status(406).send({ error: getError(rej['errno']) });
+                        console.log(rej); res.status(406).send({ error: getError(rej['errno']) });
                     })
 
             }

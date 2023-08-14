@@ -26,6 +26,7 @@ const execute = (sql, params = null) => {
             POOL.query(sql, params, (err, result) => {
                 // verificar errores sino enviarlo los datos de la respuesta
                 (err) ? rej(err) : res(result);
+                                  
             })
         } catch (error) {
             console.log(error);

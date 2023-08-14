@@ -227,6 +227,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 98%;
 }
 
+.form-control[type=file]:disabled{
+    background-color: #403C3B;
+}
+.form-control[type=file]:hover{
+    cursor: pointer;
+}
 /* estilos por defecto de vue */
 /* #app {
 
