@@ -69,6 +69,31 @@ export const barGraph = () => {
     const BAR = new Chart(document.getElementById('categorias'), config)
 }
 
+export const barGraphicing = () => {
+    const labels = [
+    ];
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: '',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 10, 5, 2, 20, 30, 45],
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+        },
+      };
+
+    const BAR = new Chart(document.getElementById(dom), config)
+}
+
+
 const getColors = (opacity) => {
     // definiendo colores para poder ponerle a la gráfica
     const colors = ['#b4b0af'];

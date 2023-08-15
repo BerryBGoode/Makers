@@ -16,7 +16,14 @@
         <div class="container-grap">
             <canvas id="categorias"></canvas>
         </div>
-
+        <div class="container-mesordenes-grap">
+            <span>Ordenes</span>
+            <canvas id="mesorden"></canvas>
+        </div>
+        <div class="container-topprod-grap">
+            <span>Popularidad</span>
+            <canvas id="topp"></canvas>
+        </div>
     </div>
 </template>
 <script>
@@ -51,9 +58,44 @@ export default {
                 }).catch(e => { console.log(e) })
         },
 
+        getPopularidad() {
+            axios.get('http://localhost:3000/api/graficas/topp')
+                .then(rows => {
+
+                    let topp = rows.data;
+                    for (let i = 0; i < topp.length; i++) {
+                        this.servicio.push(topp[i].servicio)
+                        this.cantidad.push(topp[i].cantidad)
+                    }
+
+                    barGraph('Top Productos', this.servicio, this.cantidad, 'Ventas')
+                    ()
+
+                }).catch(e => { console.log(e) })
+        },
+
+        getOrdenesby() {
+            axios.get('http://localhost:3000/api/graficas/mesorden')
+                .then(rows => {
+
+                    let mesorden = rows.data;
+                    for (let i = 0; i < mesorden.length; i++) {
+                        this.mes.push(mesorden[i].mes)
+                        this.orden.push(mesorden[i].orden)
+                    }
+
+                    lineGraph('Ordenes', this.mes, this.orden, 'Ordenes')
+
+                }).catch(e => { console.log(e) })
+        }
+
     },
+
+    
     mounted() {
         this.getVentasPromise();
     }
 }
+
+
 </script>
