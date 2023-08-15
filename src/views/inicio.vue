@@ -16,12 +16,15 @@
         <div class="container-grap">
             <canvas id="categorias"></canvas>
         </div>
+        <div class="container-grap">
+            <canvas id="facturas-sucursales"></canvas>
+        </div>
 
     </div>
 </template>
 <script>
 import axios from 'axios';
-import { lineGraph, barGraph } from './charts';
+import { lineGraph, barGraph, barGraphic } from './charts';
 
 
 export default {
@@ -51,9 +54,24 @@ export default {
                 }).catch(e => { console.log(e) })
         },
 
+        //método para obtener cuantas facturas tiene cada sucursal
+        getFacturasSucursal() {
+            axios.get('http://localhost:3000/api/graficas/facturasS')
+            .then(rows => {
+
+                let facturas = rows.data;
+                for (let i = 0; i < facturas.length; i++) {
+                    this.nombre_sucursal.push(facturas[i].nombre_sucursal)
+                    this.cantidad_facturas.push(facturas[i].cantidad_facturas)
+                }
+
+                barGraphic('facturas', this.nombre_sucursal, this.cantidad_facturas, 'Facturas')
+            }).catch(e => { console.log(e) })
+        }
     },
     mounted() {
         this.getVentasPromise();
+        this.getFacturasSucursal();
     }
 }
 </script>
