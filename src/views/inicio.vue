@@ -19,12 +19,14 @@
         <div class="container-grap">
             <canvas id="facturas-sucursales"></canvas>
         </div>
-
+        <div class="container-grap">
+            <canvas id="servicios-vendidos"></canvas>
+        </div>
     </div>
 </template>
 <script>
 import axios from 'axios';
-import { lineGraph, barGraph, barGraphic } from './charts';
+import { lineGraph, barGraph, barGraphic, GraficaDeBarra } from './charts';
 
 
 export default {
@@ -67,11 +69,26 @@ export default {
 
                 barGraphic('facturas', this.nombre_sucursal, this.cantidad_facturas, 'Facturas')
             }).catch(e => { console.log(e) })
+        },
+
+        getServiciosVendidos()  {
+            axios.get('http://localhost:3000/api/graficas/servicosV')
+            .then(rows => {
+
+                let servicios = rows.data;
+                for (let i = 0; i < servicios.length; i++) {
+                    this.nombre_servicio.push(facturas[i].nombre_sucursal)
+                    this.cantidad_ventas.push(facturas[i].cantidad_facturas)
+                }
+
+                GraficaDeBarra('vista_productos_mas_vendidos', this.nombre_servicio, this.cantidad_ventas, 'Servicios')
+            }).catch(e => { console.log(e) })
         }
     },
     mounted() {
         this.getVentasPromise();
         this.getFacturasSucursal();
+        this.getServiciosVendidos();
     }
 }
 </script>

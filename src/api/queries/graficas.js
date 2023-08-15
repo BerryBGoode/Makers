@@ -28,7 +28,7 @@ const getEmpleado = (req,res) =>   {
 }
 
 const getFacturasSucursales = (req,res) =>  {
-    execute('SELECT s.id_sucursal, s.nombre AS nombre_sucursal, COUNT(f.id_factura) AS cantidad_facturas FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal GROUP BY s.id_sucursal, s.nombre;')
+    execute('SELECT s.id_sucursal, s.nombre_sucursal AS nombre_sucursal, COUNT(f.id_factura) AS cantidad_facturas FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal GROUP BY s.id_sucursal, s.nombre_sucursal;')
     .then(row =>    {
         es.status(200).json(rows)
     }).catch(rej => {
@@ -37,7 +37,7 @@ const getFacturasSucursales = (req,res) =>  {
 }
 
 const getServiciosVendidos = (req, res) =>  {
-    execute('')
+    execute('SELECT * FROM vista_productos_mas_vendidos')
     .then(row =>    {
         es.status(200).json(rows)
     }).catch(rej => {
