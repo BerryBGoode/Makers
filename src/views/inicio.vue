@@ -31,7 +31,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { lineGraph, barGraph } from './charts';
+import { lineGraph, barGraph, graficalineal } from './charts';
 
 
 export default {
@@ -70,7 +70,7 @@ export default {
 
 <script>
 import axios from 'axios';
-import { lineGraph, barGraph } from './charts';
+import { lineGraph, barGraph, graficalineal } from './charts';
 
 
 export default {
@@ -101,6 +101,46 @@ export default {
     },
     mounted() {
         this.getClientesPromise();
+        this.getClientes
+    }
+}
+</script>
+
+<script>
+import axios from 'axios';
+import { lineGraph, barGraph, graficalineal } from './charts';
+
+
+export default {
+    name: 'inicio',
+    data() {
+        return {
+            title: '',
+            venta: [],
+            mes: []
+        }
+    },
+    methods: {
+        // método para obtener las ventas
+        getClientefechaPromise() {
+            axios.get('http://localhost:3000/api/graficas/clientesfecha')
+                .then(rows => {
+
+                    let ventas = rows.data;
+                    for (let i = 0; i < cliente.length; i++) {
+                        this.mes.push(ventas[i].mes)
+                        this.venta.push(ventas[i].venta)
+                    }
+
+                    graficalineal('cliente', this.mes, this.venta, 'fechas')
+                    barGraph()
+
+                }).catch(e => { console.log(e) })
+        },
+
+    },
+    mounted() {
+        this.getClientefechaPromise();
     }
 }
 </script>
