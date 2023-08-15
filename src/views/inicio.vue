@@ -19,6 +19,9 @@
         <div class="container-grap">
             <canvas id="clientes"></canvas>
         </div>
+        <div class="container-grap">
+            <canvas id="clientesfecha"></canvas>
+        </div>
 
     </div>
 
