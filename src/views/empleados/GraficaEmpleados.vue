@@ -33,7 +33,7 @@ export default {
         }
     },
     methods: {
-        // método para obtener las ventas
+        // método para obtener la cantidad cargos que tiene un empleado
         getVentasPromise() {
             axios.get('http://localhost:3000/api/graficas/cargos')
                 .then(rows => {
