@@ -2,7 +2,6 @@
 .graph-lineal-sales {
     overflow: auto;
     height: 100%;
-    /* border: solid 1px #b4b0af; */
     border-radius: 7px;
 }
 </style>
@@ -10,18 +9,14 @@
     <div class="container graph-lineal-sales">
         <span>Inicio</span>
         <div class="container-ventas-grap">
-            <span>Ventas</span>
-            <canvas id="ventas"></canvas>
+            <span>Hora con mas ordenes</span>
+            <canvas id="ordenes"></canvas>
         </div>
         <div class="container-grap">
-            <canvas id="cantidad"></canvas>
+            <canvas id="hora"></canvas>
         </div>
 
     </div>
-
-
-
-    
 </template>
 <script>
 import axios from 'axios';
@@ -29,27 +24,27 @@ import { lineGraph, barGraph } from './charts';
 
 
 export default {
-    name: 'inicio',
+    name: 'Home',
     data() {
         return {
             title: '',
-            venta: [],
+            ordenes: [],
             mes: []
         }
     },
     methods: {
-        // método para obtener las ventas
+        // método para obtener la hora de una orden
         getVentasPromise() {
-            axios.get('http://localhost:3000/api/graficas/ventas')
+            axios.get('http://localhost:3000/api/graficas/ordenes')
                 .then(rows => {
 
                     let ventas = rows.data;
-                    for (let i = 0; i < ventas.length; i++) {
-                        this.mes.push(ventas[i].mes)
-                        this.venta.push(ventas[i].venta)
+                    for (let i = 0; i < ordenes.length; i++) {
+                        this.mes.push(ordenes[i].mes)
+                        this.venta.push(ordenes[i].ordenes)
                     }
 
-                    lineGraph('ventas', this.mes, this.venta, 'Ventas')
+                    lineGraph('ordenes', this.mes, this.ordenes, 'Ordenes')
                     barGraph()
 
                 }).catch(e => { console.log(e) })
@@ -57,7 +52,7 @@ export default {
 
     },
     mounted() {
-        this.getVentasPromise();
+        this.getOrdenes();
     }
 }
 </script>
