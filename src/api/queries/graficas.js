@@ -28,7 +28,7 @@ const getEmpleado = (req,res) =>   {
 }
 
 const getCliente = (req,res) =>   {
-    execute('SELECT * FROM clientes')
+    execute('SELECT c.nombres AS nombres, COUNT(o.id_cliente) AS total_ordenes FROM clientes c JOIN ordenes o ON c.id_cliente = o.id_cliente  GROUP BY c.id_cliente  ORDER BY total_ordenes DESC')
     .then(row =>    {
         es.status(200).json(rows)  
     }).catch(rej => {
