@@ -35,7 +35,16 @@ const getFacturasSucursales = (req,res) =>  {
         res.status(406).send({ error: getError(rej) })
     })
 }
+
+const getServiciosVendidos = (req, res) =>  {
+    execute('')
+    .then(row =>    {
+        es.status(200).json(rows)
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+}
    
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, getEmpleado, getFacturasSucursales};
+module.exports = { getVentas, getEmpleado, getFacturasSucursales, getServiciosVendidos};
