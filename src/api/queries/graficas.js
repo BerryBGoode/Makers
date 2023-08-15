@@ -37,16 +37,17 @@ const getCliente = (req,res) =>   {
     
 }
 
-const getOrdenes = (req,res) =>   {
-    execute('SELECT * FROM vista_ordenes_por_hora')
+const getEmpleadoCargos = (req,res) =>   {
+    execute('SELECT o.hora, count(*) as ordenes FROM ordenes o GROUP BY hora ORDER BY ordenes DESC;')
     .then(row =>    {
         es.status(200).json(rows)  
     }).catch(rej => {
         res.status(406).send({ error: getError(rej) })
     })
+    
 }
     
-   
+
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, getEmpleado, getCliente,getOrdenes};
+module.exports = { getVentas, getEmpleado, getCliente, getEmpleadoCargos}; 
