@@ -3,6 +3,8 @@ const { Router } = require('express');
 // requerir de los métodos para obtener los datos para la gráficas
 const { getVentas } = require('../queries/graficas');
 const { getEmpleado } = require('../queries/graficas');
+const { getCliente } = require('../queries/graficas');
+
 const { getOrdenes } = require('../queries/graficas');
 
 // instanciar enrutados
@@ -12,6 +14,7 @@ const ROUTER = Router();
 // para retornarle el resultado del servidor (lo que se obtiene al realizar las consultas)
 ROUTER.get('/ventas', getVentas)
 ROUTER.get('/cargos', getEmpleado)
+ROUTER.get('/clientes', getCliente)
 ROUTER.get('/ordenes', getOrdenes)
 
 

@@ -16,6 +16,9 @@
         <div class="container-grap">
             <canvas id="cantidad"></canvas>
         </div>
+        <div class="container-grap">
+            <canvas id="clientes"></canvas>
+        </div>
 
     </div>
 
@@ -58,6 +61,43 @@ export default {
     },
     mounted() {
         this.getVentasPromise();
+    }
+}
+</script>
+
+<script>
+import axios from 'axios';
+import { lineGraph, barGraph } from './charts';
+
+
+export default {
+    name: 'inicio',
+    data() {
+        return {
+            title: '',
+            ordenes: []
+        }
+    },
+    methods: {
+        // método para obtener los clientes con mas ordenes
+        getClientesPromise() {
+            axios.get('http://localhost:3000/api/graficas/clientes')
+                .then(rows => {
+
+                    let clientes = rows.data;
+                    for (let i = 0; i < clientes.length; i++) {
+                        this.mes.push(clientes[i].mes)
+                    }
+
+                    lineGraph()
+                    barGraph('ventas', this.mes, this.venta, 'Ventas')
+
+                }).catch(e => { console.log(e) })
+        },
+
+    },
+    mounted() {
+        this.getClientesPromise();
     }
 }
 </script>
