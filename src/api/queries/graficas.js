@@ -37,6 +37,16 @@ const getCliente = (req,res) =>   {
     
 }
 
+const getClienteporfecha = (req,res) =>   {
+    execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
+    .then(row =>    {
+        es.status(200).json(rows)  
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+    
+}
+
 const getEmpleadoCargos = (req,res) =>   {
     execute('SELECT o.hora, count(*) as ordenes FROM ordenes o GROUP BY hora ORDER BY ordenes DESC;')
     .then(row =>    {
