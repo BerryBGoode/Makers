@@ -34,8 +34,19 @@ const getCliente = (req,res) =>   {
     }).catch(rej => {
         res.status(406).send({ error: getError(rej) })
     })
+    
 }
+
+const getOrdenes = (req,res) =>   {
+    execute('SELECT * FROM vista_ordenes_por_hora')
+    .then(row =>    {
+        es.status(200).json(rows)  
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+}
+    
    
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, getEmpleado, getCliente};
+module.exports = { getVentas, getEmpleado, getCliente,getOrdenes};

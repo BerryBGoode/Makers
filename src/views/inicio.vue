@@ -14,13 +14,17 @@
             <canvas id="ventas"></canvas>
         </div>
         <div class="container-grap">
-            <canvas id="categorias"></canvas>
+            <canvas id="cantidad"></canvas>
         </div>
         <div class="container-grap">
             <canvas id="clientes"></canvas>
         </div>
 
     </div>
+
+
+
+    
 </template>
 <script>
 import axios from 'axios';
