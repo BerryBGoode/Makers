@@ -18,8 +18,8 @@ const getVentas = (req, res) => {
 }
 
 
-const getEmpleado = (req,res) =>   {
-    execute('SELECT * FROM EmpleadoCargos')
+const getEmpleadoCantidad = (req,res) =>   {
+    execute('SELECT * c.Cargo, COALESCE(COUNT(e.id_empleado), 0) AS CantidadEmpleados FROM Cargos c LEFT JOIN Empleados e ON c.Id_cargo = e.id_cargo  GROUP BY c.Cargo;')
     .then(row =>    {
         es.status(200).json(rows)  
     }).catch(rej => {
@@ -50,4 +50,4 @@ const getEmpleadoCargos = (req,res) =>   {
 
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, getEmpleado, getCliente, getEmpleadoCargos}; 
+module.exports = { getVentas, getEmpleadoCantidad, getCliente, getEmpleadoCargos}; 
