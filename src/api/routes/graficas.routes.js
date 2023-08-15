@@ -5,6 +5,7 @@ const { getVentas } = require('../queries/graficas');
 const { getEmpleadoCantidad } = require('../queries/graficas');
 const { getCliente } = require('../queries/graficas');
 const { getEmpleadoCargos } = require('../queries/graficas');
+const { getClienteporfecha } = require('../queries/graficas');
 
 // instanciar enrutados
 const ROUTER = Router();
@@ -15,6 +16,8 @@ ROUTER.get('/ventas', getVentas)
 ROUTER.get('/cargos', getEmpleadoCantidad)
 ROUTER.get('/clientes', getCliente)
 ROUTER.get('/ordenes', getEmpleadoCargos)
+ROUTER.get('/clientesfecha', getClienteporfecha)
+
 
 
 // exportar enrutador
