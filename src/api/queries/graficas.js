@@ -17,8 +17,9 @@ const getVentas = (req, res) => {
         })
 }
 
+// Consulta para obtener la cantidad de reservaciones por fecha en un mes, dividido por semana
 const getMesOr = (req, res) => {
-    execute('select extract(month from fecha) mes, count (id_orden) from ordenes where fecha between ? and ? group by mes')
+    execute('select WEEK(fecha) AS semana, count (id_reservacion) from reservaciones where MONTH(NOW()) = MONTH(fecha) group by semana')
         .then(rows => {
             res.status(200).json(rows)        
         }).catch(rej => {
@@ -26,6 +27,7 @@ const getMesOr = (req, res) => {
         })
 }
 
+// Consulta para obtener el top 7 de productos
 const getTopP = (req, res) => {
     execute('select nombre_servicio, count (id_servicio) cantidad from servicios inner join detalle_ordenes using (id_servicio) group by nombre_servicio order by cantidad desc limit 7')
         .then(rows => {
