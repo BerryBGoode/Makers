@@ -15,7 +15,7 @@
 <template>
     <div class="container graph-lineal-sales">
         <div class="container-graph">
-            <button @click="generatePDF">Generar pdf</button>
+            <button @click="proxReservaciones">Generar pdf</button>
         </div>
 
         <div class="container-graph container-ventas-graph">
@@ -38,7 +38,7 @@ import axios from 'axios';
 import { lineGraph, barGraph } from './charts';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-
+import { generateTablePDF } from './reports'
 
 export default {
     name: 'inicio',
@@ -95,58 +95,23 @@ export default {
                 }).catch(e => alert(e))
 
         },
-        async generatePDF() {
-            // realizar petición
+        async proxReservaciones() {
+            // realizar petición según el reporte
             try {
+                // llamar la función asicrona para obtener los datos de la petición
                 const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/proxreservaciones');
+                // obtener la 'data' de la función asicrona
                 const ROWS = RESERVACIONES.data;
-
-
-
-                // a partir de aquí genera el reporte
-                const PDF = new jsPDF();
-
-                // titulo
-                PDF.setFontSize(15);
-
-                PDF.text('Próximas Rervaciones', 15, 20);
-                PDF.addImage('/src/assets/img/logos/logo_gris.png', 'PNG', 155, 15, 40, 10)
-
-                // declarar los nombres de la columnas de la tabla
+                // declarando datos para poner en el header de la tabla
                 const colNames = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
-                // extraer los datos de la petición y separarlos según el nombre obteniedo de cada columna de la consulta
-                // y separarlos en orden de colNames
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
-                // creando la tabla con los datos de cabeza, los datos de la petición y donde inicia
-                PDF.autoTable({
-                    head: [colNames],
-                    body: colData,
-                    startY: 45,
-                    didDrawCell: data => {
-                        if (data.row.index) {
-                            data.cell.styles.fillColor = [255, 255, 255]
-                        }
-                    }
-                })
-                let img = '/src/assets/img/logos/logo_gris_nav.png';
-                let width = 10, height = 10;
-
-                const PAGE = PDF.internal.getNumberOfPages();
-
-                for (let i = 0; i <= PAGE; i++) {
-                    PDF.setPage(i);
-                    const X = (PDF.internal.pageSize.width - width) - 10;
-                    const Y = (PDF.internal.pageSize.height - height) - 10;
-                    PDF.addImage(img, 'PNG', X, Y, width, height);
-                    i = i + 1;
-                    PDF.setFontSize(12)
-                    PDF.text(i.toString(), (PDF.internal.pageSize.width - width) / 2, 282.5);
-                }
-
-                PDF.save('reporte.pdf');
+                // llamando al método para generar reportes
+                generateTablePDF('proxReservaciones', 'Próximas Reservaciones', colNames, colData)
 
             } catch (e) {
-                alert(e)
+                alert(e.response.data.error)
             }
         }
     },
