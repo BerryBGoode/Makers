@@ -25,5 +25,13 @@ const getProxReservaciones = async (req, res) => {
     }
 }
 
+const getEmpleadosCargo = async (req, res) => {
+    try {
+        const EMPLEADOS = await execute('')
+    } catch (error) {
+        
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
 module.exports = { getProxReservaciones }
