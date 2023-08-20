@@ -1,146 +1,123 @@
 <style scoped>
 .graph-lineal-sales {
     overflow: auto;
+    padding: 0;
     height: 100%;
     /* border: solid 1px #b4b0af; */
+    border-radius: 7px;
+}
+
+.container-graph {
+    background: #231f1e;
     border-radius: 7px;
 }
 </style>
 <template>
     <div class="container graph-lineal-sales">
-        <span>Inicio</span>
-        <div class="container-ventas-grap">
-            <span>Ventas</span>
+        <div class="container-graph">
+            <button @click="EmpleadosCargos">Generar pdf</button>
+        </div>
+
+        <div class="container-graph container-ventas-graph">
             <canvas id="ventas"></canvas>
         </div>
-        <div class="container-grap">
-            <canvas id="cantidad"></canvas>
+        <div class="container-graph">
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                @change="getOrdenesByMes" v-model="mes">
+                <option v-for="(mes, i) in meses" :key="i" :value="i">{{ mes }}</option>
+            </select>
+            <canvas id="ordenesMes"></canvas>
         </div>
-        <div class="container-grap">
-            <canvas id="clientes"></canvas>
-        </div>
-        <div class="container-grap">
-            <canvas id="clientesfecha"></canvas>
-        </div>
+
+
 
     </div>
-
-
-
-    
 </template>
 <script>
 import axios from 'axios';
-import { lineGraph, barGraph, graficalineal } from './charts';
-
+import { lineGraph, barGraph } from './charts';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { generateTablePDF } from './reports'
 
 export default {
     name: 'inicio',
+    created() {
+        let month = new Date().getMonth();
+        this.mes = month;
+    },
     data() {
+        let meses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+            'Noviembre', 'Diciembre'
+        ]
         return {
             title: '',
-            venta: [],
-            mes: []
+            mes: '',
+            meses
         }
     },
     methods: {
         // método para obtener las ventas
         getVentasPromise() {
+            // realizar petición para obtener los meses y la cantidad de ventas por este tiempo
             axios.get('http://localhost:3000/api/graficas/ventas')
+                // si la petición se realiza correctamente
                 .then(rows => {
-
+                    // crear arreglos para dividir o desagrupar en ordenes o ventas que se a realizado en el mes
+                    // y los meses para 
+                    let venta = [], mes = []
                     let ventas = rows.data;
+                    // recorrer los datos encontrados
                     for (let i = 0; i < ventas.length; i++) {
-                        this.mes.push(ventas[i].mes)
-                        this.venta.push(ventas[i].venta)
+                        // agregarlos a los arreglos para desagrupar cada uno
+                        mes.push(ventas[i].mes)
+                        venta.push(ventas[i].venta)
+                    }
+                    // con los arreglos con datos, crear la gráfica
+                    lineGraph('ventas', mes, venta, 'Ventas')
+
+
+                }).catch(e => { alert(e.response.data.error) })
+        },
+        getOrdenesByMes() {
+            let req = (this.mes + 1)
+            axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req)
+                .then(rows => {
+                    let dia = [], ordenes = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        dia.push(data[i].fecha);
+                        ordenes.push(data[i].ordenes)
                     }
 
-                    lineGraph('ventas', this.mes, this.venta, 'Ventas')
-                    barGraph()
+                    lineGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
 
-                }).catch(e => { console.log(e) })
+                }).catch(e => alert(e))
+
         },
+        async EmpleadosCargos() {
+            // realizar petición según el reporte
+            try {
+                // llamar la función asicrona para obtener los datos de la petición
+                const EMPLEADOS = await axios.get('http://localhost:3000/api/reportes/empleadoscargos');
+                // obtener la 'data' de la función asicrona
+                const ROWS = EMPLEADOS.data;
+                // declarando datos para poner en el header de la tabla
+                const colNames = ['Nombres', 'Apellidos', 'Cargo'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.nombres, row.apellidos, row.cargo]);
+                // llamando al método para generar reportes
+                generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
 
+            } catch (e) {
+                alert(e.response.data.error)
+            }
+        }
     },
     mounted() {
         this.getVentasPromise();
-    }
-}
-</script>
-
-<script>
-import axios from 'axios';
-import { lineGraph, barGraph, graficalineal } from './charts';
-
-
-export default {
-    name: 'inicio',
-    data() {
-        return {
-            title: '',
-            ordenes: []
-        }
-    },
-    methods: {
-        // método para obtener los clientes con mas ordenes
-        getClientesPromise() {
-            axios.get('http://localhost:3000/api/graficas/clientes')
-                .then(rows => {
-
-                    let clientes = rows.data;
-                    for (let i = 0; i < clientes.length; i++) {
-                        this.mes.push(clientes[i].mes)
-                    }
-
-                    lineGraph()
-                    barGraph('ventas', this.mes, this.venta, 'Ventas')
-
-                }).catch(e => { console.log(e) })
-        },
-
-    },
-    mounted() {
-        this.getClientesPromise();
-        this.getClientes
-    }
-}
-</script>
-
-<script>
-import axios from 'axios';
-import { lineGraph, barGraph, graficalineal } from './charts';
-
-
-export default {
-    name: 'inicio',
-    data() {
-        return {
-            title: '',
-            venta: [],
-            mes: []
-        }
-    },
-    methods: {
-        // método para obtener las ventas
-        getClientefechaPromise() {
-            axios.get('http://localhost:3000/api/graficas/clientesfecha')
-                .then(rows => {
-
-                    let ventas = rows.data;
-                    for (let i = 0; i < cliente.length; i++) {
-                        this.mes.push(ventas[i].mes)
-                        this.venta.push(ventas[i].venta)
-                    }
-
-                    graficalineal('cliente', this.mes, this.venta, 'fechas')
-                    barGraph()
-
-                }).catch(e => { console.log(e) })
-        },
-
-    },
-    mounted() {
-        this.getClientefechaPromise();
+        this.getOrdenesByMes()
     }
 }
 </script>
