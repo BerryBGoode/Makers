@@ -15,7 +15,8 @@
 <template>
     <div class="container graph-lineal-sales">
         <div class="container-graph">
-            <button @click="proxReservaciones">Generar pdf</button>
+            <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
+            <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
         </div>
 
         <div class="container-graph container-ventas-graph">
@@ -36,8 +37,6 @@
 <script>
 import axios from 'axios';
 import { lineGraph, barGraph } from './charts';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import { generateTablePDF } from './reports'
 
 export default {
@@ -112,6 +111,23 @@ export default {
 
             } catch (e) {
                 alert(e.response.data.error)
+            }
+        },
+        async prevReservaciones() {
+            try {
+                // realiza la petición para obtener las reservaciones antes del día que se generé el reporte
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/prevreservaciones');
+                // obtener los datos de la petición
+                const ROWS = RESERVACIONES.data;
+                // declarando un arreglo para guardar los nombres de la columnas de la tabla
+                const colNames = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
+                // llamando al método para generar reportes
+                generateTablePDF('prevReservaciones', 'Reservaciones Previas', colNames, colData);
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
         }
     },

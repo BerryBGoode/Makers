@@ -25,5 +25,28 @@ const getProxReservaciones = async (req, res) => {
     }
 }
 
+/**
+ * Método para obtener de la db las reservaciones previas a el día que se console
+ * @param {*} req datos de la petición
+ * @param {*} res respues del servidor
+ */
+const getPrevReservaciones = async (req, res) => {
+    try {
+        const RESERVACIONES = await execute(`
+        SELECT 
+            concat(c.nombres, ' ', c.apellidos) as cliente, c.dui as duicliente, 
+            concat(e.nombres, ' ', e.apellidos) as empleado, e.dui as duiempleado, 
+            date_format(r.fecha, '%Y-%m-%d') as fecha,
+            TIME_FORMAT(r.hora, '%h:%i') as hora
+        FROM reservaciones r
+        INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+        INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+        WHERE fecha < CURRENT_DATE`);
+        if (res.status(200)) res.json(RESERVACIONES)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones }
+module.exports = { getProxReservaciones, getPrevReservaciones }

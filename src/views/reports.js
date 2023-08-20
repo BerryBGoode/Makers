@@ -5,11 +5,21 @@
 import jsPDF from 'jspdf';
 // importando jspdf-autotable para generar una tabla automatica
 import 'jspdf-autotable';
+import store from "./../store/index";
+
+const TODAY = new Date;
+
+const formatDateToDDMMYYYY = date => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses en Date empiezan desde 0
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
 
 export const generateTablePDF = (pdf, title, names, values) => {
+
     try {
-
-
         // a partir de aquí genera el reporte
         const PDF = new jsPDF();
 
@@ -19,6 +29,12 @@ export const generateTablePDF = (pdf, title, names, values) => {
         PDF.text(title, 15, 20);
         // definiendo el logo de la empresa en la parte superior derecha
         PDF.addImage('/src/assets/img/logos/logo_gris.png', 'PNG', 155, 15, 40, 10)
+
+        PDF.setFontSize(11)
+        // mostrar el nombre del usuario loggeado
+        PDF.text(store.state.usuario, 188, 30)
+        PDF.text(formatDateToDDMMYYYY(TODAY).toString(), 15, 28)
+        PDF.text(TODAY.toLocaleTimeString(), 15, 34)
         // a continuación se define la tabla y lo que contedrá dentro de ella
         // creando la tabla con los datos de cabeza, los datos de la petición y donde inicia
         PDF.autoTable({
@@ -52,7 +68,7 @@ export const generateTablePDF = (pdf, title, names, values) => {
             // agregando el número de página
             PDF.text(i.toString(), (PDF.internal.pageSize.width - width) / 2, 282.5);
         }
-
+        // creando el out del reporte
         PDF.save(pdf + '.pdf');
     } catch (e) {
         console.log(e);
