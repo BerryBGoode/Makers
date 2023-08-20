@@ -11,6 +11,9 @@
                 Agregar
             </router-link>
         </div>
+        <div class="container-graph">
+            <button @click="EmpleadosCargos">Generar pdf</button>
+        </div>
         <hr>
 
         <div class="data p-2" v-if="reservaciones.length > 0">
@@ -89,6 +92,8 @@
 <script>
 //importar el axios
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { mapState } from 'vuex';
 
 // componente para vista
@@ -145,6 +150,25 @@ export default {
             })
             // asignar a los del filters
             this.filters = RESREVACIONES;
+        },
+        async EmpleadosCargos() {
+            // realizar petición según el reporte
+            try {
+                // llamar la función asicrona para obtener los datos de la petición
+                const EMPLEADOS = await axios.get('http://localhost:3000/api/reportes/empleadoscargos');
+                // obtener la 'data' de la función asicrona
+                const ROWS = EMPLEADOS.data;
+                // declarando datos para poner en el header de la tabla
+                const colNames = ['Nombres', 'Apellidos', 'Cargo'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.nombres, row.apellidos, row.cargo]);
+                // llamando al método para generar reportes
+                generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
+
+            } catch (e) {
+                alert(e.response.data.error)
+            }
         }
     },
     mounted() {
