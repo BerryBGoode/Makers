@@ -75,7 +75,7 @@
                                 </svg>
 
                                 <div class="container-graph">
-                                    <button @click.prevent="ProducSucursales(sucursal.id_sucursal)">Generar pdf</button>
+                                    <button @click.prevent="ProducSucursales(sucursal.id_sucursal)">Generar pdf</button>    
                                 </div>
 
                             </div>
