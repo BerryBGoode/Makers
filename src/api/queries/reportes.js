@@ -32,7 +32,18 @@ const getEmpleadosCargos = async (req, res) => {
     } catch (error) {
         res.status(406).send({  error: getError(error)});
     }
+
 }
 
+const getProdSucursal = async (req, res) => {
+    try {
+        const PRODUCTOS = await execute('SELECT s.nombre_servicio, sc.nombre_sucursal, ds.cantidad FROM detalles_servicios_sucursales ds JOIN servicios s ON ds.id_servicio = s.id_servicio JOIN sucursales sc ON ds.id_sucursal = sc.id_sucursal WHERE ds.id_detalle = ?');
+        if(res.status(200)) res.json(PRODUCTOS)
+    } catch (error) {
+        res.status(406).send({ error: getError(error)});
+    }
+}
+
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getEmpleadosCargos }
+module.exports = { getProxReservaciones, getEmpleadosCargos, getProdSucursal }
