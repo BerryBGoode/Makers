@@ -39,6 +39,20 @@
 .button {
     cursor: pointer;
 }
+
+.btn-makers-revert {
+    background-color: #231F1E;
+}
+
+.btn-makers-revert:hover {
+    background-color: #181615;
+}
+
+.buttons-historial {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 </style>
 
 <template>
@@ -56,15 +70,20 @@
             <div class="card" v-for="(cliente, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <h5 class="card-title bold mb-1">{{ cliente.nombres }} {{ cliente.apellidos }}</h5>
                             <span class="card-text mb-0 smaller">{{ cliente.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ cliente.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p>
                         </div>
                         <div class="col-md-1">
-                            <span>ordenes: </span>                            
-                            <span class="bold">{{ cliente.consumo}}</span>
+                            <span>ordenes: </span>
+                            <span class="bold">{{ cliente.consumo }}</span>
+                        </div>
+                        <div class="col-md-3 buttons-historial">
+                            <button class="btn btn-makers-revert"
+                                @click="historialCompras(cliente.id_cliente)">Compras</button>
+                            <button class="btn btn-makers-revert">Reservaciones</button>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
@@ -126,6 +145,7 @@
 // importar axios para hacer las peticiones
 import axios from 'axios';
 import { mapState } from 'vuex';
+import { generateTablePDF } from '../reports';
 // exportando componente
 export default {
     name: 'clientes',
@@ -195,6 +215,22 @@ export default {
             // asignar los registros encontrados al arreglo que los muestra
             this.filters = CLIENTES;
         },
+        async historialCompras(id) {
+            try {
+                // realizando la petición sobre las ordenes que tiene el cliente
+                const COMPRAS = await axios.get('http://localhost:3000/api/reportes/historialcompras/' + id)
+                // sí se realizo con exito que obtenga los datos de la petición
+                const ROWS = COMPRAS.data;
+                // definiendo los headers para el reporte
+                const NAMES = ['Nombres', 'Apellidos', 'Fecha', 'Hora'];
+                // extrayendo los datos de la petición
+                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.fecha, row.hora])
+                // creando reporte
+                generateTablePDF('compras', 'Historial de compras', NAMES, VALUES);
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        }
     },
     watch: {
         // se ejecuta cada ves que cambia un valor de texto en el buscador
@@ -203,7 +239,7 @@ export default {
             // verificar sí no viene vació para cargar los datos sin filtro 
             //      sí el texto del bucador no tiene nada, cargar los datos normalmente
             //      síno realizar método de busqueda
-            (this.buscador.trim() === '') ? this.filters = this.clientes : this.buscar(this.buscador)            
+            (this.buscador.trim() === '') ? this.filters = this.clientes : this.buscar(this.buscador)
         }
     },
     computed: {

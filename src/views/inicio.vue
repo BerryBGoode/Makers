@@ -111,7 +111,7 @@ export default {
                 generateTablePDF('proxReservaciones', 'Próximas Reservaciones', colNames, colData)
 
             } catch (e) {
-                alert(e.response.data.error)
+                (e.response.data.error) ? alert(e.response.data.error) : alert(e)
             }
         },
         async prevReservaciones() {
@@ -145,7 +145,7 @@ export default {
                 // generar el reporte con la tabla
                 generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', NAMES, VALUES);
             } catch (error) {
-
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
         }
     },

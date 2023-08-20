@@ -17,7 +17,11 @@ const getVentas = (req, res) => {
         })
 }
 
-
+/**
+ * Método para obtener las ordenes por mes
+ * @param {*} req cuerpo de la petición (mes)
+ * @param {*} res respuesta del reservidor
+ */
 const ordenesByMes = async (req, res) => {
     let mes = req.params.mes;
     try {

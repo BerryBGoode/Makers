@@ -69,5 +69,28 @@ const getLessProductos = async (req, res) => {
     }
 }
 
+/**
+ * Metodo para obtener las ordenes que tiene un cliente 
+ * @param {*} req cuerpo de la petición (cliente)
+ * @param {*} res respuesta del servidor
+ */
+const historialComprasCliente = async (req, res) => {
+    try {
+        // obtener el cliente que se decea saber el historial de ordenes
+        const cliente = req.params.cliente
+        const ORDENES = await execute(`
+            SELECT c.nombres, c.apellidos, c.dui,
+            date_format(o.fecha, '%Y-%m-%d') as fecha, 
+            TIME_FORMAT(o.hora, '%h:%i') as hora
+            FROM ordenes o
+            INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+            WHERE c.id_cliente = ?
+        `, [cliente]);
+        if (res.status(200)) res.json(ORDENES)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) })
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos }
+module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos, historialComprasCliente }
