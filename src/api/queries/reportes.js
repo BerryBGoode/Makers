@@ -13,13 +13,13 @@ const { execute } = require('../MySQL')
 const getEmpleadosOrdenes = async (req, res) => {
     try {
         const EMPLEADOS = await execute(`
+        CREATE VIEW vista_empleados_mas_ordenes AS
         SELECT e.id_empleado, e.nombres, e.apellidos, COUNT(o.id_orden) AS cantidad_ordenes
         FROM empleados e
-        LEFT JOIN ordenes o ON e.id_empleado = o.id_cliente
+        LEFT JOIN ordenes o ON e.id_empleado = o.id_empleado
         GROUP BY e.id_empleado, e.nombres, e.apellidos
         ORDER BY cantidad_ordenes DESC
-        LIMIT 5;
-        
+        LIMIT 5;        
         `);
         if (res.status(200)) res.json(EMPLEADOS)
     } catch (error) {

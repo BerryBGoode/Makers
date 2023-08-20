@@ -103,12 +103,31 @@ export default {
                 // obtener la 'data' de la función asicrona
                 const ROWS = EMPLEADOS.data;
                 // declarando datos para poner en el header de la tabla
-                const colNames = ['Nombres', 'Apellidos', 'cantidad_ordenes'];
+                const colNames = ['Empleados','Nombres', 'Apellidos', 'cantidad_ordenes'];
                 // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
                 // o la obtenido en la petición (Network)
-                const colData = ROWS.map(row => [row.nombres, row.apellidos,row.cantidad_ordenes]);
+                const colData = ROWS.map(row => [row.empleados,row.nombres, row.apellidos,row.cantidad_ordenes]);
                 // llamando al método para generar reportes
                 generateTablePDF('EmpleadoOrdenes', 'Empleados con mas ordenes', colNames, colData)
+
+            } catch (e) {
+                alert(e.response.data.error)
+            }
+        },
+        async tipoServicios() {
+            // realizar petición según el reporte
+            try {
+                // llamar la función asicrona para obtener los datos de la petición
+                const SERVICIOS = await axios.get('http://localhost:3000/api/reportes/tiposervicios');
+                // obtener la 'data' de la función asicrona
+                const ROWS = SERVICIOS.data;
+                // declarando datos para poner en el header de la tabla
+                const colNames = ['Servicio','Nombre_Servicio', 'Tipo_Servicio'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.servicio,row.nombre_servicio, row.tipo_servicio]);
+                // llamando al método para generar reportes
+                generateTablePDF('tipoServicios', 'Servicios por tipo servicios', colNames, colData)
 
             } catch (e) {
                 alert(e.response.data.error)
@@ -119,6 +138,7 @@ export default {
         this.getVentasPromise();
         this.getOrdenesByMes()
         this.EmpleadoOrdenes()
+        this.tipoServicios
 
     }
 }
