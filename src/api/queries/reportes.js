@@ -26,6 +26,7 @@ const getProxReservaciones = async (req, res) => {
     }
 }
 
+
 const getEmpleadosOrdenes = async (req, res) => {
     try {
         const EMPLEADOS = await execute(`
@@ -36,7 +37,7 @@ const getEmpleadosOrdenes = async (req, res) => {
         ORDER BY cantidad_ordenes DESC
         LIMIT 5
         `)
-        if(res.status(200)) res.json(PRODUCTOS)
+        if(res.status(200)) res.json(EMPLEADOS)
     } catch (error) {
         res.status(406).send({ error: getError(error)});
     }
