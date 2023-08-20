@@ -8,7 +8,7 @@ const { getTipoServicios } = require('../queries/reportes')
 // del lado del cliente por medio de la url
 const APP = new Router();
 ;
-APP.get('/empleadoOrdenes',getEmpleadosOrdenes);
+APP.get('/empleadoordenes',getEmpleadosOrdenes);
 APP.get('/tiposervicios', getTipoServicios );
 
 // exportar enrutador para importarlo en ../index.js
