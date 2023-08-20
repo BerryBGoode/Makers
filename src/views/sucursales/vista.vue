@@ -74,6 +74,10 @@
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
 
+                                <div class="container-graph">
+                                    <button @click.prevent="ProducSucursales(sucursal.id_sucursal)">Generar pdf</button>
+                                </div>
+
                             </div>
 
                         </div>
@@ -97,6 +101,8 @@
 </template>
 <script>
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { mapState } from 'vuex';
 // componente para vista
 export default {
@@ -145,6 +151,25 @@ export default {
                 )
             })
             this.filters = SUCURSALES;
+        },
+        async ProducSucursales() {
+            // realizar petición según el reporte
+            try {
+                // llamar la función asicrona para obtener los datos de la petición
+                const PRODUCTOS = await axios.get('http://localhost:3000/api/reportes/prodsucursal');
+                // obtener la 'data' de la función asicrona
+                const ROWS = PRODUCTOS.data;
+                // declarando datos para poner en el header de la tabla
+                const colNames = ['Nombre sucursal', 'Nombre producto', 'Cantidad'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.nombresucursal, row.nombreservicio, row.cantidad]);
+                // llamando al método para generar reportes
+                generateTablePDF('ProducSucursales', 'Porductos por sucursales', colNames, colData)
+
+            } catch (e) {
+                alert(e.response.data.error)
+            }
         }
     },
     mounted() {
