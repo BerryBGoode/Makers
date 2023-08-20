@@ -48,5 +48,26 @@ const getPrevReservaciones = async (req, res) => {
     }
 }
 
+/**
+ * Método para obtener el nombre de la sucursal, el producto, la cantidad y el precio
+ * de los productos que estan a punto de agotarse (cantidad < 10)
+ * @param {*} req datos de la petición
+ * @param {*} res respuestas del servidor
+ */
+const getLessProductos = async (req, res) => {
+    try {
+        const PRODUCTOS = await execute(`
+            SELECT sc.nombre_sucursal, sr.nombre_servicio, ds.cantidad, sr.precio
+            FROM detalles_servicios_sucursales ds
+            INNER JOIN servicios sr ON sr.id_servicio = ds.id_servicio
+            INNER JOIN sucursales sc ON sc.id_sucursal = ds.id_sucursal
+            WHERE ds.cantidad < 10
+        `)
+        if (res.status(200)) res.json(PRODUCTOS);
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getPrevReservaciones }
+module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos }

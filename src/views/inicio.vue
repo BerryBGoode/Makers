@@ -17,6 +17,7 @@
         <div class="container-graph">
             <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
             <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
+            <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
         </div>
 
         <div class="container-graph container-ventas-graph">
@@ -128,6 +129,23 @@ export default {
                 generateTablePDF('prevReservaciones', 'Reservaciones Previas', colNames, colData);
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
+        async lessProductos() {
+            try {
+                // realizar petición para obtener los datos para llenar el reporte
+                const PRODUCTOS = await axios.get('http://localhost:3000/api/reportes/lessproductos');
+                // extraer los datos de la petición
+                const ROWS = PRODUCTOS.data;
+                // definiendo el nombre de la columnas para la tabla del reporte
+                const NAMES = ['Sucursal', 'Servicio', 'Cantidad', 'Precio'];
+                // obteniendo los datos resultados de la petición y mapear (crear un arreglo copia 
+                // con los datos recuperados de la petición y separlas según el nombre obtenido en .data)
+                const VALUES = ROWS.map(row => [row.nombre_sucursal, row.nombre_servicio, row.cantidad, '$' + row.precio])
+                // generar el reporte con la tabla
+                generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', NAMES, VALUES);
+            } catch (error) {
+
             }
         }
     },
