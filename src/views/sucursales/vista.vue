@@ -78,7 +78,7 @@
                                     <button @click.prevent="ProducSucursales(sucursal.id_sucursal)">Generar pdf</button>    
                                 </div>
 
-                            </div>
+                            </div> 
 
                         </div>
                     </div>
