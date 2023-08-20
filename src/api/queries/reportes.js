@@ -56,10 +56,5 @@ const getEmpleadosOrdenes = async (req, res) => {
 
 
 
-
-
-
-
-
 // exportando métodos para llamarlo en routes/reportes.routes.js
 module.exports = { getProxReservaciones, getEmpleadosCargos, getProdSucursal, getEmpleadosOrdenes }

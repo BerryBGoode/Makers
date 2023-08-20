@@ -13,7 +13,7 @@ const APP = new Router();
 APP.get('/proxreservaciones', getProxReservaciones);
 APP.get('/empleadoscargos', getEmpleadosCargos);
 APP.get('/prodsucursal', getProdSucursal);
-APP.get('/empleadosOrdene',getEmpleadosOrdenes);
+APP.get('/empleadoOrdene',getEmpleadosOrdenes);
 
 // exportar enrutador para importarlo en ../index.js
 module.exports = APP;
