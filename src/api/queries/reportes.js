@@ -25,5 +25,14 @@ const getProxReservaciones = async (req, res) => {
     }
 }
 
+const getEmpleadosCargos = async (req, res) => {
+    try {
+        const EMPLEADOS = await execute('SELECT e.nombres, e.apellidos, c.cargo FROM empleados e JOIN cargos c ON e.id_cargo = c.id_cargo');
+        if(res.status(200)) res.json(EMPLEADOS)
+    } catch (error) {
+        res.status(406).send({  error: getError(error)});
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones }
+module.exports = { getProxReservaciones, getEmpleadosCargos }
