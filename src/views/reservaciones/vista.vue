@@ -11,9 +11,7 @@
                 Agregar
             </router-link>
         </div>
-        <div class="container-graph">
-            <button @click="EmpleadosCargos">Generar pdf</button>
-        </div>
+        
         <hr>
 
         <div class="data p-2" v-if="reservaciones.length > 0">
