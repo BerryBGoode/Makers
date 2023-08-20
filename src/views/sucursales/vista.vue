@@ -163,7 +163,7 @@ export default {
                 const colNames = ['Nombre sucursal', 'Nombre producto', 'Cantidad'];
                 // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
                 // o la obtenido en la petición (Network)
-                const colData = ROWS.map(row => [row.nombresucursal, row.nombreservicio, row.cantidad]);
+                const colData = ROWS.map(row => [row.nombre_sucursal, row.nombre_servicio, row.cantidad]);
                 // llamando al método para generar reportes
                 generateTablePDF('ProducSucursales', 'Porductos por sucursales', colNames, colData)
 
