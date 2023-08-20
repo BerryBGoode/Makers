@@ -45,6 +45,21 @@ const getProdSucursal = async (req, res) => {
     }
 }
 
+const getEmpleadosOrdenes = async (req, res) => {
+    try {
+        const PRODUCTOS = await execute('SELECT e.id_empleado, e.nombres, e.apellidos, COUNT(o.id_orden) AS cantidad_ordenes FROM Empleados e LEFT JOIN Ordenes o ON e.id_empleado = o.id_cliente GROUP BY e.id_empleado ORDER BY cantidad_ordenes DESC LIMIT 5');
+        if(res.status(200)) res.json(PRODUCTOS)
+    } catch (error) {
+        res.status(406).send({ error: getError(error)});
+    }
+}
+
+
+
+
+
+
+
 
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getEmpleadosCargos, getProdSucursal }
+module.exports = { getProxReservaciones, getEmpleadosCargos, getProdSucursal, getEmpleadosOrdenes }
