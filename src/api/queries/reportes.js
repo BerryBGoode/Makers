@@ -166,8 +166,35 @@ const ventasMes = async (req, res) => {
     }
 }
 
+/**
+ * Método para obtener las reservaciones por mes seleccionado
+ * @param {*} req cuerpo de la petición (parametro: mes)
+ * @param {*} res respuesta del servidor ante la petición
+ */
+const reservacionesMes = async (req, res) => {
+    try {
+        // obtener el mes seleccionado por el cliente
+        let mes = req.params.mes;
+        const RESERVACIONES = await execute(`
+            SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
+	        CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
+            DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
+            CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+            FROM reservaciones r
+            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+            WHERE MONTH(r.fecha) = ? AND YEAR(r.fecha) = YEAR(CURRENT_DATE)`,
+            [mes]
+        );
+        if (RESERVACIONES && res.status(200)) res.json(RESERVACIONES);
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
 module.exports = {
     getProxReservaciones, getPrevReservaciones, getLessProductos,
-    historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes
+    historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes,
+    reservacionesMes
 };

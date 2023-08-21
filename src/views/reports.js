@@ -24,7 +24,7 @@ export const generateTablePDF = (pdf, title, names, values) => {
 
         PDF.setFontSize(11)
         // mostrar el nombre del usuario loggeado
-        PDF.text(store.state.usuario, 188, 30)
+        PDF.text('Generado por: ' + store.state.usuario, 155, 30)
         PDF.text(formatDateToDDMMYYYY(TODAY).toString(), 15, 28)
         PDF.text(TODAY.toLocaleTimeString('en-US'), 15, 34)
         // a continuación se define la tabla y lo que contedrá dentro de ella

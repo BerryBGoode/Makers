@@ -14,21 +14,6 @@
 </style>
 <template>
     <div class="container graph-lineal-sales">
-        <div class="container-graph">
-            <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
-            <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
-            <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
-            <div class="mb-3 flex-col input-container">
-                <input type="date" name="" id="" class="form-control" v-model="today">
-            </div>
-            <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                v-model="mesreport">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
-        </div>
-
         <div class="container-graph container-ventas-graph">
             <canvas id="ventas"></canvas>
         </div>
@@ -40,7 +25,24 @@
             <canvas id="ordenesMes"></canvas>
         </div>
 
-
+        <div class="container-graph">
+            <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
+            <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
+            <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+            <div class="mb-3 flex-col input-container">
+                <input type="date" name="" id="" class="form-control" v-model="today">
+            </div>
+            <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesreportventas">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+            <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
+        </div>
 
     </div>
 </template>
@@ -55,7 +57,8 @@ export default {
     created() {
         let month = new Date().getMonth();
         this.mesgraph = month;
-        this.mesreport = month;
+        this.mesreportventas = month;
+        this.mesreportreserv = month;
     },
     data() {
         let meses = [
@@ -69,8 +72,9 @@ export default {
             title: '',
             mesgraph: '',
             meses,
-            mesreport: '',
-            today
+            mesreportventas: '',
+            today,
+            mesreportreserv: ''
         }
     },
     methods: {
@@ -184,7 +188,7 @@ export default {
         async getVentasMes() {
             try {
                 // como mes enero es 0, al mes seleccionado sumarle uno
-                let req = this.mesreport + 1;
+                let req = this.mesreportventas + 1;
                 // realizar la petición para obtener las ventas del reporte
                 const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
                 // obtener la data de la respuesta del servidor
@@ -194,7 +198,29 @@ export default {
                 // extrayendo los valores para el reporte de la data de la petición
                 const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
                 // generando el pdf 
-                generateTablePDF('ventas de ' + this.meses[this.mesreport].toLowerCase(), 'Ventas de ' + this.meses[this.mesreport], names, VALUES)
+                generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
+        async getReservacionesMes() {
+            try {
+                // como los meses estan dentro de un arreglo y recordando teoria de arreglo n1 = 0
+                // se le suma +1 al número del mes seleccionado por el usuario
+                let req = this.mesreportreserv + 1;
+                // realizando la petición para obtener los datos para llenar el reporte
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/reservacionesmes/' + req);
+                // obteniendo la data de la respuesta de la petición
+                const ROWS = RESERVACIONES.data;
+                // definiendo los headers del reporte
+                let names = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
+                // extrayendo la data y diviendola en porciones más pequeñas según las col diferentes
+                const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
+                // generando el pdf 
+                generateTablePDF(
+                    'reservaciones de ' + this.meses[this.mesreportreserv].toLowerCase(),
+                    'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
+                );
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
