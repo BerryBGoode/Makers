@@ -21,7 +21,6 @@ export const generateTablePDF = (pdf, title, names, values) => {
         PDF.text(title, 15, 20);
         // definiendo el logo de la empresa en la parte superior derecha
         PDF.addImage('/src/assets/img/logos/logo_gris.png', 'PNG', 155, 15, 40, 10)
-
         PDF.setFontSize(11)
         // mostrar el nombre del usuario loggeado
         PDF.text('Generado por: ' + store.state.usuario, 155, 30)
