@@ -69,5 +69,42 @@ const getLessProductos = async (req, res) => {
     }
 }
 
+const getEmpTime = async (req, res) => {
+    try {
+        const EMPLEADO = await execute(`
+        SELECT 
+            CONCAT(e.nombres, ' ', e.apellidos) as empleado, 
+            e.dui as duiempleado, 
+            sc.nombre_sucursal as sucursal, 
+            e.telefono as telefono, c.id_cargo as cargo, e.planilla as planilla, 
+            CONCAT(time_format(h.hora_apertura, '%l:%i'), ' - ', time_format(h.hora_cierre, '%l:%i')) as horario,
+        FROM empleados e 
+        INNER JOIN sucursales s ON s.id_sucursal = e.id_sucursal 
+        INNER JOIN horarios h ON h.id_horario = e.id_horario 
+        INNER JOIN cargos c ON c.id_cargo = e.id_cargo
+        WHERE fecha > CURRENT_DATE`);
+        if (res.status(200)) res.json(EMPLEADO)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+const getEmpPlace = async (req, res) => {
+    try {
+        const EMPLEADO = await execute(`
+        SELECT 
+            CONCAT(e.nombres, ' ', e.apellidos) as empleado, 
+            e.dui as duiempleado, 
+            sc.nombre_sucursal,
+            CONCAT(time_format(h.hora_apertura, '%l:%i'), ' - ', time_format(h.hora_cierre, '%l:%i')) as horario,
+        FROM empleados e 
+        INNER JOIN sucursales s ON s.id_sucursal = e.id_sucursal 
+        INNER JOIN horarios h ON h.id_horario = e.id_horario 
+        WHERE fecha > CURRENT_DATE`);
+        if (res.status(200)) res.json(EMPLEADO)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos }
+module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos, getEmpPlace, getEmpTime }
