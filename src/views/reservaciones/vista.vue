@@ -11,6 +11,7 @@
                 Agregar
             </router-link>
         </div>
+        
         <hr>
 
         <div class="data p-2" v-if="reservaciones.length > 0">
@@ -89,6 +90,8 @@
 <script>
 //importar el axios
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import { mapState } from 'vuex';
 
 // componente para vista
@@ -145,7 +148,8 @@ export default {
             })
             // asignar a los del filters
             this.filters = RESREVACIONES;
-        }
+        },
+        
     },
     mounted() {
         this.getReservaciones();

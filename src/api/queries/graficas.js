@@ -59,6 +59,25 @@ const getCliente = (req,res) =>   {
     
 }
 
+const getFacturasSucursales = (req,res) =>  {
+    execute('SELECT s.id_sucursal, s.nombre_sucursal AS nombre_sucursal, COUNT(f.id_factura) AS cantidad_facturas FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal GROUP BY s.id_sucursal, s.nombre_sucursal;')
+    .then(row =>    {
+        es.status(200).json(rows)
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+}
+
+const getServiciosVendidos = (req, res) =>  {
+    execute('SELECT * FROM vista_productos_mas_vendidos')
+    .then(row =>    {
+        es.status(200).json(rows)
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) })
+    })
+}
+   
+
 const getClienteporfecha = (req,res) =>   {
     execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
     .then(row =>    {
@@ -82,5 +101,4 @@ const getEmpleadoCargos = (req,res) =>   {
 
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos}; 
-
+module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos, getEmpleado, getFacturasSucursales, getServiciosVendidos}; 

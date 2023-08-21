@@ -185,7 +185,7 @@ export default {
             })
             // asignar esos datos filtrados al arreglo que se muestran en card
             this.filters = EMPLEADOS;            
-        },        
+        }
     },
     mounted() {
         this.getEmpledos();
