@@ -185,24 +185,6 @@ export default {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
         },
-        async getVentasMes() {
-            try {
-                // como mes enero es 0, al mes seleccionado sumarle uno
-                let req = this.mesreportventas + 1;
-                // realizar la petición para obtener las ventas del reporte
-                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
-                // obtener la data de la respuesta del servidor
-                const ROWS = VENTAS.data;
-                // definiendo nombres para llenar la tabla 
-                let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
-                // extrayendo los valores para el reporte de la data de la petición
-                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
-                // generando el pdf 
-                generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
-            } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
-            }
-        },
         async getReservacionesMes() {
             try {
                 // como los meses estan dentro de un arreglo y recordando teoria de arreglo n1 = 0
@@ -224,7 +206,25 @@ export default {
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
-        }
+        },
+        async getVentasMes() {
+            try {
+                // como mes enero es 0, al mes seleccionado sumarle uno
+                let req = this.mesreportventas + 1;
+                // realizar la petición para obtener las ventas del reporte
+                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
+                // obtener la data de la respuesta del servidor
+                const ROWS = VENTAS.data;
+                // definiendo nombres para llenar la tabla 
+                let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
+                // extrayendo los valores para el reporte de la data de la petición
+                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
+                // generando el pdf 
+                generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
     },
     mounted() {
         this.getVentasPromise();
