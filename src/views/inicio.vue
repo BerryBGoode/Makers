@@ -20,6 +20,21 @@
         </div>
 
         <div class="container-graph">
+            <canvas id="productos"></canvas>
+        </div>
+
+
+        <div class="container-graph">
+            <canvas id="clientes"></canvas>
+        </div>
+
+        <div class="container-graph">
+            <canvas id="cargos"></canvas>
+        </div>
+
+
+
+        <div class="container-graph">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
                 @change="getOrdenesByMes" v-model="mesgraph">
                 <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
@@ -35,9 +50,7 @@
 
             <canvas id="servicios"></canvas>
         </div>
-        <div class="container-graph">
-            <canvas id="clientes"></canvas>
-        </div>
+
         <div class="container-graph">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
                 v-model="mesgraphora" @change="getHoraMes">
@@ -55,11 +68,6 @@
         </div>
 
 
-        <div class="container-graph">
-
-            <canvas id="cargos"></canvas>
-
-        </div>
         <div class="container-graph">
             <div class="mb-3">
                 <span>Próximas reservaciones</span>
@@ -146,6 +154,17 @@ export default {
         }
     },
     methods: {
+        productosMasVendidos() {
+            axios.get('http://localhost:3000/api/graficas/productosvendidos')
+                .then(rows => {
+                    let cantidad = [], producto = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        cantidad.push(data[i].cantidad);
+                        producto.push(data[i].nombre_servicio);
+                    }
+                    barGraph('productos', 'Productos más vendidos', producto, cantidad)
+                })
+        },
         reservacionesMes() {
             let req = this.mesgraphreserv + 1
             axios.get('http://localhost:3000/api/graficas/reservaciones/' + req)
@@ -391,7 +410,7 @@ export default {
         this.getClientesTop();
         this.getTiposServicios();
         this.getHoraMes();
-        // this.getServiciosTop();
+        this.productosMasVendidos();
         this.reservacionesMes();
     }
 }

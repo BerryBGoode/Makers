@@ -93,6 +93,23 @@ const getServiciosVendidos = (req, res) => {
         })
 }
 
+const getProductosVendidos = (req, res) => {
+    execute(`
+            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+            FROM servicios s
+            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+            WHERE t.tipo_servicio = 'Producto'
+            GROUP BY s.nombre_servicio
+            ORDER BY cantidad DESC LIMIT 7`
+        ,)
+        .then(rows => {
+            res.status(200).json(rows)
+        }).catch(rej => {
+            res.status(406).send({ error: getError(rej) })
+        })
+}
 
 const reservacionesMes = (req, res) => {
     let mes = req.params.mes;
@@ -152,5 +169,5 @@ const getHoraMes = (req, res) => {
 module.exports = {
     getVentas, ordenesByMes, getEmpleadoCantidad, getCliente,
     getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos,
-    getHoraMes, reservacionesMes
+    getHoraMes, reservacionesMes, getProductosVendidos
 }; 
