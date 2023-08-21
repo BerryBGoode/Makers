@@ -94,6 +94,19 @@ const getServiciosVendidos = (req, res) => {
 }
 
 
+const reservacionesMes = (req, res) => {
+    let mes = req.params.mes;
+    execute(`
+        SELECT COUNT(*) reservaciones, DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha
+        FROM reservaciones r
+        WHERE YEAR(r.fecha) = YEAR(CURRENT_DATE) AND MONTH(r.fecha) = ?
+        GROUP BY fecha
+        ORDER BY reservaciones DESC LIMIT 10
+    `, [mes])
+        .then(rows => { res.status(200).json(rows) })
+        .catch(rej => { res.status(406).send({ error: getError(rej) }) });
+}
+
 const getClienteporfecha = (req, res) => {
     execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
         .then(row => {
@@ -139,5 +152,5 @@ const getHoraMes = (req, res) => {
 module.exports = {
     getVentas, ordenesByMes, getEmpleadoCantidad, getCliente,
     getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos,
-    getHoraMes
+    getHoraMes, reservacionesMes
 }; 

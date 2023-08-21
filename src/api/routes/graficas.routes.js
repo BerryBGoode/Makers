@@ -4,7 +4,7 @@ const { Router } = require('express');
 const { getVentas, ordenesByMes, getEmpleadoCantidad, getEmpleadoCargos,
     getCliente, getClienteporfecha, getFacturasSucursales,
     getServiciosVendidos,
-    getHoraMes
+    getHoraMes, reservacionesMes
 } = require('../queries/graficas');
 
 
@@ -22,7 +22,7 @@ ROUTER.get('/cargos', getEmpleadoCargos)
 ROUTER.get('/clientestop', getCliente)
 ROUTER.get('/hora/:mes', getHoraMes)
 ROUTER.get('/clientesfecha', getClienteporfecha)
-
+ROUTER.get('/reservaciones/:mes', reservacionesMes)
 // exportar enrutador
 module.exports = ROUTER
 // ir a ./index.js para crear rutas accesibles

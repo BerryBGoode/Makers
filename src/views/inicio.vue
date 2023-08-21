@@ -46,6 +46,13 @@
             <canvas id="horas"></canvas>
         </div>
 
+        <div class="container-graph">
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesgraphreserv" @change="reservacionesMes">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <canvas id="reservaciones"></canvas>
+        </div>
 
 
         <div class="container-graph">
@@ -115,6 +122,7 @@ export default {
         this.mesreportventas = month;
         this.mesreportreserv = month;
         this.mesgraphora = month;
+        this.mesgraphreserv = month;
     },
     data() {
         let meses = [
@@ -132,11 +140,24 @@ export default {
             today,
             mesreportreserv: '',
             mesgraphora: '',
+            mesgraphreserv: '',
             tipos: [],
             tipo: 0
         }
     },
     methods: {
+        reservacionesMes() {
+            let req = this.mesgraphreserv + 1
+            axios.get('http://localhost:3000/api/graficas/reservaciones/' + req)
+                .then(rows => {
+                    let reservaciones = [], fechas = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        fechas.push(data[i].fecha);
+                        reservaciones.push(data[i].reservaciones)
+                    }
+                    lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
+                }).catch(e => { alert(e) })
+        },
         // método para obtener las ventas
         getVentasPromise() {
             // realizar petición para obtener los meses y la cantidad de ventas por este tiempo
@@ -371,6 +392,7 @@ export default {
         this.getTiposServicios();
         this.getHoraMes();
         // this.getServiciosTop();
+        this.reservacionesMes();
     }
 }
 </script>
