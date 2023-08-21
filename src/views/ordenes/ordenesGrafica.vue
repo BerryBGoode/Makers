@@ -9,11 +9,11 @@
     <div class="container graph-lineal-sales">
         <span>Inicio</span>
         <div class="container-ventas-grap">
-            <span>Cantidad empleados segun cargos</span>
-            <canvas id="cargos"></canvas>
+            <span>Hora con mas ordenes</span>
+            <canvas id="ordenes"></canvas>
         </div>
         <div class="container-grap">
-            <canvas id="cantidad"></canvas>
+            <canvas id="hora"></canvas>
         </div>
 
     </div>
@@ -28,23 +28,23 @@ export default {
     data() {
         return {
             title: '',
-            cargo: [],
-            cantidad: []
+            ordenes: [],
+            mes: []
         }
     },
     methods: {
-        // método para obtener la cantidad cargos que tiene un empleado
+        // método para obtener la hora de una orden
         getVentasPromise() {
-            axios.get('http://localhost:3000/api/graficas/cargos')
+            axios.get('http://localhost:3000/api/graficas/ordenes')
                 .then(rows => {
 
                     let ventas = rows.data;
-                    for (let i = 0; i < empleados.length; i++) {
-                        this.mes.push(empleados[i].cantidad)
-                        this.venta.push(empleados[i].cargo)
+                    for (let i = 0; i < ordenes.length; i++) {
+                        this.mes.push(ordenes[i].mes)
+                        this.venta.push(ordenes[i].ordenes)
                     }
 
-                    lineGraph('empleados', this.cargo, this.cantidad, 'Empleados')
+                    lineGraph('ordenes', this.mes, this.ordenes, 'Ordenes')
                     barGraph()
 
                 }).catch(e => { console.log(e) })
@@ -52,7 +52,7 @@ export default {
 
     },
     mounted() {
-        this.getEmpleadoPromise();
+        this.getOrdenes();
     }
 }
 </script>

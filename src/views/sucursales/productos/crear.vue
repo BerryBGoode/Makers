@@ -30,7 +30,7 @@
                     <span class="bold">
                         Servicio
                     </span>
-                    <form action="" class="form-2">
+                    <form class="form-2">
                         <label for="" class="form-label">Servicio</label>
                         <!-- verifica sí existen productos -->
                         <select class="form-select mb-3" aria-label="Default select example" v-if="servicios.length > 0"

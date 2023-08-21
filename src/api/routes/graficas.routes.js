@@ -1,10 +1,12 @@
 // requerir de enrutador de express
 const { Router } = require('express');
 // requerir de los métodos para obtener los datos para la gráficas
-const { getVentas } = require('../queries/graficas');
-const { getEmpleado } = require('../queries/graficas');
-const { getFacturasSucursales } = require('../queries/graficas');
-const { getServiciosVendidos } = require('../queries/graficas');
+const { getVentas, ordenesByMes, getEmpleadoCantidad,  getEmpleadoCargos, 
+        getCliente, getClienteporfecha, getEmpleado, getFacturasSucursales, 
+        getServiciosVendidos  
+} = require('../queries/graficas');
+
+
 
 // instanciar enrutados
 const ROUTER = Router();
@@ -15,6 +17,11 @@ ROUTER.get('/ventas', getVentas)
 ROUTER.get('/cargos', getEmpleado)
 ROUTER.get('/facturasS', getFacturasSucursales)
 ROUTER.get('/servicosV', getServiciosVendidos)
+ROUTER.get('/ordenesmes/:mes', ordenesByMes)
+ROUTER.get('/cargos', getEmpleadoCantidad)
+ROUTER.get('/clientes', getCliente)
+ROUTER.get('/ordenes', getEmpleadoCargos)
+ROUTER.get('/clientesfecha', getClienteporfecha)
 
 // exportar enrutador
 module.exports = ROUTER

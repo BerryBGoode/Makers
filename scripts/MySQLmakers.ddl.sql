@@ -219,7 +219,8 @@ INNER JOIN sucursales s ON s.horario = times.horario
 CREATE VIEW ventas AS
 SELECT
     YEAR(meses.fecha) AS anio,
-    MONTH(meses.fecha) AS mes,
+    MONTH(meses.fecha) AS num_mes,
+    MONTHNAME(meses.fecha) AS mes,
     IFNULL(COUNT(o.id_orden), 0) AS venta
 FROM (
     SELECT MAKEDATE(YEAR(CURDATE()), 1) + INTERVAL (n - 1) MONTH AS fecha
@@ -233,3 +234,11 @@ LEFT JOIN ordenes o ON YEAR(meses.fecha) = YEAR(o.fecha) AND MONTH(meses.fecha) 
 -- agregar where año YEAR(o.fecha) = 'año parametrizado'
 GROUP BY YEAR(meses.fecha), MONTH(meses.fecha)
 ORDER BY YEAR(meses.fecha), MONTH(meses.fecha);
+
+-- Consulta que obteniene la cantidad de ordenes y las agrupa por día, para obtener la cantidad de ordenes
+-- y las ordena la fecha de manera descendente
+SELECT count(o.fecha) as ordenes, date_format(o.fecha, '%Y-%m-%d') as fecha
+FROM ordenes o
+WHERE MONTH(o.fecha) = '08'
+GROUP BY YEAR(o.fecha), MONTH(o.fecha), DAY(o.fecha)
+ORDER BY o.fecha DESC;

@@ -1,7 +1,16 @@
 import Chart from "chart.js/auto";
 
-export const lineGraph = (dom, x, y, title) => {
+let line;
 
+/**
+ * Método que define la gráfica de tipo lineal, este método define objetos para la configuración 
+ * de la gráfica
+ * @param {*} dom elemento html (canvas (id)) donde cargará la gráfica
+ * @param {*} x elementos en el eje x 
+ * @param {*} y elemento en el eje y, (principal razón de estudio)
+ * @param {*} title titulo de la gráfica
+ */
+export const lineGraph = (dom, x, y, title) => {
     const data = {
         labels: x,
         datasets: [{
@@ -37,8 +46,12 @@ export const lineGraph = (dom, x, y, title) => {
         options: options
     };
 
-    const LINE = new Chart(document.getElementById(dom), config)
+    if (document.getElementById(dom).$chartjs) {
+        line.destroy();
+    }
+    line = new Chart(document.getElementById(dom), config)
 }
+
 
 export const barGraph = () => {
     const labels = [
@@ -160,4 +173,68 @@ const getColors = (opacity) => {
     // definiendo colores para poder ponerle a la gráfica
     const colors = ['#b4b0af'];
     return colors.map(color => opacity ? `${color + opacity}` : color)
+}
+
+export const barGraphic = () => {
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: lables,
+            data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+            ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        },
+    };
+    const BAR = new Chart(document.getElementById('clientes'), config)
+}
+
+export const graficalineal = () =>{
+
+    const labels = Utils.months({count: 7});
+const data = {
+  labels: labels,
+  datasets: [{
+    label: 'My First Dataset',
+    data: [65, 59, 80, 81, 56, 55, 40],
+    fill: false,
+    borderColor: 'rgb(75, 192, 192)',
+    tension: 0.1
+  }]
+};
+
+    const config = {
+    type: 'line',
+    data: data,
+  };
+  const BAR = new Chart(document.getElementById('clientesfecha'), config)
 }

@@ -166,9 +166,9 @@ export default {
             axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
                 .then(res => {
                     this.empleado = {
-                        nombres: res.data[0].nombres,
-                        apellidos: res.data[0].apellidos
-                    }                    
+                        nombres: res.data.nombres,
+                        apellidos: res.data.apellidos
+                    }
                 })
                 .catch(e => { console.log(e.response.data.error) });
 
@@ -188,7 +188,6 @@ export default {
             // realizar petición y enviando datos
             axios.put('http://localhost:3000/api/facturas/' + this.$route.params.id, this.model.factura)
                 .then(res => {
-                    console.log(res)
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
                     if (res.status === 201 && !res.data.error) {
@@ -216,7 +215,6 @@ export default {
                     .then(res => {
                         // verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
                         this.$router.push('/ordenes')
                     })
                     .catch(e => {

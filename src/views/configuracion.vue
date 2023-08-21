@@ -64,7 +64,8 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="alias" class="form-label">Alias</label>
-                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50" required>
+                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50"
+                                required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="clave" class="form-label">Nueva contraseña</label> <label class="form-label">*no
@@ -96,7 +97,7 @@ export default {
     name: 'configuracion',
     data() {
         return {
-            
+
             empleado: {
                 nombres: '',
                 apellidos: '',
@@ -161,7 +162,7 @@ export default {
                     if (res.status === 201 && !res.data.error) {
                         // limpiar valores 
                         this.empleado = {
-                            alias: '',  
+                            alias: '',
                             nombres: '',
                             apellidos: '',
                             dui: '',
@@ -172,7 +173,7 @@ export default {
                         // redireccionar
 
                         this.msg = '';
-                        this.$router.push('/');
+                        this.$router.go(-1);
                         // emitir info que se modifico algo, a componente de cuenta
                     }
 
@@ -185,6 +186,6 @@ export default {
     },
     mounted() {
         this.getEmpleado();
-    },    
+    },
 } 
 </script>
