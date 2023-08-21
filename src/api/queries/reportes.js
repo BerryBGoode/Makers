@@ -120,6 +120,11 @@ const historialReservacionesCliente = async (req, res) => {
     }
 }
 
+/**
+ * Método para obtener las ventas realizadas por fecha elegida por usuario
+ * @param {*} req cuerpo de la petición (parametro: día)
+ * @param {*} res respuesta del servidor ante la petición
+ */
 const ventasDia = async (req, res) => {
     try {
         let fecha = req.params.fecha;
@@ -139,8 +144,30 @@ const ventasDia = async (req, res) => {
     }
 }
 
+/**
+ * Método para obtener las ventas realizadas durante el mes elegido
+ * @param {*} req cuerpo de la petición (parametro: mes)
+ * @param {*} res respuesta del servidor ante la petición
+ */
+const ventasMes = async (req, res) => {
+    try {
+        let mes = req.params.mes;
+        const VENTAS = await execute(`
+            SELECT c.nombres, c.apellidos, c.dui, 
+            DATE_FORMAT(o.fecha, '%Y-%m-%d') as fecha,     
+            CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+            FROM ordenes o
+            INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+            WHERE MONTH(o.fecha) = ? AND YEAR(CURRENT_DATE) = YEAR(o.fecha)
+        `, [mes]);
+        if (VENTAS && res.status(200)) res.json(VENTAS);
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
 module.exports = {
     getProxReservaciones, getPrevReservaciones, getLessProductos,
-    historialComprasCliente, historialReservacionesCliente, ventasDia
+    historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes
 };

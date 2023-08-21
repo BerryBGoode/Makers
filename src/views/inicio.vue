@@ -22,6 +22,11 @@
                 <input type="date" name="" id="" class="form-control" v-model="today">
             </div>
             <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesreport">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
         </div>
 
         <div class="container-graph container-ventas-graph">
@@ -29,8 +34,8 @@
         </div>
         <div class="container-graph">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                @change="getOrdenesByMes" v-model="mes">
-                <option v-for="(mes, i) in meses" :key="i" :value="i">{{ mes }}</option>
+                @change="getOrdenesByMes" v-model="mesgraph">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
             </select>
             <canvas id="ordenesMes"></canvas>
         </div>
@@ -49,7 +54,8 @@ export default {
     name: 'inicio',
     created() {
         let month = new Date().getMonth();
-        this.mes = month;
+        this.mesgraph = month;
+        this.mesreport = month;
     },
     data() {
         let meses = [
@@ -61,8 +67,9 @@ export default {
         let today = formatDateToYYYYMMDD(date).toString()
         return {
             title: '',
-            mes: '',
+            mesgraph: '',
             meses,
+            mesreport: '',
             today
         }
     },
@@ -90,7 +97,8 @@ export default {
                 }).catch(e => { alert(e.response.data.error) })
         },
         getOrdenesByMes() {
-            let req = (this.mes + 1)
+            // como mes enero es 0, al mes seleccionado sumarle uno
+            let req = (this.mesgraph + 1)
             axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req)
                 .then(rows => {
                     let dia = [], ordenes = [], data = rows.data;
@@ -169,6 +177,24 @@ export default {
                 const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
                 // invocando el método para generar el reporte 
                 generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
+        async getVentasMes() {
+            try {
+                // como mes enero es 0, al mes seleccionado sumarle uno
+                let req = this.mesreport + 1;
+                // realizar la petición para obtener las ventas del reporte
+                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
+                // obtener la data de la respuesta del servidor
+                const ROWS = VENTAS.data;
+                // definiendo nombres para llenar la tabla 
+                let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
+                // extrayendo los valores para el reporte de la data de la petición
+                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
+                // generando el pdf 
+                generateTablePDF('ventas de ' + this.meses[this.mesreport].toLowerCase(), 'Ventas de ' + this.meses[this.mesreport], names, VALUES)
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }

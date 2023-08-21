@@ -4,7 +4,7 @@ const { Router } = require('express');
 const { getProxReservaciones, getPrevReservaciones,
     getLessProductos, historialComprasCliente,
     historialReservacionesCliente,
-    ventasDia
+    ventasDia, ventasMes
 } = require('../queries/reportes');
 
 // instanciar router para poder crear las rutas del servidor y poder acceder a ellas 
@@ -16,7 +16,8 @@ APP.get('/prevreservaciones', getPrevReservaciones);
 APP.get('/lessproductos', getLessProductos);
 APP.get('/historialcompras/:cliente', historialComprasCliente);
 APP.get('/historialreservaciones/:usuario', historialReservacionesCliente);
-APP.get('/ventadia/:fecha', ventasDia)
+APP.get('/ventadia/:fecha', ventasDia);
+APP.get('/ventasmes/:mes', ventasMes);
 
 // exportar enrutador para importarlo en ../index.js
 module.exports = APP;
