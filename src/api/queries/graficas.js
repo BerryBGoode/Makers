@@ -101,4 +101,4 @@ const getEmpleadoCargos = (req, res) => {
 
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos, getEmpleado, getFacturasSucursales, getServiciosVendidos }; 
+module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos }; 
