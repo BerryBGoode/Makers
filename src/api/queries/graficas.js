@@ -18,7 +18,7 @@ const getVentas = (req, res) => {
 }
 
 // Consulta para obtener la cantidad de reservaciones por fecha en un mes, dividido por semana
-const getMesOr = (req, res) => {
+const getMesRE = (req, res) => {
     execute('select WEEK(fecha) AS semana, count (id_reservacion) from reservaciones where MONTH(NOW()) = MONTH(fecha) group by semana')
         .then(rows => {
             res.status(200).json(rows)        
@@ -39,5 +39,5 @@ const getTopP = (req, res) => {
 
 // exportar los métodos para obtener los datos para pintar las gráficas
 module.exports = { getVentas };
-module.exports = { getMesOr };
+module.exports = { getMesRE };
 module.exports = { getTopP };
