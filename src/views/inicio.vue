@@ -14,12 +14,17 @@
 </style>
 <template>
     <div class="container graph-lineal-sales">
-        <div class="container-graph">
-            <button @click="EmpleadosCargos">Generar pdf</button>
-        </div>
 
         <div class="container-graph container-ventas-graph">
             <canvas id="ventas"></canvas>
+        </div>
+
+        <div class="container-graph">
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                @change="getOrdenesByMes" v-model="mesgraph">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <canvas id="ordenesMes"></canvas>
         </div>
 
         <div class="container-graph">
@@ -32,45 +37,58 @@
             <canvas id="clientesfecha"></canvas>
         </div>
 
+
+
         <div class="container-graph">
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                @change="getOrdenesByMes" v-model="mesgraph">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <canvas id="ordenesMes"></canvas>
+
+            <canvas id="cargos"></canvas>
+
         </div>
-
-
         <div class="container-graph">
-            <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
-            <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
-            <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+            <div class="mb-3">
+                <span>Próximas reservaciones</span>
+                <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
+
+            </div>
+            <div class="mb-">
+                <span>Reservaciones previas</span>
+                <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
+            </div>
+            <div class="mb-3">
+                <span>Productos a punto de agotarse</span>
+                <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+            </div>
+
+            <div class="mb-3">
+                <span>Empleados</span>
+                <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
+            </div>
+
             <div class="mb-3 flex-col input-container">
                 <input type="date" name="" id="" class="form-control" v-model="today">
+                <div class="mb3">
+                    <span>Ventas del día </span>
+                    <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
+                </div>
             </div>
-            <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
                 v-model="mesreportventas">
                 <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
             </select>
-            <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+            <div class="mb3">
+                <span>Ventas del mes</span>
+                <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+            </div>
+
             <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
                 <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
             </select>
-            <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
-        </div>
-        <div class="container-grap">
-            <canvas id="clientes"></canvas>
-        </div>
-        <div class="container-graph">
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                @change="getOrdenesByMes" v-model="mes">
-                <option v-for="(mes, i) in meses" :key="i" :value="i">{{ mes }}</option>
-            </select>
-            <canvas id="ordenesMes"></canvas>
-        </div>
 
-
+            <div class="mb-3">
+                <span>Reservaciones del mes</span>
+                <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
+            </div>
+        </div>
 
     </div>
 </template>
@@ -78,7 +96,7 @@
 import axios from 'axios';
 import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
-import { lineGraph, barGraph, graficalineal } from './charts';
+import { lineGraph, barGraph, doughnutGraph } from './charts';
 
 export default {
     name: 'inicio',
@@ -123,7 +141,7 @@ export default {
                         venta.push(ventas[i].venta)
                     }
                     // con los arreglos con datos, crear la gráfica
-                    lineGraph('ventas', mes, venta, 'Ventas')
+                    lineGraph('ventas', mes, venta, 'Ventas de año')
 
 
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
@@ -144,6 +162,29 @@ export default {
                 }).catch(e => alert(e))
 
         },
+        getEmpleadosCargos() {
+            axios.get('http://localhost:3000/api/graficas/cargos')
+                .then(rows => {
+                    let cargo = [], count = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        cargo.push(data[i].cargo);
+                        count.push(data[i].count)
+                    }
+                    barGraph('cargos', 'Cargos', cargo, count);
+                }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+        },
+        getClientesTop() {
+            axios.get('http://localhost:3000/api/graficas/clientestop')
+                .then(rows => {
+                    let ordenes = [], clientes = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        ordenes.push(data[i].ordenes);
+                        clientes.push(data[i].cliente);
+                    }
+                    doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
+                })
+                .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+        },
         async EmpleadosCargos() {
             // realizar petición según el reporte
             try {
@@ -160,7 +201,7 @@ export default {
                 generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
 
             } catch (e) {
-                alert(e.response.data.error)
+                (e.response.data.error) ? alert(e.response.data.error) : alert(e)
             }
         },
         async proxReservaciones() {
@@ -276,8 +317,9 @@ export default {
     mounted() {
         this.getVentasPromise();
         this.getOrdenesByMes();
-        this.EmpleadoOrdenes();
-        this.tipoServicios;
+        this.getEmpleadosCargos();
+        // this.tipoServicios;
+        this.getClientesTop();
     }
 }
 </script>
