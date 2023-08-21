@@ -223,11 +223,11 @@ export default {
                 // sí se realizo con exito que obtenga los datos de la petición
                 const ROWS = COMPRAS.data;
                 // definiendo los headers para el reporte
-                const NAMES = ['Nombres', 'Apellidos', 'Fecha', 'Hora'];
+                let names = ['Nombres', 'Apellidos', 'Fecha', 'Hora'];
                 // extrayendo los datos de la petición
                 const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.fecha, row.hora])
                 // creando reporte
-                generateTablePDF('compras', 'Historial de compras', NAMES, VALUES);
+                generateTablePDF('compras', 'Historial de compras', names, VALUES);
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
@@ -239,11 +239,11 @@ export default {
                 // sí se realizo con exito que obtenga los datos de la petición
                 const ROWS = RESERVACIONES.data;
                 // definiendo los headers para el reporte
-                const NAMES = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
+                let names = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
                 // extrayendo los datos de la petición
                 const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
                 // creando reporte
-                generateTablePDF('reservaciones', 'Historial de reservaciones', NAMES, VALUES);
+                generateTablePDF('reservaciones', 'Historial de reservaciones', names, VALUES);
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }

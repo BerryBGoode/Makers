@@ -1,6 +1,6 @@
 // importar los métodos para realizar las consultas SQL y para obtener los errores
-const { getError } = require('../helpers/errors')
-const { execute } = require('../MySQL')
+const { getError } = require('../helpers/errors');
+const { execute } = require('../MySQL');
 
 /**
  * Método para obtener las próximas reservaciones, retorna la respuesta del servidor
@@ -19,7 +19,7 @@ const getProxReservaciones = async (req, res) => {
         INNER JOIN empleados e ON e.id_empleado = r.id_empleado
         INNER JOIN clientes c ON c.id_cliente = r.id_cliente
         WHERE fecha > CURRENT_DATE`);
-        if (res.status(200)) res.json(RESERVACIONES)
+        if (res.status(200)) res.json(RESERVACIONES);
     } catch (error) {
         res.status(406).send({ error: getError(error) });
     }
@@ -42,7 +42,7 @@ const getPrevReservaciones = async (req, res) => {
         INNER JOIN empleados e ON e.id_empleado = r.id_empleado
         INNER JOIN clientes c ON c.id_cliente = r.id_cliente
         WHERE fecha < CURRENT_DATE`);
-        if (res.status(200)) res.json(RESERVACIONES)
+        if (res.status(200)) res.json(RESERVACIONES);
     } catch (error) {
         res.status(406).send({ error: getError(error) });
     }
@@ -86,9 +86,9 @@ const historialComprasCliente = async (req, res) => {
             INNER JOIN clientes c ON c.id_cliente = o.id_cliente
             WHERE c.id_cliente = ?
         `, [cliente]);
-        if (res.status(200)) res.json(ORDENES)
+        if (res.status(200)) res.json(ORDENES);
     } catch (error) {
-        res.status(406).send({ error: getError(error) })
+        res.status(406).send({ error: getError(error) });
     }
 }
 
@@ -116,9 +116,31 @@ const historialReservacionesCliente = async (req, res) => {
             if (res.status(200)) res.json(RESERVACIONES);
         }
     } catch (error) {
-        res.status(406).send({ error: getError(error) })
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+const ventasDia = async (req, res) => {
+    try {
+        let fecha = req.params.fecha;
+        const VENTAS = await execute(`
+            SELECT c.nombres, c.apellidos, c.dui, 
+            DATE_FORMAT(o.fecha, '%Y-%m-%d') as fecha,     
+            CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+            FROM ordenes o
+            INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+            WHERE o.fecha = ?    
+        `, [fecha]);
+        if (VENTAS) {
+            if (res.status(200)) res.json(VENTAS);
+        }
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
     }
 }
 
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos, historialComprasCliente, historialReservacionesCliente }
+module.exports = {
+    getProxReservaciones, getPrevReservaciones, getLessProductos,
+    historialComprasCliente, historialReservacionesCliente, ventasDia
+};

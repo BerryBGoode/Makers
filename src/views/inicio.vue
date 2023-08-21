@@ -18,6 +18,10 @@
             <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
             <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
             <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+            <div class="mb-3 flex-col input-container">
+                <input type="date" name="" id="" class="form-control" v-model="today">
+            </div>
+            <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
         </div>
 
         <div class="container-graph container-ventas-graph">
@@ -39,6 +43,7 @@
 import axios from 'axios';
 import { lineGraph, barGraph } from './charts';
 import { generateTablePDF } from './reports'
+import { formatDateToYYYYMMDD } from '../validator';
 
 export default {
     name: 'inicio',
@@ -50,11 +55,15 @@ export default {
         let meses = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
             'Noviembre', 'Diciembre'
-        ]
+        ];
+
+        let date = new Date();
+        let today = formatDateToYYYYMMDD(date).toString()
         return {
             title: '',
             mes: '',
-            meses
+            meses,
+            today
         }
     },
     methods: {
@@ -75,7 +84,7 @@ export default {
                         venta.push(ventas[i].venta)
                     }
                     // con los arreglos con datos, crear la gráfica
-                    lineGraph('ventas', mes, venta, 'Ventas')
+                    lineGraph('ventas', mes, venta, 'Ventas de año')
 
 
                 }).catch(e => { alert(e.response.data.error) })
@@ -103,12 +112,12 @@ export default {
                 // obtener la 'data' de la función asicrona
                 const ROWS = RESERVACIONES.data;
                 // declarando datos para poner en el header de la tabla
-                const colNames = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
+                let names = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
                 // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
                 // llamando al método para generar reportes
-                generateTablePDF('proxReservaciones', 'Próximas Reservaciones', colNames, colData)
+                generateTablePDF('proxReservaciones', 'Próximas Reservaciones', names, colData)
 
             } catch (e) {
                 (e.response.data.error) ? alert(e.response.data.error) : alert(e)
@@ -121,12 +130,12 @@ export default {
                 // obtener los datos de la petición
                 const ROWS = RESERVACIONES.data;
                 // declarando un arreglo para guardar los nombres de la columnas de la tabla
-                const colNames = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
+                let names = ['Fecha', 'Hora', 'Cliente', 'DUI', 'Empleado', 'DUI'];
                 // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
                 // llamando al método para generar reportes
-                generateTablePDF('prevReservaciones', 'Reservaciones Previas', colNames, colData);
+                generateTablePDF('prevReservaciones', 'Reservaciones Previas', names, colData);
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
@@ -138,12 +147,28 @@ export default {
                 // extraer los datos de la petición
                 const ROWS = PRODUCTOS.data;
                 // definiendo el nombre de la columnas para la tabla del reporte
-                const NAMES = ['Sucursal', 'Servicio', 'Cantidad', 'Precio'];
+                let names = ['Sucursal', 'Servicio', 'Cantidad', 'Precio'];
                 // obteniendo los datos resultados de la petición y mapear (crear un arreglo copia 
                 // con los datos recuperados de la petición y separlas según el nombre obtenido en .data)
                 const VALUES = ROWS.map(row => [row.nombre_sucursal, row.nombre_servicio, row.cantidad, '$' + row.precio])
                 // generar el reporte con la tabla
-                generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', NAMES, VALUES);
+                generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', names, VALUES);
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
+        async getVentasDia() {
+            try {
+                // realizar petición para obtener las ventas del dia actual
+                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventadia/' + this.today)
+                // extraer la data de la petición
+                const ROWS = VENTAS.data;
+                // definiendo los headers para la tabla del reporte
+                let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
+                // extrayendo la date de manera individual de la petición            
+                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
+                // invocando el método para generar el reporte 
+                generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
@@ -151,7 +176,7 @@ export default {
     },
     mounted() {
         this.getVentasPromise();
-        this.getOrdenesByMes()
+        this.getOrdenesByMes();
     }
 }
 </script>

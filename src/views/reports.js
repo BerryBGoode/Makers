@@ -6,14 +6,7 @@ import jsPDF from 'jspdf';
 // importando jspdf-autotable para generar una tabla automatica
 import 'jspdf-autotable';
 import store from "./../store/index";
-
-const formatDateToDDMMYYYY = date => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses en Date empiezan desde 0
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-}
+import { formatDateToDDMMYYYY } from '../validator'
 
 export const generateTablePDF = (pdf, title, names, values) => {
 
