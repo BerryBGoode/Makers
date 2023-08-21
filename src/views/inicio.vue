@@ -14,6 +14,10 @@
 </style>
 <template>
     <div class="container graph-lineal-sales">
+        <div class="container-graph">
+            <button @click="EmpleadosCargos">Generar pdf</button>
+        </div>
+
         <div class="container-graph container-ventas-graph">
             <canvas id="ventas"></canvas>
         </div>
@@ -55,6 +59,19 @@
             </select>
             <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
         </div>
+        <div class="container-grap">
+            <canvas id="clientes"></canvas>
+        </div>
+        <div class="container-graph">
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                @change="getOrdenesByMes" v-model="mes">
+                <option v-for="(mes, i) in meses" :key="i" :value="i">{{ mes }}</option>
+            </select>
+            <canvas id="ordenesMes"></canvas>
+        </div>
+
+
+
     </div>
 </template>
 <script>
@@ -106,7 +123,7 @@ export default {
                         venta.push(ventas[i].venta)
                     }
                     // con los arreglos con datos, crear la gráfica
-                    lineGraph('ventas', mes, venta, 'Ventas de año')
+                    lineGraph('ventas', mes, venta, 'Ventas')
 
 
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
@@ -126,6 +143,25 @@ export default {
 
                 }).catch(e => alert(e))
 
+        },
+        async EmpleadosCargos() {
+            // realizar petición según el reporte
+            try {
+                // llamar la función asicrona para obtener los datos de la petición
+                const EMPLEADOS = await axios.get('http://localhost:3000/api/reportes/empleadoscargos');
+                // obtener la 'data' de la función asicrona
+                const ROWS = EMPLEADOS.data;
+                // declarando datos para poner en el header de la tabla
+                const colNames = ['Nombres', 'Apellidos', 'Cargo'];
+                // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
+                // o la obtenido en la petición (Network)
+                const colData = ROWS.map(row => [row.nombres, row.apellidos, row.cargo]);
+                // llamando al método para generar reportes
+                generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
+
+            } catch (e) {
+                alert(e.response.data.error)
+            }
         },
         async proxReservaciones() {
             // realizar petición según el reporte
@@ -240,6 +276,8 @@ export default {
     mounted() {
         this.getVentasPromise();
         this.getOrdenesByMes();
+        this.EmpleadoOrdenes();
+        this.tipoServicios;
     }
 }
 </script>

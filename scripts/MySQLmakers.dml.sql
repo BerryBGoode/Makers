@@ -42,19 +42,19 @@ INSERT INTO clientes(
 INSERT INTO servicios(
 	id_servicio, id_tipo_servicio, nombre_servicio, descripcion, precio, existencias, estado)
 	VALUES
-(UUID(), '8b889475-1f66-11', 'Corte de Cabello', 'Corte de cabello según el cliente', 5.00, 1, 1),
-(UUID(), '8b9d3ffc-1f66-11', 'Corte de Barba', 'Corte de cabello según el cliente', 4.00, 1, 1),
-(UUID(), '8b889475-1f66-11', 'Alisado', 'Un alisado para resplandecer tu cabello', 6.00, 1, 1),
-(UUID(), '8b889475-1f66-11', 'Texturizado', 'Un texturizado  perfecto para moldear', 3.00, 20, 1),
-(UUID(), '8b9d3ffc-1f66-11', 'Corte de Barba con Vapor de Ozono', 'Corte con nuestra especialidad de vapor al ozono', 7.00, 1, 2),
-(UUID(), '8b9d4416-1f66-11', 'Lavado Spa', 'Un lavado para tu rostro', 6.00, 1, 1),
-(UUID(), '8b889475-1f66-11', 'Corte de Cejas', 'Tu corte de cejas que tu rostro luzca bien', 4.00, 1, 2),
-(UUID(), '8b889475-1f66-11', 'Diseños en Corte de Cabellos', 'Elige tu mejor corte de cabello', 4.00, 1, 2),
-(UUID(), '8b9d4525-1f66-11', 'Mascarilla de Carbón Activado', 'Una mascarilla para tu rostro suave', 6.00, 20, 1),
-(UUID(), '8b9d4525-1f66-11', 'Mascarilla con Vapor de Ozono', 'Una mascarilla para tu rostro suave', 6.00, 19, 1),
-(UUID(), '8b889475-1f66-11', 'Afeitados', 'Cuida de tu barba, es lo que brilla en ti', 5.00, 1, 2),
-(UUID(), '8b9d4525-1f66-11', 'Crema para cabello', 'Deja tu cabello en excelente cuidado', 3.00,50,1),
-(UUID(), '8b9d4525-1f66-11', 'Vacelina', 'Da más suavidad a tú cabello', 2.50, 50, 1);
+(UUID(), '4174a22f-3a40-11', 'Corte de Cabello', 'Corte de cabello según el cliente', 5.00, 1, 1),
+(UUID(), '4174b645-3a40-11', 'Corte de Barba', 'Corte de cabello según el cliente', 4.00, 1, 1),
+(UUID(), '4174a22f-3a40-11', 'Alisado', 'Un alisado para resplandecer tu cabello', 6.00, 1, 1),
+(UUID(), '4174a22f-3a40-11', 'Texturizado', 'Un texturizado  perfecto para moldear', 3.00, 20, 1),
+(UUID(), '4174b645-3a40-11', 'Corte de Barba con Vapor de Ozono', 'Corte con nuestra especialidad de vapor al ozono', 7.00, 1, 2),
+(UUID(), '4174b722-3a40-11', 'Lavado Spa', 'Un lavado para tu rostro', 6.00, 1, 1),
+(UUID(), '4174a22f-3a40-11', 'Corte de Cejas', 'Tu corte de cejas que tu rostro luzca bien', 4.00, 1, 2),
+(UUID(), '4174a22f-3a40-11', 'Diseños en Corte de Cabellos', 'Elige tu mejor corte de cabello', 4.00, 1, 2),
+(UUID(), '4174b781-3a40-11', 'Mascarilla de Carbón Activado', 'Una mascarilla para tu rostro suave', 6.00, 20, 1),
+(UUID(), '4174b781-3a40-11', 'Mascarilla con Vapor de Ozono', 'Una mascarilla para tu rostro suave', 6.00, 19, 1),
+(UUID(), '4174b645-3a40-11', 'Afeitados', 'Cuida de tu barba, es lo que brilla en ti', 5.00, 1, 2),
+(UUID(), '4174b781-3a40-11', 'Crema para cabello', 'Deja tu cabello en excelente cuidado', 3.00,50,1),
+(UUID(), '4174b781-3a40-11', 'Vacelina', 'Da más suavidad a tú cabello', 2.50, 50, 1);
 
 
 INSERT INTO empleados(

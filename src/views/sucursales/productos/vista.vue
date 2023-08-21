@@ -117,6 +117,7 @@
 </template>
 <script>
 import axios from 'axios'
+
 import { mapState } from 'vuex';
 export default {
     name: 'productosSucursales',
@@ -179,7 +180,8 @@ export default {
                 )
             })
             this.filters = PRODUCTOS;
-        }
+        },
+        
     },
     watch: {
         buscador() {
