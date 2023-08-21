@@ -25,6 +25,42 @@ const getProxReservaciones = async (req, res) => {
     }
 }
 
+const getEmpleadosCargos = async (req, res) => {
+    try {
+        const EMPLEADOS = await execute('SELECT e.nombres, e.apellidos, c.cargo FROM empleados e JOIN cargos c ON e.id_cargo = c.id_cargo');
+        if(res.status(200)) res.json(EMPLEADOS)
+    } catch (error) {
+        res.status(406).send({  error: getError(error)});
+    }
+
+}
+
+const getProdSucursal = async (req, res) => {
+    try {
+        const PRODUCTOS = await execute('SELECT ss.nombre_sucursal, s.nombre_servicio, ds.cantidad FROM detalles_servicios_sucursales ds JOIN sucursales ss ON ds.id_sucursal = ss.id_sucursal JOIN servicios s ON ds.id_servicio = s.id_servicio WHERE ds.id_sucursal = ?');
+        if(res.status(200)) res.json(PRODUCTOS)
+    } catch (error) {
+        res.status(406).send({ error: getError(error)});
+    }
+}
+
+const getEmpleadosOrdenes = async (req, res) => {
+    try {
+        const EMPLEADOS = await execute(`
+        CREATE VIEW vista_empleados_mas_ordenes AS
+        SELECT e.id_empleado, e.nombres, e.apellidos, COUNT(o.id_orden) AS cantidad_ordenes
+        FROM empleados e
+        LEFT JOIN ordenes o ON e.id_empleado = o.id_empleado
+        GROUP BY e.id_empleado, e.nombres, e.apellidos
+        ORDER BY cantidad_ordenes DESC
+        LIMIT 5;        
+        `);
+        if (res.status(200)) res.json(EMPLEADOS);
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
 /**
  * Método para obtener de la db las reservaciones previas a el día que se console
  * @param {*} req datos de la petición
@@ -65,6 +101,20 @@ const getLessProductos = async (req, res) => {
         `)
         if (res.status(200)) res.json(PRODUCTOS);
     } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+
+const getTipoServicios = async (req, res) => {
+    try {
+        const SERVICIOS = await execute(`
+        SELECT s.id_servicio, s.nombre_servicio, t.tipo_servicio
+        FROM servicios s
+        INNER JOIN tipos_servicios t ON s.id_tipo_servicio = t.id_tipo_servicio
+        `);
+        if (res.status(200)) res.json(SERVICIOS);
+      } catch (error) {
         res.status(406).send({ error: getError(error) });
     }
 }
@@ -196,5 +246,5 @@ const reservacionesMes = async (req, res) => {
 module.exports = {
     getProxReservaciones, getPrevReservaciones, getLessProductos,
     historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes,
-    reservacionesMes
+    reservacionesMes, getProxReservaciones, getEmpleadosCargos, getProdSucursal
 };
