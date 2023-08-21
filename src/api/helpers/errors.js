@@ -5,6 +5,7 @@
  */
 const getError = (err = null) => {
 
+    console.log(err)
     err = err['errno'];
     let msg;
     switch (err) {
@@ -30,6 +31,7 @@ const getError = (err = null) => {
             msg = 'Error al conectar con el servidor de base de datos';
             break;
         default:
+
             msg = 'Surgio un problema en el servidor';
             break;
     }

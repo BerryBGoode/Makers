@@ -1,48 +1,90 @@
 <style scoped>
 .graph-lineal-sales {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 0;
     height: 100%;
     /* border: solid 1px #b4b0af; */
     border-radius: 7px;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
 }
 
 .container-graph {
+
     background: #231f1e;
     border-radius: 7px;
+}
+
+.area-1 {
+    padding: .5%;
+    width: 81.9vw;
+    grid-area: 1 / 1 / 2 / 6;
+}
+
+.area-2 {
+    width: 38vw;
+}
+
+.area-3 {
+    width: 43.5vw;
+}
+
+.area-4 {
+    width: 100%;
+    grid-area: 3/ 1 / 3/ 3;
+}
+
+.area-5 {
+    width: 100%;
+    grid-area: 4/ 1/ 4/ 3;
+}
+
+.area-6 {
+    width: 50%;
+    grid-area: 5/ 1/ 6/3;
+}
+
+.area-7 {
+    width: 93%;
+    margin-left: 6.8%;
+    grid-area: 5/ 2/ 6/ 3;
+}
+
+.area-8 {
+    /* width: 45vw; */
+    grid-area: 6/ 1/ 6/ 1;
+}
+
+.area-9 {
+    padding: 3%;
+    grid-area: 6/ 2/ 6/ 2;
 }
 </style>
 <template>
     <div class="container graph-lineal-sales">
 
-        <div class="container-graph container-ventas-graph">
+        <div class="container-graph container-ventas-graph area-1">
             <canvas id="ventas"></canvas>
         </div>
 
-        <div class="container-graph">
+        <div class="container-graph area-2">
+            <canvas id="clientes"></canvas>
+        </div>
+        <div class="container-graph area-3">
             <canvas id="productos"></canvas>
         </div>
 
 
-        <div class="container-graph">
-            <canvas id="clientes"></canvas>
-        </div>
-
-        <div class="container-graph">
+        <div class="container-graph area-4">
             <canvas id="cargos"></canvas>
         </div>
 
-
-
-        <div class="container-graph">
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                @change="getOrdenesByMes" v-model="mesgraph">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <canvas id="ordenesMes"></canvas>
-        </div>
-
-        <div class="container-graph">
+        <div class="container-graph area-5">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
                 @change="getServiciosTop" v-model="tipo">
                 <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}</option>
@@ -51,15 +93,16 @@
             <canvas id="servicios"></canvas>
         </div>
 
-        <div class="container-graph">
+        <div class="container-graph area-6">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                v-model="mesgraphora" @change="getHoraMes">
+                @change="getOrdenesByMes" v-model="mesgraph">
                 <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
             </select>
-            <canvas id="horas"></canvas>
+            <canvas id="ordenesMes"></canvas>
         </div>
 
-        <div class="container-graph">
+
+        <div class="container-graph area-7">
             <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
                 v-model="mesgraphreserv" @change="reservacionesMes">
                 <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
@@ -67,8 +110,15 @@
             <canvas id="reservaciones"></canvas>
         </div>
 
+        <div class="container-graph area-8">
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesgraphora" @change="getHoraMes">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <canvas id="horas"></canvas>
+        </div>
 
-        <div class="container-graph">
+        <div class="container-graph area-9">
             <div class="mb-3">
                 <span>Próximas reservaciones</span>
                 <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
@@ -120,7 +170,7 @@
 import axios from 'axios';
 import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
-import { lineGraph, barGraph, doughnutGraph, pieGraph } from './charts';
+import { lineGraph, barGraph, doughnutGraph, pieGraph, linealGraph } from './charts';
 
 export default {
     name: 'inicio',
@@ -166,16 +216,21 @@ export default {
                 })
         },
         reservacionesMes() {
-            let req = this.mesgraphreserv + 1
-            axios.get('http://localhost:3000/api/graficas/reservaciones/' + req)
-                .then(rows => {
-                    let reservaciones = [], fechas = [], data = rows.data;
-                    for (let i = 0; i < data.length; i++) {
-                        fechas.push(data[i].fecha);
-                        reservaciones.push(data[i].reservaciones)
-                    }
-                    lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
-                }).catch(e => { alert(e) })
+            if (this.mesgraphreserv <= 11) {
+
+                let req = this.mesgraphreserv + 1
+                axios.get('http://localhost:3000/api/graficas/reservaciones/' + req)
+                    .then(rows => {
+                        let reservaciones = [], fechas = [], data = rows.data;
+                        for (let i = 0; i < data.length; i++) {
+                            fechas.push(data[i].fecha);
+                            reservaciones.push(data[i].reservaciones)
+                        }
+                        lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
+                    }).catch(e => { alert(e) })
+            } else {
+                alert('Mes invalido')
+            }
         },
         // método para obtener las ventas
         getVentasPromise() {
@@ -201,18 +256,23 @@ export default {
         },
         getOrdenesByMes() {
             // como mes enero es 0, al mes seleccionado sumarle uno
-            let req = (this.mesgraph + 1)
-            axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req)
-                .then(rows => {
-                    let dia = [], ordenes = [], data = rows.data;
-                    for (let i = 0; i < data.length; i++) {
-                        dia.push(data[i].fecha);
-                        ordenes.push(data[i].ordenes)
-                    }
+            if (this.mesgraph <= 11) {
 
-                    lineGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
+                let req = (this.mesgraph + 1)
+                axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req)
+                    .then(rows => {
+                        let dia = [], ordenes = [], data = rows.data;
+                        for (let i = 0; i < data.length; i++) {
+                            dia.push(data[i].fecha);
+                            ordenes.push(data[i].ordenes)
+                        }
 
-                }).catch(e => alert(e))
+                        linealGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
+
+                    }).catch(e => alert(e))
+            } else {
+                alert('Mes invalido')
+            }
 
         },
         getEmpleadosCargos() {
@@ -239,18 +299,22 @@ export default {
                 .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
         getHoraMes() {
+            if (this.mesgraphora <= 11) {
 
-            // como mes enero es 0, al mes seleccionado sumarle uno
-            let req = (this.mesgraphora + 1)
-            axios.get('http://localhost:3000/api/graficas/hora/' + req)
-                .then(rows => {
-                    let hora = [], ventas = [], data = rows.data;
-                    for (let i = 0; i < data.length; i++) {
-                        hora.push(data[i].hora);
-                        ventas.push(data[i].ventas);
-                    }
-                    pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
-                })
+                // como mes enero es 0, al mes seleccionado sumarle uno
+                let req = (this.mesgraphora + 1)
+                axios.get('http://localhost:3000/api/graficas/hora/' + req)
+                    .then(rows => {
+                        let hora = [], ventas = [], data = rows.data;
+                        for (let i = 0; i < data.length; i++) {
+                            hora.push(data[i].hora);
+                            ventas.push(data[i].ventas);
+                        }
+                        pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
+                    })
+            } else {
+                alert('Mes invalido');
+            }
         },
         getTiposServicios() {
             axios.get('http://localhost:3000/api/servicios/tipos')
@@ -358,6 +422,7 @@ export default {
                 // invocando el método para generar el reporte 
                 generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
             } catch (error) {
+
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
         },
@@ -365,38 +430,47 @@ export default {
             try {
                 // como los meses estan dentro de un arreglo y recordando teoria de arreglo n1 = 0
                 // se le suma +1 al número del mes seleccionado por el usuario
-                let req = this.mesreportreserv + 1;
-                // realizando la petición para obtener los datos para llenar el reporte
-                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/reservacionesmes/' + req);
-                // obteniendo la data de la respuesta de la petición
-                const ROWS = RESERVACIONES.data;
-                // definiendo los headers del reporte
-                let names = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
-                // extrayendo la data y diviendola en porciones más pequeñas según las col diferentes
-                const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
-                // generando el pdf 
-                generateTablePDF(
-                    'reservaciones de ' + this.meses[this.mesreportreserv].toLowerCase(),
-                    'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
-                );
+                if (this.mesreportreserv <= 11) {
+
+                    let req = this.mesreportreserv + 1;
+                    // realizando la petición para obtener los datos para llenar el reporte
+                    const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/reservacionesmes/' + req);
+                    // obteniendo la data de la respuesta de la petición
+                    const ROWS = RESERVACIONES.data;
+                    // definiendo los headers del reporte
+                    let names = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
+                    // extrayendo la data y diviendola en porciones más pequeñas según las col diferentes
+                    const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
+                    // generando el pdf 
+                    generateTablePDF(
+                        'reservaciones de ' + this.meses[this.mesreportreserv].toLowerCase(),
+                        'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
+                    );
+                } else {
+                    alert('Mes invalido')
+                }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
         },
         async getVentasMes() {
             try {
-                // como mes enero es 0, al mes seleccionado sumarle uno
-                let req = this.mesreportventas + 1;
-                // realizar la petición para obtener las ventas del reporte
-                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
-                // obtener la data de la respuesta del servidor
-                const ROWS = VENTAS.data;
-                // definiendo nombres para llenar la tabla 
-                let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
-                // extrayendo los valores para el reporte de la data de la petición
-                const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
-                // generando el pdf 
-                generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+                if (this.mesreportventas <= 11) {
+                    // como mes enero es 0, al mes seleccionado sumarle uno
+                    let req = this.mesreportventas + 1;
+                    // realizar la petición para obtener las ventas del reporte
+                    const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
+                    // obtener la data de la respuesta del servidor
+                    const ROWS = VENTAS.data;
+                    // definiendo nombres para llenar la tabla 
+                    let names = ['Nombres', 'Apellidos', 'Dui', 'Fecha', 'Hora'];
+                    // extrayendo los valores para el reporte de la data de la petición
+                    const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
+                    // generando el pdf 
+                    generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+                } else {
+                    alert('Mes invalido');
+                }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }

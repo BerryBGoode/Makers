@@ -1,7 +1,7 @@
 // requiriendo la pool con los attrs de la conexión
 const jwt = require('jsonwebtoken');
 // requerir de ecryptador
-const encrypt = require('../helpers/encrypt');
+const { encrypt, decodeBase64 } = require('../helpers/encrypt');
 
 const { getError } = require('../helpers/errors');
 const { execute } = require('../MySQL');
@@ -22,7 +22,7 @@ const get = async (req, res) => {
     if (TOKEN) {
 
         // obtener id
-        const ID = encrypt.decodeBase64(jwt.decode(TOKEN))
+        const ID = decodeBase64(jwt.decode(TOKEN))
         // guardar los datos recuperados            
         let data = [];
         let i = 0;
@@ -56,7 +56,7 @@ const get = async (req, res) => {
                 });
                 if (res.status(200)) res.json(data);
             })
-            .catch(rej => res.status(500).json({ error: rej }))
+            .catch(rej => res.status(406).json({ error: rej }))
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
@@ -89,7 +89,7 @@ const getSucursales = async (req, res) => {
  */
 const getHorarios = async (req, res) => {
     try {
-        
+
         // realizar consulta
         const HORARIOS = await execute(`SELECT id_horario, time_format(inicio, '%l:%i') as inicio, time_format(cierre, '%l:%i') as cierre FROM horarios_view`);
         // verificar respuesta satisfeca
@@ -141,14 +141,15 @@ const store = (req, res) => {
     try {
         // obtener los datos del req
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
+        let password = encrypt(clave)
         // realizar query o insert y enviarle los parametros
-        execute('INSERT INTO empleados(nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES ($1,$2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-            [nombres, apellidos, dui, encrypt(clave), planilla, telefono, correo, sucursal, horario, cargo, alias])
+        execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
             .then(() => {
                 res.status(201).send('Empleado agregado')
             })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) })
+                res.status(406).send({ error: getError(rej) })
             })
     } catch (e) {
         console.log(e)
