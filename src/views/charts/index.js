@@ -1,6 +1,6 @@
 import Chart from "chart.js/auto";
 
-let line, bar, dough;
+let line, bar, dough, pie;
 
 /**
  * Método que define la gráfica de tipo lineal, este método define objetos para la configuración 
@@ -50,6 +50,43 @@ export const lineGraph = (dom, x, y, title) => {
         line.destroy();
     }
     line = new Chart(document.getElementById(dom), config)
+}
+
+export const pieGraph = (dom, title, names, studio, values) => {
+    let data = {
+        labels: names,
+        datasets: [{
+            label: studio,
+            data: values,
+            backgroundColor: getColors(35),
+            borderColor: getColors(),
+            borderWidth: 1
+        }]
+    }
+
+    let options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: title
+            }
+        }
+    }
+
+    let config = {
+        type: 'pie',
+        data: data,
+        options: options
+    }
+
+    if (document.getElementById(dom).$chartjs) {
+        pie.destroy();
+    }
+    pie = new Chart(document.getElementById(dom), config)
 }
 
 

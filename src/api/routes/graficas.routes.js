@@ -3,7 +3,8 @@ const { Router } = require('express');
 // requerir de los métodos para obtener los datos para la gráficas
 const { getVentas, ordenesByMes, getEmpleadoCantidad, getEmpleadoCargos,
     getCliente, getClienteporfecha, getFacturasSucursales,
-    getServiciosVendidos
+    getServiciosVendidos,
+    getHoraMes
 } = require('../queries/graficas');
 
 
@@ -19,7 +20,7 @@ ROUTER.get('/servicosvendido/:tipo', getServiciosVendidos)
 ROUTER.get('/ordenesmes/:mes', ordenesByMes)
 ROUTER.get('/cargos', getEmpleadoCargos)
 ROUTER.get('/clientestop', getCliente)
-// ROUTER.get('/ordenes', getEmpleadoCargos)
+ROUTER.get('/hora/:mes', getHoraMes)
 ROUTER.get('/clientesfecha', getClienteporfecha)
 
 // exportar enrutador

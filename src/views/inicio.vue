@@ -39,7 +39,11 @@
             <canvas id="clientes"></canvas>
         </div>
         <div class="container-graph">
-            <canvas id="clientesfecha"></canvas>
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesgraphora" @change="getHoraMes">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <canvas id="horas"></canvas>
         </div>
 
 
@@ -101,7 +105,7 @@
 import axios from 'axios';
 import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
-import { lineGraph, barGraph, doughnutGraph } from './charts';
+import { lineGraph, barGraph, doughnutGraph, pieGraph } from './charts';
 
 export default {
     name: 'inicio',
@@ -110,6 +114,7 @@ export default {
         this.mesgraph = month;
         this.mesreportventas = month;
         this.mesreportreserv = month;
+        this.mesgraphora = month;
     },
     data() {
         let meses = [
@@ -126,6 +131,7 @@ export default {
             mesreportventas: '',
             today,
             mesreportreserv: '',
+            mesgraphora: '',
             tipos: [],
             tipo: 0
         }
@@ -191,6 +197,20 @@ export default {
                     doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
                 })
                 .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+        },
+        getHoraMes() {
+
+            // como mes enero es 0, al mes seleccionado sumarle uno
+            let req = (this.mesgraphora + 1)
+            axios.get('http://localhost:3000/api/graficas/hora/' + req)
+                .then(rows => {
+                    let hora = [], ventas = [], data = rows.data;
+                    for (let i = 0; i < data.length; i++) {
+                        hora.push(data[i].hora);
+                        ventas.push(data[i].ventas);
+                    }
+                    pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
+                })
         },
         getTiposServicios() {
             axios.get('http://localhost:3000/api/servicios/tipos')
@@ -349,6 +369,7 @@ export default {
         // this.tipoServicios;
         this.getClientesTop();
         this.getTiposServicios();
+        this.getHoraMes();
         // this.getServiciosTop();
     }
 }

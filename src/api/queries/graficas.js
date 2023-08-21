@@ -116,9 +116,28 @@ const getEmpleadoCargos = (req, res) => {
         }).catch(rej => {
             res.status(406).send({ error: getError(rej) })
         })
+}
 
+const getHoraMes = (req, res) => {
+    let mes = req.params.mes;
+    execute(`
+        SELECT COUNT(*) as ventas, 
+        CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+        FROM ordenes o
+        WHERE YEAR(o.fecha) = YEAR(CURRENT_DATE) AND MONTH(o.fecha) = ?
+        GROUP BY HOUR(o.hora)
+        ORDER BY ventas DESC LIMIT 7        
+    `, [mes]).then(rows => {
+        res.status(200).json(rows)
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) });
+    })
 }
 
 
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos }; 
+module.exports = {
+    getVentas, ordenesByMes, getEmpleadoCantidad, getCliente,
+    getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos,
+    getHoraMes
+}; 
