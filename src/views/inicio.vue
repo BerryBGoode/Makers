@@ -212,7 +212,11 @@ export default {
                         cantidad.push(data[i].cantidad);
                         producto.push(data[i].nombre_servicio);
                     }
-                    barGraph('productos', 'Productos más vendidos', producto, cantidad)
+                    if (cantidad.length > 0 && producto.length > 0) {
+                        barGraph('productos', 'Productos más vendidos', producto, cantidad)
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 })
         },
         reservacionesMes() {
@@ -226,7 +230,11 @@ export default {
                             fechas.push(data[i].fecha);
                             reservaciones.push(data[i].reservaciones)
                         }
-                        lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
+                        if (fechas.length > 0 && reservaciones.length > 0) {
+                            lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
+                        } else {
+                            alert('No se encontraron resultados')
+                        }
                     }).catch(e => { alert(e) })
             } else {
                 alert('Mes invalido')
@@ -248,9 +256,12 @@ export default {
                         mes.push(ventas[i].mes)
                         venta.push(ventas[i].venta)
                     }
-                    // con los arreglos con datos, crear la gráfica
-                    lineGraph('ventas', mes, venta, 'Ventas de año')
-
+                    if (mes.length > 0 && venta.length > 0) {
+                        // con los arreglos con datos, crear la gráfica
+                        lineGraph('ventas', mes, venta, 'Ventas de año')
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
 
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
@@ -266,8 +277,11 @@ export default {
                             dia.push(data[i].fecha);
                             ordenes.push(data[i].ordenes)
                         }
-
-                        linealGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
+                        if (dia.length > 0 && ordenes.length > 0) {
+                            linealGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
+                        } else {
+                            alert('No se encontraron resultados')
+                        }
 
                     }).catch(e => alert(e))
             } else {
@@ -283,7 +297,12 @@ export default {
                         cargo.push(data[i].cargo);
                         count.push(data[i].count)
                     }
-                    barGraph('cargos', 'Cargos', cargo, count);
+                    if (cargo.length > 0 && count.length > 0) {
+                        barGraph('cargos', 'Cargos', cargo, count);
+
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
         getClientesTop() {
@@ -294,7 +313,12 @@ export default {
                         ordenes.push(data[i].ordenes);
                         clientes.push(data[i].cliente);
                     }
-                    doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
+                    if (ordenes.length > 0 && clientes.length > 0) {
+                        doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
+
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 })
                 .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
@@ -310,7 +334,12 @@ export default {
                             hora.push(data[i].hora);
                             ventas.push(data[i].ventas);
                         }
-                        pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
+
+                        if (hora.length > 0 && ventas.length > 0) {
+                            pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
+                        } else {
+                            alert('No se encontraron resultados')
+                        }
                     })
             } else {
                 alert('Mes invalido');
@@ -333,7 +362,11 @@ export default {
                         servicio.push(data[i].nombre_servicio);
                         cantidad.push(data[i].cantidad)
                     }
-                    barGraph('servicios', 'Servicios más vendidos', servicio, cantidad);
+                    if (cantidad.length > 0 && servicio.length > 0) {
+                        barGraph('servicios', 'Servicios más vendidos', servicio, cantidad);
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 })
                 .catch(e => { alert(e) })
         },
@@ -349,8 +382,13 @@ export default {
                 // obteniendo los datos para mostrar en la tabla del reporte, este tiene que ir de acuerdo al nombre del campo en la db
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.nombres, row.apellidos, row.cargo]);
-                // llamando al método para generar reportes
-                generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
+
+                if (colData.length > 0) {
+                    generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
+                    // llamando al método para generar reportes
+                } else {
+                    alert('No se encontraron resultados')
+                }
 
             } catch (e) {
                 (e.response.data.error) ? alert(e.response.data.error) : alert(e)
@@ -369,7 +407,12 @@ export default {
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
                 // llamando al método para generar reportes
-                generateTablePDF('proxReservaciones', 'Próximas Reservaciones', names, colData)
+                if (colData.length > 0) {
+                    generateTablePDF('proxReservaciones', 'Próximas Reservaciones', names, colData)
+                    // llamando al método para generar reportes
+                } else {
+                    alert('No se encontraron resultados')
+                }
 
             } catch (e) {
                 (e.response.data.error) ? alert(e.response.data.error) : alert(e)
@@ -387,7 +430,12 @@ export default {
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.fecha, row.hora, row.cliente, row.duicliente, row.empleado, row.duiempleado]);
                 // llamando al método para generar reportes
-                generateTablePDF('prevReservaciones', 'Reservaciones Previas', names, colData);
+                if (colData.length > 0) {
+                    // llamando al método para generar reportes
+                    generateTablePDF('prevReservaciones', 'Reservaciones Previas', names, colData);
+                } else {
+                    alert('No se encontraron resultados')
+                }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
@@ -404,7 +452,11 @@ export default {
                 // con los datos recuperados de la petición y separlas según el nombre obtenido en .data)
                 const VALUES = ROWS.map(row => [row.nombre_sucursal, row.nombre_servicio, row.cantidad, '$' + row.precio])
                 // generar el reporte con la tabla
-                generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', names, VALUES);
+                if (VALUES.length > 0) {
+                    generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', names, VALUES);
+                } else {
+                    alert('No se encontraron resultados')
+                }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }
@@ -420,7 +472,11 @@ export default {
                 // extrayendo la date de manera individual de la petición            
                 const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
                 // invocando el método para generar el reporte 
-                generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
+                if (VALUES.length > 0) {
+                    generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
+                } else {
+                    alert('No se encontraron resultados')
+                }
             } catch (error) {
 
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
@@ -442,10 +498,14 @@ export default {
                     // extrayendo la data y diviendola en porciones más pequeñas según las col diferentes
                     const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
                     // generando el pdf 
-                    generateTablePDF(
-                        'reservaciones de ' + this.meses[this.mesreportreserv].toLowerCase(),
-                        'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
-                    );
+                    if (VALUES.length > 0) {
+                        generateTablePDF(
+                            'reservaciones de ' + this.meses[this.mesreportreserv].toLowerCase(),
+                            'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
+                        );
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 } else {
                     alert('Mes invalido')
                 }
@@ -467,7 +527,11 @@ export default {
                     // extrayendo los valores para el reporte de la data de la petición
                     const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.dui, row.fecha, row.hora]);
                     // generando el pdf 
-                    generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+                    if (VALUES.length > 0) {
+                        generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
+                    } else {
+                        alert('No se encontraron resultados')
+                    }
                 } else {
                     alert('Mes invalido');
                 }
