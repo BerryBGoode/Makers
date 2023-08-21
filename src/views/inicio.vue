@@ -21,6 +21,10 @@
         Generar pdf
       </button>
       <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+      <button @click="EmpleadoPlace" class="btn btn-makers">Generar pdf
+    </button>
+      <button @click="EmpleadoTime" class="btn btn-makers">Generar pdf
+    </button>
     </div>
     <div class="container-ventas-graph">
       <canvas id="ventas"></canvas>
@@ -238,6 +242,57 @@ export default {
         error.response.data.error
           ? alert(error.response.data.error)
           : alert(error);
+      }
+    },
+    async EmpleadoTime() {
+      try {
+        const EMPLEADO = await axios.get(
+          "http://localhost:3000/api/reportes/empleadoshorario"
+        );
+        const ROWS = EMPLEADO.data;
+        const colNames = ["Fecha", "Hora", "Cliente", "DUI", "Empleado", "DUI"];
+        const colData = ROWS.map((row) => [
+          row.fecha,
+          row.hora,
+          row.cliente,
+          row.duicliente,
+          row.empleado,
+          row.duiempleado,
+        ]);
+        generateTablePDF(
+          "empleado-time",
+          "Empleados por horario",
+          colNames,
+          colData
+        );
+      } catch (e) {
+        e.response.data.error ? alert(e.response.data.error) : alert(e);
+      }
+    },
+    async EmpleadoPlace() {
+      try {
+        // llamar la función asicrona para obtener los datos de la petición
+        const EMPLEADO = await axios.get(
+          "http://localhost:3000/api/reportes/empleadossucursal"
+        );
+        const ROWS = EMPLEADO.data;
+        const colNames = ["Fecha", "Hora", "Cliente", "DUI", "Empleado", "DUI"];
+        const colData = ROWS.map((row) => [
+          row.fecha,
+          row.hora,
+          row.cliente,
+          row.duicliente,
+          row.empleado,
+          row.duiempleado,
+        ]);
+        generateTablePDF(
+          "empleado-place",
+          "Empleados por Sucursal",
+          colNames,
+          colData
+        );
+      } catch (e) {
+        e.response.data.error ? alert(e.response.data.error) : alert(e);
       }
     },
   },
