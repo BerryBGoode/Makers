@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            <hr>            
+            <hr>
             <div class="buttons-reservacion bottom-0 form-data">
                 <router-link to="/ordenes" class="btn btn-makers">
                     Cancelar
@@ -73,6 +73,7 @@ import axios from 'axios';
 export default {
     name: 'ordenes',
     data() {
+
         return {
             // arreglo con info. clientes
             clientes: [],
@@ -84,11 +85,12 @@ export default {
             },
             model: {
                 ordenes: {
-                    cliente: 'Seleccionar'
+                    cliente: 'Seleccionar',
+
                 }
             },
             // mostrarle al cliente mensajes
-            msg: ''
+            msg: '',
         }
     },
     mounted() {
@@ -108,7 +110,7 @@ export default {
             try {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
-                    .then(res => { this.clientes = res.data;}) // obtener los datos de la petición
+                    .then(res => { this.clientes = res.data; }) // obtener los datos de la petición
                     .catch(e => { alert(e.response.data.error) })
             } catch (error) {
                 console.error(error);

@@ -84,7 +84,7 @@ const store = (req, res) => {
         const { cliente } = req.body;
         let estado = 1
         // realizar query o insert y enviarle los parametros
-        execute('INSERT INTO ordenes(id_orden ,fecha, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, ?, ?)',
+        execute('INSERT INTO ordenes(id_orden ,fecha, hora, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, CURRENT_TIME, ?, ?)',
             [estado, convertToBin(cliente)])
             .then(() => {
                 res.status(201).send('Orden agregada')
@@ -134,7 +134,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).send('Orden eliminada');
             }).catch(rej => {
-                res.status(406).send({error: getError(rej)})
+                res.status(406).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);

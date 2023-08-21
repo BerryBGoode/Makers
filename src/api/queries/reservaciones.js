@@ -23,7 +23,7 @@ const getDuiCli = async (req, res) => {
         if (res.status(200)) res.send(DUI);
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(406).send({ error: getError(rej) })
     }
 }
 
@@ -40,7 +40,7 @@ const getCliente = async (req, res) => {
         if (res.status(200)) res.send(CLIENTE[0]);
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(406).send({ error: getError(rej) })
     }
 }
 
@@ -60,7 +60,7 @@ const getEmpleado = async (req, res) => {
             if (res.status(200)) res.json(data[0]);
         })
         .catch(rej => {
-            res.status(500).send({ error: getError(rej['errno']) });
+            res.status(406).send({ error: getError(rej) })
         })
 }
 
@@ -83,7 +83,7 @@ const getDuiEmp = async (req, res) => {
             if (res.status(200)) res.json(data);
         })
         .catch(rej => {
-            res.status(500).json(rej);
+            res.status(406).send({ error: getError(rej) })
             console.log(rej)
         })
 }
@@ -108,7 +108,7 @@ const get = async (req, res) => {
             });
             if (res.status(200)) res.json(data);
         })
-        .catch(rej => res.status(500).json({ error: rej }))
+        .catch(rej => res.status(406).send({ error: getError(rej) }))
 }
 
 /* Método que cuarga los datos de las reservaciones
@@ -127,7 +127,7 @@ const store = async (req, res) => {
             .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.error(error);
-        res.status(500).send('Surgio un problema en el servidor');
+        res.status(406).send({ error: getError(rej) })
     }
 }
 
@@ -155,7 +155,7 @@ const one = async (req, res) => {
         if (res.status(200)) res.json(RESERVACION[0])
     } catch (error) {
         console.error(error);
-        res.status(500).send({ error: 'Surgio un problema en el servidor' });
+        res.status(406).send({ error: getError(rej) })
     }
 }
 
@@ -178,7 +178,7 @@ const change = async (req, res) => {
             .catch(rej => { res.status(406).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
-        res.status(500).send({ error: 'Surgio un problema en el servidor' });
+        res.status(406).send({ error: getError(rej) })
     }
 }
 
@@ -200,7 +200,7 @@ const destroy = async (req, res) => {
     } catch (error) {
         //capturar error
         console.error(error);
-        res.status(500).send({ error: 'Surgio un problema en el servidor' });
+        res.status(406).send({ error: getError(rej) })
     }
 }
 //exportar funciones
