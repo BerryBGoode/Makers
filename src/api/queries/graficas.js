@@ -75,9 +75,19 @@ const getFacturasSucursales = (req, res) => {
 }
 
 const getServiciosVendidos = (req, res) => {
-    execute('SELECT * FROM vista_productos_mas_vendidos')
-        .then(row => {
-            es.status(200).json(rows)
+    let tipo = req.params.tipo;
+    execute(`
+            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+            FROM servicios s
+            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+            WHERE t.id_tipo_servicio = ?
+            GROUP BY s.nombre_servicio
+            ORDER BY cantidad DESC LIMIT 3`
+        , [tipo])
+        .then(rows => {
+            res.status(200).json(rows)
         }).catch(rej => {
             res.status(406).send({ error: getError(rej) })
         })

@@ -15,7 +15,7 @@ const ROUTER = Router();
 // para retornarle el resultado del servidor (lo que se obtiene al realizar las consultas)
 ROUTER.get('/ventas', getVentas)
 ROUTER.get('/facturasS', getFacturasSucursales)
-ROUTER.get('/servicosV', getServiciosVendidos)
+ROUTER.get('/servicosvendido/:tipo', getServiciosVendidos)
 ROUTER.get('/ordenesmes/:mes', ordenesByMes)
 ROUTER.get('/cargos', getEmpleadoCargos)
 ROUTER.get('/clientestop', getCliente)

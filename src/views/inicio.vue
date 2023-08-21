@@ -28,7 +28,12 @@
         </div>
 
         <div class="container-graph">
-            <canvas id="cantidad"></canvas>
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
+                @change="getServiciosTop" v-model="tipo">
+                <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}</option>
+            </select>
+
+            <canvas id="servicios"></canvas>
         </div>
         <div class="container-graph">
             <canvas id="clientes"></canvas>
@@ -120,7 +125,9 @@ export default {
             meses,
             mesreportventas: '',
             today,
-            mesreportreserv: ''
+            mesreportreserv: '',
+            tipos: [],
+            tipo: 0
         }
     },
     methods: {
@@ -184,6 +191,27 @@ export default {
                     doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
                 })
                 .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+        },
+        getTiposServicios() {
+            axios.get('http://localhost:3000/api/servicios/tipos')
+                .then(res => {
+                    this.tipos = res.data;
+                    this.tipo = res.data[0].id_tipo_servicio;
+                    this.getServiciosTop();
+                })
+                .catch(e => console.log(e));
+        },
+        getServiciosTop() {
+            axios.get('http://localhost:3000/api/graficas/servicosvendido/' + this.tipo)
+                .then(res => {
+                    let servicio = [], cantidad = [], data = res.data;
+                    for (let i = 0; i < data.length; i++) {
+                        servicio.push(data[i].nombre_servicio);
+                        cantidad.push(data[i].cantidad)
+                    }
+                    barGraph('servicios', 'Servicios más vendidos', servicio, cantidad);
+                })
+                .catch(e => { alert(e) })
         },
         async EmpleadosCargos() {
             // realizar petición según el reporte
@@ -320,6 +348,8 @@ export default {
         this.getEmpleadosCargos();
         // this.tipoServicios;
         this.getClientesTop();
+        this.getTiposServicios();
+        // this.getServiciosTop();
     }
 }
 </script>

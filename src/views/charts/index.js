@@ -88,7 +88,9 @@ export const barGraph = (dom, title, x, y) => {
             }
         }
     };
-
+    if (document.getElementById(dom).$chartjs) {
+        bar.destroy();
+    }
     bar = new Chart(document.getElementById(dom), config)
 }
 
