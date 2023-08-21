@@ -83,7 +83,8 @@
                         <div class="col-md-3 buttons-historial">
                             <button class="btn btn-makers-revert"
                                 @click="historialCompras(cliente.id_cliente)">Compras</button>
-                            <button class="btn btn-makers-revert">Reservaciones</button>
+                            <button class="btn btn-makers-revert"
+                                @click="historialRerservaciones(cliente.id_cliente)">Reservaciones</button>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">
@@ -227,6 +228,22 @@ export default {
                 const VALUES = ROWS.map(row => [row.nombres, row.apellidos, row.fecha, row.hora])
                 // creando reporte
                 generateTablePDF('compras', 'Historial de compras', NAMES, VALUES);
+            } catch (error) {
+                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+            }
+        },
+        async historialRerservaciones(id) {
+            try {
+                // realizando la petición sobre las ordenes que tiene el cliente
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/historialreservaciones/' + id)
+                // sí se realizo con exito que obtenga los datos de la petición
+                const ROWS = RESERVACIONES.data;
+                // definiendo los headers para el reporte
+                const NAMES = ['Cliente', 'Dui', 'Empleado', 'Dui', 'Fecha', 'Hora'];
+                // extrayendo los datos de la petición
+                const VALUES = ROWS.map(row => [row.Cliente, row.DuiCliente, row.Empleado, row.DuiEmpleado, row.fecha, row.hora])
+                // creando reporte
+                generateTablePDF('reservaciones', 'Historial de reservaciones', NAMES, VALUES);
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
             }

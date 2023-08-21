@@ -7,8 +7,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import store from "./../store/index";
 
-const TODAY = new Date;
-
 const formatDateToDDMMYYYY = date => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses en Date empiezan desde 0
@@ -19,6 +17,7 @@ const formatDateToDDMMYYYY = date => {
 
 export const generateTablePDF = (pdf, title, names, values) => {
 
+    const TODAY = new Date;
     try {
         // a partir de aquí genera el reporte
         const PDF = new jsPDF();

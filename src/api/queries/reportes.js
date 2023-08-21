@@ -77,11 +77,11 @@ const getLessProductos = async (req, res) => {
 const historialComprasCliente = async (req, res) => {
     try {
         // obtener el cliente que se decea saber el historial de ordenes
-        const cliente = req.params.cliente
+        let cliente = req.params.cliente
         const ORDENES = await execute(`
             SELECT c.nombres, c.apellidos, c.dui,
             date_format(o.fecha, '%Y-%m-%d') as fecha, 
-            TIME_FORMAT(o.hora, '%h:%i') as hora
+            CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
             FROM ordenes o
             INNER JOIN clientes c ON c.id_cliente = o.id_cliente
             WHERE c.id_cliente = ?
@@ -92,5 +92,33 @@ const historialComprasCliente = async (req, res) => {
     }
 }
 
+/**
+ * Metodo para obtener las reservaciones que tiene un cliente 
+ * @param {*} req cuerpo de la petición (cliente)
+ * @param {*} res respuesta del servidor
+ */
+const historialReservacionesCliente = async (req, res) => {
+    try {
+        // obtener las reservaciones por cliente
+        let usuario = req.params.usuario;
+
+        const RESERVACIONES = await execute(`
+            SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
+	        CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
+            DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
+            CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+            FROM reservaciones r
+            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+            WHERE c.id_cliente = ?
+        `, [usuario])
+        if (RESERVACIONES) {
+            if (res.status(200)) res.json(RESERVACIONES);
+        }
+    } catch (error) {
+        res.status(406).send({ error: getError(error) })
+    }
+}
+
 // exportando métodos para llamarlo en routes/reportes.routes.js
-module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos, historialComprasCliente }
+module.exports = { getProxReservaciones, getPrevReservaciones, getLessProductos, historialComprasCliente, historialReservacionesCliente }
