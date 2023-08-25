@@ -58,13 +58,12 @@ const validateUsuario = async (req, res) => {
                 auth = false;
                 token = '';
             }
-            console.log('a')
             res.status(200).send({ msg, auth, token });
         }
     } catch (error) {
         console.log('error')
         console.log(error)
-        res.status(500).send({error: getError(error)})
+        res.status(500).send({ error: getError(error) })
     }
 }
 
