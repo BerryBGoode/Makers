@@ -192,5 +192,21 @@ const change = async (req, res) => {
     }
 }
 
+/**
+ * Método asincrono para verificar sí hay Sucursales registradas para verificar el primer uso
+ * @param {*} req datos de la petición (vienen de la del cliente)
+ * @param {*} res respuesta del servidor
+ */
+const verificarSucursales = async (req, res) => {
+    try {
+        // obtener las Sucursales para verificar sí existen registradas
+        const SUCURSALES = await execute('SELECT * FROM sucursales');
+        // retornar en la respuesta las sucursales encontradas
+        res.status(200).json(SUCURSALES);
+
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
 // exportar modulos
-module.exports = { validateUsuario, getInfo, getConfig, change };
+module.exports = { validateUsuario, getInfo, getConfig, change, verificarSucursales };
