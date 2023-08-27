@@ -80,7 +80,7 @@
                 </div>
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
-                        <img :src="model.logo_lc" alt="Logo">
+                        <img :src="model.logo_lc" alt="Logo" draggable="false">
                     </div>
 
                     <div class="buttons-login">

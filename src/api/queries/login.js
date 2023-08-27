@@ -208,5 +208,21 @@ const verificarSucursales = async (req, res) => {
         res.status(406).send({ error: getError(error) });
     }
 }
+
+/**
+ * Método ascricrono para verificar sí hay empleados registrados para el método de primer uso
+ * @param {*} req datos de la petición
+ * @param {*} res respuesta del servidor
+ */
+const verificarEmpleados = async (req, res) => {
+    try {
+        // obtener los empleados registrados
+        const EMPLEADOS = await execute('SELECT * FROM empleados');
+        // retornar los empleados registrados
+        res.status(200).json(EMPLEADOS)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
 // exportar modulos
-module.exports = { validateUsuario, getInfo, getConfig, change, verificarSucursales };
+module.exports = { validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados };

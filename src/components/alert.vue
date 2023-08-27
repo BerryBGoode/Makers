@@ -56,7 +56,7 @@ export const notificationInfo = (txt, time, button) => {
  * @param {*} time tiempo de duración en milisegundos de la notificación
  * @param {*} button texto del botton
  */
-export const notificationError = (txt, time, button) => {
+export const notificationError = (txt, time) => {
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -68,7 +68,7 @@ export const notificationError = (txt, time, button) => {
         color: '#fff',
         width: '25vw',
         timer: time,
-        confirmButtonText: button,
+        confirmButtonText: 'Aceptar',
         iconColor: '#767676',
         confirmButtonColor: '#393534',
     })
