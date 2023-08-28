@@ -64,6 +64,8 @@ import notfound from '../views/404.vue';
 
 import inicio from '../views/inicio.vue';
 
+import forgot from '../views/ForgotPassword.vue';
+
 // intancia del enrutador
 const ROUTER = createRouter({
     // configuración del historial dentro de la ejecucción
@@ -315,6 +317,11 @@ const ROUTER = createRouter({
             name: 'inicio',
             path: '/inicio',
             component: inicio
+        },
+        {
+            name: 'correo',
+            path: '/recuperar/correo',
+            component: forgot
         }
 
     ]

@@ -4,24 +4,19 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const mysql = require('mysql2');
+const { execute } = require('../MySQL');
 
 const app = express();
 app.use(bodyParser.json());
 
 const PORT = 3000;
-const EMAIL_SENDER = 'your-email@example.com';
-const EMAIL_PASSWORD = 'your-email-password';
+const EMAIL_SENDER = 'roberalvarado.20@gmail.com';
+const EMAIL_PASSWORD = 'ehlkqifmwslkverv';
 
-const dbPool = mysql.createPool({
-  host: 'localhost',
-  user: 'your-db-username',
-  password: 'your-db-password',
-  database: 'your-db-name',
-});
 
 function fetchUserDataFromDatabase(email, callback) {
-  const query = 'SELECT * FROM users WHERE email = ?';
-  dbPool.execute(query, [email], (error, results) => {
+  const query = 'SELECT * FROM empleados WHERE correo = ?';
+  execute(query, [email], (error, results) => {
     if (error) {
       console.error(error);
       return callback(error, null);
@@ -33,7 +28,7 @@ function fetchUserDataFromDatabase(email, callback) {
   });
 }
 
-app.post('/forgot-password', (req, res) => {
+app.post('/recuperarcontracorreo', (req, res) => {
   const { email } = req.body;
 
   fetchUserDataFromDatabase(email, (error, user) => {

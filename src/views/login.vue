@@ -85,7 +85,8 @@
 
                     <div class="buttons-login">
                         <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
-                        <a href="" class="href-makers">Restablecer contraseña</a>
+                        <router-link class="href-makers" to="">Restablecer contraseña
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -96,21 +97,20 @@
 // importar axios para hacer peticiones
 import axios from 'axios';
 // importar para configurar rutas
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouterLink } from 'vue-router'
 // importar componente a reenviar
 import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
 
 
-
 export default {
     // nombre del componente
     name: "login",
-    components: {logo},
+    components: { logo, RouterLink },
     // método que retorna el componente
     data() {
-        return {            
+        return {
             model: {
                 logo_lc: logo,
                 empleado: {
@@ -160,7 +160,7 @@ export default {
                             // redireccionar al inicio
                             this.$router.push(inicio)
                         }
-                    }) 
+                    })
                     .catch(e => {
                         alert(e.response.data.error)
                     })
@@ -175,7 +175,14 @@ export default {
             this.$emit('getCookie', this.$cookies.get('auth'))
             localStorage.setItem('auth', token)
 
-        },        
+        },
+        //método para redireccionar a recuperación de contraseña
+        redirectToOtherPage() {
+            this.$router.push(forgot); // Redirige a la ruta '/other-page'
+        }
+    },
+    mounted() {
+        console.log(RouterLink)
     }
 
 }

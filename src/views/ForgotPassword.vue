@@ -55,48 +55,47 @@
 </style>
 <template>
     <div>
-      <h1>Forgot Password</h1>
-      <input v-model="email" placeholder="Email">
-      <button @click="sendResetEmail">Send Reset Email</button>
+        <h1>Recuperar contraseña</h1>
+        <input v-model="email" placeholder="Ingresa tu correo">
+        <button @click="sendResetEmail">Enviar correo</button>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
 // importar axios para hacer peticiones
 import axios from 'axios';
-// importar para configurar rutas
-import { createRouter, createWebHistory } from 'vue-router'
-  export default {
+
+export default {
     data() {
-      return {
-        email: ''
-      };
+        return {
+            email: ''
+        };
     },
     methods: {
-      async sendResetEmail() {
-        try {
-          const response = await fetch('/forgot-password', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: this.email })
-          });
-  
-          if (response.status === 200) {
-            // Password reset email sent successfully
-          } else if (response.status === 404) {
-            // User not found
-          } else {
-            // Other error
-          }
-        } catch (error) {
-            alert(e.response.data.error)
+        async sendResetEmail() {
+            try {
+                const response = await fetch('/recuperarcontracorreo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: this.email })
+                });
+
+                if (response.status === 200) {
+                    // Password reset email sent successfully
+                } else if (response.status === 404) {
+                    // User not found
+                } else {
+                    // Other error
+                }
+            } catch (error) {
+                alert(e.response.data.error)
+            }
         }
-      }
     }
-  };
-  </script>
+};
+</script>
 
 
 
