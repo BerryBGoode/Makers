@@ -228,5 +228,5 @@ const reservacionesMes = async (req, res) => {
 module.exports = {
     getProxReservaciones, getPrevReservaciones, getLessProductos,
     historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes,
-    reservacionesMes
+    reservacionesMes, getEmpleadosOrdenes, getTipoServicios
 };
