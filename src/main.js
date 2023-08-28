@@ -16,7 +16,9 @@ import cors from 'cors';
 
 import VueCookies from 'vue-cookies';
 import store from './store';
-
+import alert from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.all';
+import '@sweetalert2/theme-dark';
 // instancia del componente
 const APP = createApp(App)
 
@@ -25,8 +27,8 @@ APP.use(cors);
 APP.use(ROUTER);
 APP.use(store)
 // usando vue-cookies, cada cookie durará 1 día
-APP.use(VueCookies, { expires: '1d'});
-
+APP.use(VueCookies, { expires: '1d' });
+APP.use(alert);
 // montar lo recuperado del componente principal
 // al contenedor con id="app"
 APP.mount('#app')

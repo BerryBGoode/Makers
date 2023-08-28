@@ -75,7 +75,7 @@ hr,
 .form-select {
     background: transparent url(../../assets/img/arrow.png) no-repeat right 0.75rem center;
     color: white;
-    border: solid 1px rgb(118, 118, 118);
+    border: solid 1px #767676;
 }
 
 option {
@@ -86,7 +86,7 @@ option {
 .form-control:focus {
     border-color: #b4b0af;
     outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(84, 84, 84, 0.48);
+    box-shadow: 0 0 0 0.25rem #5454547a;
 }
 
 .form-control,
@@ -227,12 +227,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 98%;
 }
 
-.form-control[type=file]:disabled{
+.form-control[type=file]:disabled {
     background-color: #403C3B;
 }
-.form-control[type=file]:hover{
+
+.form-control[type=file]:hover {
     cursor: pointer;
 }
+
 /* estilos por defecto de vue */
 /* #app {
 

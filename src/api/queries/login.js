@@ -58,13 +58,12 @@ const validateUsuario = async (req, res) => {
                 auth = false;
                 token = '';
             }
-            console.log('a')
             res.status(200).send({ msg, auth, token });
         }
     } catch (error) {
         console.log('error')
         console.log(error)
-        res.status(500).send({error: getError(error)})
+        res.status(500).send({ error: getError(error) })
     }
 }
 
@@ -193,5 +192,37 @@ const change = async (req, res) => {
     }
 }
 
+/**
+ * Método asincrono para verificar sí hay Sucursales registradas para verificar el primer uso
+ * @param {*} req datos de la petición (vienen de la del cliente)
+ * @param {*} res respuesta del servidor
+ */
+const verificarSucursales = async (req, res) => {
+    try {
+        // obtener las Sucursales para verificar sí existen registradas
+        const SUCURSALES = await execute('SELECT * FROM sucursales');
+        // retornar en la respuesta las sucursales encontradas
+        res.status(200).json(SUCURSALES);
+
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+/**
+ * Método ascricrono para verificar sí hay empleados registrados para el método de primer uso
+ * @param {*} req datos de la petición
+ * @param {*} res respuesta del servidor
+ */
+const verificarEmpleados = async (req, res) => {
+    try {
+        // obtener los empleados registrados
+        const EMPLEADOS = await execute('SELECT * FROM empleados');
+        // retornar los empleados registrados
+        res.status(200).json(EMPLEADOS)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
 // exportar modulos
-module.exports = { validateUsuario, getInfo, getConfig, change };
+module.exports = { validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados };

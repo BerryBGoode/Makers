@@ -153,54 +153,57 @@ export default {
         },
         crearDetalle() {
             this.msg = '';
-            // validar datos, evaluar casos erroneos
-            if (this.model.pedido.servicio === 'Seleccionar' || this.model.sucursal.value === 'Seleccionar' ||
-                this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
-                this.model.pedido.cantidad <= -1 || ((this.input.stock) ? this.model.pedido.cantidad > this.input.stock : this.model.pedido.cantidad) >= 1) {
-                this.msg = 'Datos invalidos'
-                
-            } else {
+            // console.log(console.log(
+            //     this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
+            //     this.model.pedido.cantidad <= -1 || ((this.input.stock) ? this.model.pedido.cantidad > this.input.stock : this.model.pedido.cantidad) >= 1))
+            // // validar datos, evaluar casos erroneos
+            // if (this.model.pedido.servicio === 'Seleccionar' || this.model.sucursal.value === 'Seleccionar' ||
+            //     this.model.pedido.descuento <= -1 || this.model.pedido.descuento >= 101 ||
+            //     this.model.pedido.cantidad <= -1 || ((this.input.stock) ? this.model.pedido.cantidad > this.input.stock : this.model.pedido.cantidad) >= 1) {
+            //     this.msg = 'Datos invalidos'
 
-                // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
-                if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.sucursal.txt !== 'Producto') {
-                    this.model.pedido.cantidad = 1;
-                    this.model.pedido.descuento = 0;
-                }
-                // verificar sí hay cantidad establecediar cuando es un producto para asignar por defecto
-                if (!this.model.pedido.cantidad && this.model.sucursal.txt !== 'Producto') {
-                    this.model.pedido.cantidad = 1;
-                }
-                // verificar sí se establecio un descuento, sino establecer 0
-                if (!this.model.pedido.descuento) {
-                    this.model.pedido.descuento = 0;
-                }
+            // } else {
 
-                // realizar petición
-                axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido)
-                    .then(res => {                        
-                        // verificar error                    
-                        if (res.data.error) {
-                            this.msg = res.data.error;
-                        }
-                        // verificar sí la tarea se realizo de manera esperada
-                        if (res.status === 201 && !res.data.error) {
-                            // limipiar campos
-                            this.model.pedido = {
-                                servicio: 'Seleccionar',
-                                descuento: '',
-                                cantidad: '',
-                                orden: this.$route.params.orden
-                            }
-                            this.msg = '';
-                            alert(res.data);
-                            // redireccionar
-                            this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
-                        }
-                    })
-                    .catch(e => {                        
-                        alert(e.response.data.error);
-                    });
+            // asignar por defecto sí es un servicio el seleccionado y no agregado descuento ni cantidad
+            if (!this.model.pedido.cantidad && !this.model.pedido.descuento && this.model.sucursal.txt !== 'Producto') {
+                this.model.pedido.cantidad = 1;
+                this.model.pedido.descuento = 0;
             }
+            // verificar sí hay cantidad establecediar cuando es un producto para asignar por defecto
+            if (!this.model.pedido.cantidad && this.model.sucursal.txt !== 'Producto') {
+                this.model.pedido.cantidad = 1;
+            }
+            // verificar sí se establecio un descuento, sino establecer 0
+            if (!this.model.pedido.descuento) {
+                this.model.pedido.descuento = 0;
+            }
+
+            // realizar petición
+            axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido)
+                .then(res => {
+                    // verificar error                    
+                    if (res.data.error) {
+                        this.msg = res.data.error;
+                    }
+                    // verificar sí la tarea se realizo de manera esperada
+                    if (res.status === 201 && !res.data.error) {
+                        // limipiar campos
+                        this.model.pedido = {
+                            servicio: 'Seleccionar',
+                            descuento: '',
+                            cantidad: '',
+                            orden: this.$route.params.orden
+                        }
+                        this.msg = '';
+                        alert(res.data);
+                        // redireccionar
+                        this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
+                    }
+                })
+                .catch(e => {
+                    alert(e.response.data.error);
+                });
+            // }
         }
     }
 }

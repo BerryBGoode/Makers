@@ -54,8 +54,8 @@
         <div class="logo-sidebar">
             <picture>
                 <source srcset="../assets/img/logos/logo_blanco.png" type="image/png">
-                <img :src="logo"  srcset="../assets/img/logos/logo_blanco.png"/>
-            </picture>            
+                <img :src="logo" srcset="../assets/img/logos/logo_blanco.png" draggable="false" />
+            </picture>
         </div>
         <ul class="ul-lista">
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">
@@ -72,7 +72,7 @@
 // importando componentes para enrutar
 import { RouterLink, RouterView } from "vue-router";
 // funcionalidades del componente
-export default {    
+export default {
     // nombre del componente
     name: "sidebar",
     data() {

@@ -80,7 +80,7 @@
                 </div>
                 <div class="row-6 p-3 w-50 func">
                     <div class="img-fun align-center">
-                        <img :src="model.logo_lc" alt="Logo">
+                        <img :src="model.logo_lc" alt="Logo" draggable="false">
                     </div>
 
                     <div class="buttons-login">
@@ -101,16 +101,17 @@ import { createRouter, createWebHistory } from 'vue-router'
 import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
+import { } from '../components/alert.vue';
 
 
 
 export default {
     // nombre del componente
     name: "login",
-    components: {logo},
+    components: { logo },
     // método que retorna el componente
     data() {
-        return {            
+        return {
             model: {
                 logo_lc: logo,
                 empleado: {
@@ -143,6 +144,7 @@ export default {
             // validar datos vacios
             if (!this.model.empleado.correo && !this.model.empleado.clave && !this.model.empleado.dui) {
                 this.msg = 'No se permite campos vacíos';
+
             } else {
                 // realizar petición
                 axios.post('http://localhost:3000/api/auth', this.model.empleado)
@@ -160,7 +162,7 @@ export default {
                             // redireccionar al inicio
                             this.$router.push(inicio)
                         }
-                    }) 
+                    })
                     .catch(e => {
                         alert(e.response.data.error)
                     })
@@ -175,7 +177,7 @@ export default {
             this.$emit('getCookie', this.$cookies.get('auth'))
             localStorage.setItem('auth', token)
 
-        },        
+        },
     }
 
 }

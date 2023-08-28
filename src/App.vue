@@ -43,11 +43,16 @@ main {
 
 
 <template>
-    <template v-if="!auth || !storage">
-        <login @getCookie="validateCookie" />
+    <template v-if="sucursales.length <= 0">
+        <primerUso />
     </template>
     <template v-else>
-        <dashboard />
+        <template v-if="!auth || !storage">
+            <login @getCookie="validateCookie" />
+        </template>
+        <template v-else>
+            <dashboard />
+        </template>
     </template>
 </template>
 <script>
@@ -56,15 +61,19 @@ main {
 
 import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
-import login from './views/login.vue'
+import login from './views/login.vue';
+import axios from 'axios';
+import primerUso from './primerUso.vue';
+
 // espacio para importar componentes hijos
 export default {
     name: 'app',
-    components: { dashboard, login, cookies},
+    components: { dashboard, login, cookies, axios, primerUso },
     data() {
         return {
             auth: '',
             storage: '',
+            sucursales: []
         }
     },
     methods: {
@@ -81,7 +90,7 @@ export default {
             const STORAGE = this.getTokenStorage('auth')
             // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
             // de login o dashboard, síno tiene valor le asignará null para mostrar login
-            this.auth = COOKIE  !== null;
+            this.auth = COOKIE !== null;
         },
         chechTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
@@ -93,12 +102,24 @@ export default {
         },
         getTokenStorage(token) {
             return localStorage.getItem(token)
+        },
+        verificarSucursales() {
+            axios.get('http://localhost:3000/api/auth/verificarsucursal')
+                .then(rows => {
+
+                    // guardar las sucursales encontradas
+                    this.sucursales = rows.data;
+                }).catch(rej => {
+                    console.log(rej);
+                })
+
         }
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
         this.checkTokenCookie();
         this.chechTokenStorage();
+        this.verificarSucursales();
     },
     watch: {
         // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
@@ -109,7 +130,7 @@ export default {
                 // volver a verificar sí existe la cookie cada 20segundos
                 setInterval(() => {
                     this.checkTokenCookie();
-                }, 10)                
+                }, 10)
             }
         }
     }
