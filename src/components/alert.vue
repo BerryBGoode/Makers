@@ -125,7 +125,47 @@ export const notificationWarning = (txt, time, button) => {
  * @param {*} time tiempo de duración en milisegundos de la notificación
  * @param {*} button texto del botton
  */
-export const notificationQuestion = (txt, time, button) => {
+export const alertQuestion = (txt, time, button, deny = null, txtdeny = null, cancel = null) => {
+    if (!time) {
+        time = null;
+    }
+    return Swal.fire({
+        toast: false,
+        background: '#1B1716',
+        position: 'center',
+        timerProgressBar: true,
+        title: txt,
+        showCancelButton: cancel,
+        cancelButtonText: 'Cancelar',
+        showDenyButton: deny,
+        denyButtonText: txtdeny,
+        cancelButtonColor: 'Cancelar',
+        icon: 'question',
+        // text: 'dxd',
+        color: '#fff',
+        width: '25vw',
+        timer: time,
+        confirmButtonText: button,
+        iconColor: '#767676',
+        confirmButtonColor: '#393534',
+        denyButtonColor: '#393534',
+        // verificar sí se confirma el mensaje
+    }).then((res) => {
+        // retornar el resultado de la pregunta
+        return res.isConfirmed
+    })
+
+}
+/**
+ * Método para generar mensaje de tipo pregunta
+ * @param {*} txt texto del mensaje
+ * @param {*} time tiempo de duración en milisegundos de la notificación
+ * @param {*} button texto del botton
+ */
+export const notificationQuestion = (txt, time, button, deny = null, txtdeny = null) => {
+    if (!time) {
+        time = null;
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -133,6 +173,8 @@ export const notificationQuestion = (txt, time, button) => {
         timerProgressBar: true,
         title: txt,
         showCancelButton: true,
+        showDenyButton: deny,
+        denyButtonText: txtdeny,
         cancelButtonColor: 'Cancelar',
         icon: 'question',
         // text: 'dxd',

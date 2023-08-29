@@ -9,7 +9,7 @@ LOGIN.post('/', validateUsuario);
 LOGIN.get('/config', getConfig);
 LOGIN.get('/', getInfo);
 LOGIN.put('/', change);
-LOGIN.get('/verificarsucursal', verificarSucursales);
-LOGIN.get('/verificarempleados', verificarEmpleados);
+LOGIN.get('/verificar/sucursal', verificarSucursales);
+LOGIN.get('/verificar/empleados', verificarEmpleados);
 
 module.exports = LOGIN

@@ -200,10 +200,10 @@ const change = async (req, res) => {
 const verificarSucursales = async (req, res) => {
     try {
         // obtener las Sucursales para verificar sí existen registradas
-        const SUCURSALES = await execute('SELECT * FROM sucursales');
+        let sucursales = await execute('SELECT nombre_sucursal FROM sucursales');
         // retornar en la respuesta las sucursales encontradas
-        res.status(200).json(SUCURSALES);
 
+        res.status(200).json(sucursales);
     } catch (error) {
         res.status(406).send({ error: getError(error) });
     }
@@ -217,9 +217,10 @@ const verificarSucursales = async (req, res) => {
 const verificarEmpleados = async (req, res) => {
     try {
         // obtener los empleados registrados
-        const EMPLEADOS = await execute('SELECT * FROM empleados');
+        let empleados = await execute('SELECT id_empleado FROM empleados');
         // retornar los empleados registrados
-        res.status(200).json(EMPLEADOS)
+
+        res.status(200).json(empleados)
     } catch (error) {
         res.status(406).send({ error: getError(error) });
     }

@@ -22,6 +22,7 @@
 
 .href-makers {
     color: #909090;
+    cursor: pointer;
 }
 
 .buttons-login {
@@ -40,6 +41,7 @@
 .msg {
     position: absolute;
 }
+
 
 @media screen and (max-width: 725px) {
     .login {
@@ -85,7 +87,7 @@
 
                     <div class="buttons-login">
                         <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
-                        <a href="" class="href-makers">Restablecer contraseña</a>
+                        <a @click="selectMetodo" class="href-makers">Restablecer contraseña</a>
                     </div>
                 </div>
             </div>
@@ -101,7 +103,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
-import { } from '../components/alert.vue';
+import { alertQuestion } from '../components/alert.vue';
 
 
 
@@ -129,7 +131,7 @@ export default {
                 history: createWebHistory(),
                 routes: [
                     { path: '/', component: dashboard },
-                    { path: '/inicio', component: inicio }
+                    { path: '/inicio', component: inicio },
 
                 ]
             })
@@ -137,6 +139,12 @@ export default {
         }
     },
     methods: {
+        async selectMetodo() {
+            let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
+            console.log(notif)
+
+
+        },
         // método para buscar a un empleado con esos datos
         checkEmpleado() {
             // limpiar mensaje

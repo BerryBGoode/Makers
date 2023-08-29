@@ -47,13 +47,14 @@ const store = async (req, res) => {
     try {
         // asignar a u arreglo los valores del req
         const { cargo } = req.body;
+
         // preparando query con los datos
         execute('INSERT INTO  cargos(id_cargo, cargo) VALUES (UUID(), ?)', [cargo])
             .then(() => {
                 // enviar mensaje exitoso
                 res.status(201).send('Cargo agregado');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) });
+                res.status(406).send({ error: getError(rej) });
             })
     } catch (error) {
         console.log(error);
@@ -102,7 +103,7 @@ const change = (req, res) => {
                 res.status(201).send('Cargo modificado');
             })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) });
+                res.status(406).send({ error: getError(rej) });
             })
     } catch (error) {
         console.log(error);
@@ -118,11 +119,11 @@ const destroy = (req, res) => {
         const ID = req.params.id;
         // realizar consulta
         execute('DELETE FROM cargos WHERE id_cargo = ?', [ID])
-            .then(() => {                
+            .then(() => {
                 res.status(200).send('Cargo eliminado');
             })
-            .catch(rej => {                
-                res.status(406).send({ error: getError(rej['errno']) });
+            .catch(rej => {
+                res.status(406).send({ error: getError(rej) });
             })
     } catch (error) {
         console.log(error);

@@ -43,7 +43,7 @@ main {
 
 
 <template>
-    <template v-if="sucursales.length <= 0">
+    <template v-if="sucursales.length <= 0 || empleados.length <= 0">
         <primerUso />
     </template>
     <template v-else>
@@ -63,7 +63,7 @@ import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
 import login from './views/login.vue';
 import axios from 'axios';
-import primerUso from './primerUso.vue';
+import primerUso from './views/primerUso.vue';
 
 // espacio para importar componentes hijos
 export default {
@@ -73,7 +73,8 @@ export default {
         return {
             auth: '',
             storage: '',
-            sucursales: []
+            sucursales: [],
+            empleados: []
         }
     },
     methods: {
@@ -104,21 +105,32 @@ export default {
             return localStorage.getItem(token)
         },
         verificarSucursales() {
-            axios.get('http://localhost:3000/api/auth/verificarsucursal')
+            axios.get('http://localhost:3000/api/auth/verificar/sucursal')
                 .then(rows => {
-
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
                 }).catch(rej => {
                     console.log(rej);
                 })
 
+        },
+        verficarEmpleados() {
+            axios.get('http://localhost:3000/api/auth/verificar/empleados')
+                .then((rows) => {
+                    this.empleados = rows.data;
+
+                    // (this.empleados.length <= 0) ? alertInfo('Se ha detectado la inexistencia de empleados y sucursales', 'Aceptar')
+                    // : alertInfo('Se ha detectado la inexistencia de empleados', 'Aceptar')
+                }).catch(e => {
+                    notificationError(e.reponse.data.error, 7000);
+                })
         }
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
         this.checkTokenCookie();
         this.chechTokenStorage();
+        this.verficarEmpleados();
         this.verificarSucursales();
     },
     watch: {

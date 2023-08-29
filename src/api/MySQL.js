@@ -35,4 +35,4 @@ const execute = (sql, params = null) => {
     })
 }
 
-module.exports = { POOL, execute }
+module.exports = { execute }
