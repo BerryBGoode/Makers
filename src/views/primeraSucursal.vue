@@ -86,11 +86,27 @@
                                     <input type="email" v-model="empleado.correo" class="form-control" id="correo" required>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" v-model="empleado.telefono" class="form-control" id="telefono" required>
+                            <div class="load">
+                                <div class="mb-3 input-container">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="text" v-model="empleado.telefono" class="form-control" id="telefono"
+                                        required>
+                                </div>
+                                <div class="mb-3 input-container">
+                                    <label for="alias" class="form-label">Alias</label>
+                                    <input type="text" v-model="empleado.alias" class="form-control" id="alias" required>
+                                </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="clave" class="form-label">Contraseña</label>
+                                <input type="password" v-model="empleado.clave" class="form-control" id="clave" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmar" class="form-label">Confirmar contraseñ<a href=""></a></label>
+                                <input type="password" v-model="empleado.confirmar" class="form-control" id="confirmar"
+                                    required>
+                            </div>
                         </div>
                     </div>
                     <div class="row-6 p-3 w-50 logo-button func">
@@ -142,7 +158,10 @@ export default {
                 apellidos: '',
                 dui: '',
                 correo: '',
-                telefono: ''
+                telefono: '',
+                alias: '',
+                clave: '',
+                confirmar: ''
             }
         }
     },
