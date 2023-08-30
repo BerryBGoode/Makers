@@ -80,6 +80,7 @@ const ROUTER = createRouter({
         // inicio
         //#region 
         // servicios
+        // { path: '/', component: dashboard },
         {
             name: 'servicios',
             path: '/servicios',
@@ -222,9 +223,6 @@ const ROUTER = createRouter({
             path: '/ordenes/:orden/detalles/crear/',
             component: crearDetalle
         },
-        // TODO: faltan algunos de crear
-
-
 
         // rutas de actualizar, reciben parametro de id
         // clientes

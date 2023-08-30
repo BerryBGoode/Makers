@@ -98,7 +98,7 @@
 // importar axios para hacer peticiones
 import axios from 'axios';
 // importar para configurar rutas
-import { createRouter, createWebHistory } from 'vue-router'
+import { useRouter } from 'vue-router'
 // importar componente a reenviar
 import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
@@ -127,14 +127,6 @@ export default {
                 }
             },
             msg: '',
-            router: createRouter({
-                history: createWebHistory(),
-                routes: [
-                    { path: '/', component: dashboard },
-                    { path: '/inicio', component: inicio },
-
-                ]
-            })
 
         }
     },
@@ -168,7 +160,7 @@ export default {
                             // mostrar mensaje
                             this.msg = res.data.msg
                             // redireccionar al inicio
-                            this.$router.push(inicio)
+                            this.$router.push('/inicio')
                         }
                     })
                     .catch(e => {
