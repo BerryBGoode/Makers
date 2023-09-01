@@ -29,8 +29,17 @@ const getError = (err = null) => {
         case -4078:
             msg = 'Error al conectar con el servidor de base de datos';
             break;
+        case 2002:
+            msg = 'Servidor desconocido';
+            break;
+        case 1049:
+            msg = 'Base de datos no encontrada';
+            break;
+        case 1045:
+            msg = 'Acceso denegado';
+            break;
         default:
-            msg = 'Surgio un problema en el servidor';
+            msg = 'Ocurrio un problema con la base de datos';
             break;
     }
     return msg;
