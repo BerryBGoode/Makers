@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
  * @param {*} time tiempo de duración en milisegundos de la notificación
  * @param {*} button texto del botton
  */
-export const alertInfo = (txt, button, time) => {
+export const alertInfo = (txt, button, time, text = null) => {
     let options = {
         background: '#1B1716',
         position: 'center',
@@ -22,6 +22,7 @@ export const alertInfo = (txt, button, time) => {
         confirmButtonColor: '#393534',
     };
     (time) ? options.timer = time : options.timer = null;
+    (text) ? options.text = text : options.text = null;
     return Swal.fire(options)
 
 }
@@ -32,6 +33,9 @@ export const alertInfo = (txt, button, time) => {
  * @param {*} button texto del botton
  */
 export const notificationInfo = (txt, time, button) => {
+    if (!button) {
+        button = 'Aceptar';
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',

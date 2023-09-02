@@ -43,17 +43,13 @@ main {
 
 
 <template>
-    <template v-if="sucursales.length <= 0 || empleados.length <= 0">
-        <primerUso />
+    <!-- <template v-if="access === null">
+        <login />
     </template>
     <template v-else>
-        <template v-if="!auth || !storage">
-            <login @getCookie="validateCookie" />
-        </template>
-        <template v-else>
-            <dashboard />
-        </template>
-    </template>
+        <dashboard />
+    </template> -->
+    <router-view />
 </template>
 <script>
 //  setup solo se utiliza en el componente principal,
@@ -64,17 +60,23 @@ import dashboard from './views/dashboard.vue';
 import login from './views/login.vue';
 import axios from 'axios';
 import primerUso from './views/primerUso.vue';
+import { mapState } from 'vuex';
+import { RouterView } from 'vue-router';
+import store from './store/';
 
-// espacio para importar componentes hijos
+
 export default {
     name: 'app',
-    components: { dashboard, login, cookies, axios, primerUso },
+    components: { dashboard, login, cookies, axios, primerUso, store, RouterView },
     data() {
+
+        let state = store.state.access;
         return {
             auth: '',
             storage: '',
             sucursales: [],
-            empleados: []
+            empleados: [],
+            access: state
         }
     },
     methods: {
@@ -88,7 +90,6 @@ export default {
         checkTokenCookie() {
             // obtener el valor de la cookie para autenticación
             const COOKIE = this.getCookie('auth');
-            const STORAGE = this.getTokenStorage('auth')
             // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
             // de login o dashboard, síno tiene valor le asignará null para mostrar login
             this.auth = COOKIE !== null;
@@ -144,7 +145,19 @@ export default {
                     this.checkTokenCookie();
                 }, 10)
             }
-        }
-    }
+        },
+        empleado() {
+            this.verificarSucursales();
+            this.verficarEmpleados();
+        },
+
+    },
+    computed: {
+        ...mapState({
+            empleado: state => state.empleados,
+        }),
+
+    },
+
 }
 </script>

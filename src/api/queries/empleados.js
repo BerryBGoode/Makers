@@ -163,7 +163,7 @@ const store = (req, res) => {
 const one = async (req, res) => {
     try {
         // obtener del parametro de la url el id
-        const IDEMPLEADO = parseInt(req.params.id);
+        const IDEMPLEADO = req.params.id;
         // convertirlo a entero, por sí el cliente modifica dato
 
         // esperar la respuesta cuando se haga la consulta

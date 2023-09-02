@@ -6,6 +6,8 @@ const store = createStore({
     state: {
         buscador: '',
         usuario: '',
+        empleados: 0,
+        access: localStorage.getItem('auth')
     },
 
     mutations: {
@@ -25,6 +27,18 @@ const store = createStore({
         setUsuario(state, dato) {
             state.usuario = dato;
         },
+        /**
+         * Método para setear o mutar el estado global y poder realizar una acción
+         * @param {*} state estado global a modificar
+         * @param {*} data valor a setear
+         */
+        setEmpleado(state, data) {
+            state.empleados = data;
+        },
+
+        setAccess(state, data) {
+            state.access = data
+        }
     },
     actions: {
         /**
@@ -34,7 +48,7 @@ const store = createStore({
          */
         actionBuscador({ commit }, now) {
             // llamar a la mutación
-            commit('setBuscador', now)
+            commit('setBuscador', now);
         },
         /**
          * Acción para setter el nuevo nombre de usuario
@@ -43,8 +57,20 @@ const store = createStore({
          */
         actionUsuario({ commit }, now) {
             // llamar método para mutar el estado
-            commit('setUsuario', now)
+            commit('setUsuario', now);
         },
+        /**
+         *  Acción para acceder al setter para modificar la cantidad de empleados
+         * @param {*} param0 obj => acceder a commit => para acceder al método que sette el nuevo nombre
+         * @param {*} now nuevo valor
+         */
+        actionEmpleado({ commit }, now) {
+            // llamar el método q realizar la mutación del estado y mandarle el nuevo valor
+            commit('setEmpleado', now);
+        },
+        actionAccess({ commit }, now) {
+            commit('setAccess', now);
+        }
 
     },
 })

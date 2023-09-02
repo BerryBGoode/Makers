@@ -26,10 +26,10 @@
 // componente sidebar
 import sidebar from '../components/sidebar.vue';
 // componente buscador
-import buscador from "../components/buscador.vue";
+import buscador from '../components/buscador.vue';
 // coomponente de la cuenta
-import cuenta from "../components/cuenta.vue";
-import { RouterLink, RouterView } from "vue-router";
+import cuenta from '../components/cuenta.vue';
+import { RouterLink, RouterView } from 'vue-router';
 // exportar componente hijo
 export default {
     // nombre del componente
@@ -40,7 +40,6 @@ export default {
     // método que retorna el componente
     data() {
         return {
-            text: 'Dashboard de inicio',
             datos: ''
         }
     },

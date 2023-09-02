@@ -99,12 +99,10 @@
 import axios from 'axios';
 // importar para configurar rutas
 import { useRouter } from 'vue-router'
-// importar componente a reenviar
-import inicio from './inicio.vue';
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
 import { alertQuestion } from '../components/alert.vue';
-
+import { mapActions, mapState } from 'vuex';
 
 
 export default {
@@ -131,6 +129,10 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['actionAccess']),
+        setAccess(state) {
+            this.actionAccess(state)
+        },
         async selectMetodo() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             console.log(notif)
@@ -174,12 +176,11 @@ export default {
             this.$cookies.set('auth', token, { experies: '1d' });
             // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
             // componente realiza y el dato
-            this.$emit('getCookie', this.$cookies.get('auth'))
-            localStorage.setItem('auth', token)
-
+            // this.$emit('getCookie', this.$cookies.get('auth'));
+            localStorage.setItem('auth', token);
+            this.setAccess(true)
         },
-    }
-
+    },
 }
 
 </script>

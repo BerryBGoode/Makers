@@ -91,7 +91,7 @@
 <script>
 import axios from 'axios'
 import cookies from 'vue-cookies';
-import { alertQuestion } from '../components/alert.vue';
+import { alertQuestion, notificationInfo } from '../components/alert.vue';
 import { mapState, mapActions } from 'vuex';
 // exportar componente
 export default {
@@ -119,14 +119,19 @@ export default {
     },
     methods: {
         ...mapActions(['actionUsuario']),
+        ...mapActions(['actionAccess']),
         setUsuario(usuario) {
             this.actionUsuario(usuario);
+        },
+        setAccess(state) {
+            this.actionAccess(state);
         },
         async cerrarSesion() {
             if (await alertQuestion('Desea cerrar sesión?', null, 'Aceptar', null, null, true)) {
                 this.$cookies.remove('auth');
                 localStorage.removeItem('auth')
                 this.$router.push('/')
+                this.setAccess(false);
             }
 
         },
@@ -180,7 +185,7 @@ export default {
                         // emitir info que se modifico algo, a componente de cuenta
                     }
 
-                    alert(res.data)
+                    notificationInfo(res.data, 7000, 'Aceptar')
                 })
                 .catch(e => {
                     console.log(e);
