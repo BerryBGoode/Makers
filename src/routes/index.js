@@ -361,7 +361,6 @@ const ROUTER = createRouter({
                     component: editarFactura,
                     meta: { requiresAuth: true }
                 },
-
                 // configuración
                 {
                     name: 'configuracion',

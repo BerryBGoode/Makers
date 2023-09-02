@@ -35,8 +35,6 @@ export default {
     // nombre del componente
     name: "dashboard",
     components: { sidebar, buscador, cuenta },
-    // props que pudiera recibir el componente
-    props: {},
     // método que retorna el componente
     data() {
         return {
@@ -49,7 +47,7 @@ export default {
             // enviar datos el componente de la vista
             this.datos = now
         }
-    }
+    },
 }
 
 </script>

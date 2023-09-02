@@ -63,40 +63,44 @@ import primerUso from './views/primerUso.vue';
 import { mapState } from 'vuex';
 import { RouterView } from 'vue-router';
 import store from './store/';
+import { alertInfo } from './components/alert.vue';
 
 
 export default {
     name: 'app',
     components: { dashboard, login, cookies, axios, primerUso, store, RouterView },
     data() {
+        let storage = window.addEventListener('storage', (e) => {
+            if (e.key === 'auth' && e.oldValue !== e.newValue) {
+                alertInfo('Acto sospechoso', 'Aceptar', 7500, 'Debido a actividad sospechosa se ha redireccionado')
+                this.$router.push('/login');
+            }
 
+        })
         let state = store.state.access;
         return {
-            auth: '',
+            auth: localStorage.getItem('auth'),
             storage: '',
             sucursales: [],
             empleados: [],
-            access: state
+            access: state,
+            state,
+
         }
     },
     methods: {
-        // método del evento del login para evaluar 
-        // cuando se crea la cookie
-        validateCookie() {
-            this.auth = true;
-        },
         // método para evaludar sí existe un cookie en el evento padre
         // así ir verificando y actualizar el valor de la cookie cuando exista
         checkTokenCookie() {
-            // obtener el valor de la cookie para autenticación
-            const COOKIE = this.getCookie('auth');
-            // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
-            // de login o dashboard, síno tiene valor le asignará null para mostrar login
-            this.auth = COOKIE !== null;
+            console.log(this.state)
+            console.log(this.auth)
         },
-        chechTokenStorage() {
+        checkTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
             this.storage = STORAGE !== null;
+
+            this.storage = this.getTokenStorage('auth');
+            console.log(this.storage)
         },
         // método para obtener el valor de la cookie
         getCookie(cookie) {
@@ -130,27 +134,34 @@ export default {
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
         this.checkTokenCookie();
-        this.chechTokenStorage();
         this.verficarEmpleados();
         this.verificarSucursales();
+        this.checkTokenStorage();
     },
     watch: {
         // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
         // para así identificar que vista mostrar
-        auth(now) {
-            // verificar sí el valor fue modificado
-            if (now) {
-                // volver a verificar sí existe la cookie cada 20segundos
-                setInterval(() => {
-                    this.checkTokenCookie();
-                }, 10)
-            }
+        // state(now) {
+        //     // volver a verificar sí existe la cookie cada 20segundos
+        //     setInterval(() => {
+        //         this.checkTokenCookie();
+        //     }, 10)
+
+        // },
+
+        auth(now, old) {
+            console.log(now)
+            console.log(old)
         },
         empleado() {
             this.verificarSucursales();
             this.verficarEmpleados();
         },
-
+        storage(now, old) {
+            if (now !== null) {
+                this.$router.push('/login')
+            }
+        }
     },
     computed: {
         ...mapState({
