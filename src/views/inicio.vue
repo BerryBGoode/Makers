@@ -171,6 +171,7 @@ import axios from 'axios';
 import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
 import { lineGraph, barGraph, doughnutGraph, pieGraph, linealGraph } from './charts';
+import { notificationError } from '../components/alert.vue';
 
 export default {
     name: 'inicio',
@@ -215,7 +216,7 @@ export default {
                     if (cantidad.length > 0 && producto.length > 0) {
                         barGraph('productos', 'Productos más vendidos', producto, cantidad)
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 })
         },
@@ -233,7 +234,7 @@ export default {
                         if (fechas.length > 0 && reservaciones.length > 0) {
                             lineGraph('reservaciones', fechas, reservaciones, 'Reservaciones por mes');
                         } else {
-                            alert('No se encontraron resultados')
+                            notificationError('No se encontraron resultados', 5000)
                         }
                     }).catch(e => { alert(e) })
             } else {
@@ -260,7 +261,7 @@ export default {
                         // con los arreglos con datos, crear la gráfica
                         lineGraph('ventas', mes, venta, 'Ventas de año')
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
 
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
@@ -280,7 +281,7 @@ export default {
                         if (dia.length > 0 && ordenes.length > 0) {
                             linealGraph('ordenesMes', dia, ordenes, 'Ordenes por día según mes')
                         } else {
-                            alert('No se encontraron resultados')
+                            notificationError('No se encontraron resultados', 5000)
                         }
 
                     }).catch(e => alert(e))
@@ -301,7 +302,7 @@ export default {
                         barGraph('cargos', 'Cargos', cargo, count);
 
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
@@ -317,7 +318,7 @@ export default {
                         doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
 
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 })
                 .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
@@ -338,7 +339,7 @@ export default {
                         if (hora.length > 0 && ventas.length > 0) {
                             pieGraph('horas', 'Top 7 horas pico del mes', hora, 'ventas', ventas);
                         } else {
-                            alert('No se encontraron resultados')
+                            notificationError('No se encontraron resultados', 5000)
                         }
                     })
             } else {
@@ -365,7 +366,7 @@ export default {
                     if (cantidad.length > 0 && servicio.length > 0) {
                         barGraph('servicios', 'Servicios más vendidos', servicio, cantidad);
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 })
                 .catch(e => { alert(e) })
@@ -387,7 +388,7 @@ export default {
                     generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
                     // llamando al método para generar reportes
                 } else {
-                    alert('No se encontraron resultados')
+                    notificationError('No se encontraron resultados', 5000)
                 }
 
             } catch (e) {
@@ -411,7 +412,7 @@ export default {
                     generateTablePDF('proxReservaciones', 'Próximas Reservaciones', names, colData)
                     // llamando al método para generar reportes
                 } else {
-                    alert('No se encontraron resultados')
+                    notificationError('No se encontraron resultados', 5000)
                 }
 
             } catch (e) {
@@ -434,7 +435,7 @@ export default {
                     // llamando al método para generar reportes
                     generateTablePDF('prevReservaciones', 'Reservaciones Previas', names, colData);
                 } else {
-                    alert('No se encontraron resultados')
+                    notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
@@ -455,7 +456,7 @@ export default {
                 if (VALUES.length > 0) {
                     generateTablePDF('casi-agotados', 'Servicios a punto de agotarse', names, VALUES);
                 } else {
-                    alert('No se encontraron resultados')
+                    notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
                 (error.response.data.error) ? alert(error.response.data.error) : alert(error)
@@ -475,7 +476,7 @@ export default {
                 if (VALUES.length > 0) {
                     generateTablePDF('ventas de ' + this.today, 'Ventas de ' + this.today, names, VALUES)
                 } else {
-                    alert('No se encontraron resultados')
+                    notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
 
@@ -504,7 +505,7 @@ export default {
                             'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
                         );
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 } else {
                     alert('Mes invalido')
@@ -530,7 +531,7 @@ export default {
                     if (VALUES.length > 0) {
                         generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
                     } else {
-                        alert('No se encontraron resultados')
+                        notificationError('No se encontraron resultados', 5000)
                     }
                 } else {
                     alert('Mes invalido');

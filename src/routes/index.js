@@ -108,6 +108,12 @@ const ROUTER = createRouter({
             component: dashboard,
             children: [
                 {
+                    name: 'inicio',
+                    path: '/inicio',
+                    component: inicio,
+                    meta: { requiresAuth: true }
+                },
+                {
                     name: 'servicios',
                     path: '/servicios',
                     component: servicios,
@@ -365,13 +371,6 @@ const ROUTER = createRouter({
                 },
             ]
         },
-
-        {
-            name: 'inicio',
-            path: '/inicio',
-            component: inicio,
-            meta: { requiresAuth: true }
-        }
 
     ]
 })
