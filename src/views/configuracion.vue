@@ -130,7 +130,7 @@ export default {
             if (await alertQuestion('Desea cerrar sesión?', null, 'Aceptar', null, null, true)) {
                 this.$cookies.remove('auth');
                 localStorage.removeItem('auth')
-                this.$router.push('/')
+                this.$router.push('/login')
                 this.setAccess(false);
             }
 

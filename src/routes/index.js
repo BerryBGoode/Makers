@@ -100,7 +100,7 @@ const ROUTER = createRouter({
         {
             name: 'index',
             path: '/',
-            component: login,
+            // component: login,
         },
         {
             name: 'dashboard',
@@ -376,16 +376,21 @@ const ROUTER = createRouter({
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
-    // verificar sí la ruta que se esta buscando 
     // tiene como parametro la autenticación
     if (to.matched.some(route => route.meta.requiresAuth)) {
-        // verificar sí se tiene autenciación
+        // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (store.state.access !== null) ? next() : next({ name: 'login' });
-    } else {
+
+    }
+    // verificar sí a ruta que se decea acceder es '/' y hay sesión
+    else if (from.path === '/login' || to.path === '/') {
+        // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
+        (localStorage.getItem('auth') !== null) ? next({ name: 'inicio' }) : next({ name: 'login' })
+    }
+    else {
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }
-
 })
 // exportando ruteado
 export default ROUTER;
