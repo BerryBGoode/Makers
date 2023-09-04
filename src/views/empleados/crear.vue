@@ -19,7 +19,8 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" v-model="this.model.empleado.nombres" class="form-control" id="nombres" required>
+                                <input type="text" v-model="this.model.empleado.nombres" class="form-control" id="nombres"
+                                    required>
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="apellidos" class="form-label">Apellidos</label>
@@ -178,7 +179,7 @@ export default {
                 // hacer petición para obtener sucursales y horarios
                 axios.get('http://localhost:3000/api/empleados/sucursales')
                     .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { alert(e) })
             } catch (error) {
                 console.error(error);
             }
@@ -207,45 +208,44 @@ export default {
             this.msg = '';
             if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
                 ((this.model.empleado.cargo && this.model.empleado.sucursal && this.model.empleado.horario) !== 'Seleccionar') &&
-                this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo && 
+                this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&
                 this.model.empleado.planilla && this.model.empleado.clave) {
-                    // realizar petición y enviando datos
-                    axios.post('http://localhost:3000/api/empleados', this.model.empleado)
-                        .then(res => {
-                            // cuando hay un error 400 que no realizo lo que se debía
-                            if (res.data.error) {
-                                this.msg = res.data.error;                        
+                // realizar petición y enviando datos
+                axios.post('http://localhost:3000/api/empleados', this.model.empleado)
+                    .then(res => {
+                        // cuando hay un error 400 que no realizo lo que se debía
+                        if (res.data.error) {
+                            this.msg = res.data.error;
+                        }
+                        // cuando si se realizo la tarea deceada y se creo algo 
+                        // 201 es usado en método post y put
+                        if (res.status === 201 && !res.data.error) {
+                            // limpiar valores 
+                            this.model.empleado = {
+                                nombres: '',
+                                apellidos: '',
+                                dui: '',
+                                clave: '',
+                                planilla: '',
+                                telefono: '',
+                                correo: '',
+                                sucursal: 'Seleccionar',
+                                cargo: 'Seleccionar',
+                                horario: 'Seleccionar',
                             }
-                            // cuando si se realizo la tarea deceada y se creo algo 
-                            // 201 es usado en método post y put
-                            if (res.status === 201 && !res.data.error) {
-                                // limpiar valores 
-                                this.model.empleado = {
-                                    nombres: '',
-                                    apellidos: '',
-                                    dui: '',
-                                    clave: '',
-                                    planilla: '',
-                                    telefono: '',
-                                    correo: '',
-                                    sucursal: 'Seleccionar',
-                                    cargo: 'Seleccionar',
-                                    horario: 'Seleccionar',
-                                }
-                                // redireccionar
-                                alert('Empleado agregado')
-                                this.$router.push('/empleados');
-                            }
-                            console.log(res)                    
-        
-                            // sí la respuesta fue la esperada, redirección a la vista principal
-                            // if (res.status === 201) this.$router.push('/empleados');
-                        })
-                        .catch(e => { alert(e) });
-                
-            }else{
+                            // redireccionar
+                            alert('Empleado agregado')
+                            this.$router.push('/empleados');
+                        }
+
+                        // sí la respuesta fue la esperada, redirección a la vista principal
+                        // if (res.status === 201) this.$router.push('/empleados');
+                    })
+                    .catch(e => { alert(e) });
+
+            } else {
                 this.msg = 'No se permiten campos vacíos';
-            }        
+            }
         }
     }
 } 

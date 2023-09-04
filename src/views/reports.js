@@ -1,5 +1,6 @@
 /**
  * ! En este archivo se definin el formato de página para los reporte * 
+ * 
  */
 // importando jsPDF Para poder generar, modificar el pdf
 import jsPDF from 'jspdf';
@@ -13,7 +14,7 @@ export const generateTablePDF = (pdf, title, names, values) => {
     const TODAY = new Date;
     try {
         // a partir de aquí genera el reporte
-        const PDF = new jsPDF();
+        const PDF = new jsPDF('p', 'mm', 'a4');
 
         // definiendo el tamaño de letra para los reportes
         PDF.setFontSize(15);
@@ -53,11 +54,10 @@ export const generateTablePDF = (pdf, title, names, values) => {
             const Y = (PDF.internal.pageSize.height - height) - 10;
             // agregando la water mark al pie de la página
             PDF.addImage(img, 'PNG', X, Y, width, height);
-            i = i + 1;
-            // enviando el tamaño de la letra para el pie de la página
-            PDF.setFontSize(12)
-            // agregando el número de página
-            PDF.text(i.toString(), (PDF.internal.pageSize.width - width) / 2, 282.5);
+            if (i > 0) {
+                // agregando el número de página
+                PDF.text(String(i), (PDF.internal.pageSize.width - width) / 2, 282.5)
+            }
         }
         // creando el out del reporte
         PDF.save(pdf + '.pdf');

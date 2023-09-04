@@ -28,9 +28,9 @@ const getProxReservaciones = async (req, res) => {
 const getEmpleadosCargos = async (req, res) => {
     try {
         const EMPLEADOS = await execute('SELECT e.nombres, e.apellidos, c.cargo FROM empleados e JOIN cargos c ON e.id_cargo = c.id_cargo');
-        if(res.status(200)) res.json(EMPLEADOS)
+        if (res.status(200)) res.json(EMPLEADOS)
     } catch (error) {
-        res.status(406).send({  error: getError(error)});
+        res.status(406).send({ error: getError(error) });
     }
 
 }
@@ -38,9 +38,9 @@ const getEmpleadosCargos = async (req, res) => {
 const getProdSucursal = async (req, res) => {
     try {
         const PRODUCTOS = await execute('SELECT ss.nombre_sucursal, s.nombre_servicio, ds.cantidad FROM detalles_servicios_sucursales ds JOIN sucursales ss ON ds.id_sucursal = ss.id_sucursal JOIN servicios s ON ds.id_servicio = s.id_servicio WHERE ds.id_sucursal = ?');
-        if(res.status(200)) res.json(PRODUCTOS)
+        if (res.status(200)) res.json(PRODUCTOS)
     } catch (error) {
-        res.status(406).send({ error: getError(error)});
+        res.status(406).send({ error: getError(error) });
     }
 }
 
@@ -114,7 +114,7 @@ const getTipoServicios = async (req, res) => {
         INNER JOIN tipos_servicios t ON s.id_tipo_servicio = t.id_tipo_servicio
         `);
         if (res.status(200)) res.json(SERVICIOS);
-      } catch (error) {
+    } catch (error) {
         res.status(406).send({ error: getError(error) });
     }
 }
@@ -246,5 +246,6 @@ const reservacionesMes = async (req, res) => {
 module.exports = {
     getProxReservaciones, getPrevReservaciones, getLessProductos,
     historialComprasCliente, historialReservacionesCliente, ventasDia, ventasMes,
-    reservacionesMes, getProxReservaciones, getEmpleadosCargos, getProdSucursal
+    reservacionesMes, getProxReservaciones, getEmpleadosCargos, getProdSucursal,
+    getTipoServicios, getEmpleadosOrdenes
 };

@@ -5,7 +5,7 @@ const { getProxReservaciones, getPrevReservaciones,
     getLessProductos, historialComprasCliente,
     historialReservacionesCliente,
     ventasDia, ventasMes, reservacionesMes, getEmpleadosOrdenes,
-       getTipoServicios
+    getTipoServicios, getProdSucursal, getEmpleadosCargos
 } = require('../queries/reportes');
 
 
@@ -13,8 +13,8 @@ const { getProxReservaciones, getPrevReservaciones,
 // del lado del cliente por medio de la url
 const APP = new Router();
 
-APP.get('/empleadoordenes',getEmpleadosOrdenes);
-APP.get('/tiposervicios', getTipoServicios );
+APP.get('/empleadoordenes', getEmpleadosOrdenes);
+APP.get('/tiposervicios', getTipoServicios);
 APP.get('/proxreservaciones', getProxReservaciones);
 APP.get('/prevreservaciones', getPrevReservaciones);
 APP.get('/lessproductos', getLessProductos);
@@ -23,6 +23,8 @@ APP.get('/historialreservaciones/:usuario', historialReservacionesCliente);
 APP.get('/ventadia/:fecha', ventasDia);
 APP.get('/ventasmes/:mes', ventasMes);
 APP.get('/reservacionesmes/:mes', reservacionesMes);
-
+APP.get('/proxreservaciones', getProxReservaciones);
+APP.get('/empleadoscargos', getEmpleadosCargos);
+APP.get('/prodsucursal', getProdSucursal);
 // exportar enrutador para importarlo en ../index.js
 module.exports = APP;

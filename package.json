@@ -9,6 +9,7 @@
     "serve": "nodemon src/api/index.js"
   },
   "dependencies": {
+    "@sweetalert2/theme-dark": "^5.0.15",
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.1",
@@ -36,6 +37,7 @@
     "vue-chartjs": "^5.2.0",
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.2.2",
+    "vue-sweetalert2": "^5.0.5",
     "vue3-cookies": "^1.0.6",
     "vuex": "^4.1.0"
   },

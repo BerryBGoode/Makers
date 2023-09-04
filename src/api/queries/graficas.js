@@ -41,7 +41,7 @@ const ordenesByMes = async (req, res) => {
 }
 
 const getEmpleadoCantidad = (req, res) => {
-    execute('SELECT * c.Cargo, COALESCE(COUNT(e.id_empleado), 0) AS CantidadEmpleados FROM Cargos c LEFT JOIN Empleados e ON c.Id_cargo = e.id_cargo  GROUP BY c.Cargo;')
+    execute('SELECT o.hora, count(*) as ordenes FROM ordenes o GROUP BY hora ORDER BY ordenes DESC')
         .then(row => {
             es.status(200).json(rows)
         }).catch(rej => {
@@ -50,9 +50,15 @@ const getEmpleadoCantidad = (req, res) => {
 }
 
 const getCliente = (req, res) => {
-    execute('SELECT c.nombres AS nombres, COUNT(o.id_cliente) AS total_ordenes FROM clientes c JOIN ordenes o ON c.id_cliente = o.id_cliente  GROUP BY c.id_cliente  ORDER BY total_ordenes DESC')
-        .then(row => {
-            es.status(200).json(rows)
+    execute(`
+        SELECT COUNT(o.id_orden) AS ordenes, concat(c.nombres, ' ', c.apellidos) AS cliente
+        FROM ordenes o
+        INNER JOIN clientes c ON c.id_cliente = o.id_cliente
+        GROUP BY cliente
+        ORDER BY ordenes DESC LIMIT 7`
+    )
+        .then(rows => {
+            res.status(200).json(rows)
         }).catch(rej => {
             res.status(406).send({ error: getError(rej) })
         })
@@ -69,14 +75,54 @@ const getFacturasSucursales = (req, res) => {
 }
 
 const getServiciosVendidos = (req, res) => {
-    execute('SELECT * FROM vista_productos_mas_vendidos')
-        .then(row => {
-            es.status(200).json(rows)
+    let tipo = req.params.tipo;
+    execute(`
+            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+            FROM servicios s
+            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+            WHERE t.id_tipo_servicio = ?
+            GROUP BY s.nombre_servicio
+            ORDER BY cantidad DESC LIMIT 3`
+        , [tipo])
+        .then(rows => {
+            res.status(200).json(rows)
         }).catch(rej => {
             res.status(406).send({ error: getError(rej) })
         })
 }
 
+const getProductosVendidos = (req, res) => {
+    execute(`
+            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+            FROM servicios s
+            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+            WHERE t.tipo_servicio = 'Producto'
+            GROUP BY s.nombre_servicio
+            ORDER BY cantidad DESC LIMIT 7`
+        ,)
+        .then(rows => {
+            res.status(200).json(rows)
+        }).catch(rej => {
+            res.status(406).send({ error: getError(rej) })
+        })
+}
+
+const reservacionesMes = (req, res) => {
+    let mes = req.params.mes;
+    execute(`
+        SELECT COUNT(*) reservaciones, DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha
+        FROM reservaciones r
+        WHERE YEAR(r.fecha) = YEAR(CURRENT_DATE) AND MONTH(r.fecha) = ?
+        GROUP BY fecha
+        ORDER BY reservaciones DESC LIMIT 10
+    `, [mes])
+        .then(rows => { res.status(200).json(rows) })
+        .catch(rej => { res.status(406).send({ error: getError(rej) }) });
+}
 
 const getClienteporfecha = (req, res) => {
     execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
@@ -89,16 +135,39 @@ const getClienteporfecha = (req, res) => {
 }
 
 const getEmpleadoCargos = (req, res) => {
-    execute('SELECT o.hora, count(*) as ordenes FROM ordenes o GROUP BY hora ORDER BY ordenes DESC;')
-        .then(row => {
-            es.status(200).json(rows)
+    execute(`SELECT count(e.id_cargo) as count, c.cargo
+            FROM cargos c
+            LEFT JOIN empleados e ON c.id_cargo = e.id_cargo
+            GROUP BY c.cargo
+            ORDER BY count DESC`
+    )
+        .then(rows => {
+            res.status(200).json(rows)
         }).catch(rej => {
             res.status(406).send({ error: getError(rej) })
         })
+}
 
+const getHoraMes = (req, res) => {
+    let mes = req.params.mes;
+    execute(`
+        SELECT COUNT(*) as ventas, 
+        CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+        FROM ordenes o
+        WHERE YEAR(o.fecha) = YEAR(CURRENT_DATE) AND MONTH(o.fecha) = ?
+        GROUP BY HOUR(o.hora)
+        ORDER BY ventas DESC LIMIT 7        
+    `, [mes]).then(rows => {
+        res.status(200).json(rows)
+    }).catch(rej => {
+        res.status(406).send({ error: getError(rej) });
+    })
 }
 
 
-
 // exportar los métodos para obtener los datos para pintar las gráficas
-module.exports = { getVentas, ordenesByMes, getEmpleadoCantidad, getCliente, getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos }; 
+module.exports = {
+    getVentas, ordenesByMes, getEmpleadoCantidad, getCliente,
+    getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos,
+    getHoraMes, reservacionesMes, getProductosVendidos
+}; 

@@ -2,7 +2,7 @@
 
 // importación de modulos para el enrutamiento con vue
 import { createRouter, createWebHistory } from "vue-router";
-
+import store from "../store";
 // importar interfaces, dashboard (inicio), servicios, productos, clientes
 //#region 
 // empleados, reservaciones, facturas, horarios, sucursales
@@ -64,6 +64,10 @@ import notfound from '../views/404.vue';
 
 import inicio from '../views/inicio.vue';
 
+import login from '../views/login.vue';
+
+import template from '../App.vue';
+
 // intancia del enrutador
 const ROUTER = createRouter({
     // configuración del historial dentro de la ejecucción
@@ -80,245 +84,328 @@ const ROUTER = createRouter({
         // inicio
         //#region 
         // servicios
-        {
-            name: 'servicios',
-            path: '/servicios',
-            component: servicios
-        },
-        // productos 
-        {
-            name: 'productos',
-            path: '/productos',
-            component: productos
-        },
-        // clientes
-        {
-            name: 'clientes',
-            path: '/clientes',
-            component: clientes
-        },
-        // empleados
-        {
-            name: 'empleados',
-            path: '/empleados',
-            component: empleados
-        },
-        // reservaciones
-        {
-            name: 'reservaciones',
-            path: '/reservaciones',
-            component: reservaciones
-        },
-        // sucursales
-        {
-            name: 'sucursales',
-            path: '/sucursales',
-            component: sucursales
-        },
-        // horarios
-        {
-            name: 'horarios',
-            path: '/horarios',
-            component: horarios
-        },
-        // tipos de servicios
-        {
-            name: 'tipos servicios',
-            path: '/servicios/tipos',
-            component: tipos
-        },
-        // cargos
-        {
-            name: 'cargos',
-            path: '/empleados/cargos',
-            component: cargos
-        },
-        // ordenes 
-        {
-            name: 'ordenes',
-            path: '/ordenes',
-            component: ordenes
-        },
-        // productos sucursales
-        {
-            name: 'productosSucursales',
-            path: '/sucursales/:id/productos',
-            component: productosSucursales
-        },
-        {
-            name: 'detallesOrden',
-            path: '/ordenes/:orden/detalles/',
-            component: detallesOrden
-        },
-        //#endregion
+        // { path: '/', component: dashboard },
 
-        // rutas de crear
-        // servicios
         {
-            name: 'crearServicio',
-            path: '/servicios/crear',
-            component: crearServicio
-
+            name: 'login',
+            path: '/login',
+            component: login
         },
-        // productos
-        {
-            name: 'crearProducto',
-            path: '/productos/crear',
-            component: crearProducto
-        },
-        {
-            name: 'crearCliente',
-            path: '/clientes/crear',
-            component: crearCliente
-        },
-        {
-            name: 'crearEmpleado',
-            path: '/empleados/crear',
-            component: crearEmpleado
-        },
-        // reservacion
-        {
-            name: 'crearReservacion',
-            path: '/reservaciones/crear',
-            component: crearReservacion
-        },
-        {
-            name: 'crearTipoServicio',
-            path: '/servicios/tipos/crear',
-            component: crearTipo
-        },
-        {
-            name: 'crearCargo',
-            path: '/empleados/cargos/crear',
-            component: crearCargo
-        },
-        {
-            name: 'crearOrden',
-            path: '/ordenes/crear',
-            component: crearOrden
-        },
-        {
-            name: 'crearSucursal',
-            path: '/sucursales/crear',
-            component: crearSucursal
-        },
-        {
-            name: 'crearHorario',
-            path: '/horarios/crear',
-            component: crearHorario
-        },
-        {
-            name: 'crearFactura',
-            path: '/ordenes/:orden/factura/crear',
-            component: crearFactura
-        },
-        {
-            name: 'crearProductoSucursal',
-            path: '/sucursales/:id/productos/crear',
-            component: crearProductoSucursal
-        },
-        {
-            name: 'crearDetalle',
-            path: '/ordenes/:orden/detalles/crear/',
-            component: crearDetalle
-        },
-        // TODO: faltan algunos de crear
-
-
-
-        // rutas de actualizar, reciben parametro de id
-        // clientes
-        {
-            name: 'editarCliente',
-            path: '/clientes/editar/:id',
-            component: editarCliente
-        },
-        {
-            name: 'editarCargo',
-            path: '/empleados/cargos/editar/:id',
-            component: editarCargo
-        },
-        {
-            name: 'editarTipoServicio',
-            path: '/servicios/tipos/editar/:id',
-            component: editarTipo
-        },
-        {
-            name: 'editarEmpleado',
-            path: '/empleados/editar/:id',
-            component: editarEmpleado
-        },
-        {
-            name: 'editarProductoSucursal',
-            path: '/sucursales/:id/productos/editar/:detalle',
-            component: editarProductoSucursal
-        },
-        {
-            name: 'editarDetalleOrden',
-            path: '/ordenes/:orden/detalles/editar/:detalle',
-            component: editarDetalle
-        },
-        {
-            name: 'editarProducto',
-            path: '/productos/editar/:id',
-            component: editarProducto
-        },
-        {
-            name: 'editarServicio',
-            path: '/servicios/editar/:id',
-            component: editarServicio
-        },
-        {
-            name: 'editarHorarios',
-            path: '/horarios/editar/:id',
-            component: editarHorario
-        },
-        {
-            name: 'editarSucursal',
-            path: '/sucursales/editar/:id',
-            component: editarSucursal
-        },
-        {
-            name: 'editarRervacion',
-            path: '/reservaciones/editar/:id',
-            component: editarRervacion
-        },
-        {
-            name: 'editarOrden',
-            path: '/ordenes/editar/:id',
-            component: editarOrden
-        },
-        {
-            name: 'editarFactura',
-            path: '/ordenes/:orden/factura/editar/:id',
-            component: editarFactura
-        },
-
-        // configuración
-        {
-            name: 'configuracion',
-            path: '/configuracion',
-            component: config
-        },
-
         // ruta cuando no se encontró la ruta
         {
             path: '/:pathMatch(.*)*',
-            component: notfound
+            component: notfound,
+            name: '404'
         },
         {
             name: 'index',
             path: '/',
-            component: inicio
+            // component: login,
         },
         {
-            name: 'inicio',
-            path: '/inicio',
-            component: inicio
-        }
+            name: 'primeraSucursal',
+            path: '/primer/sucursal',
+            component: () => import('../views/primerUso/sucursal.vue'),
+        },
+        {
+            name: 'primerEmpleado',
+            path: '/primer/empleado',
+            component: () => import('../views/primerUso/empleado.vue'),
+        },
+        {
+            name: 'dashboard',
+            path: '/dashboard',
+            component: dashboard,
+            children: [
+                {
+                    name: 'inicio',
+                    path: '/inicio',
+                    component: inicio,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'servicios',
+                    path: '/servicios',
+                    component: servicios,
+                    meta: { requiresAuth: true }
+                },
+                // productos 
+                {
+                    name: 'productos',
+                    path: '/productos',
+                    component: productos,
+                    meta: { requiresAuth: true }
+                },
+                // clientes
+                {
+                    name: 'clientes',
+                    path: '/clientes',
+                    component: clientes,
+                    meta: { requiresAuth: true }
+                },
+                // empleados
+                {
+                    name: 'empleados',
+                    path: '/empleados',
+                    component: empleados,
+                    meta: { requiresAuth: true }
+                },
+                // reservaciones
+                {
+                    name: 'reservaciones',
+                    path: '/reservaciones',
+                    component: reservaciones,
+                    meta: { requiresAuth: true }
+                },
+                // sucursales
+                {
+                    name: 'sucursales',
+                    path: '/sucursales',
+                    component: sucursales,
+                    meta: { requiresAuth: true }
+                },
+                // horarios
+                {
+                    name: 'horarios',
+                    path: '/horarios',
+                    component: horarios,
+                    meta: { requiresAuth: true }
+                },
+                // tipos de servicios
+                {
+                    name: 'tipos servicios',
+                    path: '/servicios/tipos',
+                    component: tipos,
+                    meta: { requiresAuth: true }
+                },
+                // cargos
+                {
+                    name: 'cargos',
+                    path: '/empleados/cargos',
+                    component: cargos,
+                    meta: { requiresAuth: true }
+                },
+                // ordenes 
+                {
+                    name: 'ordenes',
+                    path: '/ordenes',
+                    component: ordenes,
+                    meta: { requiresAuth: true }
+                },
+                // productos sucursales
+                {
+                    name: 'productosSucursales',
+                    path: '/sucursales/:id/productos',
+                    component: productosSucursales,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'detallesOrden',
+                    path: '/ordenes/:orden/detalles/',
+                    component: detallesOrden,
+                    meta: { requiresAuth: true }
+                },
+                //#endregion
 
+                // rutas de crear
+                // servicios
+                {
+                    name: 'crearServicio',
+                    path: '/servicios/crear',
+                    component: crearServicio,
+                    meta: { requiresAuth: true }
+
+                },
+                // productos
+                {
+                    name: 'crearProducto',
+                    path: '/productos/crear',
+                    component: crearProducto,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearCliente',
+                    path: '/clientes/crear',
+                    component: crearCliente,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearEmpleado',
+                    path: '/empleados/crear',
+                    component: crearEmpleado,
+                    meta: { requiresAuth: true }
+                },
+                // reservacion
+                {
+                    name: 'crearReservacion',
+                    path: '/reservaciones/crear',
+                    component: crearReservacion,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearTipoServicio',
+                    path: '/servicios/tipos/crear',
+                    component: crearTipo,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearCargo',
+                    path: '/empleados/cargos/crear',
+                    component: crearCargo,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearOrden',
+                    path: '/ordenes/crear',
+                    component: crearOrden,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearSucursal',
+                    path: '/sucursales/crear',
+                    component: crearSucursal,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearHorario',
+                    path: '/horarios/crear',
+                    component: crearHorario,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearFactura',
+                    path: '/ordenes/:orden/factura/crear',
+                    component: crearFactura,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearProductoSucursal',
+                    path: '/sucursales/:id/productos/crear',
+                    component: crearProductoSucursal,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'crearDetalle',
+                    path: '/ordenes/:orden/detalles/crear/',
+                    component: crearDetalle,
+                    meta: { requiresAuth: true }
+                },
+
+                // rutas de actualizar, reciben parametro de id
+                // clientes
+                {
+                    name: 'editarCliente',
+                    path: '/clientes/editar/:id',
+                    component: editarCliente,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarCargo',
+                    path: '/empleados/cargos/editar/:id',
+                    component: editarCargo,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarTipoServicio',
+                    path: '/servicios/tipos/editar/:id',
+                    component: editarTipo,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarEmpleado',
+                    path: '/empleados/editar/:id',
+                    component: editarEmpleado,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarProductoSucursal',
+                    path: '/sucursales/:id/productos/editar/:detalle',
+                    component: editarProductoSucursal,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarDetalleOrden',
+                    path: '/ordenes/:orden/detalles/editar/:detalle',
+                    component: editarDetalle,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarProducto',
+                    path: '/productos/editar/:id',
+                    component: editarProducto,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarServicio',
+                    path: '/servicios/editar/:id',
+                    component: editarServicio,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarHorarios',
+                    path: '/horarios/editar/:id',
+                    component: editarHorario,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarSucursal',
+                    path: '/sucursales/editar/:id',
+                    component: editarSucursal,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarRervacion',
+                    path: '/reservaciones/editar/:id',
+                    component: editarRervacion,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarOrden',
+                    path: '/ordenes/editar/:id',
+                    component: editarOrden,
+                    meta: { requiresAuth: true }
+                },
+                {
+                    name: 'editarFactura',
+                    path: '/ordenes/:orden/factura/editar/:id',
+                    component: editarFactura,
+                    meta: { requiresAuth: true }
+                },
+                // configuración
+                {
+                    name: 'configuracion',
+                    path: '/configuracion',
+                    component: config,
+                    meta: { requiresAuth: true }
+                },
+            ]
+        },
     ]
 })
 
+// se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
+ROUTER.beforeEach((to, from, next) => {
+    console.log(to.fullPath)
+    // tiene como parametro la autenticación
+    if (to.matched.some(route => route.meta.requiresAuth)) {
+        // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
+        (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
+    }
+    // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
+    else if (to.fullPath.matchAll('/login') && store.state.sucursales <= 1) {
+        // verificar sí existe autencicación
+        (localStorage.getItem('auth')) ? next({ name: 'inicio' }) : next()
+    }
+    // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
+    else if (to.fullPath.matchAll('/inicio') || to.fullPath.matchAll('/')) {
+
+        // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
+        (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' })
+    }
+    else {
+        // ejecutar lo que debería pasar sí no necesita autenticación
+        next();
+    }
+})
 // exportando ruteado
 export default ROUTER;
