@@ -60,7 +60,7 @@ import dashboard from './views/dashboard.vue';
 import login from './views/login.vue';
 import axios from 'axios';
 import primerUso from './views/primerUso.vue';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { RouterView } from 'vue-router';
 import store from './store/';
 import { alertInfo } from './components/alert.vue';
@@ -77,30 +77,40 @@ export default {
             }
 
         })
-        let state = store.state.access;
+
         return {
             auth: localStorage.getItem('auth'),
             storage: '',
             sucursales: [],
             empleados: [],
-            access: state,
-            state,
+
 
         }
     },
     methods: {
+        // obtiendo la acción para poder asignar valores a los estados
+        // para obtener la acción que asignar valores a el estado sucursales
+        ...mapActions(['actionSucursal']),
+        // obteniendo la acción para asignar valores al estado empleados
+        ...mapActions(['actionEmpleado']),
+        // estos métodos asignar el valor a la acción o ejecutan la acción para enviar valores al estado
+        setSucursal(data) {
+            this.actionSucursal(data)
+        },
+        setEmpleado(data) {
+            this.actionEmpleado(data)
+        },
         // método para evaludar sí existe un cookie en el evento padre
         // así ir verificando y actualizar el valor de la cookie cuando exista
         checkTokenCookie() {
-            console.log(this.state)
-            console.log(this.auth)
+
         },
         checkTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
             this.storage = STORAGE !== null;
 
             this.storage = this.getTokenStorage('auth');
-            console.log(this.storage)
+
         },
         // método para obtener el valor de la cookie
         getCookie(cookie) {
@@ -114,6 +124,9 @@ export default {
                 .then(rows => {
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
+                    this.setSucursal(this.sucursales.length);
+                    // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
+                    (this.sucursales.length <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
                 }).catch(rej => {
                     console.log(rej);
                 })
@@ -122,10 +135,10 @@ export default {
         verficarEmpleados() {
             axios.get('http://localhost:3000/api/auth/verificar/empleados')
                 .then((rows) => {
+                    // obtiendo los valores de la petición
                     this.empleados = rows.data;
-
-                    // (this.empleados.length <= 0) ? alertInfo('Se ha detectado la inexistencia de empleados y sucursales', 'Aceptar')
-                    // : alertInfo('Se ha detectado la inexistencia de empleados', 'Aceptar')
+                    // verificando la existencia de los empleados, para redireccionara primer empleados, sino al login
+                    (this.empleados.length <= 0) ? this.$router.push('/primer/empleado') : this.$router.push('/login');
                 }).catch(e => {
                     notificationError(e.reponse.data.error, 7000);
                 })
@@ -155,17 +168,13 @@ export default {
         },
         empleado() {
             this.verificarSucursales();
-            this.verficarEmpleados();
         },
-        storage(now, old) {
-            if (now !== null) {
-                this.$router.push('/login')
-            }
-        }
+
     },
     computed: {
         ...mapState({
             empleado: state => state.empleados,
+
         }),
 
     },

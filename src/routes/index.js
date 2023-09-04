@@ -103,6 +103,16 @@ const ROUTER = createRouter({
             // component: login,
         },
         {
+            name: 'primeraSucursal',
+            path: '/primer/sucursal',
+            component: () => import('../views/primerUso/sucursal.vue'),
+        },
+        {
+            name: 'primerEmpleado',
+            path: '/primer/empleado',
+            component: () => import('../views/primerUso/empleado.vue'),
+        },
+        {
             name: 'dashboard',
             path: '/dashboard',
             component: dashboard,
@@ -375,24 +385,23 @@ const ROUTER = createRouter({
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
-    console.log(to.path)
+    console.log(to.fullPath)
     // tiene como parametro la autenticación
     if (to.matched.some(route => route.meta.requiresAuth)) {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
-        (store.state.access !== null) ? next() : next({ name: 'login' });
-
+        (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
     }
-    // verificar cuando se va a navegar al login
-    else if (to.fullPath === '/login') {
+    // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
+    else if (to.fullPath.matchAll('/login') && store.state.sucursales <= 1) {
         // verificar sí existe autencicación
         (localStorage.getItem('auth')) ? next({ name: 'inicio' }) : next()
     }
-    else if (to.fullPath === '/inicio' || to.fullPath === '/') {
+    // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
+    else if (to.fullPath.matchAll('/inicio') || to.fullPath.matchAll('/')) {
 
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' })
     }
-
     else {
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();

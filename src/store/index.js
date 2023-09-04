@@ -7,6 +7,7 @@ const store = createStore({
         buscador: '',
         usuario: '',
         empleados: 0,
+        sucursales: 0,
         access: localStorage.getItem('auth')
     },
 
@@ -37,7 +38,10 @@ const store = createStore({
         },
 
         setAccess(state, data) {
-            state.access = data
+            state.access = data;
+        },
+        setSucursal(state, data) {
+            state.sucursales = data;
         }
     },
     actions: {
@@ -70,6 +74,9 @@ const store = createStore({
         },
         actionAccess({ commit }, now) {
             commit('setAccess', now);
+        },
+        actionSucursal({ commit }, now) {
+            commit('setSucursal', now);
         }
 
     },
