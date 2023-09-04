@@ -167,11 +167,8 @@ export default {
     mounted() {
         this.verificarSucursales();
         // mostrar mensaje de proceder a crear primer empleado solo cuando ya exista al menos 1 sucursal y 0 empleados
-        if (this.sucursales >= 1 && this.empleados <= 0) {
-            alertInfo('Se ha detectado la inexistencia de empleados', 'Aceptar')
-        }
-        console.log(this.empleados)
-        console.log(this.sucursales)
+        if (this.sucursales >= 1 && this.empleados <= 0) { alertInfo('Se ha detectado la inexistencia de empleados', 'Aceptar') }
+
     }
 }
 </script>

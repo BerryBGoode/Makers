@@ -137,8 +137,9 @@ export default {
                 .then((rows) => {
                     // obtiendo los valores de la petición
                     this.empleados = rows.data;
-                    // verificando la existencia de los empleados, para redireccionara primer empleados, sino al login
-                    (this.empleados.length <= 0) ? this.$router.push('/primer/empleado') : this.$router.push('/login');
+                    // verificando la existencia de los empleados, para redireccionara primer empleados, 
+                    // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
+                    (this.empleados.length <= 0) ? this.$router.push('/primer/empleado') : (localStorage.getItem('auth')) ? this.$router.push('/inicio') : this.$router.push('/login')
                 }).catch(e => {
                     notificationError(e.reponse.data.error, 7000);
                 })

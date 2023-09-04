@@ -129,7 +129,6 @@ export default {
         }
     },
     methods: {
-
         async selectMetodo() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             console.log(notif)

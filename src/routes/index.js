@@ -394,7 +394,7 @@ ROUTER.beforeEach((to, from, next) => {
     // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
     else if (to.fullPath.matchAll('/login') && store.state.sucursales <= 1) {
         // verificar sí existe autencicación
-        (localStorage.getItem('auth')) ? next({ name: 'inicio' }) : next()
+        (localStorage.getItem('auth')) ? next({ name: 'inicio' }) : next();
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
     else if (to.fullPath.matchAll('/inicio') || to.fullPath.matchAll('/')) {
@@ -403,6 +403,7 @@ ROUTER.beforeEach((to, from, next) => {
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' })
     }
     else {
+        console.log(to)
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }
