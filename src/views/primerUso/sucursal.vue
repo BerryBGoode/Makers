@@ -107,6 +107,7 @@ export default {
                             this.registrarHorario(this.sucursal.inicio, this.sucursal.cierre)
                             // notificar el proceso exitoso
                             notificationSuccess(res.data, 3500, 'Aceptar');
+                            // agregar una sucursal al estado general                            
                             setTimeout(() => {
                                 this.$router.push('/primer/empleado')
                             }, 2500)
