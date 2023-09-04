@@ -129,10 +129,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['actionAccess']),
-        setAccess(state) {
-            this.actionAccess(state)
-        },
+
         async selectMetodo() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             console.log(notif)
@@ -178,7 +175,7 @@ export default {
             // componente realiza y el dato
             // this.$emit('getCookie', this.$cookies.get('auth'));
             localStorage.setItem('auth', token);
-            this.setAccess(true)
+
         },
     },
 }
