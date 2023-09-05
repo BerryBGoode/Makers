@@ -110,7 +110,7 @@ export default {
             },
             config: {
                 headers: {
-                    authorization: this.$cookies.get('auth')
+                    authorization: localStorage.getItem('auth')
                 }
             },
             msg: '',
@@ -128,11 +128,13 @@ export default {
         },
         async cerrarSesion() {
             if (await alertQuestion('Desea cerrar sesión?', null, 'Aceptar', null, null, true)) {
-                if (await this.$router.push({ name: 'login' })) {
-                    console.log('a')
+                localStorage.removeItem('auth');
+                if (this.$router.push({ name: 'login' })) {
+                    // console.log('a')
                 } else {
-                    console.log('b')
+                    //     console.log('b')
                 }
+                // remover storage
             }
 
         },

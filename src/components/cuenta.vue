@@ -51,7 +51,7 @@ export default {
             },
             config: {
                 headers: {
-                    authorization: this.$cookies.get('auth')
+                    authorization: localStorage.getItem('auth')
                 }
             }
         };

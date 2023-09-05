@@ -1,13 +1,15 @@
 // archivo con la configuración de direcciones
 
 // importación de modulos para el enrutamiento con vue
-import { createRouter, createWebHistory } from "vue-router";
-import store from "../store";
+import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store';
+import cookies from 'vue-cookies';
+import { alertInfo } from '../components/alert.vue';
 // importar interfaces, dashboard (inicio), servicios, productos, clientes
 //#region 
 // empleados, reservaciones, facturas, horarios, sucursales
-import dashboard from "../views/dashboard.vue";
-import servicios from "../views/servicios/vista.vue";
+import dashboard from '../views/dashboard.vue';
+import servicios from '../views/servicios/vista.vue';
 import productos from '../views/productos/vista.vue';
 import clientes from '../views/clientes/vista.vue';
 import empleados from '../views/empleados/vista.vue';
@@ -24,7 +26,7 @@ import detallesOrden from '../views/ordenes/detalle/vista.vue';
 
 //#region 
 // arcihvos de crear
-import crearReservacion from "../views/reservaciones/crear.vue";
+import crearReservacion from '../views/reservaciones/crear.vue';
 import crearServicio from '../views/servicios/crear.vue';
 import crearProducto from '../views/productos/crear.vue';
 import crearCliente from '../views/clientes/crear.vue';
@@ -106,11 +108,13 @@ const ROUTER = createRouter({
             name: 'primeraSucursal',
             path: '/primer/sucursal',
             component: () => import('../views/primerUso/sucursal.vue'),
+            meta: { requiredSucursal: 0 },
         },
         {
             name: 'primerEmpleado',
             path: '/primer/empleado',
             component: () => import('../views/primerUso/empleado.vue'),
+            meta: { requiredEmpleado: 0 },
         },
         {
             name: 'dashboard',
@@ -383,30 +387,68 @@ const ROUTER = createRouter({
     ]
 })
 
+/**
+ * TODO: REVERISAR CUANDO DE INICIO SE REDIRECCIONA A OTRA, EJEMPLO: PRODUCTOS, QUE DIRECCIONÉ A PRODUCTOS NO A INICIO.
+ * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO
+ * 
+ */
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
-    console.log(to.fullPath)
     // tiene como parametro la autenticación
     if (to.matched.some(route => route.meta.requiresAuth)) {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
     }
+    // verificar sí la ruta requiere de la cantidad de empleados sea 0
+    else if (to.matched.some(route => route.meta.requiredSucursal)) {
+        console.log('we try it')
+    }
+
     // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
-    else if (to.fullPath.matchAll('/login') && store.state.sucursales <= 1) {
+    // cuando redirecciona al inicio
+    else if (to.fullPath === '/login' && store.state.sucursales <= 1) {
+
         // verificar sí existe autencicación
-        (localStorage.getItem('auth')) ? next({ name: 'inicio' }) : next();
+        if (localStorage.getItem('auth')) {
+            // redireccionar al inicio sí existen autenticación
+            next({ name: 'inicio' })
+        } else {
+            // en esta parte se aplica cuando forsosamente se decea ir al login
+            next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
+        }
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
-    else if (to.fullPath.matchAll('/inicio') || to.fullPath.matchAll('/')) {
-
+    else if (to.fullPath === '/inicio' || to.fullPath.matchAll('/')) {
+        console.log(from)
+        console.log(to)
+        // en esta parte es cuando vue-router redirecciona al login
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
-        (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' })
+        if (localStorage.getItem('auth') !== null) {
+            // eliminando tokens
+            console.log('eliminando tokens')
+            // localStorage.removeItem('auth');
+            next();
+        } else {
+            // se ejecutará un evento del storage
+            // veficar sí se ha borrado el token para mandar al login
+            if (localStorage.getItem('auth') !== null) {
+                console.log('next')
+                next();
+            } else {
+
+                // redirección sospechosa, cuando se elimina del localStorage
+                next();
+            }
+            // next({ name: 'login' });
+
+        }
     }
     else {
-        console.log(to)
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }
+
 })
+
 // exportando ruteado
 export default ROUTER;

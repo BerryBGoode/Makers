@@ -169,7 +169,7 @@ export default {
         crearCookie(token) {
 
             // creando cookie
-            this.$cookies.set('auth', token, { experies: '1d' });
+            // this.$cookies.set('auth', token, { experies: '1d' });
             // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
             // componente realiza y el dato
             // this.$emit('getCookie', this.$cookies.get('auth'));

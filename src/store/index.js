@@ -10,7 +10,6 @@ const store = createStore({
         sucursales: 0,
         access: localStorage.getItem('auth')
     },
-
     mutations: {
         /**
          * Método para mutar el estado 'buscador'

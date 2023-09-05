@@ -63,28 +63,26 @@ import primerUso from './views/primerUso.vue';
 import { mapState, mapActions } from 'vuex';
 import { RouterView } from 'vue-router';
 import store from './store/';
-import { alertInfo } from './components/alert.vue';
+import { alertInfo, notificationError } from './components/alert.vue';
 
 
 export default {
     name: 'app',
     components: { dashboard, login, cookies, axios, primerUso, store, RouterView },
     data() {
-        let storage = window.addEventListener('storage', (e) => {
+
+        let state = window.addEventListener('storage', (e) => {
             if (e.key === 'auth' && e.oldValue !== e.newValue) {
+                this.$router.push('/login')
                 alertInfo('Acto sospechoso', 'Aceptar', 7500, 'Debido a actividad sospechosa se ha redireccionado')
-                this.$router.push('/login');
             }
-
         })
-
         return {
             auth: localStorage.getItem('auth'),
             storage: '',
             sucursales: [],
             empleados: [],
-
-
+            state
         }
     },
     methods: {
@@ -137,11 +135,21 @@ export default {
                 .then((rows) => {
                     // obtiendo los valores de la petición
                     this.empleados = rows.data;
+                    // setteando la cantidad de empleados que existen
+                    this.setEmpleado(this.empleados.length);
                     // verificando la existencia de los empleados, para redireccionara primer empleados, 
                     // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                    (this.empleados.length <= 0) ? this.$router.push('/primer/empleado') : (localStorage.getItem('auth')) ? this.$router.push('/inicio') : this.$router.push('/login')
+                    if (this.empleados.length <= 0) { this.$router.push('/primer/empleado') } else {
+                        if (localStorage.getItem('auth')) {
+                            // console.log('s')
+                            this.$router.push('/inicio');
+                        } else {
+                            // console.log('a')
+                            this.$router.push('/login')
+                        }
+                    }
                 }).catch(e => {
-                    notificationError(e.reponse.data.error, 7000);
+                    notificationError(e, 7000);
                 })
         }
     },
