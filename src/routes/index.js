@@ -1,7 +1,7 @@
 // archivo con la configuración de direcciones
 
 // importación de modulos para el enrutamiento con vue
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import store from '../store';
 import cookies from 'vue-cookies';
 import { alertInfo } from '../components/alert.vue';
@@ -59,16 +59,6 @@ import editarTipo from '../views/tipos_servicios/editar.vue';
 //#endregion
 
 // configuración
-import config from '../views/configuracion.vue';
-
-// 404
-import notfound from '../views/404.vue';
-
-import inicio from '../views/inicio.vue';
-
-import login from '../views/login.vue';
-
-import template from '../App.vue';
 
 // intancia del enrutador
 const ROUTER = createRouter({
@@ -77,7 +67,7 @@ const ROUTER = createRouter({
     // la url base del proyecto
     // hace la consulta a la al obj. routes, según el valor obtenido de la url
     // para buscar el componente
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHashHistory(import.meta.env.BASE_URL),
     // definiendo arreglo con las rutas
     routes: [
         // nombre de la ruta para ser llamada en el sidebar
@@ -128,7 +118,7 @@ const ROUTER = createRouter({
                     name: 'servicios',
                     path: '/servicios',
                     component: () => import('../views/servicios/vista.vue'),
-                    meta: { requiresAuth: true }
+                    meta: { requiresAuth: true },
                 },
                 // productos 
                 {
@@ -386,8 +376,7 @@ const ROUTER = createRouter({
 
 /**
  * TODO: REVERISAR CUANDO DE INICIO SE REDIRECCIONA A OTRA, EJEMPLO: PRODUCTOS, QUE DIRECCIONÉ A PRODUCTOS NO A INICIO.
- * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO
- * TODO: REVISAR ADEVERTENCIAS CUANDO SE ELIMINA EL TOKEN DE MANERA FORSOSA 
+ * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO 
  */
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
@@ -396,11 +385,6 @@ ROUTER.beforeEach((to, from, next) => {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
     }
-    // verificar sí la ruta requiere de la cantidad de empleados sea 0
-    else if (to.matched.some(route => route.meta.requiredSucursal)) {
-        console.log('we try it')
-    }
-
     // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
     // cuando redirecciona al inicio
     else if (to.fullPath === '/login' && store.state.sucursales <= 1) {
@@ -410,19 +394,22 @@ ROUTER.beforeEach((to, from, next) => {
             // redireccionar al inicio sí existen autenticación
             next({ name: 'inicio' })
         } else {
+            (to.fullPath.matchAll('/')) ? next('/login') : next();
             // en esta parte se aplica cuando forsosamente se decea ir al login
-            next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
+            // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
         }
+    }
+    // vericar sí no hay autenticación y este en login y se quiere ir a '/'
+    else if (to.path.match('/') && from.path.match('/login') && !localStorage.getItem('auth')) {
+
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
     else if (to.fullPath === '/inicio' || to.fullPath.matchAll('/')) {
         // en esta parte es cuando vue-router redirecciona al login
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
         if (localStorage.getItem('auth') !== null) {
-            // eliminando tokens
-            console.log('eliminando tokens')
-            // localStorage.removeItem('auth');
-            next();
+            // redireccionar a inicio sí sé quería ir '/'
+            (to.fullPath.matchAll('/')) ? next('/inicio') : next()
         } else {
             // se ejecutará un evento del storage
             // veficar sí se ha borrado el token para mandar al login
@@ -430,7 +417,6 @@ ROUTER.beforeEach((to, from, next) => {
                 console.log('next')
                 next();
             } else {
-
                 // redirección sospechosa, cuando se elimina del localStorage
                 next();
             }
