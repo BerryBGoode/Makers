@@ -84,20 +84,17 @@ const ROUTER = createRouter({
         // path: direcicón url
         // nombre del componente importado
         // inicio
-        //#region 
-        // servicios
-        // { path: '/', component: dashboard },
-
+        //#region
         {
             name: 'login',
             path: '/login',
-            component: login
+            component: () => import('../views/login.vue')
         },
         // ruta cuando no se encontró la ruta
         {
             path: '/:pathMatch(.*)*',
-            component: notfound,
-            name: '404'
+            name: '404',
+            component: () => import('../views/404.vue'),
         },
         {
             name: 'index',
@@ -119,94 +116,94 @@ const ROUTER = createRouter({
         {
             name: 'dashboard',
             path: '/dashboard',
-            component: dashboard,
+            component: () => import('../views/dashboard.vue'),
             children: [
                 {
                     name: 'inicio',
                     path: '/inicio',
-                    component: inicio,
+                    component: () => import('../views/inicio.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'servicios',
                     path: '/servicios',
-                    component: servicios,
+                    component: () => import('../views/servicios/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // productos 
                 {
                     name: 'productos',
                     path: '/productos',
-                    component: productos,
+                    component: () => import('../views/productos/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // clientes
                 {
                     name: 'clientes',
                     path: '/clientes',
-                    component: clientes,
+                    component: () => import('../views/clientes/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // empleados
                 {
                     name: 'empleados',
                     path: '/empleados',
-                    component: empleados,
+                    component: () => import('../views/empleados/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // reservaciones
                 {
                     name: 'reservaciones',
                     path: '/reservaciones',
-                    component: reservaciones,
+                    component: () => import('../views/reservaciones/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // sucursales
                 {
                     name: 'sucursales',
                     path: '/sucursales',
-                    component: sucursales,
+                    component: () => import('../views/sucursales/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // horarios
                 {
                     name: 'horarios',
                     path: '/horarios',
-                    component: horarios,
+                    component: () => import('../views/horarios/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // tipos de servicios
                 {
-                    name: 'tipos servicios',
+                    name: 'tiposServicios',
                     path: '/servicios/tipos',
-                    component: tipos,
+                    component: () => import('../views/tipos_servicios/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // cargos
                 {
                     name: 'cargos',
                     path: '/empleados/cargos',
-                    component: cargos,
+                    component: () => import('../views/cargos/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // ordenes 
                 {
                     name: 'ordenes',
                     path: '/ordenes',
-                    component: ordenes,
+                    component: () => import('../views/ordenes/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // productos sucursales
                 {
                     name: 'productosSucursales',
                     path: '/sucursales/:id/productos',
-                    component: productosSucursales,
+                    component: () => import('../views/sucursales/productos/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'detallesOrden',
                     path: '/ordenes/:orden/detalles/',
-                    component: detallesOrden,
+                    component: () => import('../views/ordenes/detalle/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 //#endregion
@@ -216,7 +213,7 @@ const ROUTER = createRouter({
                 {
                     name: 'crearServicio',
                     path: '/servicios/crear',
-                    component: crearServicio,
+                    component: () => import('../views/servicios/crear.vue'),
                     meta: { requiresAuth: true }
 
                 },
@@ -224,74 +221,74 @@ const ROUTER = createRouter({
                 {
                     name: 'crearProducto',
                     path: '/productos/crear',
-                    component: crearProducto,
+                    component: () => import('../views/productos/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearCliente',
                     path: '/clientes/crear',
-                    component: crearCliente,
+                    component: () => import('../views/clientes/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearEmpleado',
                     path: '/empleados/crear',
-                    component: crearEmpleado,
+                    component: () => import('../views/empleados/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 // reservacion
                 {
                     name: 'crearReservacion',
                     path: '/reservaciones/crear',
-                    component: crearReservacion,
+                    component: () => import('../views/reservaciones/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearTipoServicio',
                     path: '/servicios/tipos/crear',
-                    component: crearTipo,
+                    component: () => import('../views/tipos_servicios/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearCargo',
                     path: '/empleados/cargos/crear',
-                    component: crearCargo,
+                    component: () => import('../views/cargos/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearOrden',
                     path: '/ordenes/crear',
-                    component: crearOrden,
+                    component: () => import('../views/ordenes/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearSucursal',
                     path: '/sucursales/crear',
-                    component: crearSucursal,
+                    component: () => import('../views/sucursales/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearHorario',
                     path: '/horarios/crear',
-                    component: crearHorario,
+                    component: () => import('../views/horarios/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearFactura',
                     path: '/ordenes/:orden/factura/crear',
-                    component: crearFactura,
+                    component: () => import('../views/facturas/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearProductoSucursal',
                     path: '/sucursales/:id/productos/crear',
-                    component: crearProductoSucursal,
+                    component: () => import('../views/sucursales/productos/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'crearDetalle',
                     path: '/ordenes/:orden/detalles/crear/',
-                    component: crearDetalle,
+                    component: () => import('../views/ordenes/detalle/crear.vue'),
                     meta: { requiresAuth: true }
                 },
 
@@ -300,86 +297,86 @@ const ROUTER = createRouter({
                 {
                     name: 'editarCliente',
                     path: '/clientes/editar/:id',
-                    component: editarCliente,
+                    component: () => import('../views/clientes/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarCargo',
                     path: '/empleados/cargos/editar/:id',
-                    component: editarCargo,
+                    component: () => import('../views/cargos/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarTipoServicio',
                     path: '/servicios/tipos/editar/:id',
-                    component: editarTipo,
+                    component: () => import('../views/tipos_servicios/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarEmpleado',
                     path: '/empleados/editar/:id',
-                    component: editarEmpleado,
+                    component: () => import('../views/empleados/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarProductoSucursal',
                     path: '/sucursales/:id/productos/editar/:detalle',
-                    component: editarProductoSucursal,
+                    component: () => import('../views/sucursales/productos/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarDetalleOrden',
                     path: '/ordenes/:orden/detalles/editar/:detalle',
-                    component: editarDetalle,
+                    component: () => import('../views/ordenes/detalle/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarProducto',
                     path: '/productos/editar/:id',
-                    component: editarProducto,
+                    component: () => import('../views/productos/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarServicio',
                     path: '/servicios/editar/:id',
-                    component: editarServicio,
+                    component: () => import('../views/servicios/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarHorarios',
                     path: '/horarios/editar/:id',
-                    component: editarHorario,
+                    component: () => import('../views/horarios/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarSucursal',
                     path: '/sucursales/editar/:id',
-                    component: editarSucursal,
+                    component: () => import('../views/sucursales/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarRervacion',
                     path: '/reservaciones/editar/:id',
-                    component: editarRervacion,
+                    component: () => import('../views/reservaciones/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarOrden',
                     path: '/ordenes/editar/:id',
-                    component: editarOrden,
+                    component: () => import('../views/ordenes/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     name: 'editarFactura',
                     path: '/ordenes/:orden/factura/editar/:id',
-                    component: editarFactura,
+                    component: () => import('../views/facturas/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 // configuración
                 {
                     name: 'configuracion',
                     path: '/configuracion',
-                    component: config,
+                    component: () => import('../views/configuracion.vue'),
                     meta: { requiresAuth: true }
                 },
             ]
@@ -390,7 +387,7 @@ const ROUTER = createRouter({
 /**
  * TODO: REVERISAR CUANDO DE INICIO SE REDIRECCIONA A OTRA, EJEMPLO: PRODUCTOS, QUE DIRECCIONÉ A PRODUCTOS NO A INICIO.
  * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO
- * 
+ * TODO: REVISAR ADEVERTENCIAS CUANDO SE ELIMINA EL TOKEN DE MANERA FORSOSA 
  */
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
@@ -419,8 +416,6 @@ ROUTER.beforeEach((to, from, next) => {
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
     else if (to.fullPath === '/inicio' || to.fullPath.matchAll('/')) {
-        console.log(from)
-        console.log(to)
         // en esta parte es cuando vue-router redirecciona al login
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
         if (localStorage.getItem('auth') !== null) {

@@ -3,7 +3,7 @@ const MySQL = require('mysql');
 
 // attrs. de la conexión con mariaDB
 const POOL = MySQL.createPool({
-    database: 'makers',
+    database: 'makers_fu',
     password: '',
     host: 'localhost',// definir dominio en este caso host local
     user: 'root'

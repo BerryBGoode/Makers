@@ -110,7 +110,7 @@ export default {
                             // agregar una sucursal al estado general                            
                             setTimeout(() => {
                                 this.$router.push('/primer/empleado')
-                            }, 2500)
+                            }, 100)
                         }
 
                     })

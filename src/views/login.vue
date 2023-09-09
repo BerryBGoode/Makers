@@ -1,58 +1,16 @@
 <style>
-.login-container {
-    border: solid 2px #676767;
-    background-color: #2c2828;
-    border-radius: 7px;
-    height: 75%;
+.btn-makers {
+    background: #393534;
+    color: white;
 }
 
-.items-center {
-    align-items: center;
+.btn-makers:hover {
+    background: #504c4a;
 }
 
-.wrap {
-    flex-wrap: wrap;
-}
-
-.children-form {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.href-makers {
-    color: #909090;
-    cursor: pointer;
-}
-
-.buttons-login {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.func {
-    gap: 50px;
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
-}
-
-.msg {
-    position: absolute;
-}
-
-
-@media screen and (max-width: 725px) {
-    .login {
-        flex-direction: column;
-    }
-
-    .func,
-    .form {
-        height: 50%;
-        width: 100% !important;
-    }
+.btn-makers:active {
+    border-color: #b4b0af !important;
+    color: #b4b0af !important;
 }
 </style>
 
