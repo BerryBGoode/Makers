@@ -56,7 +56,6 @@
 // importar axios para hacer peticiones
 import axios from 'axios';
 // importar para configurar rutas
-import { useRouter } from 'vue-router'
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
 import { alertQuestion, notificationInfo, notificationSuccess } from '../components/alert.vue';
