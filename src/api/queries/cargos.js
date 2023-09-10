@@ -59,13 +59,13 @@ const store = async (req, res) => {
                     // enviar mensaje exitoso
                     res.status(201).send('Cargo agregado');
                 }).catch(rej => {
-                    res.status(406).send({ error: getError(rej) });
+                    res.status(500).send('Surgio un problema en el servidor');
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe iniciar sesión antes');
     }
 
 }
@@ -117,14 +117,13 @@ const change = (req, res) => {
                     res.status(201).send('Cargo modificado');
                 })
                 .catch(rej => {
-                    res.status(406).send({ error: getError(rej) });
+                    res.status(500).send('Surgio un problema en el servidor');
                 })
         } catch (error) {
-            console.log(error);
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe iniciar sesión antes');
     }
 
 }
@@ -141,15 +140,14 @@ const destroy = (req, res) => {
                 .then(() => {
                     res.status(200).send('Cargo eliminado');
                 })
-                .catch(rej => {
-                    res.status(406).send({ error: getError(rej) });
+                .catch(() => {
+                    res.status(500).send('Surgio un problema en el servidor');
                 })
         } catch (error) {
-            console.log(error);
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe iniciar sesión antes');
     }
 
 }

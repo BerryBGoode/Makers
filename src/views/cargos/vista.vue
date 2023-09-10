@@ -79,7 +79,8 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
-import { notificationQuestion } from '../../components/alert.vue';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 
 export default {
     name: 'cargos',
@@ -89,16 +90,11 @@ export default {
             cargos: [],
             // arreglo que primero tendra los cargos
             filters: [],
-            config: {
-                headers: {
-                    authorization: localStorage.getItem('auth')
-                }
-            }
         }
     },
     methods: {
         getCargos() {
-            axios.get('http://localhost:3000/api/cargos', this.config)
+            axios.get('http://localhost:3000/api/cargos', store.state.config)
                 .then(res => {
                     this.cargos = res.data;
                     this.filters = res.data;
@@ -107,18 +103,17 @@ export default {
                     console.log(e)
                 })
         },
-        eliminarCargo(cargo) {
-            if (notificationQuestion('Desea eliminar este cargo?')) {
-                axios.delete('http://localhost:3000/api/cargos/' + cargo, this.config)
+        async eliminarCargo(cargo) {
+            if (await notificationQuestion('Desea eliminar este cargo?', 3000, 'Aceptar')) {
+                axios.delete('http://localhost:3000/api/cargos/' + cargo, store.state.config)
                     .then(res => {
-                        //verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
 
+                        notificationSuccess(res.data);
                         //cargar
                         this.getCargos();
                     })
                     .catch(rej => {
-                        if (rej.response.data.error) alert(rej.response.data.error);
+                        if (rej.response.data.error) notificationError(rej.response.data.error);
                     })
             }
         },
