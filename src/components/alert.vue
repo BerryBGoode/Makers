@@ -84,6 +84,9 @@ export const notificationError = (txt, time) => {
  * @param {*} button texto del botton
  */
 export const notificationSuccess = (txt, time, button) => {
+    if (!button) {
+        button = 'Aceptar';
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -91,10 +94,13 @@ export const notificationSuccess = (txt, time, button) => {
         timerProgressBar: true,
         title: txt,
         icon: 'success',
+        // text: 'dxd',
         color: '#fff',
         width: '25vw',
         timer: time,
-
+        confirmButtonText: button,
+        iconColor: '#767676',
+        confirmButtonColor: '#393534',
     })
 }
 /**

@@ -111,8 +111,12 @@ export default {
     },
     methods: {
         ...mapActions(['actionSucursal']),
+        ...mapActions(['actionEmpleado']),
         setSucursal(state) {
             this.actionSucursal(state)
+        },
+        setEmpleado(state) {
+            this.actionEmpleado(state)
         },
         // método para obtener datos dependientes antes de hacer el registro
         async registrarPrimerEmpleado() {
@@ -135,7 +139,9 @@ export default {
                         .then((res) => {
                             // mostrar mensaje de error sí encuentra
                             (res.data.error) ? notificationInfo(res.data.error, 5000, 'Aceptar') : alertInfo(res.data, 'Aceptar', 6500, 'Ahora procedera a iniciar sesión con el empleado creado');
-                            // redireccionar al login                            
+                            // agregando 1 empleado al estado general de los empleados existentes
+                            this.setEmpleado(1)
+                            // redireccionar al login        
                             this.$router.push('/login');
                         }).catch(e => {
                             // mostrar mensaje de exception sí encuentra

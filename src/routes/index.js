@@ -392,7 +392,6 @@ ROUTER.beforeEach((to, from, next) => {
         // cuando se desea ir a la ruta de primera sucursal
         // validar otra ves la cantidad de sucursales que se encontraron
         // verificar sí existen sucursales
-        console.log(store.state.sucursales);
         if (store.state.sucursales <= 0) {
             next();
         }
@@ -446,6 +445,13 @@ ROUTER.beforeEach((to, from, next) => {
     else if (to.fullPath === '/' && from.path === '/login' && !localStorage.getItem('auth')) {
         next('/login')
     }
+    // verificar sí se quiere ir a la '/' desde primer uso
+    else if (to.fullPath === '/' && (from.path === '/primer/empleado' || from.path === '/primer/sucursal')) {
+        // verificar sí existen empleados, para mandar a crear primer empleado o mandar a crear primer sucursal
+        // porque puede entrar a esta condicional solo sí 
+        // va (to) a la dirección raíz '/', y viene (from) de alguna dirección de primer uso
+        (store.state.empleados <= 0) ? next('/primer/empleado') : next('/primer/sucursal');
+    }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
     else if (to.fullPath === '/inicio' || to.fullPath === '/') {
         // en esta parte es cuando vue-router redirecciona al login
@@ -457,7 +463,6 @@ ROUTER.beforeEach((to, from, next) => {
             // se ejecutará un evento del storage
             // veficar sí se ha borrado el token para mandar al login
             if (localStorage.getItem('auth') !== null) {
-                console.log('next')
                 next();
             } else {
                 // redirección sospechosa, cuando se elimina del localStorage
@@ -468,7 +473,7 @@ ROUTER.beforeEach((to, from, next) => {
         }
     }
     else {
-        console.log(to)
+
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }

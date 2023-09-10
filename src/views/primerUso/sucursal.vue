@@ -81,6 +81,14 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['actionEmpleado']),
+        ...mapActions(['actionSucursal']),
+        setSucursal(state) {
+            this.actionSucursal(state)
+        },
+        setEmpleado(state) {
+            this.actionEmpleado(state)
+        },
         registrarPrimeraSucursal() {
             // validando campos vacíos
             if (!this.sucursal.cierre || !this.sucursal.direccion || !this.sucursal.inicio ||
@@ -106,11 +114,14 @@ export default {
                             // y el nuevo registro de horarioa la respectiva entidad
                             this.registrarHorario(this.sucursal.inicio, this.sucursal.cierre)
                             // notificar el proceso exitoso
-                            notificationSuccess(res.data, 3500, 'Aceptar');
-                            // agregar una sucursal al estado general                            
+                            notificationSuccess(res.data, 2000, 'Aceptar');
+                            // agregar al estado general 1 sucursal para poder acceder a la de primer empleado
+                            this.setSucursal(1);
+                            // agregar una sucursal al estado general  \
                             setTimeout(() => {
                                 this.$router.push('/primer/empleado')
-                            }, 100)
+                            }, 1500)
+
                         }
 
                     })
@@ -146,16 +157,42 @@ export default {
         registrarCargo(cargo) {
             axios.post('http://localhost:3000/api/cargos', cargo)
                 .then(res => {
-                    if (res.data.error) notificationInfo(res.data.error, 5000, 'Aceptar');
+                    // verificar síno hay errores
+                    if (!res.data.error) {
+                        this.cargo = {
+                            cargo: ''
+                        }
+
+                    }
                 })
                 .catch(e => {
                     notificationError(e.response.data.error);
                 })
         },
+        verficarEmpleados() {
+            axios.get('http://localhost:3000/api/auth/verificar/empleados')
+                .then((rows) => {
+                    // obtiendo los valores de la petición
+                    this.empleados = rows.data;
+                    // setteando la cantidad de empleados que existen
+                    this.setEmpleado(this.empleados.length);
+                    // verificando la existencia de los empleados, para redireccionara primer empleados, 
+                    // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
+                    if (this.empleados.length <= 0) {
+                        this.$router.push('/primer/empleado')
+                    } else {
+                        if (!localStorage.getItem('auth')) {
+                            this.$router.push('/login')
+                        }
+                    }
+                }).catch(e => {
+                    notificationError(e, 7000);
+                })
+        }
     },
     computed: {
         ...mapState({
-            sucursales: state => state.sucursales
+            sucursales: state => state.sucursales,
         })
     },
     mounted() {
