@@ -6,15 +6,14 @@
                 <router-link to="/empleados" type="button" class="btn btn-makers">
                     Volver
                 </router-link>
-                <router-link to="/empleados/cargos/crear" type="button"
-                    class="btn btn-makers">
+                <router-link to="/empleados/cargos/crear" type="button" class="btn btn-makers">
                     Agregar
                 </router-link>
-            </div>  
+            </div>
         </div>
         <hr>
         <!-- Apartir de aquí verificar sí hay datos o servicios -->
-        <div class="data p-2" v-if="cargos.length >= 0">          
+        <div class="data p-2" v-if="cargos.length >= 0">
             <div class="card" v-for="(cargo, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
@@ -80,39 +79,45 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import { notificationQuestion } from '../../components/alert.vue';
 
 export default {
-    name: 'cargos',    
+    name: 'cargos',
     data() {
         return {
             // arreglo para cargas cargos
             cargos: [],
             // arreglo que primero tendra los cargos
-            filters: []
+            filters: [],
+            config: {
+                headers: {
+                    authorization: localStorage.getItem('auth')
+                }
+            }
         }
     },
     methods: {
         getCargos() {
-            axios.get('http://localhost:3000/api/cargos')
+            axios.get('http://localhost:3000/api/cargos', this.config)
                 .then(res => {
                     this.cargos = res.data;
-                    this.filters = res.data;                    
-                }) 
+                    this.filters = res.data;
+                })
                 .catch(e => {
                     console.log(e)
                 })
         },
         eliminarCargo(cargo) {
-            if (confirm('Desea eliminar este cargo?')) {
-                axios.delete('http://localhost:3000/api/cargos/' + cargo)
-                    .then(res => {                            
+            if (notificationQuestion('Desea eliminar este cargo?')) {
+                axios.delete('http://localhost:3000/api/cargos/' + cargo, this.config)
+                    .then(res => {
                         //verificar errores
                         (res.data.error) ? alert(res.data.error) : alert(res.data);
 
                         //cargar
                         this.getCargos();
                     })
-                    .catch(rej => {                                            
+                    .catch(rej => {
                         if (rej.response.data.error) alert(rej.response.data.error);
                     })
             }
@@ -142,7 +147,7 @@ export default {
         // detetar cuando se modifica el dato del input, para ello
         // tiene que tener el nombre de la var u obj
         buscador() {
-            
+
             // verificar sí tiene datos vacíos para mostrar los datos con normalidad
             // sino mostrar los realizar filtro
             (this.buscador.trim() === '') ? this.filters = this.cargos : this.buscar(this.buscador.toLowerCase())
