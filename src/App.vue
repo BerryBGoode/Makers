@@ -142,7 +142,7 @@ export default {
                     if (this.empleados.length <= 0) { this.$router.push('/primer/empleado') } else {
                         if (localStorage.getItem('auth')) {
                             // console.log('s')
-                            this.$router.push('/inicio');
+                            // this.$router.push('/inicio');
                         } else {
                             // console.log('a')
                             this.$router.push('/login')

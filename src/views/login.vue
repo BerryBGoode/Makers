@@ -59,7 +59,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router'
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
-import { alertQuestion } from '../components/alert.vue';
+import { alertQuestion, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
 
 
@@ -94,7 +94,7 @@ export default {
 
         },
         // método para buscar a un empleado con esos datos
-        checkEmpleado() {
+        async checkEmpleado() {
             // limpiar mensaje
             this.msg = '';
             // validar datos vacios
@@ -102,26 +102,27 @@ export default {
                 this.msg = 'No se permite campos vacíos';
 
             } else {
-                // realizar petición
-                axios.post('http://localhost:3000/api/auth', this.model.empleado)
-                    .then(res => {
-                        // verificar estado de autenticación
-                        if (!res.data.auth) this.msg = res.data.msg;
-                        // creando token
-                        if (res.data.auth !== false) {
-                            // asginar estado de la autenticación
-                            this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                            // crear cookie
-                            this.crearCookie(res.data.token)
-                            // mostrar mensaje
-                            this.msg = res.data.msg
-                            // redireccionar al inicio
-                            this.$router.push('/inicio')
-                        }
-                    })
-                    .catch(e => {
-                        alert(e.response.data.error)
-                    })
+                try {
+                    let res = await axios.post('http://localhost:3000/api/auth', this.model.empleado);
+                    if (!res.data.auth) this.msg = res.data.msg;
+                    // creando token
+                    if (res.data.auth !== false) {
+                        // asginar estado de la autenticación
+                        this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                        // crear cookie
+                        this.crearCookie(res.data.token)
+                        // mostrar mensaje
+                        this.msg = res.data.msg
+                        // redireccionar al inicio
+                        this.$router.push('/inicio');
+                        await notificationSuccess('Sesión iniciada correctamente', 5000, null);
+                    }
+
+                } catch (error) {
+                    alert(e.response.data.error)
+
+                }
+
             }
         },
         crearCookie(token) {

@@ -80,10 +80,16 @@ const ROUTER = createRouter({
             path: '/login',
             component: () => import('../views/login.vue')
         },
+        {
+            name: '404',
+            path: '/404',
+            component: () => import('../views/404.vue')
+        },
         // ruta cuando no se encontró la ruta
         {
             path: '/:pathMatch(.*)*',
-            name: '404',
+            // redirect: '/404',
+            name: 'notFound',
             component: () => import('../views/404.vue'),
         },
         {
@@ -388,7 +394,6 @@ ROUTER.beforeEach((to, from, next) => {
     // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
     // cuando redirecciona al inicio
     else if (to.fullPath === '/login' && store.state.sucursales <= 1) {
-
         // verificar sí existe autencicación
         if (localStorage.getItem('auth')) {
             // redireccionar al inicio sí existen autenticación
@@ -400,16 +405,16 @@ ROUTER.beforeEach((to, from, next) => {
         }
     }
     // vericar sí no hay autenticación y este en login y se quiere ir a '/'
-    else if (to.path.match('/') && from.path.match('/login') && !localStorage.getItem('auth')) {
-
+    else if (to.fullPath.match('/') && from.path.match('/login') && !localStorage.getItem('auth')) {
+        next('/login')
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
     else if (to.fullPath === '/inicio' || to.fullPath.matchAll('/')) {
         // en esta parte es cuando vue-router redirecciona al login
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
         if (localStorage.getItem('auth') !== null) {
-            // redireccionar a inicio sí sé quería ir '/'
-            (to.fullPath.matchAll('/')) ? next('/inicio') : next()
+            // redireccionar a inicio sí sé quería ir '/', sí no coincide redireccionar a la establecida según la ruta
+            (to.fullPath === '/') ? next('/inicio') : next();
         } else {
             // se ejecutará un evento del storage
             // veficar sí se ha borrado el token para mandar al login

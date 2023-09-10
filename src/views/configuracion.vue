@@ -91,7 +91,7 @@
 <script>
 import axios from 'axios'
 import cookies from 'vue-cookies';
-import { alertQuestion, notificationError, notificationInfo } from '../components/alert.vue';
+import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapState, mapActions } from 'vuex';
 // exportar componente
 export default {
@@ -129,12 +129,8 @@ export default {
         async cerrarSesion() {
             if (await alertQuestion('Desea cerrar sesión?', null, 'Aceptar', null, null, true)) {
                 localStorage.removeItem('auth');
-                if (this.$router.push({ name: 'login' })) {
-                    // console.log('a')
-                } else {
-                    //     console.log('b')
-                }
-                // remover storage
+                this.$router.push({ name: 'login' });
+                notificationSuccess('Sesión cerrada correctamente', 5000, null);
             }
 
         },
