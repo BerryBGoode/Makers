@@ -122,9 +122,9 @@ export default {
                 .then(rows => {
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
-                    this.setSucursal(this.sucursales.length);
+                    this.setSucursal(rows.data.length);
                     // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
-                    (this.sucursales.length <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
+                    (rows.data.length <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
                 }).catch(rej => {
                     console.log(rej);
                 })
@@ -139,12 +139,12 @@ export default {
                     this.setEmpleado(this.empleados.length);
                     // verificando la existencia de los empleados, para redireccionara primer empleados, 
                     // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                    if (this.empleados.length <= 0) { this.$router.push('/primer/empleado') } else {
-                        if (localStorage.getItem('auth')) {
+                    if (this.empleados.length <= 0) {
+                        this.$router.push('/primer/empleado')
+                    } else {
+                        if (!localStorage.getItem('auth')) {
                             // console.log('s')
                             // this.$router.push('/inicio');
-                        } else {
-                            // console.log('a')
                             this.$router.push('/login')
                         }
                     }
@@ -161,20 +161,7 @@ export default {
         this.checkTokenStorage();
     },
     watch: {
-        // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
-        // para así identificar que vista mostrar
-        // state(now) {
-        //     // volver a verificar sí existe la cookie cada 20segundos
-        //     setInterval(() => {
-        //         this.checkTokenCookie();
-        //     }, 10)
 
-        // },
-
-        auth(now, old) {
-            console.log(now)
-            console.log(old)
-        },
         empleado() {
             this.verificarSucursales();
         },

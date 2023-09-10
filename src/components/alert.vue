@@ -91,13 +91,10 @@ export const notificationSuccess = (txt, time, button) => {
         timerProgressBar: true,
         title: txt,
         icon: 'success',
-        // text: 'dxd',
         color: '#fff',
         width: '25vw',
         timer: time,
-        confirmButtonText: button,
-        iconColor: '#767676',
-        confirmButtonColor: '#393534',
+
     })
 }
 /**

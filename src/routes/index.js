@@ -88,9 +88,7 @@ const ROUTER = createRouter({
         // ruta cuando no se encontró la ruta
         {
             path: '/:pathMatch(.*)*',
-            // redirect: '/404',
-            name: 'notFound',
-            component: () => import('../views/404.vue'),
+            redirect: '/404',
         },
         {
             name: 'index',
@@ -101,13 +99,11 @@ const ROUTER = createRouter({
             name: 'primeraSucursal',
             path: '/primer/sucursal',
             component: () => import('../views/primerUso/sucursal.vue'),
-            meta: { requiredSucursal: 0 },
         },
         {
             name: 'primerEmpleado',
             path: '/primer/empleado',
             component: () => import('../views/primerUso/empleado.vue'),
-            meta: { requiredEmpleado: 0 },
         },
         {
             name: 'dashboard',
@@ -391,25 +387,67 @@ ROUTER.beforeEach((to, from, next) => {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
     }
-    // verificar cuando se va a navegar al login y cuando exista +1 de sucursal
+    // verificar cuando se decea ir formulario de primera sucursal
+    else if (to.path === '/primer/sucursal') {
+        // cuando se desea ir a la ruta de primera sucursal
+        // validar otra ves la cantidad de sucursales que se encontraron
+        // verificar sí existen sucursales
+        console.log(store.state.sucursales);
+        if (store.state.sucursales <= 0) {
+            next();
+        }
+        // verificando sí existen empleados para direccionar al que se deceaba
+        else if (store.state.empleados <= 0) {
+            next('/primer/empleado');
+        }
+        // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
+        else {
+
+            (localStorage.getItem('auth')) ? next(from.path) : next('/login')
+        }
+    }
+    // validando cuando se quiere ir primer empleado
+    else if (to.path === '/primer/empleado') {
+        // verificar sí existen sucursales
+        if (store.state.sucursales <= 0) {
+            next('/primer/sucursal')
+        }
+        // verificando sí existen empleados para direccionar al que se deceaba
+        else if (store.state.empleados <= 0) {
+            next()
+        }
+        // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
+        else {
+            (localStorage.getItem('auth')) ? next(from.path) : next('/login')
+        }
+
+    }
+    // verificar cuando se va a navegar al login
     // cuando redirecciona al inicio
-    else if (to.fullPath === '/login' && store.state.sucursales <= 1) {
-        // verificar sí existe autencicación
-        if (localStorage.getItem('auth')) {
-            // redireccionar al inicio sí existen autenticación
-            next({ name: 'inicio' })
-        } else {
-            (to.fullPath.matchAll('/')) ? next('/login') : next();
-            // en esta parte se aplica cuando forsosamente se decea ir al login
-            // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
+    else if (to.fullPath === '/login') {
+        //  cuando se desea ir a la ruta de primera sucursal
+        // validar otra ves la cantidad de sucursales que se encontraron
+        if (store.state.sucursales <= 0) {
+            next('/primer/sucursal')
+        } else if (store.state.empleados <= 0) { next('/primer/empleado') }
+        else {
+            // verificar sí existe autencicación
+            if (localStorage.getItem('auth')) {
+                // redireccionar al inicio sí existen autenticación
+                next({ name: 'inicio' })
+            } else {
+                next();
+                // en esta parte se aplica cuando forsosamente se decea ir al login
+                // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
+            }
         }
     }
     // vericar sí no hay autenticación y este en login y se quiere ir a '/'
-    else if (to.fullPath.match('/') && from.path.match('/login') && !localStorage.getItem('auth')) {
+    else if (to.fullPath === '/' && from.path === '/login' && !localStorage.getItem('auth')) {
         next('/login')
     }
     // verificar sí el usuaurio esta autenticado cuando quiera acceder a la ruta raíz
-    else if (to.fullPath === '/inicio' || to.fullPath.matchAll('/')) {
+    else if (to.fullPath === '/inicio' || to.fullPath === '/') {
         // en esta parte es cuando vue-router redirecciona al login
         // verificar sí hay sesión para redireccionar sí tiene sesión a inicio, sino a login
         if (localStorage.getItem('auth') !== null) {
@@ -430,6 +468,7 @@ ROUTER.beforeEach((to, from, next) => {
         }
     }
     else {
+        console.log(to)
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }

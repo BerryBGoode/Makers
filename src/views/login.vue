@@ -115,7 +115,7 @@ export default {
                         this.msg = res.data.msg
                         // redireccionar al inicio
                         this.$router.push('/inicio');
-                        await notificationSuccess('Sesión iniciada correctamente', 5000, null);
+                        await notificationSuccess('Sesión iniciada correctamente', 5000);
                     }
 
                 } catch (error) {
