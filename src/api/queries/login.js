@@ -58,13 +58,12 @@ const validateUsuario = async (req, res) => {
                 auth = false;
                 token = '';
             }
-            console.log('a')
             res.status(200).send({ msg, auth, token });
         }
     } catch (error) {
         console.log('error')
         console.log(error)
-        res.status(500).send({error: getError(error)})
+        res.status(500).send({ error: getError(error) })
     }
 }
 
@@ -193,5 +192,65 @@ const change = async (req, res) => {
     }
 }
 
+/**
+ * Método asincrono para verificar sí hay Sucursales registradas para verificar el primer uso
+ * @param {*} req datos de la petición (vienen de la del cliente)
+ * @param {*} res respuesta del servidor
+ */
+const verificarSucursales = async (req, res) => {
+    try {
+        // obtener las Sucursales para verificar sí existen registradas
+        let sucursales = await execute('SELECT nombre_sucursal FROM sucursales');
+        // retornar en la respuesta las sucursales encontradas
+
+        res.status(200).json(sucursales);
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+/**
+ * Método ascricrono para verificar sí hay empleados registrados para el método de primer uso
+ * @param {*} req datos de la petición
+ * @param {*} res respuesta del servidor
+ */
+const verificarEmpleados = async (req, res) => {
+    try {
+        // obtener los empleados registrados
+        let empleados = await execute('SELECT id_empleado FROM empleados');
+        // retornar los empleados registrados
+
+        res.status(200).json(empleados)
+    } catch (error) {
+        res.status(406).send({ error: getError(error) });
+    }
+}
+
+/**
+ * Método para obtener la primera sucursal, el primer horario y el primer cargo para asignar al primer empleado
+ * @param {*} req datos que se envia de la petición
+ * @param {*} res respues del servidor o (return de este método)
+ */
+const getDataPrimerEmpleado = async (req, res) => {
+    try {
+        // obtener los cargos, horarios y sucursal para despues formatear 
+        let cargo = await execute('SELECT id_cargo FROM cargos');
+        let horario = await execute('SELECT id_horario FROM horarios');
+        let sucursal = await execute('SELECT id_sucursal FROM sucursales');
+
+        // declarar un objeto para retornar al cliente un objetos con los ids
+        let id = {
+            cargo: getBinary(cargo, 'id_cargo')[0],
+            horario: getBinary(horario, 'id_horario')[0],
+            sucursal: getBinary(sucursal, 'id_sucursal')[0]
+        }
+
+        res.status(200).json(id);
+    } catch (error) {
+        res.status(500).send({ error: getError(error) });
+    }
+}
 // exportar modulos
-module.exports = { validateUsuario, getInfo, getConfig, change };
+module.exports = {
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado
+};

@@ -1,6 +1,6 @@
 import Chart from "chart.js/auto";
 
-let line;
+let line, bar, dough, pie, lineal;
 
 /**
  * Método que define la gráfica de tipo lineal, este método define objetos para la configuración 
@@ -11,7 +11,7 @@ let line;
  * @param {*} title titulo de la gráfica
  */
 export const lineGraph = (dom, x, y, title) => {
-    const data = {
+    let data = {
         labels: x,
         datasets: [{
             label: title,
@@ -40,46 +40,173 @@ export const lineGraph = (dom, x, y, title) => {
         }
     }
 
-    const config = {
+    let config = {
         type: 'line',
         data: data,
         options: options
     };
-
     if (document.getElementById(dom).$chartjs) {
         line.destroy();
     }
     line = new Chart(document.getElementById(dom), config)
 }
 
-
-export const barGraph = () => {
-    const labels = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-    ];
-
-    const data = {
-        labels: labels,
+export const linealGraph = (dom, x, y, title) => {
+    let data = {
+        labels: x,
         datasets: [{
-            label: 'My First dataset',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45],
+            label: title,
+            fill: true,
+            backgroundColor: getColors(35),
+            borderColor: getColors(),
+            data: y,
         }]
     };
 
-    const config = {
-        type: 'bar',
+    let options = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+            },
+            x: {
+                grid: {
+                    display: false
+                }
+
+            }
+        },
+        plugins: {
+            legend: { position: 'top' }
+        }
+    }
+
+    let config = {
+        type: 'line',
         data: data,
-        options: {}
+        options: options
+    };
+    if (document.getElementById(dom).$chartjs) {
+        lineal.destroy();
+    }
+    lineal = new Chart(document.getElementById(dom), config)
+}
+
+export const pieGraph = (dom, title, names, studio, values) => {
+    let data = {
+        labels: names,
+        datasets: [{
+            label: studio,
+            data: values,
+            backgroundColor: getColors(35),
+            borderColor: getColors(),
+            borderWidth: 1
+        }]
+    }
+
+    let options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: title
+            }
+        }
+    }
+
+    let config = {
+        type: 'pie',
+        data: data,
+        options: options
+    }
+
+    if (document.getElementById(dom).$chartjs) {
+        pie.destroy();
+    }
+    pie = new Chart(document.getElementById(dom), config)
+}
+
+
+export const barGraph = (dom, title, x, y) => {
+
+
+    let data = {
+        labels: x,
+        datasets: [{
+            label: title,
+            backgroundColor: getColors(35),
+            borderColor: getColors(),
+            data: y,
+            borderWidth: 1
+        }]
     };
 
-    const BAR = new Chart(document.getElementById('categorias'), config)
+    let config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+
+                }
+            },
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    };
+    if (document.getElementById(dom).$chartjs) {
+        bar.destroy();
+    }
+    bar = new Chart(document.getElementById(dom), config)
+}
+
+export const doughnutGraph = (dom, title, studio, names, values) => {
+
+    let data = {
+        labels: names,
+        datasets: [{
+            label: studio,
+            data: values,
+            backgroundColor: getColors(35),
+            borderColor: getColors(),
+            borderWidth: 1
+        }]
+    }
+
+    let options = {
+        responsive: true,
+        plugins: {
+
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: title
+            }
+        }
+    }
+    let config = {
+        type: 'doughnut',
+        data: data,
+        options: options
+    }
+
+    if (document.getElementById(dom).$chartjs) {
+        dough.destroy();
+    }
+    dough = new Chart(document.getElementById(dom), config)
 }
 
 const getColors = (opacity) => {

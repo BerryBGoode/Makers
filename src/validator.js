@@ -33,3 +33,25 @@ export const formatEmail = value => {
     // console.log((mail.test(value)));
     return (mail.test(value));
 }
+
+export const formatDateToDDMMYYYY = date => {
+    // obtener los días en base a la fecha obtenida
+    const day = String(date.getDate()).padStart(2, '0');
+    // extraer mes del parametro
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses en Date empiezan desde 0
+    // obtener el año con los 4 digitos de la fecha obtenida
+    const year = date.getFullYear();
+    // retornar la fecha en formato dd/mm/yyyy
+    return `${day}/${month}/${year}`;
+}
+export const formatDateToYYYYMMDD = date => {
+    // obtener los días en base a la fecha obtenida
+    const day = String(date.getDate()).padStart(2, '0');
+    // extraer mes del parametro
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    // obtener el año con los 4 digitos de la fecha obtenida
+    const year = date.getFullYear();
+    // retornar la fecha en formato yyyy-mm-dd
+    return `${year}-${month}-${day}`;
+}
+

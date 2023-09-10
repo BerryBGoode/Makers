@@ -27,7 +27,10 @@
                             <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                         </div>
                         <div class="col-md-4">
-                            <span>{{ producto.existencias }}</span>
+                            <span>Existencias: </span>
+                            <span class="bold">
+                                {{ producto.existencias }}
+                            </span>
                         </div>
                         <div class="col-md-2 card-buttons">
                             <div class="buttons">

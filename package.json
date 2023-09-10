@@ -9,9 +9,10 @@
     "serve": "nodemon src/api/index.js"
   },
   "dependencies": {
+    "@sweetalert2/theme-dark": "^5.0.15",
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
-    "bootstrap": "^5.3.0",
+    "bootstrap": "^5.3.1",
     "bootstrap-vue": "^2.23.1",
     "chart.js": "^4.3.3",
     "chartjs": "^0.3.24",
@@ -21,8 +22,9 @@
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "flatpickr": "^4.6.13",
+    "html2pdf.js": "^0.10.1",
     "js-cookie": "^3.0.5",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.31",
     "md5": "^2.3.0",
@@ -35,12 +37,13 @@
     "vue-chartjs": "^5.2.0",
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.2.2",
+    "vue-sweetalert2": "^5.0.5",
     "vue3-cookies": "^1.0.6",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.3",
     "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.3.5"
+    "vite": "^4.4.9"
   }
 }

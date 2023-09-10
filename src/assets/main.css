@@ -75,7 +75,7 @@ hr,
 .form-select {
     background: transparent url(../../assets/img/arrow.png) no-repeat right 0.75rem center;
     color: white;
-    border: solid 1px rgb(118, 118, 118);
+    border: solid 1px #767676;
 }
 
 option {
@@ -86,7 +86,7 @@ option {
 .form-control:focus {
     border-color: #b4b0af;
     outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(84, 84, 84, 0.48);
+    box-shadow: 0 0 0 0.25rem #5454547a;
 }
 
 .form-control,
@@ -227,12 +227,119 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 98%;
 }
 
-.form-control[type=file]:disabled{
+.form-control[type=file]:disabled {
     background-color: #403C3B;
 }
-.form-control[type=file]:hover{
+
+.form-control[type=file]:hover {
     cursor: pointer;
 }
+
+.tipos {
+    background: #231F1E;
+    padding: .7% .9%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.top {
+    padding: 1%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.servicios {
+    background: #231F1E;
+    padding: 0 .5%;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+}
+
+.component-servicio {
+    margin-top: 2.5%;
+    border-radius: 7px;
+}
+
+.btn-makers {
+    background: #393534;
+    color: white;
+}
+
+.btn-makers:hover {
+    background: #504c4a;
+}
+
+.btn-makers:active {
+    border-color: #b4b0af !important;
+    color: #b4b0af !important;
+}
+
+.login-container {
+    border: solid 2px #676767;
+    background-color: #2c2828;
+    border-radius: 7px;
+    height: 75%;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.children-form {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.href-makers {
+    color: #909090;
+    cursor: pointer;
+}
+
+.buttons-login {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.func {
+    gap: 50px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+
+.msg {
+    position: absolute;
+}
+
+
+@media screen and (max-width: 725px) {
+    .login {
+        flex-direction: column;
+    }
+
+    .func,
+    .form {
+        height: 50%;
+        width: 100% !important;
+    }
+}
+
 /* estilos por defecto de vue */
 /* #app {
 

@@ -43,12 +43,13 @@ main {
 
 
 <template>
-    <template v-if="!auth || !storage">
-        <login @getCookie="validateCookie" />
+    <!-- <template v-if="access === null">
+        <login />
     </template>
     <template v-else>
         <dashboard />
-    </template>
+    </template> -->
+    <router-view />
 </template>
 <script>
 //  setup solo se utiliza en el componente principal,
@@ -56,36 +57,58 @@ main {
 
 import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
-import login from './views/login.vue'
-// espacio para importar componentes hijos
+import login from './views/login.vue';
+import axios from 'axios';
+import primerUso from './views/primerUso.vue';
+import { mapState, mapActions } from 'vuex';
+import { RouterView } from 'vue-router';
+import store from './store/';
+import { alertInfo, notificationError } from './components/alert.vue';
+
+
 export default {
     name: 'app',
-    components: { dashboard, login, cookies},
+    components: { dashboard, login, cookies, axios, primerUso, store, RouterView },
     data() {
+
+        let state = window.addEventListener('storage', (e) => {
+            if (e.key === 'auth' && e.oldValue !== e.newValue) {
+                this.$router.push('/login')
+                alertInfo('Acto sospechoso', 'Aceptar', 7500, 'Debido a actividad sospechosa se ha redireccionado')
+            }
+        })
         return {
-            auth: '',
+            auth: localStorage.getItem('auth'),
             storage: '',
+            sucursales: [],
+            empleados: [],
+            state
         }
     },
     methods: {
-        // método del evento del login para evaluar 
-        // cuando se crea la cookie
-        validateCookie() {
-            this.auth = true;
+        // obtiendo la acción para poder asignar valores a los estados
+        // para obtener la acción que asignar valores a el estado sucursales
+        ...mapActions(['actionSucursal']),
+        // obteniendo la acción para asignar valores al estado empleados
+        ...mapActions(['actionEmpleado']),
+        // estos métodos asignar el valor a la acción o ejecutan la acción para enviar valores al estado
+        setSucursal(data) {
+            this.actionSucursal(data)
+        },
+        setEmpleado(data) {
+            this.actionEmpleado(data)
         },
         // método para evaludar sí existe un cookie en el evento padre
         // así ir verificando y actualizar el valor de la cookie cuando exista
         checkTokenCookie() {
-            // obtener el valor de la cookie para autenticación
-            const COOKIE = this.getCookie('auth');
-            const STORAGE = this.getTokenStorage('auth')
-            // asignar el valor de la cookie el elemento que se evalua para mostrar la vista
-            // de login o dashboard, síno tiene valor le asignará null para mostrar login
-            this.auth = COOKIE  !== null;
+
         },
-        chechTokenStorage() {
+        checkTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
             this.storage = STORAGE !== null;
+
+            this.storage = this.getTokenStorage('auth');
+
         },
         // método para obtener el valor de la cookie
         getCookie(cookie) {
@@ -93,25 +116,64 @@ export default {
         },
         getTokenStorage(token) {
             return localStorage.getItem(token)
+        },
+        verificarSucursales() {
+            axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+                .then(rows => {
+                    // guardar las sucursales encontradas
+                    this.sucursales = rows.data;
+                    this.setSucursal(rows.data.length);
+                    // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
+                    (rows.data.length <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
+                }).catch(rej => {
+                    console.log(rej);
+                })
+
+        },
+        verficarEmpleados() {
+            axios.get('http://localhost:3000/api/auth/verificar/empleados')
+                .then((rows) => {
+                    // obtiendo los valores de la petición
+                    this.empleados = rows.data;
+                    // setteando la cantidad de empleados que existen
+                    this.setEmpleado(this.empleados.length);
+                    // verificando la existencia de los empleados, para redireccionara primer empleados, 
+                    // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
+                    if (this.empleados.length <= 0) {
+                        this.$router.push('/primer/empleado')
+                    } else {
+                        if (!localStorage.getItem('auth')) {
+                            // console.log('s')
+                            // this.$router.push('/inicio');
+                            this.$router.push('/login')
+                        }
+                    }
+                }).catch(e => {
+                    notificationError(e, 7000);
+                })
         }
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
         this.checkTokenCookie();
-        this.chechTokenStorage();
+        this.verficarEmpleados();
+        this.verificarSucursales();
+        this.checkTokenStorage();
     },
     watch: {
-        // realizar las siguientes acciones cuando se modifique el valor que verífica sí existe una cookie
-        // para así identificar que vista mostrar
-        auth(now) {
-            // verificar sí el valor fue modificado
-            if (now) {
-                // volver a verificar sí existe la cookie cada 20segundos
-                setInterval(() => {
-                    this.checkTokenCookie();
-                }, 10)                
-            }
-        }
-    }
+
+        empleado() {
+            this.verificarSucursales();
+        },
+
+    },
+    computed: {
+        ...mapState({
+            empleado: state => state.empleados,
+
+        }),
+
+    },
+
 }
 </script>
