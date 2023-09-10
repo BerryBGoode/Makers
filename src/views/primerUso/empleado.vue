@@ -84,7 +84,7 @@ import {
     notificationSuccess, notificationError,
     alertInfo, notificationInfo
 } from '../../components/alert.vue';
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import logo from '../../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png';
 
 export default {
@@ -110,6 +110,14 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['actionSucursal']),
+        ...mapActions(['actionEmpleado']),
+        setSucursal(state) {
+            this.actionSucursal(state)
+        },
+        setEmpleado(state) {
+            this.actionEmpleado(state)
+        },
         // método para obtener datos dependientes antes de hacer el registro
         async registrarPrimerEmpleado() {
 
@@ -131,7 +139,9 @@ export default {
                         .then((res) => {
                             // mostrar mensaje de error sí encuentra
                             (res.data.error) ? notificationInfo(res.data.error, 5000, 'Aceptar') : alertInfo(res.data, 'Aceptar', 6500, 'Ahora procedera a iniciar sesión con el empleado creado');
-                            // redireccionar al login                            
+                            // agregando 1 empleado al estado general de los empleados existentes
+                            this.setEmpleado(1)
+                            // redireccionar al login        
                             this.$router.push('/login');
                         }).catch(e => {
                             // mostrar mensaje de exception sí encuentra
@@ -141,7 +151,30 @@ export default {
 
             }
 
-        }
+        },
+        // método para obtener las sucursales registradas con el objetivo de mostrar el registro de primer empleado o primera sucursal
+        verificarSucursales() {
+            axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+                .then(rows => {
+                    // enviar las sucursales encontradas
+                    this.setSucursal(rows.data.length)
+                }).catch(rej => {
+                    console.log(rej);
+                })
+
+        },
+    },
+    computed: {
+        ...mapState({
+            empleados: state => state.empleados,
+            sucursales: state => state.sucursales
+        })
+    },
+    mounted() {
+        this.verificarSucursales();
+        // mostrar mensaje de proceder a crear primer empleado solo cuando ya exista al menos 1 sucursal y 0 empleados
+        if (this.sucursales >= 1 && this.empleados <= 0) { alertInfo('Se ha detectado la inexistencia de empleados', 'Aceptar') }
+
     }
 }
 </script>

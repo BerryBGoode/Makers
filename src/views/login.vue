@@ -1,58 +1,16 @@
 <style>
-.login-container {
-    border: solid 2px #676767;
-    background-color: #2c2828;
-    border-radius: 7px;
-    height: 75%;
+.btn-makers {
+    background: #393534;
+    color: white;
 }
 
-.items-center {
-    align-items: center;
+.btn-makers:hover {
+    background: #504c4a;
 }
 
-.wrap {
-    flex-wrap: wrap;
-}
-
-.children-form {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.href-makers {
-    color: #909090;
-    cursor: pointer;
-}
-
-.buttons-login {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.func {
-    gap: 50px;
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
-}
-
-.msg {
-    position: absolute;
-}
-
-
-@media screen and (max-width: 725px) {
-    .login {
-        flex-direction: column;
-    }
-
-    .func,
-    .form {
-        height: 50%;
-        width: 100% !important;
-    }
+.btn-makers:active {
+    border-color: #b4b0af !important;
+    color: #b4b0af !important;
 }
 </style>
 
@@ -98,10 +56,9 @@
 // importar axios para hacer peticiones
 import axios from 'axios';
 // importar para configurar rutas
-import { useRouter } from 'vue-router'
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
-import { alertQuestion } from '../components/alert.vue';
+import { alertQuestion, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
 
 
@@ -129,7 +86,6 @@ export default {
         }
     },
     methods: {
-
         async selectMetodo() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             console.log(notif)
@@ -137,7 +93,7 @@ export default {
 
         },
         // método para buscar a un empleado con esos datos
-        checkEmpleado() {
+        async checkEmpleado() {
             // limpiar mensaje
             this.msg = '';
             // validar datos vacios
@@ -145,32 +101,33 @@ export default {
                 this.msg = 'No se permite campos vacíos';
 
             } else {
-                // realizar petición
-                axios.post('http://localhost:3000/api/auth', this.model.empleado)
-                    .then(res => {
-                        // verificar estado de autenticación
-                        if (!res.data.auth) this.msg = res.data.msg;
-                        // creando token
-                        if (res.data.auth !== false) {
-                            // asginar estado de la autenticación
-                            this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                            // crear cookie
-                            this.crearCookie(res.data.token)
-                            // mostrar mensaje
-                            this.msg = res.data.msg
-                            // redireccionar al inicio
-                            this.$router.push('/inicio')
-                        }
-                    })
-                    .catch(e => {
-                        alert(e.response.data.error)
-                    })
+                try {
+                    let res = await axios.post('http://localhost:3000/api/auth', this.model.empleado);
+                    if (!res.data.auth) this.msg = res.data.msg;
+                    // creando token
+                    if (res.data.auth !== false) {
+                        // asginar estado de la autenticación
+                        this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
+                        // crear cookie
+                        this.crearCookie(res.data.token)
+                        // mostrar mensaje
+                        this.msg = res.data.msg
+                        // redireccionar al inicio
+                        this.$router.push('/inicio');
+                        await notificationSuccess('Sesión iniciada correctamente', 5000);
+                    }
+
+                } catch (error) {
+                    alert(e.response.data.error)
+
+                }
+
             }
         },
         crearCookie(token) {
 
             // creando cookie
-            this.$cookies.set('auth', token, { experies: '1d' });
+            // this.$cookies.set('auth', token, { experies: '1d' });
             // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
             // componente realiza y el dato
             // this.$emit('getCookie', this.$cookies.get('auth'));

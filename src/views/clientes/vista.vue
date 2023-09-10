@@ -158,7 +158,7 @@ export default {
             // configuración para enviar el token de acceso en las peticiones
             config: {
                 headers: {
-                    authorization: this.$cookies.get('auth')
+                    authorization: localStorage.getItem('auth')
                 }
             }
         }

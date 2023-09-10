@@ -84,6 +84,9 @@ export const notificationError = (txt, time) => {
  * @param {*} button texto del botton
  */
 export const notificationSuccess = (txt, time, button) => {
+    if (!button) {
+        button = 'Aceptar';
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -195,4 +198,9 @@ export const notificationQuestion = (txt, time, button, deny = null, txtdeny = n
     })
 
 }
+
+// crear evento que detectar cuando se elimina el token del localStorage
+export const STORAGE = window.addEventListener('storage', (e) => {
+    return (e.key === 'auth' && e.oldValue !== e.newValue)
+})
 </script>

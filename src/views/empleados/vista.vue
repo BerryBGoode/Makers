@@ -49,7 +49,7 @@
                 <div class="card-body">
                     <div class="row fila">
                         <div class="col-md-4">
-                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>                            
+                            <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>
                             <span class="card-text mb-0 smaller">{{ empleado.correo }}</span>
                             <p class="card-text mb-0 smaller">{{ empleado.dui }} </p>
                             <p class="card-text mb-0 smaller"> {{ empleado.telefono }} </p>
@@ -135,7 +135,7 @@ export default {
             filters: [],
             config: {
                 headers: {
-                    authorization: this.$cookies.get('auth')
+                    authorization: localStorage.getItem('auth')
                 }
             },
         }
@@ -164,7 +164,7 @@ export default {
                     .catch(e => { alert(e.response.data.error) })
             }
         },
-        buscar(dato) {            
+        buscar(dato) {
             // constante con los datos filtrados del arreglo con los empleados (en limipios)
             const EMPLEADOS = this.empleados.filter((empleado) => {
                 // retornar los datos que pasen la condición
@@ -184,7 +184,7 @@ export default {
                 )
             })
             // asignar esos datos filtrados al arreglo que se muestran en card
-            this.filters = EMPLEADOS;            
+            this.filters = EMPLEADOS;
         }
     },
     mounted() {
