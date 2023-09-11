@@ -92,8 +92,10 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import store from '../../../store';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../../components/alert.vue';
 export default {
-    name: 'detalleOrden',    
+    name: 'detalleOrden',
     data() {
         return {
             // arreglo para guardar los datos
@@ -110,28 +112,27 @@ export default {
     methods: {
         // método para obtener los detalles de esa orden
         getDetalles() {
-            axios.get('http://localhost:3000/api/ordenes/detalles/orden/' + this.$route.params.orden)
+            axios.get('http://localhost:3000/api/ordenes/detalles/orden/' + this.$route.params.orden, store.state.config)
                 .then(res => {
                     this.filters = res.data;
 
                     this.detalles = res.data;
                 })
-                .catch(e => alert(e));
+                .catch(e => notificationError(e.response.data));
 
         },
         // método para eliminar pedido o detalle
-        eliminarDetalle(detalle) {
+        async eliminarDetalle(detalle) {
             // esperar confimración
-            if (confirm('Desea eliminar este pedido?')) {
+            if (await notificationQuestion('Desea eliminar este pedido?', 3500)) {
                 // realizar petición
-                axios.delete('http://localhost:3000/api/ordenes/detalles/' + detalle)
+                axios.delete('http://localhost:3000/api/ordenes/detalles/' + detalle, store.state.config)
                     .then(res => {
-                        alert(res.data);
+                        notificationSuccess(res.data, 3500);
                         this.getDetalles();
                     })
                     .catch(e => {
-                        console.log(e.response)
-                        alert(e.response.data.error)
+                        notificationError(e.response.data, 3500)
                     })
             }
         },

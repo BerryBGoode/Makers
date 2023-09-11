@@ -82,6 +82,8 @@
 
 <script>
 import axios from 'axios'
+import store from '../../../store';
+import { notificationError, notificationSuccess } from '../../../components/alert.vue';
 export default {
     // nombre del componente
     name: "editarDetalle",
@@ -131,7 +133,7 @@ export default {
         },
         // método para obtener los tipos de servicios
         cargarSucursales() {
-            axios.get('http://localhost:3000/api/empleados/sucursales')
+            axios.get('http://localhost:3000/api/empleados/sucursales', store.state.config)
                 .then(res => { this.sucursales = res.data; })
                 .catch(e => console(e));
         },
@@ -147,11 +149,11 @@ export default {
 
             }
             // realizar petición
-            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value)
+            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value, store.state.config)
                 .then(res => {
                     this.servicios = res.data;
                 })
-                .catch(e => alert(e));
+                .catch(e => notificationError(e.response.data, 3500));
         },
         // método para modificar los datos (UPDATE)
         modificarDetalle() {
@@ -179,29 +181,24 @@ export default {
                     this.model.pedido.descuento = 0;
                 }
                 // realizar petición enviandole el parametro de iddetalle de la url y los datos
-                axios.put('http://localhost:3000/api/ordenes/detalles/' + this.$route.params.detalle, this.model.pedido)
+                axios.put('http://localhost:3000/api/ordenes/detalles/' + this.$route.params.detalle, this.model.pedido, store.state.config)
                     .then(res => {
-                        // verificar error                    
-                        if (res.data.error) {
-                            this.msg = res.data.error;
+
+                        // limipiar campos
+                        this.model.pedido = {
+                            servicio: 'Seleccionar',
+                            descuento: '',
+                            cantidad: '',
+                            orden: this.$route.params.id
                         }
-                        // verificar sí la tarea se realizo de manera esperada
-                        if (res.status === 201 && !res.data.error) {
-                            // limipiar campos
-                            this.model.pedido = {
-                                servicio: 'Seleccionar',
-                                descuento: '',
-                                cantidad: '',
-                                orden: this.$route.params.id
-                            }
-                            this.msg = '';
-                            alert(res.data);
-                            // redireccionar
-                            this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
-                        }
+                        this.msg = '';
+                        notificationSuccess(res.data, 3500);
+                        // redireccionar
+                        this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
+
                     })
-                    .catch(e => {                        
-                        alert(e.response.data.error);
+                    .catch(e => {
+                        notificationError(e.response.data, 3500);
                     });
             }
 
@@ -210,7 +207,7 @@ export default {
         // método para obtener los datos apartir del detalle
         cargarDetalle() {
             // obtener los datos del detalle
-            axios.get('http://localhost:3000/api/ordenes/detalles/detalle/' + this.$route.params.detalle)
+            axios.get('http://localhost:3000/api/ordenes/detalles/detalle/' + this.$route.params.detalle, store.state.config)
                 .then(res => {
                     // obtener los datos                    
                     // this.cargarServicios(event),
@@ -229,7 +226,7 @@ export default {
                     this.input.stock = DETALLE.cantidad_servicio
                     this.cargarServicios();
                 }).catch(e => {
-                    alert(e.response.data.error);
+                    notificationError(e.response.data, 3500);
                 })
         }
 

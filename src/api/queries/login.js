@@ -172,35 +172,32 @@ const change = async (req, res) => {
             }
             else {
                 clave = encrypt(clave);
-                // console.log(clave);
-                // console.log(await getClave(ID));
                 execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ? WHERE id_empleado = ?',
                     [nombres, apellidos, dui, telefono, correo, clave, alias, ID])
                     .then(() => {
-                        res.status(201).send("Datos modificados")
+                        res.status(201).send('Datos modificados');
                     }).catch(rej => {
-                        res.status(406).send({ error: getError(rej['errno']) });
+                        res.status(500).send(getError(rej['errno']));
                     })
             }
         } catch (error) {
-            console.log(error);
             res.status(500).send('Surgio un problema en el servidor');
         }
 
     } else {
-        res.status(401).json({ error: 'Debe iniciar sesión antes' })
+        res.status(401).send('Debe iniciar sesión antes');
     }
 }
 
 /**
  * Método asincrono para verificar sí hay Sucursales registradas para verificar el primer uso
- * @param {*} req datos de la petición (vienen de la del cliente)
+ * @param {*} req datos de la petición (vienen de la del cliente
  * @param {*} res respuesta del servidor
  */
 const verificarSucursales = async (req, res) => {
     try {
         // obtener las Sucursales para verificar sí existen registradas
-        let sucursales = await execute('SELECT nombre_sucursal FROM sucursales');
+        let sucursales = await execute(` SELECT count(nombre_sucursal) as '$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC' FROM sucursales`);
         // retornar en la respuesta las sucursales encontradas
 
         res.status(200).json(sucursales);
@@ -217,7 +214,7 @@ const verificarSucursales = async (req, res) => {
 const verificarEmpleados = async (req, res) => {
     try {
         // obtener los empleados registrados
-        let empleados = await execute('SELECT id_empleado FROM empleados');
+        let empleados = await execute(`SELECT count(id_empleado) as '$2a$10$23bWlWgaHrD/uBy4p6Sj/eC0U73vpDJXkOs7KLmtpQxdF5nrasgdK' FROM empleados`);
         // retornar los empleados registrados
 
         res.status(200).json(empleados)
