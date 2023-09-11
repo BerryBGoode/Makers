@@ -42,6 +42,7 @@
 
 .btn-makers-revert {
     background-color: #231F1E;
+    color: #fff;
 }
 
 .btn-makers-revert:hover {
@@ -147,6 +148,8 @@
 import axios from 'axios';
 import { mapState } from 'vuex';
 import { generateTablePDF } from '../reports';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 // exportando componente
 export default {
     name: 'clientes',
@@ -187,19 +190,18 @@ export default {
                 .catch(e => { console.error(e); })
         },
         // metodo para eliminar el cliente seleccionado
-        eliminarCliente(idcliente) {
+        async eliminarCliente(idcliente) {
             // esperar confirmación
-            if (confirm('Desea eliminar a este cliente?')) {
-                axios.delete('http://localhost:3000/api/clientes/' + idcliente)
+            if (await notificationQuestion('Desea eliminar a este cliente?', 3000)) {
+                axios.delete('http://localhost:3000/api/clientes/' + idcliente, store.state.config)
                     .then(res => {
-                        // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        // mostrar notificación
+                        notificationSuccess(res.data);
                         // cargar
                         this.obtenerClientes();
                     })
                     .catch(e => {
-                        alert(e.response.data.error);
-                        console.log(e)
+                        notificationError(e.response.data);
                     })
             }
         },

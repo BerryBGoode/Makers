@@ -107,7 +107,6 @@ export default {
             if (await notificationQuestion('Desea eliminar este cargo?', 3000, 'Aceptar')) {
                 axios.delete('http://localhost:3000/api/cargos/' + cargo, store.state.config)
                     .then(res => {
-
                         notificationSuccess(res.data);
                         //cargar
                         this.getCargos();

@@ -61,6 +61,9 @@ export const notificationInfo = (txt, time, button) => {
  * @param {*} button texto del botton
  */
 export const notificationError = (txt, time) => {
+    if (!time) {
+        time = 3500;
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -87,6 +90,7 @@ export const notificationSuccess = (txt, time, button) => {
     if (!button) {
         button = 'Aceptar';
     }
+    if (!time) { time = 3500 }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
@@ -173,6 +177,7 @@ export const notificationQuestion = (txt, time, button, deny = null, txtdeny = n
     if (!time) {
         time = null;
     }
+    if (!button) { button = 'Aceptar' }
     return Swal.fire({
         toast: true,
         background: '#1B1716',
