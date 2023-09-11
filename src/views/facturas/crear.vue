@@ -96,6 +96,7 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
 export default {
     // nombre del componente
@@ -142,7 +143,7 @@ export default {
                         // obtener los datos de la petición
                         this.empleados = res.data;
                     })
-                    .catch(e => { console.log(e) })
+                    .catch(e => { notificationError(e.response.data, 3500) })
 
             } catch (error) {
                 console.error(error);
@@ -154,7 +155,7 @@ export default {
                     this.empleado.nombres = res.data.nombres;
                     this.empleado.apellidos = res.data.apellidos
                 })
-                .catch(e => { console.log(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data, 3500) });
         },
         // método para obtener la sucursal para la factura
         cargarSucursales() {
@@ -164,7 +165,7 @@ export default {
                 .then(res => {
                     this.sucursales = res.data
                 }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { alert(e.response.data.error) }) // mostrar mensaje de error
+                .catch(e => { notificationError(e.response.data) }) // mostrar mensaje de error
         },
 
         // método para agregar una nueva factura
@@ -189,7 +190,7 @@ export default {
 
                         }
                         // redireccionar
-                        alert('Factura agregada')
+                        notificationSuccess(res.data)
                         this.$router.push('/ordenes');
                     }
                     // console.log(res)
@@ -197,7 +198,7 @@ export default {
                     // sí la respuesta fue la esperada, redirección a la vista principal
                     // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         }
     }
