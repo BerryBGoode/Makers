@@ -97,6 +97,8 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 // exportar componente
 export default {
     // nombre del componente
@@ -136,7 +138,7 @@ export default {
     methods: {
         getFactura() {
             // realizar petición
-            axios.get('http://localhost:3000/api/facturas/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/facturas/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     this.model.factura = {
                         empleado: res.data.id_empleado,
@@ -147,15 +149,15 @@ export default {
                         nombres: res.data.nombres,
                         apellidos: res.data.apellidos
                     }
-                }).catch(e => alert(e.response.data.error))
+                }).catch(e => notificationError(e.response.data))
         },
         // método para obtener el dui del cliente
         cargarEmpleadoDui() {
             try {
                 // hacer petición para obtener dui de clientes
-                axios.get('http://localhost:3000/api/reservaciones/empleados')
+                axios.get('http://localhost:3000/api/reservaciones/empleados', store.state.config)
                     .then(res => { this.empleados = res.data; }) // obtener los datos de la petición
-                    .catch(e => { console.log(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data) })
 
             } catch (error) {
                 console.error(error);
@@ -163,30 +165,30 @@ export default {
         },
         getEmpleado() {
 
-            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
+            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado, store.state.config)
                 .then(res => {
                     this.empleado = {
                         nombres: res.data.nombres,
-                        apellidos: res.data.apellidos
+                        apellidos: res.data.apellidos,
                     }
                 })
-                .catch(e => { console.log(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         },
         // método para obtener la sucursal para la factura
         cargarSucursales() {
             // realizar petición
-            axios.get('http://localhost:3000/api/facturas/sucursales')
+            axios.get('http://localhost:3000/api/facturas/sucursales', store.state.config)
                 // cuando pase todo correctamente
                 .then(res => { this.sucursales = res.data }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { console.error(e) }) // mostrar mensaje de error
+                .catch(e => { notificationError(e.response.data); }) // mostrar mensaje de error
         },
 
         // método para agregar una nueva factura
         modificar() {
             // validar datos
             // realizar petición y enviando datos
-            axios.put('http://localhost:3000/api/facturas/' + this.$route.params.id, this.model.factura)
+            axios.put('http://localhost:3000/api/facturas/' + this.$route.params.id, this.model.factura, store.state.config)
                 .then(res => {
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
@@ -199,27 +201,22 @@ export default {
 
                         }
                         // redireccionar
-                        alert('Factura modificada')
+                        notificationSuccess(res.data)
                         this.$router.push('/ordenes');
                     }
-                    // console.log(res)
-
-                    // sí la respuesta fue la esperada, redirección a la vista principal
-                    // if (res.status === 201) this.$router.push('/empleados');
                 })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
         },
-        eliminarFactura() {
-            if (confirm('Desea eliminar esta factura?')) {
-                axios.delete('http://localhost:3000/api/facturas/' + this.$route.params.id)
+        async eliminarFactura() {
+            if (await notificationQuestion('Desea eliminar esta factura?', 3500)) {
+                axios.delete('http://localhost:3000/api/facturas/' + this.$route.params.id, store.state.config)
                     .then(res => {
                         // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        this.$router.push('/ordenes')
+                        notificationSuccess(res.data);
+                        this.$router.push('/ordenes');
                     })
                     .catch(e => {
-                        alert(e);
-                        console.log(e)
+                        notificationError(e.response.data);
                     })
             }
         }

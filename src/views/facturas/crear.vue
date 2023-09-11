@@ -97,6 +97,7 @@
 // importar axios para realizar peticiones
 import axios from 'axios';
 import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 // exportar componente
 export default {
     // nombre del componente
@@ -138,7 +139,7 @@ export default {
         cargarEmpleadoDui() {
             try {
                 // hacer petición para obtener dui de clientes
-                axios.get('http://localhost:3000/api/reservaciones/empleados')
+                axios.get('http://localhost:3000/api/reservaciones/empleados', store.state.config)
                     .then(res => {
                         // obtener los datos de la petición
                         this.empleados = res.data;
@@ -146,11 +147,11 @@ export default {
                     .catch(e => { notificationError(e.response.data, 3500) })
 
             } catch (error) {
-                console.error(error);
+                notificationError(error);
             }
         },
         getEmpleado() {
-            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado)
+            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.factura.empleado, store.state.config)
                 .then(res => {
                     this.empleado.nombres = res.data.nombres;
                     this.empleado.apellidos = res.data.apellidos
@@ -160,7 +161,7 @@ export default {
         // método para obtener la sucursal para la factura
         cargarSucursales() {
             // realizar petición
-            axios.get('http://localhost:3000/api/facturas/sucursales')
+            axios.get('http://localhost:3000/api/facturas/sucursales', store.state.config)
                 // cuando pase todo correctamente
                 .then(res => {
                     this.sucursales = res.data
@@ -172,7 +173,7 @@ export default {
         crear() {
             // validar datos
             // realizar petición y enviando datos
-            axios.post('http://localhost:3000/api/facturas', this.model.factura)
+            axios.post('http://localhost:3000/api/facturas', this.model.factura, store.state.config)
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
