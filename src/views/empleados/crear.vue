@@ -136,6 +136,8 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
 export default {
     name: 'crearEmpleado',
@@ -177,9 +179,9 @@ export default {
         cargarSucursales() {
             try {
                 // hacer petición para obtener sucursales y horarios
-                axios.get('http://localhost:3000/api/empleados/sucursales')
+                axios.get('http://localhost:3000/api/empleados/sucursales', store.state.config)
                     .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
-                    .catch(e => { alert(e) })
+                    .catch(e => { notificationError(e.response.data, 3500) })
             } catch (error) {
                 console.error(error);
             }
@@ -188,30 +190,30 @@ export default {
         cargarHorarios() {
             try {
                 // realizar petición
-                axios.get('http://localhost:3000/api/empleados/horarios')
+                axios.get('http://localhost:3000/api/empleados/horarios', store.state.config)
                     .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
-                    .catch(e => { console.log(e) }) // caso de error
+                    .catch(e => { notificationError(e.response.data, 3500) }) // caso de error
             } catch (error) {
-                console.error(error);
+                notificationError(error, 3500);
             }
         },
         // método para obtener los cargos que puede tener un empleado
         cargarCargos() {
             // realizar petición
-            axios.get('http://localhost:3000/api/empleados/cargos')
+            axios.get('http://localhost:3000/api/empleados/cargos', store.state.config)
                 // cuando pase todo correctamente
                 .then(res => { this.cargos = res.data }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { console.error(e) }) // mostrar mensaje de error
+                .catch(e => { notificationError(e.response.data, 3500) }) // mostrar mensaje de error
         },
         // método para agregar un nuevo empleado
         crear() {
             this.msg = '';
             if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
-                ((this.model.empleado.cargo && this.model.empleado.sucursal && this.model.empleado.horario) !== 'Seleccionar') &&
-                this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&
+                this.model.empleado.cargo !== 'Seleccionar' && this.model.empleado.sucursal !== 'Seleccionar' && this.model.empleado.horario !== 'Seleccionar'
+                && this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&
                 this.model.empleado.planilla && this.model.empleado.clave) {
                 // realizar petición y enviando datos
-                axios.post('http://localhost:3000/api/empleados', this.model.empleado)
+                axios.post('http://localhost:3000/api/empleados', this.model.empleado, store.state.config)
                     .then(res => {
                         // cuando hay un error 400 que no realizo lo que se debía
                         if (res.data.error) {
@@ -234,7 +236,7 @@ export default {
                                 horario: 'Seleccionar',
                             }
                             // redireccionar
-                            alert('Empleado agregado')
+                            notificationSuccess('Empleado agregado', 3500)
                             this.$router.push('/empleados');
                         }
 
