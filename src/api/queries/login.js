@@ -250,7 +250,50 @@ const getDataPrimerEmpleado = async (req, res) => {
         res.status(500).send({ error: getError(error) });
     }
 }
+
+const RecuperacionContrasenia = async (req, res) => {
+    const { correo } = req.body;
+    const EMAIL_SENDER = 'roberalvarado.20@gmail.com';
+    const EMAIL_PASSWORD = 'ehlkqifmwslkverv';
+
+    function fetchUserDataFromDatabase(correo, callback) {
+        const query = 'SELECT * FROM empleados WHERE correo = ?';
+        execute(query, [correo], (error, results) => {
+            if (error) {
+                console.error(error);
+                return callback(error, null);
+            }
+            if (results.length === 0) {
+                return callback(null, null);
+            }
+            return callback(null, results[0]);
+
+        });
+    }
+
+    fetchUserDataFromDatabase(correo, (error, user) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).send('Error en la base de datos');
+        }
+
+        if (!user) {
+            return res.status(404).send('El correo ingresado no existe');
+        }
+
+        const token = crypto.randomBytes(20).toString('hex');
+        const expiration = new Date(Date.now() + 3600000);
+
+        user.resetToken = token;
+        user.resetTokenExpiration = expiration;
+        console.log('Se encontró correctamente el correo. ', correo);
+        console.log('Token de usuario', user.resetToken);
+        console.log('Fecha de expiración', user.resetTokenExpiration);
+        return res.status(200).send(user);
+    });
+}
+
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, RecuperacionContrasenia
 };

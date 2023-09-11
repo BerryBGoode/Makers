@@ -18,7 +18,7 @@
     <section class="flex items-center w-100 h-100 ">
         <form class="container p-5 login-container" @submit.prevent="checkEmpleado">
             <span class="msg">{{ msg }}</span>
-            <div class="col h-100 flex wrap login">
+            <div class="col h-100 flex wrap login" v-if="ocultarFormulario">
                 <div class="row-6 p-3 w-50 form align-center">
                     <div class="children-form">
                         <div class="mb-3">
@@ -48,6 +48,12 @@
                         <a @click="selectMetodo" class="href-makers">Restablecer contraseña</a>
                     </div>
                 </div>
+
+            </div>
+            <!-- Modal para el formulario de recuperación -->
+            <div v-if="mostrarFormulario">
+                <FormularioRecuperacion />
+                <!-- Puedes agregar botones o lógica para cerrar el modal aquí -->
             </div>
         </form>
     </section>
@@ -61,12 +67,13 @@ import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
 import { alertQuestion, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
+import FormularioRecuperacion from './FormularioRecuperacion.vue'; //importar el componente
 
 
 export default {
     // nombre del componente
     name: "login",
-    components: { logo },
+    components: { logo, FormularioRecuperacion },
     // método que retorna el componente
     data() {
         return {
@@ -84,13 +91,19 @@ export default {
             },
             msg: '',
 
+            mostrarFormulario: false, // Inicialmente oculto
+            ocultarFormulario: true,
         }
     },
     methods: {
         async selectMetodo() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
-            console.log(notif)
+            if (notif === true) {
+                this.mostrarFormulario = true; // Muestra el formulario cuando se selecciona "Correo electrónico"
+                this.ocultarFormulario = false;
+            }
 
+            console.log(notif);
 
         },
         // método para buscar a un empleado con esos datos
