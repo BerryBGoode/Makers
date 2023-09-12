@@ -39,7 +39,7 @@ const store = (req, res) => {
             [tel, inicio + ' - ' + cierre, nombre, direccion])
             .then(() => {
                 res.status(201).send('Sucursal agregada')
-            }).catch(rej => { res.status(406).send({ error: getError(rej) }) })
+            }).catch(rej => { res.status(500).send(getError(rej)) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -80,7 +80,7 @@ const change = (req, res) => {
             [tel, inicio + ' - ' + cierre, nombre, direccion, ID])
             .then(() => { res.status(201).send('Sucursal modificada') })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(500).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);
@@ -99,7 +99,7 @@ const destroy = (req, res) => {
         // realizar delete
         execute('DELETE FROM sucursales WHERE id_sucursal = ?', [ID])
             .then(() => { res.status(201).send('Sucursal eliminada') })
-            .catch(rej => res.status(406).send({ error: getError(rej) }));
+            .catch(rej => res.status(500).send({ error: getError(rej) }));
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');

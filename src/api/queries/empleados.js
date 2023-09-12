@@ -162,7 +162,7 @@ const store = (req, res) => {
                     res.status(201).send('Empleado agregado');
                 })
                 .catch(rej => {
-                    res.status(406).send(getError(rej));
+                    res.status(500).send(getError(rej));
                 })
         } catch (e) {
             res.status(500).send(getError(e));

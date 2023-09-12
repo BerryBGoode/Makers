@@ -45,7 +45,7 @@ const store = (req, res) => {
         // query
         execute('INSERT INTO tipos_servicios(id_tipo_servicio, tipo_servicio) VALUES (UUID(), ?)', [tipo])
             .then(() => { res.status(201).send('Tipo de servicio agregado') })
-            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
+            .catch(rej => { res.status(500).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor');
@@ -62,7 +62,7 @@ const one = async (req, res) => {
         // obtener los datos del registro con este
         const TIPO = await execute('SELECT * FROM tipos_servicios WHERE id_tipo_servicio = ?', [ID])
         // verificar sí la respuesta es correcta
-        
+
         for (let i = 0; i < TIPO.length; i++) {
             id = {
                 id_tipo_servicio: getBinary(TIPO, 'id_tipo_servicio')[i]
@@ -87,7 +87,7 @@ const change = (req, res) => {
         //realizar actualizacion
         execute('UPDATE tipos_servicios SET tipo_servicio = ? WHERE id_tipo_servicio = ?', [tipo, ID])
             .then(() => { res.status(201).send('Tipo de servicio modificado') })
-            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
+            .catch(rej => { res.status(500).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
@@ -101,7 +101,7 @@ const destroy = (req, res) => {
         //realizar query
         execute('DELETE FROM tipos_servicios WHERE id_tipo_servicio = ?', [ID])
             .then(() => { res.status(201).send('Tipo de servicio eliminado') })
-            .catch(rej => { res.status(406).send({ error: getError(rej) }) })
+            .catch(rej => { res.status(500).send({ error: getError(rej) }) })
     } catch (error) {
         console.log(error);
         res.status(500).send('Surgio un problema en el servidor')

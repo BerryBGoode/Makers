@@ -79,7 +79,7 @@ const store = async (req, res) => {
                     [sucursal, servicio, cantidad])
                     .then(() => {
                         res.status(201).send('Producto agregado')
-                    }).catch(rej => { res.status(406).send(getError(rej)) })
+                    }).catch(rej => { res.status(500).send(getError(rej)) })
             } else {
                 res.json('Cantidad máxima superada')
                 return
@@ -141,7 +141,7 @@ const change = async (req, res) => {
                 execute('UPDATE detalles_servicios_sucursales SET id_servicio = ?, cantidad = ? WHERE id_detalle = ?', [servicio, cantidad, DETALLE])
                     .then(() => {
                         res.status(201).send('Producto modificado')
-                    }).catch(rej => { res.status(406).send(getError(rej)) })
+                    }).catch(rej => { res.status(500).send(getError(rej)) })
             } else {
                 res.json('Cantidad máxima superada');
                 return
@@ -168,7 +168,7 @@ const destroy = (req, res) => {
                 .then(() => {
                     res.status(201).send('Producto eliminado');
                 }).catch(rej => {
-                    res.status(406).send(getError(rej))
+                    res.status(500).send(getError(rej))
                 })
         } catch (error) {
             res.status(500).send('Surgio un problema en el servidor')

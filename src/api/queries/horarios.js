@@ -16,7 +16,7 @@ const store = (req, res) => {
             execute('INSERT INTO horarios(id_horario, hora_apertura, hora_cierre) VALUES (UUID(), ?, ?)', [inicio, cierre])
                 .then(() => {
                     res.status(201).send('Horario agregado');
-                }).catch(rej => { res.status(406).send(getError(rej)) })
+                }).catch(rej => { res.status(500).send(getError(rej)) })
 
         } catch (error) {
 
@@ -68,7 +68,7 @@ const change = (req, res) => {
                 .then(() => {
                     res.status(201).send('Horario modificado');
                 }).catch(rej => {
-                    res.status(406).send(getError(rej));
+                    res.status(500).send(getError(rej));
                 })
         } catch (error) {
             res.status(500).send('Surgio un problema en el servidor');
@@ -92,7 +92,7 @@ const destroy = (req, res) => {
                 .then(() => {
                     res.status(201).send('Horario eliminado');
                 }).catch(rej => {
-                    res.status(406).send(getError(rej))
+                    res.status(500).send(getError(rej))
                 })
         } catch (error) {
             res.status(500).send('Surgio un problema en el servidor');

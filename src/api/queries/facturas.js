@@ -174,7 +174,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).send('Factura eliminada');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(500).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);

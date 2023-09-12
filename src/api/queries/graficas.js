@@ -129,7 +129,7 @@ const getServiciosVendidos = (req, res) => {
             .then(rows => {
                 res.status(200).json(rows)
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(500).send({ error: getError(rej) })
             })
     } else {
         res.status(401).send('Debe autenticarse antes');
@@ -151,7 +151,7 @@ const getProductosVendidos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 }
 
@@ -165,7 +165,7 @@ const reservacionesMes = (req, res) => {
         ORDER BY reservaciones DESC LIMIT 10
     `, [mes])
         .then(rows => { res.status(200).json(rows) })
-        .catch(rej => { res.status(406).send({ error: getError(rej) }) });
+        .catch(rej => { res.status(500).send({ error: getError(rej) }) });
 }
 
 const getClienteporfecha = (req, res) => {
@@ -173,7 +173,7 @@ const getClienteporfecha = (req, res) => {
         .then(row => {
             es.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 
 }
@@ -188,7 +188,7 @@ const getEmpleadoCargos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 }
 
@@ -204,7 +204,7 @@ const getHoraMes = (req, res) => {
     `, [mes]).then(rows => {
         res.status(200).json(rows)
     }).catch(rej => {
-        res.status(406).send({ error: getError(rej) });
+        res.status(500).send({ error: getError(rej) });
     })
 }
 

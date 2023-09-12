@@ -193,10 +193,9 @@ const destroy = (req, res) => {
                 res.status(201).send('Detalle eliminado')
             })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) })
+                res.status(500).send(getError(rej))
             })
     } catch (error) {
-        console.log(error);
         res.status(500).send('Surgio un problema en el servidor')
     }
 }
