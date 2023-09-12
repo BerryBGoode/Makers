@@ -34,7 +34,7 @@ const get = async (req, res) => {
                 if (res.status(200)) res.json(filled);
             })
             .catch(rej => {
-                res.status(500).json({ error: getError(rej) })
+                res.status(500).json(getError(rej))
             })
 
     } else {
@@ -101,7 +101,7 @@ const store = (req, res) => {
                 [estado, convertToBin(cliente)])
                 .then(() => {
                     res.status(201).send('Orden agregada')
-                }).catch(rej => { console.log(rej); res.status(500).send({ error: getError(rej) }); })
+                }).catch(rej => { console.log(rej); res.status(500).send(getError(rej)); })
         } catch (error) {
             res.status(500).send(getError(error))
         }
@@ -135,7 +135,7 @@ const change = (req, res) => {
                 res.status(500).send(getError(rej))
             })
     } catch (error) {
-        res.status
+        res.status(401).send(getError(error))
     }
 }
 
@@ -146,20 +146,24 @@ const change = (req, res) => {
  * Método para eliminar la orden seleccionada
  */
 const destroy = (req, res) => {
-
-    try {
-        // obtener el idorden
-        const IDORDEN = req.params.id;
-        // realizar transferencia sql o delete en este caso
-        execute('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN])
-            .then(() => {
-                res.status(201).send('Orden eliminada');
-            }).catch(rej => {
-                res.status(500).send({ error: getError(rej) })
-            })
-    } catch (error) {
-        console.log(error);
+    if (req.headers.authorization) {
+        try {
+            // obtener el idorden
+            const IDORDEN = req.params.id;
+            // realizar transferencia sql o delete en este caso
+            execute('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN])
+                .then(() => {
+                    res.status(201).send('Orden eliminada');
+                }).catch(rej => {
+                    res.status(500).send(getError(rej))
+                })
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 
@@ -167,22 +171,27 @@ const destroy = (req, res) => {
  * Método para obtener los datos de la orden enviada por la url
  */
 const one = async (req, res) => {
-    try {
-        // obtener id
-        const ID = req.params.id;
-        // realizar query
-        const ORDEN = await execute('SELECT dui, nombres, apellidos, fecha, id_cliente FROM ordenes_view WHERE id_orden = ?', [ID]);
-        // verificar respuesta esperada
-        for (let i = 0; i < ORDEN.length; i++) {
-            let id = {
-                id_cliente: getBinary(ORDEN, 'id_cliente')[i]
+    if (req.headers.authorization) {
+        try {
+            // obtener id
+            const ID = req.params.id;
+            // realizar query
+            const ORDEN = await execute('SELECT dui, nombres, apellidos, fecha, id_cliente FROM ordenes_view WHERE id_orden = ?', [ID]);
+            // verificar respuesta esperada
+            for (let i = 0; i < ORDEN.length; i++) {
+                let id = {
+                    id_cliente: getBinary(ORDEN, 'id_cliente')[i]
+                }
+                Object.assign(ORDEN[i], id);
             }
-            Object.assign(ORDEN[i], id);
+            if (res.status(200)) res.send(ORDEN[0]);
+        } catch (error) {
+            res.status(500).send(getError(error));
         }
-        if (res.status(200)) res.send(ORDEN[0]);
-    } catch (error) {
-        res.status(500).send(getError(error));
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 
