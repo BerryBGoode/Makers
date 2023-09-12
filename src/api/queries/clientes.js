@@ -43,7 +43,7 @@ const get = async (req, res) => {
             .catch(rej => res.status(500).json({ error: rej }))
 
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -71,7 +71,7 @@ const store = (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe  antes');
     }
 }
 
@@ -106,7 +106,7 @@ const one = async (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -136,7 +136,7 @@ const change = (req, res) => {
             res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe autenticarse antes')
     }
 
 }
@@ -164,7 +164,7 @@ const destroy = (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 // exportar funciones

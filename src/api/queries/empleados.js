@@ -58,7 +58,7 @@ const get = async (req, res) => {
             })
             .catch(rej => res.status(500).send(getError(rej)))
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -84,7 +84,7 @@ const getSucursales = async (req, res) => {
             res.status(500).send('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -113,7 +113,7 @@ const getHorarios = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -141,7 +141,7 @@ const getCargos = async (req, res) => {
             res.status(500).send(getError(error))
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -168,7 +168,7 @@ const store = (req, res) => {
             res.status(500).send(getError(e));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe autenticarse antes')
     }
 
 }
@@ -202,7 +202,7 @@ const one = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -231,7 +231,7 @@ const change = (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -258,7 +258,7 @@ const destroy = (req, res) => {
             res.status(500).send('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }

@@ -42,7 +42,7 @@ const get = async (req, res) => {
                 res.status(500).send('Surgio un problema en el servidor');
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -70,7 +70,7 @@ const getDirección = async (req, res) => {
                 res.status(500).send('Surgio un problema en el servidor');
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -93,7 +93,7 @@ const store = (req, res) => {
             res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -119,7 +119,7 @@ const change = (req, res) => {
             res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -157,7 +157,7 @@ const one = async (req, res) => {
             })
     } else {
         // enviar mensaje que necesita de una autenticación
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
     // este arreglo data sirve para guardar los datos después de haber formateado y ordenado los datos para retorar la respuesta
 }

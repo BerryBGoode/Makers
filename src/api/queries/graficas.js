@@ -22,7 +22,7 @@ const getVentas = (req, res) => {
                 res.status(500).send(getError(rej))
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -87,7 +87,7 @@ const getCliente = (req, res) => {
                 res.status(500).send(getError(rej));
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 
@@ -103,7 +103,7 @@ const getFacturasSucursales = (req, res) => {
                 res.status(500).send(getError(rej))
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -132,7 +132,7 @@ const getServiciosVendidos = (req, res) => {
                 res.status(406).send({ error: getError(rej) })
             })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 

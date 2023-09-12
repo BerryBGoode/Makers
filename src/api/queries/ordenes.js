@@ -15,26 +15,31 @@ const { convertToBin } = require('../helpers/encrypt');
  * Método para obtener las ordenes
  */
 const get = async (req, res) => {
-    execute('SELECT * FROM ordenes_view ORDER BY fecha DESC')
-        .then(filled => {
-            // convertir ids a binario
-            let _orden = getBinary(filled, 'id_orden');
-            let _cliente = getBinary(filled, 'id_cliente');
-            for (let i = 0; i < filled.length; i++) {
-                // por cada registro crear un objeto con los is convertidos
-                let ids = {
-                    id_orden: _orden[i],
-                    id_cliente: _cliente[i],
-                    factura: getBinary(filled, 'factura')[i]
+    if (req.headers.authorization) {
+        execute('SELECT * FROM ordenes_view ORDER BY fecha DESC')
+            .then(filled => {
+                // convertir ids a binario
+                let _orden = getBinary(filled, 'id_orden');
+                let _cliente = getBinary(filled, 'id_cliente');
+                for (let i = 0; i < filled.length; i++) {
+                    // por cada registro crear un objeto con los is convertidos
+                    let ids = {
+                        id_orden: _orden[i],
+                        id_cliente: _cliente[i],
+                        factura: getBinary(filled, 'factura')[i]
 
+                    }
+                    Object.assign(filled[i], ids);
                 }
-                Object.assign(filled[i], ids);
-            }
-            if (res.status(200)) res.json(filled);
-        })
-        .catch(rej => {
-            res.status(500).json({ error: getError(rej) })
-        })
+                if (res.status(200)) res.json(filled);
+            })
+            .catch(rej => {
+                res.status(500).json({ error: getError(rej) })
+            })
+
+    } else {
+
+    }
 };
 
 /**

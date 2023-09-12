@@ -27,7 +27,7 @@ const getProxReservaciones = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -41,7 +41,7 @@ const getEmpleadosCargos = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -55,7 +55,7 @@ const getProdSucursal = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -77,7 +77,7 @@ const getEmpleadosOrdenes = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -104,7 +104,7 @@ const getPrevReservaciones = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -129,7 +129,7 @@ const getLessProductos = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -147,7 +147,7 @@ const getTipoServicios = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión');
+        res.status(401).send('Debe autenticarse');
     }
 
 }
@@ -175,7 +175,7 @@ const historialComprasCliente = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión');
+        res.status(401).send('Debe autenticarse');
     }
 
 }
@@ -236,7 +236,7 @@ const ventasDia = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -263,7 +263,7 @@ const ventasMes = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -294,7 +294,7 @@ const reservacionesMes = async (req, res) => {
             res.status(500).send(getError(error));
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 

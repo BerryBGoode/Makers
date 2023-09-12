@@ -39,7 +39,7 @@ const get = async (req, res) => {
             })
             .catch(() => { res.status(500).send('Surgio un problema en el servidor'); })
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -72,7 +72,7 @@ const getServicios = async (req, res) => {
             res.status(500).send('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -102,7 +102,7 @@ const store = async (req, res) => {
             res.status(500).send('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -139,7 +139,7 @@ const change = async (req, res) => {
         }
     } else {
         // síno se ha iniciado sesión
-        res.status(401).send('Debe iniciar sesión antes')
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 

@@ -61,9 +61,7 @@ const validateUsuario = async (req, res) => {
             res.status(200).send({ msg, auth, token });
         }
     } catch (error) {
-        console.log('error')
-        console.log(error)
-        res.status(500).send({ error: getError(error) })
+        res.status(500).send(getError(error))
     }
 }
 
@@ -117,7 +115,7 @@ const getConfig = async (req, res) => {
         }
 
     } else {
-        res.status(401).json({ error: 'Debe iniciar sesión antes' })
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 
@@ -134,15 +132,15 @@ const getInfo = async (req, res) => {
             execute('SELECT alias FROM empleados_view WHERE id_empleado = ?', [ID])
                 // retornar los datos sí la respuesta es la esperada
                 .then(rows => { res.send(rows[0]); })
-                .catch(rej => { console.log(rej); res.send({ error: getError(rej) }) })
+                .catch(rej => { console.log(rej); res.send(getError(rej)) })
 
         } catch (error) {
             console.log(error);
-            res.status(500).send({ error: 'Surgio un problema en el servidor' });
+            res.status(500).send('Surgio un problema en el servidor');
         }
 
     } else {
-        res.status(401).send({ error: 'Debe iniciar sesión antes' })
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 
@@ -166,7 +164,7 @@ const change = async (req, res) => {
                     .then(() => {
                         res.status(201).send('Datos modificados')
                     }).catch(rej => {
-                        console.log(rej); res.status(406).send({ error: getError(rej['errno']) });
+                        console.log(rej); res.status(500).send(getError(rej));
                     })
 
             }
@@ -177,7 +175,7 @@ const change = async (req, res) => {
                     .then(() => {
                         res.status(201).send('Datos modificados');
                     }).catch(rej => {
-                        res.status(500).send(getError(rej['errno']));
+                        res.status(500).send(getError(rej));
                     })
             }
         } catch (error) {
@@ -185,7 +183,7 @@ const change = async (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe iniciar sesión antes');
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -202,7 +200,7 @@ const verificarSucursales = async (req, res) => {
 
         res.status(200).json(sucursales);
     } catch (error) {
-        res.status(406).send({ error: getError(error) });
+        res.status(500).send(getError(error));
     }
 }
 
@@ -219,7 +217,7 @@ const verificarEmpleados = async (req, res) => {
 
         res.status(200).json(empleados)
     } catch (error) {
-        res.status(406).send({ error: getError(error) });
+        res.status(500).send(getError(error));
     }
 }
 
@@ -244,7 +242,7 @@ const getDataPrimerEmpleado = async (req, res) => {
 
         res.status(200).json(id);
     } catch (error) {
-        res.status(500).send({ error: getError(error) });
+        res.status(500).send(getError(error));
     }
 }
 // exportar modulos
