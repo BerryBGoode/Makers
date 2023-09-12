@@ -83,6 +83,8 @@ import axios from 'axios';
 
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
+import store from '../../store/index.js';
+import { notificationSuccess } from '../../components/alert.vue';
 
 // exportando el componente principal
 export default {
@@ -169,7 +171,7 @@ export default {
             // obtener los valores
             let cliente = this.model.cliente;
             if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
-                axios.post('http://localhost:3000/api/clientes', cliente)
+                axios.post('http://localhost:3000/api/clientes', cliente, store.state.config)
                     // sí todo paso de manera correcta
                     .then(res => {
 
@@ -187,7 +189,7 @@ export default {
                                 estado: 1
                             }
                             this.$router.push('/clientes');
-                            alert(res.data)
+                            notificationSuccess(res.data, 3500)
                             // recireccionar a la vista principal
                         }
 

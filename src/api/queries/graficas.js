@@ -1,4 +1,5 @@
 // requerir método para ejecutar las peticiones a base
+const { request } = require('express');
 const { execute } = require('../MySQL');
 // requerir método para obtener el código de error y enviar mensaje
 const { getError } = require('../helpers/errors')
@@ -9,12 +10,20 @@ const { getError } = require('../helpers/errors')
  * @param {*} res respuesta del servidor
  */
 const getVentas = (req, res) => {
-    execute('SELECT * FROM ventas')
-        .then(rows => {
-            res.status(200).json(rows)
-        }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
-        })
+    // verificar la autenticación
+    if (req.headers.authorization) {
+        // ejecutar sentencia para obtener la ventas por año
+        execute('SELECT * FROM ventas')
+            .then(rows => {
+                // enviar respuesta
+                res.status(200).json(rows)
+            }).catch(rej => {
+                // enviar error interno
+                res.status(500).send(getError(rej))
+            })
+    } else {
+        res.status(401).send('Debe autenticarse antes');
+    }
 }
 
 /**
@@ -23,77 +32,112 @@ const getVentas = (req, res) => {
  * @param {*} res respuesta del reservidor
  */
 const ordenesByMes = async (req, res) => {
-    let mes = req.params.mes;
-    try {
-        let sql = `SELECT count(o.fecha) as ordenes, date_format(o.fecha, '%Y-%m-%d') as fecha
-                    FROM ordenes o
-                    WHERE MONTH(o.fecha) = ?
-                    GROUP BY YEAR(o.fecha), MONTH(o.fecha), DAY(o.fecha)
-                    ORDER BY o.fecha DESC`
-        let ordenes = await execute(sql, [mes]);
-        if (ordenes) {
-            res.status(200).json(ordenes)
+    // verificar autenticación
+    if (req.headers.authorization) {
+        // obtener el mes seleccionado por el cliente
+        let mes = req.params.mes;
+        try {
+            // ejecutar la sentencia para obtener las ventas según mes
+            let sql = `SELECT count(o.fecha) as ordenes, date_format(o.fecha, '%Y-%m-%d') as fecha
+                        FROM ordenes o
+                        WHERE MONTH(o.fecha) = ?
+                        GROUP BY YEAR(o.fecha), MONTH(o.fecha), DAY(o.fecha)
+                        ORDER BY o.fecha DESC`
+            let ordenes = await execute(sql, [mes]);
+            // sí se encontraron ventas retornar los datos
+            if (ordenes) {
+                res.status(200).json(ordenes)
+            }
+        } catch (error) {
+            // enviar error en la petición
+            res.status(500).send(getError(error))
         }
-    } catch (error) {
-        res.status(406).send({ error: getError(error) })
+    } else {
+        res.status(401).send('Debe iniciar sesió antes');
     }
 
 }
 
+/** Método para obtener la cantidad de ventas hecho por un empleado*/
 const getEmpleadoCantidad = (req, res) => {
-    execute('SELECT o.hora, count(*) as ordenes FROM ordenes o GROUP BY hora ORDER BY ordenes DESC')
-        .then(row => {
-            es.status(200).json(rows)
-        }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
-        })
-}
+    // verficar autenticación
+    if (req.headers.authorization) {
 
+    } else {
+
+    }
+}
+// método para obtener los clientes destacados
 const getCliente = (req, res) => {
-    execute(`
+    // verificar autenticación
+    if (req.headers.authorization) {
+        // ejecutar sentencia para obtener los clientes destacados
+        execute(`
         SELECT COUNT(o.id_orden) AS ordenes, concat(c.nombres, ' ', c.apellidos) AS cliente
         FROM ordenes o
         INNER JOIN clientes c ON c.id_cliente = o.id_cliente
         GROUP BY cliente
         ORDER BY ordenes DESC LIMIT 7`
-    )
-        .then(rows => {
-            res.status(200).json(rows)
-        }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
-        })
+        )
+            .then(rows => {
+                // respuesta la respuesta con los datos
+                res.status(200).json(rows);
+            }).catch(rej => {
+                // respuesta con el error
+                res.status(500).send(getError(rej));
+            })
+    } else {
+        res.status(401).send('Debe autenticarse antes');
+    }
+
 
 }
-
+// método para obtener las ventas generales por sucursal 
 const getFacturasSucursales = (req, res) => {
-    execute('SELECT s.id_sucursal, s.nombre_sucursal AS nombre_sucursal, COUNT(f.id_factura) AS cantidad_facturas FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal GROUP BY s.id_sucursal, s.nombre_sucursal;')
-        .then(row => {
-            es.status(200).json(rows)
-        }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
-        })
+    if (req.headers.authorization) {
+        // ejecutar sentencia SQL para obtener las ventas por sucursal
+        execute('SELECT s.id_sucursal, s.nombre_sucursal AS nombre_sucursal, COUNT(f.id_factura) AS ventas FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal GROUP BY s.id_sucursal, s.nombre_sucursal ORDER BY ventas DESC')
+            .then(row => {
+                res.status(200).json(row)
+            }).catch(rej => {
+                res.status(500).send(getError(rej))
+            })
+    } else {
+        res.status(401).send('Debe autenticarse antes');
+    }
 }
 
+/**
+ * Método para obtener los  servicios más vendidos según el tipo de servicio
+ * @param {*} req 
+ * @param {*} res 
+ */
 const getServiciosVendidos = (req, res) => {
-    let tipo = req.params.tipo;
-    execute(`
-            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
-            FROM servicios s
-            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
-            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
-            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
-            WHERE t.id_tipo_servicio = ?
-            GROUP BY s.nombre_servicio
-            ORDER BY cantidad DESC LIMIT 3`
-        , [tipo])
-        .then(rows => {
-            res.status(200).json(rows)
-        }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
-        })
+    // verificar autenticación
+    if (req.headers.authorization) {
+        let tipo = req.params.tipo;
+        execute(`
+                SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+                FROM servicios s
+                LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+                LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+                LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+                WHERE t.id_tipo_servicio = ?
+                GROUP BY s.nombre_servicio
+                ORDER BY cantidad DESC LIMIT 3`
+            , [tipo])
+            .then(rows => {
+                res.status(200).json(rows)
+            }).catch(rej => {
+                res.status(500).send({ error: getError(rej) })
+            })
+    } else {
+        res.status(401).send('Debe autenticarse antes');
+    }
 }
 
 const getProductosVendidos = (req, res) => {
+    // verificar autenticiación
     execute(`
             SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
             FROM servicios s
@@ -107,7 +151,7 @@ const getProductosVendidos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 }
 
@@ -121,7 +165,7 @@ const reservacionesMes = (req, res) => {
         ORDER BY reservaciones DESC LIMIT 10
     `, [mes])
         .then(rows => { res.status(200).json(rows) })
-        .catch(rej => { res.status(406).send({ error: getError(rej) }) });
+        .catch(rej => { res.status(500).send({ error: getError(rej) }) });
 }
 
 const getClienteporfecha = (req, res) => {
@@ -129,7 +173,7 @@ const getClienteporfecha = (req, res) => {
         .then(row => {
             es.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 
 }
@@ -144,7 +188,7 @@ const getEmpleadoCargos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(406).send({ error: getError(rej) })
+            res.status(500).send({ error: getError(rej) })
         })
 }
 
@@ -160,7 +204,7 @@ const getHoraMes = (req, res) => {
     `, [mes]).then(rows => {
         res.status(200).json(rows)
     }).catch(rej => {
-        res.status(406).send({ error: getError(rej) });
+        res.status(500).send({ error: getError(rej) });
     })
 }
 

@@ -8,7 +8,12 @@ const store = createStore({
         usuario: '',
         empleados: 0,
         sucursales: 0,
-        access: localStorage.getItem('auth')
+        config: {
+            headers: {
+                authorization: localStorage.getItem('auth')
+            }
+        }
+
     },
     mutations: {
         /**
@@ -37,7 +42,7 @@ const store = createStore({
         },
 
         setAccess(state, data) {
-            state.access = data;
+            state.config.headers = data;
         },
         setSucursal(state, data) {
             state.sucursales = data;

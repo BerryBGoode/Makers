@@ -77,6 +77,8 @@
 <script>
 import axios from 'axios'
 import { RouterLink } from 'vue-router'
+import store from '../../../store'
+import { notificationError, notificationSuccess } from '../../../components/alert.vue'
 export default {
     // nombre del componente
     name: "crearDetalle",
@@ -131,11 +133,11 @@ export default {
         cargarSucursales() {
             try {
                 // hacer petición para obtener sucursales y horarios
-                axios.get('http://localhost:3000/api/empleados/sucursales')
+                axios.get('http://localhost:3000/api/empleados/sucursales', store.state.config)
                     .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { notificationError(e.response.data, 3500) })
             } catch (error) {
-                console.error(error);
+                notificationError(error, 3500);
             }
         },
         // método para obtener los servicios según el tipo 
@@ -147,9 +149,9 @@ export default {
             // obtener el texto del option para evaluar la cantidad
             this.model.sucursal.txt = event.target.options[event.target.selectedIndex].text;
             // realizar petición
-            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value)
+            axios.get('http://localhost:3000/api/ordenes/detalles/productos' + this.model.sucursal.value, store.state.config)
                 .then(res => { this.servicios = res.data; })
-                .catch(e => alert(e));
+                .catch(e => notificationError(e.response.data));
         },
         crearDetalle() {
             this.msg = '';
@@ -179,31 +181,24 @@ export default {
             }
 
             // realizar petición
-            axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido)
+            axios.post('http://localhost:3000/api/ordenes/detalles/', this.model.pedido, store.state.config)
                 .then(res => {
-                    // verificar error                    
-                    if (res.data.error) {
-                        this.msg = res.data.error;
+                    // limipiar campos
+                    this.model.pedido = {
+                        servicio: 'Seleccionar',
+                        descuento: '',
+                        cantidad: '',
+                        orden: this.$route.params.orden
                     }
-                    // verificar sí la tarea se realizo de manera esperada
-                    if (res.status === 201 && !res.data.error) {
-                        // limipiar campos
-                        this.model.pedido = {
-                            servicio: 'Seleccionar',
-                            descuento: '',
-                            cantidad: '',
-                            orden: this.$route.params.orden
-                        }
-                        this.msg = '';
-                        alert(res.data);
-                        // redireccionar
-                        this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
-                    }
+                    this.msg = '';
+                    notificationSuccess(res.data, 3500);
+                    // redireccionar
+                    this.$router.push('/ordenes/' + this.$route.params.orden + '/detalles');
+
                 })
                 .catch(e => {
-                    alert(e.response.data.error);
+                    notificationError(e.response.data, 3500);
                 });
-            // }
         }
     }
 }

@@ -8,56 +8,76 @@ const { execute } = require('../MySQL');
  * @param {*} res respuesta del servidor
  */
 const getProxReservaciones = async (req, res) => {
-    try {
-        const RESERVACIONES = await execute(`
-        SELECT 
-            concat(c.nombres, ' ', c.apellidos) as cliente, c.dui as duicliente, 
-            concat(e.nombres, ' ', e.apellidos) as empleado, e.dui as duiempleado, 
-            date_format(r.fecha, '%Y-%m-%d') as fecha,
-            TIME_FORMAT(r.hora, '%h:%i') as hora
-        FROM reservaciones r
-        INNER JOIN empleados e ON e.id_empleado = r.id_empleado
-        INNER JOIN clientes c ON c.id_cliente = r.id_cliente
-        WHERE fecha > CURRENT_DATE`);
-        if (res.status(200)) res.json(RESERVACIONES);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+        try {
+            // realizando petición a la DB
+            const RESERVACIONES = await execute(`
+            SELECT 
+                concat(c.nombres, ' ', c.apellidos) as cliente, c.dui as duicliente, 
+                concat(e.nombres, ' ', e.apellidos) as empleado, e.dui as duiempleado, 
+                date_format(r.fecha, '%Y-%m-%d') as fecha,
+                TIME_FORMAT(r.hora, '%h:%i') as hora
+            FROM reservaciones r
+            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+            WHERE fecha > CURRENT_DATE`);
+            // enviando estado de la petición y + los datos
+            if (res.status(200)) res.json(RESERVACIONES);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
 const getEmpleadosCargos = async (req, res) => {
-    try {
-        const EMPLEADOS = await execute('SELECT e.nombres, e.apellidos, c.cargo FROM empleados e JOIN cargos c ON e.id_cargo = c.id_cargo');
-        if (res.status(200)) res.json(EMPLEADOS)
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    // verificar autenticación
+    if (req.headers.authorization) {
+        try {
+            const EMPLEADOS = await execute('SELECT e.nombres, e.apellidos, c.cargo FROM empleados e JOIN cargos c ON e.id_cargo = c.id_cargo');
+            if (res.status(200)) res.json(EMPLEADOS)
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
 
 const getProdSucursal = async (req, res) => {
-    try {
-        const PRODUCTOS = await execute('SELECT ss.nombre_sucursal, s.nombre_servicio, ds.cantidad FROM detalles_servicios_sucursales ds JOIN sucursales ss ON ds.id_sucursal = ss.id_sucursal JOIN servicios s ON ds.id_servicio = s.id_servicio WHERE ds.id_sucursal = ?');
-        if (res.status(200)) res.json(PRODUCTOS)
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+        try {
+            const PRODUCTOS = await execute('SELECT ss.nombre_sucursal, s.nombre_servicio, ds.cantidad FROM detalles_servicios_sucursales ds JOIN sucursales ss ON ds.id_sucursal = ss.id_sucursal JOIN servicios s ON ds.id_servicio = s.id_servicio WHERE ds.id_sucursal = ?');
+            if (res.status(200)) res.json(PRODUCTOS)
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
 const getEmpleadosOrdenes = async (req, res) => {
-    try {
-        const EMPLEADOS = await execute(`
-        CREATE VIEW vista_empleados_mas_ordenes AS
-        SELECT e.id_empleado, e.nombres, e.apellidos, COUNT(o.id_orden) AS cantidad_ordenes
-        FROM empleados e
-        LEFT JOIN ordenes o ON e.id_empleado = o.id_empleado
-        GROUP BY e.id_empleado, e.nombres, e.apellidos
-        ORDER BY cantidad_ordenes DESC
-        LIMIT 5;        
-        `);
-        if (res.status(200)) res.json(EMPLEADOS);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+
+        try {
+            const EMPLEADOS = await execute(`
+            CREATE VIEW vista_empleados_mas_ordenes AS
+            SELECT e.id_empleado, e.nombres, e.apellidos, COUNT(o.id_orden) AS cantidad_ordenes
+            FROM empleados e
+            LEFT JOIN ordenes o ON e.id_empleado = o.id_empleado
+            GROUP BY e.id_empleado, e.nombres, e.apellidos
+            ORDER BY cantidad_ordenes DESC
+            LIMIT 5;        
+            `);
+            if (res.status(200)) res.json(EMPLEADOS);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -67,20 +87,24 @@ const getEmpleadosOrdenes = async (req, res) => {
  * @param {*} res respues del servidor
  */
 const getPrevReservaciones = async (req, res) => {
-    try {
-        const RESERVACIONES = await execute(`
-        SELECT 
-            concat(c.nombres, ' ', c.apellidos) as cliente, c.dui as duicliente, 
-            concat(e.nombres, ' ', e.apellidos) as empleado, e.dui as duiempleado, 
-            date_format(r.fecha, '%Y-%m-%d') as fecha,
-            TIME_FORMAT(r.hora, '%h:%i') as hora
-        FROM reservaciones r
-        INNER JOIN empleados e ON e.id_empleado = r.id_empleado
-        INNER JOIN clientes c ON c.id_cliente = r.id_cliente
-        WHERE fecha < CURRENT_DATE`);
-        if (res.status(200)) res.json(RESERVACIONES);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+        try {
+            const RESERVACIONES = await execute(`
+            SELECT 
+                concat(c.nombres, ' ', c.apellidos) as cliente, c.dui as duicliente, 
+                concat(e.nombres, ' ', e.apellidos) as empleado, e.dui as duiempleado, 
+                date_format(r.fecha, '%Y-%m-%d') as fecha,
+                TIME_FORMAT(r.hora, '%h:%i') as hora
+            FROM reservaciones r
+            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+            WHERE fecha < CURRENT_DATE`);
+            if (res.status(200)) res.json(RESERVACIONES);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -91,32 +115,41 @@ const getPrevReservaciones = async (req, res) => {
  * @param {*} res respuestas del servidor
  */
 const getLessProductos = async (req, res) => {
-    try {
-        const PRODUCTOS = await execute(`
-            SELECT sc.nombre_sucursal, sr.nombre_servicio, ds.cantidad, sr.precio
-            FROM detalles_servicios_sucursales ds
-            INNER JOIN servicios sr ON sr.id_servicio = ds.id_servicio
-            INNER JOIN sucursales sc ON sc.id_sucursal = ds.id_sucursal
-            WHERE ds.cantidad < 10
-        `)
-        if (res.status(200)) res.json(PRODUCTOS);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+        try {
+            const PRODUCTOS = await execute(`
+                SELECT sc.nombre_sucursal, sr.nombre_servicio, ds.cantidad, sr.precio
+                FROM detalles_servicios_sucursales ds
+                INNER JOIN servicios sr ON sr.id_servicio = ds.id_servicio
+                INNER JOIN sucursales sc ON sc.id_sucursal = ds.id_sucursal
+                WHERE ds.cantidad < 10
+            `)
+            if (res.status(200)) res.json(PRODUCTOS);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
 
 const getTipoServicios = async (req, res) => {
-    try {
-        const SERVICIOS = await execute(`
+    if (req.headers.authorization) {
+        try {
+            const SERVICIOS = await execute(`
         SELECT s.id_servicio, s.nombre_servicio, t.tipo_servicio
         FROM servicios s
         INNER JOIN tipos_servicios t ON s.id_tipo_servicio = t.id_tipo_servicio
         `);
-        if (res.status(200)) res.json(SERVICIOS);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+            if (res.status(200)) res.json(SERVICIOS);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse');
     }
+
 }
 
 /**
@@ -125,10 +158,11 @@ const getTipoServicios = async (req, res) => {
  * @param {*} res respuesta del servidor
  */
 const historialComprasCliente = async (req, res) => {
-    try {
-        // obtener el cliente que se decea saber el historial de ordenes
-        let cliente = req.params.cliente
-        const ORDENES = await execute(`
+    if (req.headers.authorization) {
+        try {
+            // obtener el cliente que se decea saber el historial de ordenes
+            let cliente = req.params.cliente
+            const ORDENES = await execute(`
             SELECT c.nombres, c.apellidos, c.dui,
             date_format(o.fecha, '%Y-%m-%d') as fecha, 
             CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
@@ -136,10 +170,14 @@ const historialComprasCliente = async (req, res) => {
             INNER JOIN clientes c ON c.id_cliente = o.id_cliente
             WHERE c.id_cliente = ?
         `, [cliente]);
-        if (res.status(200)) res.json(ORDENES);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+            if (res.status(200)) res.json(ORDENES);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse');
     }
+
 }
 
 /**
@@ -148,25 +186,29 @@ const historialComprasCliente = async (req, res) => {
  * @param {*} res respuesta del servidor
  */
 const historialReservacionesCliente = async (req, res) => {
-    try {
-        // obtener las reservaciones por cliente
-        let usuario = req.params.usuario;
+    if (req.headers.authorization) {
+        try {
+            // obtener las reservaciones por cliente
+            let usuario = req.params.usuario;
 
-        const RESERVACIONES = await execute(`
-            SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
-	        CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
-            DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
-            CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
-            FROM reservaciones r
-            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
-            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
-            WHERE c.id_cliente = ?
-        `, [usuario])
-        if (RESERVACIONES) {
-            if (res.status(200)) res.json(RESERVACIONES);
+            const RESERVACIONES = await execute(`
+                SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
+                CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
+                DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
+                CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+                FROM reservaciones r
+                INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+                INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+                WHERE c.id_cliente = ?
+            `, [usuario])
+            if (RESERVACIONES) {
+                if (res.status(200)) res.json(RESERVACIONES);
+            }
+        } catch (error) {
+            res.status(500).send(getError(error));
         }
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    } else {
+        res.status(401).send('Debe inicar sesión antes');
     }
 }
 
@@ -176,9 +218,10 @@ const historialReservacionesCliente = async (req, res) => {
  * @param {*} res respuesta del servidor ante la petición
  */
 const ventasDia = async (req, res) => {
-    try {
-        let fecha = req.params.fecha;
-        const VENTAS = await execute(`
+    if (req.headers.authorization) {
+        try {
+            let fecha = req.params.fecha;
+            const VENTAS = await execute(`
             SELECT c.nombres, c.apellidos, c.dui, 
             DATE_FORMAT(o.fecha, '%Y-%m-%d') as fecha,     
             CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
@@ -186,12 +229,16 @@ const ventasDia = async (req, res) => {
             INNER JOIN clientes c ON c.id_cliente = o.id_cliente
             WHERE o.fecha = ?    
         `, [fecha]);
-        if (VENTAS) {
-            if (res.status(200)) res.json(VENTAS);
+            if (VENTAS) {
+                if (res.status(200)) res.json(VENTAS);
+            }
+        } catch (error) {
+            res.status(500).send(getError(error));
         }
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 /**
@@ -200,9 +247,10 @@ const ventasDia = async (req, res) => {
  * @param {*} res respuesta del servidor ante la petición
  */
 const ventasMes = async (req, res) => {
-    try {
-        let mes = req.params.mes;
-        const VENTAS = await execute(`
+    if (req.headers.authorization) {
+        try {
+            let mes = req.params.mes;
+            const VENTAS = await execute(`
             SELECT c.nombres, c.apellidos, c.dui, 
             DATE_FORMAT(o.fecha, '%Y-%m-%d') as fecha,     
             CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
@@ -210,10 +258,14 @@ const ventasMes = async (req, res) => {
             INNER JOIN clientes c ON c.id_cliente = o.id_cliente
             WHERE MONTH(o.fecha) = ? AND YEAR(CURRENT_DATE) = YEAR(o.fecha)
         `, [mes]);
-        if (VENTAS && res.status(200)) res.json(VENTAS);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+            if (VENTAS && res.status(200)) res.json(VENTAS);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 /**
@@ -222,23 +274,27 @@ const ventasMes = async (req, res) => {
  * @param {*} res respuesta del servidor ante la petición
  */
 const reservacionesMes = async (req, res) => {
-    try {
-        // obtener el mes seleccionado por el cliente
-        let mes = req.params.mes;
-        const RESERVACIONES = await execute(`
-            SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
-	        CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
-            DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
-            CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
-            FROM reservaciones r
-            INNER JOIN clientes c ON c.id_cliente = r.id_cliente
-            INNER JOIN empleados e ON e.id_empleado = r.id_empleado
-            WHERE MONTH(r.fecha) = ? AND YEAR(r.fecha) = YEAR(CURRENT_DATE)`,
-            [mes]
-        );
-        if (RESERVACIONES && res.status(200)) res.json(RESERVACIONES);
-    } catch (error) {
-        res.status(406).send({ error: getError(error) });
+    if (req.headers.authorization) {
+        try {
+            // obtener el mes seleccionado por el cliente
+            let mes = req.params.mes;
+            const RESERVACIONES = await execute(`
+                SELECT CONCAT(c.nombres, ' ', c.apellidos) as Cliente, c.dui as DuiCliente, 
+                CONCAT(e.nombres,' ' ,e.apellidos) as Empleado, e.dui as DuiEmpleado,
+                DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha,     
+                CONCAT(TIME_FORMAT(r.hora, '%h:%i'), ' ', IF(TIME_FORMAT(r.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+                FROM reservaciones r
+                INNER JOIN clientes c ON c.id_cliente = r.id_cliente
+                INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+                WHERE MONTH(r.fecha) = ? AND YEAR(r.fecha) = YEAR(CURRENT_DATE)`,
+                [mes]
+            );
+            if (RESERVACIONES && res.status(200)) res.json(RESERVACIONES);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 

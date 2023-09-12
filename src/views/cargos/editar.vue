@@ -30,6 +30,8 @@
 <script>
 import axios from 'axios'
 import { onlyLtrs } from '../../validator';
+import store from '../../store';
+import { notificationSuccess, notificationError } from '../../components/alert.vue'
 // definir componente 
 export default {
     name: "crearCargo",
@@ -50,26 +52,26 @@ export default {
             if (!onlyLtrs(this.cargo.cargo)) {
                 this.msg = 'Solo se permiten letras'
             } else {
-                axios.put('http://localhost:3000/api/cargos/' + this.$route.params.id, this.cargo)
+                axios.put('http://localhost:3000/api/cargos/' + this.$route.params.id, this.cargo, store.state.config)
                     .then(res => {
                         if (res.data.error) this.msg = res.data.error;
                         else {
-                            alert(res.data);
+                            notificationSuccess(res.data, 2500);
                             this.$router.push('/empleados/cargos');
                         }
                     })
                     .catch(e => {
-                        console.log(e);
+                        notificationError(e.response);
                     })
             }
         },
         getCargo() {
-            axios.get('http://localhost:3000/api/cargos/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/cargos/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     this.cargo = res.data
                 })
                 .catch(e => {
-                    console.log(e);
+                    notificationError(e);
                 })
         }
     }

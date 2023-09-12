@@ -81,6 +81,8 @@
 import axios from 'axios';
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store/index.js';
 
 // exportando el componente principal
 export default {
@@ -178,7 +180,7 @@ export default {
             let cliente = this.model.cliente;
             if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
                 // hacer la petición post, enviando parametro los datos del formulario
-                axios.put('http://localhost:3000/api/clientes/' + this.$route.params.id, this.model.cliente)
+                axios.put('http://localhost:3000/api/clientes/' + this.$route.params.id, this.model.cliente, store.state.config)
                     // sí todo paso de manera correcta
                     .then(res => {
                         if (res.data.error) this.msg = res.data.error;
@@ -193,7 +195,7 @@ export default {
                                 clave: '',
                                 estado: 1
                             }
-                            alert(res.data)
+                            notificationSuccess(res.data, 3500)
                             // recireccionar a la vista principal
                             if (res.status === 201) this.$router.push('/clientes');
                         }
@@ -207,15 +209,14 @@ export default {
         // método para obtener datos de cliente
         getCliente(cliente) {
             // haciendo petión get, enviando el parametro especificado en el .routes.js (idcliente)            
-            axios.get('http://localhost:3000/api/clientes/' + cliente)
+            axios.get('http://localhost:3000/api/clientes/' + cliente, store.state.config)
                 .then(res => {
                     this.model.cliente = res.data
                     // asignar los datos a lso inputs
 
-
                 })
                 .catch(rej => {
-                    console.log(rej)
+                    notificationError(rej.response.data, 3500)
                 })
         }
     }

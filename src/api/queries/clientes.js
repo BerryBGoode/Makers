@@ -43,7 +43,7 @@ const get = async (req, res) => {
             .catch(rej => res.status(500).json({ error: rej }))
 
     } else {
-        res.status(401).json({ error: 'Debe iniciar sesión antes' })
+        res.status(401).send('Debe autenticarse antes');
     }
 
 }
@@ -53,21 +53,25 @@ const get = async (req, res) => {
  * res, respuesta del servidor
  */
 const store = (req, res) => {
-    try {
-        // asignar a un arreglo los valores del req
-        const { nombres, apellidos, dui, telefono, correo, clave, estado } = req.body;
-        // preparando query con los datos
-        execute('INSERT INTO clientes (id_cliente, nombres, apellidos, dui, telefono, correo, clave, estado) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
-            [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado])
-            .then(() => {
-                if (res.status(201)) res.send('Cliente agregado');
-            }).catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) });
-            })
+    if (req.headers.authorization) {
+        try {
+            // asignar a un arreglo los valores del req
+            const { nombres, apellidos, dui, telefono, correo, clave, estado } = req.body;
+            // preparando query con los datos
+            execute('INSERT INTO clientes (id_cliente, nombres, apellidos, dui, telefono, correo, clave, estado) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
+                [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado])
+                .then(() => {
+                    if (res.status(201)) res.send('Cliente agregado');
+                }).catch(rej => {
+                    res.status(500).send({ error: getError(rej) });
+                })
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
+        } catch (error) {
+            res.status(500).send('Surgio un problema en el servidor');
+        }
+
+    } else {
+        res.status(401).send('Debe  antes');
     }
 }
 
@@ -78,27 +82,31 @@ const store = (req, res) => {
  * res, respuesta del servidor
  */
 const one = async (req, res) => {
-    try {
-        // obtener idcliente de los parametros de la url
-        const IDCLIENTE = req.params.id;
-        // realizar consulta
-        execute('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
-            .then(filled => {
-                let _cliente = getBinary(filled, 'id_cliente')
-                for (let i = 0; i < filled.length; i++) {
-                    let id = {
-                        id_cliente: _cliente[i]
+    if (req.headers.authorization) {
+        try {
+            // obtener idcliente de los parametros de la url
+            const IDCLIENTE = req.params.id;
+            // realizar consulta
+            execute('SELECT id_cliente, nombres, apellidos, dui, telefono, correo FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
+                .then(filled => {
+                    let _cliente = getBinary(filled, 'id_cliente')
+                    for (let i = 0; i < filled.length; i++) {
+                        let id = {
+                            id_cliente: _cliente[i]
+                        }
+                        Object.assign(filled[i], id)
                     }
-                    Object.assign(filled[i], id)
-                }
-                if (res.status(200)) res.send(filled[0])
-            })
-            .catch(rej => {
-                res.status(500).send(getError(rej['errno']));
-            })
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
+                    if (res.status(200)) res.send(filled[0])
+                })
+                .catch(rej => {
+                    res.status(500).send(getError(rej));
+                })
+        } catch (error) {
+            res.status(500).send('Surgio un problema en el servidor');
+        }
+
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
@@ -108,25 +116,29 @@ const one = async (req, res) => {
  * res, respuesta del servidor
  */
 const change = (req, res) => {
-    try {
-        // convertir a entero el id recibido de la ruta 
-        const IDCLIENTE = req.params.id;
-        // asignar a un arreglo los valores del req
-        const { nombres, apellidos, dui, telefono, correo, estado } = req.body;
-        // realizar transferencia SQL
-        execute('UPDATE clientes SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, estado = ? WHERE id_cliente = ?',
-            [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE])
-            .then(() => {
-                // sí la petición fue exitosa mandar mensaje al cliente
-                res.status(201).send('Cliente modificado')
-            }).catch(rej => {
-                // de lo contrario enviar error obtenido del catch
-                res.status(406).send({ error: getError(rej['errno']) })
-            })
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
+    if (req.headers.authorization) {
+        try {
+            // convertir a entero el id recibido de la ruta 
+            const IDCLIENTE = req.params.id;
+            // asignar a un arreglo los valores del req
+            const { nombres, apellidos, dui, telefono, correo, estado } = req.body;
+            // realizar transferencia SQL
+            execute('UPDATE clientes SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, estado = ? WHERE id_cliente = ?',
+                [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE])
+                .then(() => {
+                    // sí la petición fue exitosa mandar mensaje al cliente
+                    res.status(201).send('Cliente modificado')
+                }).catch(rej => {
+                    // de lo contrario enviar error obtenido del catch
+                    res.status(500).send({ error: getError(rej) })
+                })
+        } catch (error) {
+            res.status(500).send('Surgio un problema en el servidor');
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes')
     }
+
 }
 
 
@@ -136,20 +148,23 @@ const change = (req, res) => {
  * res, respuesta del servidor
  */
 const destroy = (req, res) => {
-    try {
-        // obtener el idcliente del parametro de la ruta
-        const IDCLIENTE = req.params.id;
-        // realizar consulta, enviar un array con los parametros y metodo para capturar error
-        execute('DELETE FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
-            .then(() => {
-                res.status(200).send('Cliente eliminado');
-            }).catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) + '(ordenes o reservaciones)' });
-            })
-    } catch (error) {
-        // capturar error
-        console.error(error);
-        res.status(500).send('Surgio un problema con el servidor');
+    if (req.headers.authorization) {
+        try {
+            // obtener el idcliente del parametro de la ruta
+            const IDCLIENTE = req.params.id;
+            // realizar consulta, enviar un array con los parametros y metodo para capturar error
+            execute('DELETE FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
+                .then(() => {
+                    res.status(200).send('Cliente eliminado');
+                }).catch(rej => {
+                    res.status(500).send(getError(rej));
+                })
+        } catch (error) {
+            res.status(500).send('Surgio un problema con el servidor');
+        }
+
+    } else {
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 // exportar funciones

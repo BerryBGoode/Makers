@@ -151,6 +151,8 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
 export default {
     name: 'editarEmpleado',
@@ -195,9 +197,9 @@ export default {
         cargarSucursales() {
             try {
                 // hacer petición para obtener sucursales y horarios
-                axios.get('http://localhost:3000/api/empleados/sucursales')
+                axios.get('http://localhost:3000/api/empleados/sucursales', store.state.config)
                     .then(res => { this.sucursales = res.data }) // obtener los datos de la petición
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data, 3500) })
             } catch (error) {
                 console.error(error);
             }
@@ -206,9 +208,9 @@ export default {
         cargarHorarios() {
             try {
                 // realizar petición
-                axios.get('http://localhost:3000/api/empleados/horarios')
+                axios.get('http://localhost:3000/api/empleados/horarios', store.state.config)
                     .then(res => { this.horarios = res.data; }) //obtener los datos de la petición
-                    .catch(e => { alert(e.response.data.error) }) // caso de error
+                    .catch(e => { notificationError(e.response.data, 3500) }) // caso de error
             } catch (error) {
                 console.error(error);
             }
@@ -216,14 +218,14 @@ export default {
         // método para cargar los cargos que puede tener un cliente
         cargarCargos() {
             // realizar petición
-            axios.get('http://localhost:3000/api/empleados/cargos')
+            axios.get('http://localhost:3000/api/empleados/cargos', store.state.config)
                 // cuando pase todo correctamente
                 .then(res => { this.cargos = res.data }) // cuando todo salga correcto asignar valores a arreglo
-                .catch(e => { console.error(e) }) // mostrar mensaje de error
+                .catch(e => { notificationError(e.response.data, 3500) }) // mostrar mensaje de error
         },
         // método para obtener los datos del empleado seleccionado
         getEmpleado(idempleado) {
-            axios.get('http://localhost:3000/api/empleados/' + idempleado)
+            axios.get('http://localhost:3000/api/empleados/' + idempleado, store.state.config)
                 .then(res => {
                     // cargar los datos                    
                     // guardar en una constante los datos obtenidos
@@ -241,28 +243,28 @@ export default {
                         cargo: EMPLEADO.id_cargo,
                         horario: EMPLEADO.id_horario
                     }
-                    
+
                 })
                 .catch(e => {
                     // validar empleado inexistente
-                    alert(e.response.data.error);
+                    notificationError(e.response.data, 3500);
                 })
         },
         // método para modificar los datos del cliente
         modificarEmpleado() {
-            
+
             // obtener idempleado, del parametro establecido en index de routes del front llamado :'id'
             let idempleado = this.$route.params.id;
             // TODO: validar datos
 
 
             // realizar petición al servidor
-            axios.put('http://localhost:3000/api/empleados/' + idempleado, this.model.empleado)
+            axios.put('http://localhost:3000/api/empleados/' + idempleado, this.model.empleado, store.state.config)
                 .then(res => {
                     // cuando hay un error 400 que no realizo lo que se debía
                     if (res.data.error) {
                         this.msg = res.data.error;
-                        
+
                         // console.log(res.data)
                     }
                     // cuando si se realizo la tarea deceada y se creo algo 
@@ -282,12 +284,12 @@ export default {
                             horario: 'Seleccionar',
                         }
                         // redireccionar
-                        alert('Empleado modificado')
+                        notificationSuccess('Empleado modificado', 3500)
                         this.msg = '';
                         this.$router.push('/empleados');
                     }
                 })
-                .catch(e => { alert(e.response.data.error);});
+                .catch(e => { notificationError(e.response.data, 3500); });
         }
     }
 } 

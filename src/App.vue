@@ -116,9 +116,9 @@ export default {
                 .then(rows => {
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
-                    this.setSucursal(rows.data.length);
+                    this.setSucursal(rows.data);
                     // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
-                    (rows.data.length <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
+                    (rows.data <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
                 }).catch(rej => {
                     console.log(rej);
                 })
@@ -130,10 +130,10 @@ export default {
                     // obtiendo los valores de la petición
                     this.empleados = rows.data;
                     // setteando la cantidad de empleados que existen
-                    this.setEmpleado(this.empleados.length);
+                    this.setEmpleado(this.empleados);
                     // verificando la existencia de los empleados, para redireccionara primer empleados, 
                     // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                    if (this.empleados.length <= 0) {
+                    if (this.empleados <= 0) {
                         this.$router.push('/primer/empleado')
                     } else {
                         if (!localStorage.getItem('auth')) {
@@ -153,20 +153,6 @@ export default {
         this.verficarEmpleados();
         this.verificarSucursales();
         this.checkTokenStorage();
-    },
-    watch: {
-
-        empleado() {
-            this.verificarSucursales();
-        },
-
-    },
-    computed: {
-        ...mapState({
-            empleado: state => state.empleados,
-
-        }),
-
     },
 
 }

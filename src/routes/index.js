@@ -80,6 +80,8 @@ const ROUTER = createRouter({
             path: '/login',
             component: () => import('../views/login.vue')
         },
+        { name: 'formulario', path: '/recuperacion', component: () => import('../views/recuperacion/form.vue') }
+        ,
         {
             name: '404',
             path: '/404',
@@ -415,15 +417,15 @@ ROUTER.beforeEach((to, from, next) => {
     else if (to.path === '/primer/empleado') {
         // verificar sí existen sucursales
         if (store.state.sucursales <= 0) {
-            next('/primer/sucursal')
+            next('/primer/sucursal');
         }
         // verificando sí existen empleados para direccionar al que se deceaba
         else if (store.state.empleados <= 0) {
-            next()
+            next();
         }
         // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
         else {
-            (localStorage.getItem('auth')) ? next(from.path) : next('/login')
+            (localStorage.getItem('auth')) ? next(from.path) : next('/login');
         }
 
     }
@@ -433,13 +435,13 @@ ROUTER.beforeEach((to, from, next) => {
         //  cuando se desea ir a la ruta de primera sucursal
         // validar otra ves la cantidad de sucursales que se encontraron
         if (store.state.sucursales <= 0) {
-            next('/primer/sucursal')
+            next('/primer/sucursal');
         } else if (store.state.empleados <= 0) { next('/primer/empleado') }
         else {
             // verificar sí existe autencicación
             if (localStorage.getItem('auth')) {
                 // redireccionar al inicio sí existen autenticación
-                next({ name: 'inicio' })
+                next({ name: 'inicio' });
             } else {
                 next();
                 // en esta parte se aplica cuando forsosamente se decea ir al login
@@ -449,7 +451,7 @@ ROUTER.beforeEach((to, from, next) => {
     }
     // vericar sí no hay autenticación y este en login y se quiere ir a '/'
     else if (to.fullPath === '/' && from.path === '/login' && !localStorage.getItem('auth')) {
-        next('/login')
+        next('/login');
     }
     // verificar sí se quiere ir a la '/' desde primer uso
     else if (to.fullPath === '/' && (from.path === '/primer/empleado' || from.path === '/primer/sucursal')) {
