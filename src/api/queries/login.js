@@ -10,6 +10,10 @@ const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
 const md5 = require('md5');
 const { getError } = require('../helpers/errors');
+//importación de crypto para generar token de solicitude de cambio contraseña aleatorio
+const crypto = require("crypto");
+//importamos a nodemailer para hacer envíos de correo
+const nodemailer = require("nodemailer");
 /**
  * método para compara claves
  */
@@ -253,45 +257,59 @@ const getDataPrimerEmpleado = async (req, res) => {
 
 const RecuperacionContrasenia = async (req, res) => {
     const { correo } = req.body;
-    const EMAIL_SENDER = 'roberalvarado.20@gmail.com';
-    const EMAIL_PASSWORD = 'ehlkqifmwslkverv';
+    // console.log(req.body);
 
-    function fetchUserDataFromDatabase(correo, callback) {
-        const query = 'SELECT * FROM empleados WHERE correo = ?';
-        execute(query, [correo], (error, results) => {
-            if (error) {
-                console.error(error);
-                return callback(error, null);
-            }
-            if (results.length === 0) {
-                return callback(null, null);
-            }
-            return callback(null, results[0]);
+    const EMAIL_SENDER = "roberalvarado.20@gmail.com";
+    const EMAIL_PASSWORD = "ehlkqifmwslkverv";
 
-        });
-    }
+    try {
+        //ejecución de la consulta
+        const verificarCorreo = await execute(
+            "SELECT * FROM empleados WHERE correo = ?",
+            [correo]
+        );
+        //en caso que no se encuentren datos
+        if (verificarCorreo.length === 0)
+            return res.status(400).json({ msg: "el correo no fue encontrado" });
 
-    fetchUserDataFromDatabase(correo, (error, user) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).send('Error en la base de datos');
-        }
-
-        if (!user) {
-            return res.status(404).send('El correo ingresado no existe');
-        }
-
-        const token = crypto.randomBytes(20).toString('hex');
+        const token = crypto.randomBytes(20).toString("hex");
         const expiration = new Date(Date.now() + 3600000);
 
-        user.resetToken = token;
-        user.resetTokenExpiration = expiration;
-        console.log('Se encontró correctamente el correo. ', correo);
-        console.log('Token de usuario', user.resetToken);
-        console.log('Fecha de expiración', user.resetTokenExpiration);
-        return res.status(200).send(user);
-    });
-}
+        console.log("token de la solicitud: ", token);
+        console.log("fecha de expiración de la solicitud ", expiration);
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: EMAIL_SENDER,
+                pass: EMAIL_PASSWORD
+            },
+            tls: {
+                rejectUnauthorized: false, // Desactivar la verificación del certificado
+            },
+        });
+
+        const mailOptions = {
+            from: EMAIL_SENDER,
+            to: correo,
+            subject: 'Cambio de contraseña',
+            text: 'Correo de prueba noma loco. PD: TE WA MATAR MENA, LO LOGRÉ XD'
+        };
+
+        //envío del correo
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) return console.log("error al enviar el correo: ", error);
+            console.log("Correo electrónico enviado exitosamente: ", info.response);
+        })
+
+        res.status(200).json({ msg: "ejecución finalizada correctamente" });
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Surgio un problema en el servidor");
+    }
+};
 
 // exportar modulos
 module.exports = {

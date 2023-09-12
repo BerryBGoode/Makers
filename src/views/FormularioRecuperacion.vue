@@ -8,8 +8,9 @@
         </form>
     </div>
 </template>
-  
+
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -19,27 +20,22 @@ export default {
     },
     methods: {
         async enviarFormulario() {
-            // Lógica para enviar el formulario
-            try {
-                const response = await fetch('/recuperarcontracorreo', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: this.email })
-                });
-
-                if (response.status === 200) {
-                    // Password reset email sent successfully
-                } else if (response.status === 404) {
-                    // User not found
-                } else {
-                    // Other error
+            console.log(this.correoElectronico);
+            // limpiar mensaje
+            this.msg = '';
+            // validar datos vacíos
+            if (!this.correoElectronico) {
+                this.msg = 'No se permiten campos vacíos';
+            } else {
+                try {
+                    const res = await axios.post('http://localhost:3000/api/auth/recuperarContrasenia', {
+                        correo: this.correoElectronico
+                    });
+                    if (res) return alert('Correo enviado exitosamente');
+                } catch (error) {
+                    alert(error);
                 }
-            } catch (error) {
-                alert(e.response.data.error)
             }
-
         }
     }
 };

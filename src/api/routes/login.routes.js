@@ -15,6 +15,5 @@ LOGIN.put('/', change);
 LOGIN.get('/verificar/sucursal', verificarSucursales);
 LOGIN.get('/verificar/empleados', verificarEmpleados);
 LOGIN.get('/get/primerempleado', getDataPrimerEmpleado);
-LOGIN.post('/recuperacion', RecuperacionContrasenia);
-
+LOGIN.post('/recuperarContrasenia', RecuperacionContrasenia);
 module.exports = LOGIN
