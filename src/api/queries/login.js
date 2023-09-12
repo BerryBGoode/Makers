@@ -270,7 +270,7 @@ const RecuperacionContrasenia = async (req, res) => {
         );
         //en caso que no se encuentren datos
         if (verificarCorreo.length === 0)
-            return res.status(400).json({ msg: "el correo no fue encontrado" });
+            return res.status(404).json({ msg: "el correo no fue encontrado" });
 
         const token = crypto.randomBytes(20).toString("hex");
         const expiration = new Date(Date.now() + 3600000);
@@ -288,12 +288,13 @@ const RecuperacionContrasenia = async (req, res) => {
                 rejectUnauthorized: false, // Desactivar la verificación del certificado
             },
         });
-
+        //Datos que se envían en el correo, de quién, para quién, asunto, texto y link que redirecciona a la recuperación de contraseña.
         const mailOptions = {
             from: EMAIL_SENDER,
             to: correo,
             subject: 'Cambio de contraseña',
-            text: 'Correo de prueba noma loco. PD: TE WA MATAR MENA, LO LOGRÉ XD'
+            text: 'Correo de prueba noma loco. PD: TE WA MATAR MENA, LO LOGRÉ XD',
+            html: '<a href="google.com">aquí iría el link para que haga la recuperación</a>'
         };
 
         //envío del correo
