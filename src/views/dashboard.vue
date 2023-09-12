@@ -78,7 +78,7 @@ export default {
                 localStorage.clear();
                 this.$router.push('/login');
                 notificationInfo('Sesion cerrada por inactividad.');
-            }, 50000)
+            }, 300000)
         }
     },
 }
