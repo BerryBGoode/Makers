@@ -172,6 +172,7 @@ import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
 import { lineGraph, barGraph, doughnutGraph, pieGraph, linealGraph } from './charts';
 import { notificationError } from '../components/alert.vue';
+import store from '../store';
 
 export default {
     name: 'inicio',
@@ -206,7 +207,7 @@ export default {
     },
     methods: {
         productosMasVendidos() {
-            axios.get('http://localhost:3000/api/graficas/productosvendidos')
+            axios.get('http://localhost:3000/api/graficas/productosvendidos', store.state.config)
                 .then(rows => {
                     let cantidad = [], producto = [], data = rows.data;
                     for (let i = 0; i < data.length; i++) {
@@ -224,7 +225,7 @@ export default {
             if (this.mesgraphreserv <= 11) {
 
                 let req = this.mesgraphreserv + 1
-                axios.get('http://localhost:3000/api/graficas/reservaciones/' + req)
+                axios.get('http://localhost:3000/api/graficas/reservaciones/' + req, store.state.config)
                     .then(rows => {
                         let reservaciones = [], fechas = [], data = rows.data;
                         for (let i = 0; i < data.length; i++) {
@@ -244,7 +245,7 @@ export default {
         // método para obtener las ventas
         getVentasPromise() {
             // realizar petición para obtener los meses y la cantidad de ventas por este tiempo
-            axios.get('http://localhost:3000/api/graficas/ventas')
+            axios.get('http://localhost:3000/api/graficas/ventas', store.state.config)
                 // si la petición se realiza correctamente
                 .then(rows => {
                     // crear arreglos para dividir o desagrupar en ordenes o ventas que se a realizado en el mes
@@ -271,7 +272,7 @@ export default {
             if (this.mesgraph <= 11) {
 
                 let req = (this.mesgraph + 1)
-                axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req)
+                axios.get('http://localhost:3000/api/graficas/ordenesmes/' + req, store.state.config)
                     .then(rows => {
                         let dia = [], ordenes = [], data = rows.data;
                         for (let i = 0; i < data.length; i++) {
@@ -291,7 +292,7 @@ export default {
 
         },
         getEmpleadosCargos() {
-            axios.get('http://localhost:3000/api/graficas/cargos')
+            axios.get('http://localhost:3000/api/graficas/cargos', store.state.config)
                 .then(rows => {
                     let cargo = [], count = [], data = rows.data;
                     for (let i = 0; i < data.length; i++) {
@@ -307,7 +308,7 @@ export default {
                 }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
         },
         getClientesTop() {
-            axios.get('http://localhost:3000/api/graficas/clientestop')
+            axios.get('http://localhost:3000/api/graficas/clientestop', store.state.config)
                 .then(rows => {
                     let ordenes = [], clientes = [], data = rows.data;
                     for (let i = 0; i < data.length; i++) {
@@ -328,7 +329,7 @@ export default {
 
                 // como mes enero es 0, al mes seleccionado sumarle uno
                 let req = (this.mesgraphora + 1)
-                axios.get('http://localhost:3000/api/graficas/hora/' + req)
+                axios.get('http://localhost:3000/api/graficas/hora/' + req, store.state.config)
                     .then(rows => {
                         let hora = [], ventas = [], data = rows.data;
                         for (let i = 0; i < data.length; i++) {
@@ -347,7 +348,7 @@ export default {
             }
         },
         getTiposServicios() {
-            axios.get('http://localhost:3000/api/servicios/tipos')
+            axios.get('http://localhost:3000/api/servicios/tipos', store.state.config)
                 .then(res => {
                     this.tipos = res.data;
                     this.tipo = res.data[0].id_tipo_servicio;
@@ -356,7 +357,7 @@ export default {
                 .catch(e => console.log(e));
         },
         getServiciosTop() {
-            axios.get('http://localhost:3000/api/graficas/servicosvendido/' + this.tipo)
+            axios.get('http://localhost:3000/api/graficas/servicosvendido/' + this.tipo, store.state.config)
                 .then(res => {
                     let servicio = [], cantidad = [], data = res.data;
                     for (let i = 0; i < data.length; i++) {
@@ -375,7 +376,7 @@ export default {
             // realizar petición según el reporte
             try {
                 // llamar la función asicrona para obtener los datos de la petición
-                const EMPLEADOS = await axios.get('http://localhost:3000/api/reportes/empleadoscargos');
+                const EMPLEADOS = await axios.get('http://localhost:3000/api/reportes/empleadoscargos', store.state.config);
                 // obtener la 'data' de la función asicrona
                 const ROWS = EMPLEADOS.data;
                 // declarando datos para poner en el header de la tabla
@@ -399,7 +400,7 @@ export default {
             // realizar petición según el reporte
             try {
                 // llamar la función asicrona para obtener los datos de la petición
-                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/proxreservaciones');
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/proxreservaciones', store.state.config);
                 // obtener la 'data' de la función asicrona
                 const ROWS = RESERVACIONES.data;
                 // declarando datos para poner en el header de la tabla
@@ -422,7 +423,7 @@ export default {
         async prevReservaciones() {
             try {
                 // realiza la petición para obtener las reservaciones antes del día que se generé el reporte
-                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/prevreservaciones');
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/prevreservaciones', store.state.config);
                 // obtener los datos de la petición
                 const ROWS = RESERVACIONES.data;
                 // declarando un arreglo para guardar los nombres de la columnas de la tabla
@@ -444,7 +445,7 @@ export default {
         async lessProductos() {
             try {
                 // realizar petición para obtener los datos para llenar el reporte
-                const PRODUCTOS = await axios.get('http://localhost:3000/api/reportes/lessproductos');
+                const PRODUCTOS = await axios.get('http://localhost:3000/api/reportes/lessproductos', store.state.config);
                 // extraer los datos de la petición
                 const ROWS = PRODUCTOS.data;
                 // definiendo el nombre de la columnas para la tabla del reporte
@@ -465,7 +466,7 @@ export default {
         async getVentasDia() {
             try {
                 // realizar petición para obtener las ventas del dia actual
-                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventadia/' + this.today)
+                const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventadia/' + this.today, store.state.config)
                 // extraer la data de la petición
                 const ROWS = VENTAS.data;
                 // definiendo los headers para la tabla del reporte
@@ -491,7 +492,7 @@ export default {
 
                     let req = this.mesreportreserv + 1;
                     // realizando la petición para obtener los datos para llenar el reporte
-                    const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/reservacionesmes/' + req);
+                    const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/reservacionesmes/' + req, store.state.config);
                     // obteniendo la data de la respuesta de la petición
                     const ROWS = RESERVACIONES.data;
                     // definiendo los headers del reporte
@@ -520,7 +521,7 @@ export default {
                     // como mes enero es 0, al mes seleccionado sumarle uno
                     let req = this.mesreportventas + 1;
                     // realizar la petición para obtener las ventas del reporte
-                    const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req);
+                    const VENTAS = await axios.get('http://localhost:3000/api/reportes/ventasmes/' + req, store.state.config);
                     // obtener la data de la respuesta del servidor
                     const ROWS = VENTAS.data;
                     // definiendo nombres para llenar la tabla 
