@@ -59,17 +59,16 @@ import { mapActions, mapState } from 'vuex';
 
 export default {
     // nombre del componente
-    name: "login",
+    name: "formulario contraseña",
     components: { logo },
     // método que retorna el componente
     data() {
         return {
             model: {
-                logo_lc: logo,
+                logo_lc: logo, 
                 empleado: {
-                    correo: '',
                     clave: '',
-                    dui: ''
+                   
                 },
                 auth: {
                     state: '',
@@ -80,19 +79,13 @@ export default {
 
         }
     },
-    methods: {
-        async selectMetodo() {
-            let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
-            console.log(notif)
-
-
-        },
+   
         // método para buscar a un empleado con esos datos
         async checkEmpleado() {
             // limpiar mensaje
             this.msg = '';
             // validar datos vacios
-            if (!this.model.empleado.correo && !this.model.empleado.clave && !this.model.empleado.dui) {
+            if (!this.model.empleado.clave) {
                 this.msg = 'No se permite campos vacíos';
 
             } else {
@@ -129,7 +122,7 @@ export default {
             localStorage.setItem('auth', token);
 
         },
-    },
-}
+    }
+
 
 </script>

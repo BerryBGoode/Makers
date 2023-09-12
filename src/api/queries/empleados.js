@@ -263,5 +263,50 @@ const destroy = (req, res) => {
 
 }
 
+/**
+ * Método para validar sí los datos que se envian del login existen
+ */
+const validateUsuario = async (req, res) => {
+    // variables para enviar 1 mensaje al hacer la petición 
+    let auth = false, msg, token, status = '', clave_db;
+    // obtener los datos
+    const { clave } = req.body;
+    try {
+        const CLAVE = await execute('SELECT clave FROM empleados WHERE clave = ? AND cambio_contraseña = ?', [ clave,cambio_contraseña])
+        if (CLAVE) {
+
+            // obtener clave cuando
+            for (let i = 0; i < CLAVE.length; i++) {
+                // obtener la clave
+                clave_db = CLAVE[i]['clave'];
+            }
+            // compara claves'
+            if (clave_db && compare(clave, clave_db)) {
+                // clave correcta
+                // obtener los datos del empleado encontrado
+
+                // crear token
+                token = await getToken(dui, correo, clave_db)
+                // enviar el estado de la autenticación
+                auth = true;
+                // setear token a la cookie
+                res.cookie('token', token, { httpOnly: true });
+
+            } else {
+                msg = 'Usuario o contraseña incorrecta';
+                auth = false;
+                token = '';
+            }
+            res.status(200).send({ msg, auth, token });
+        }
+    } catch (error) {
+        console.log('error')
+        console.log(error)
+        res.status(500).send({ error: getError(error) })
+    }
+}
+
+
+
 // exportación de modulos
 module.exports = { get, getSucursales, getHorarios, getCargos, store, one, change, destroy }
