@@ -38,7 +38,7 @@ const get = async (req, res) => {
             })
 
     } else {
-
+        res.status(401).send('Debe autenticarse antes');
     }
 };
 
@@ -46,21 +46,24 @@ const get = async (req, res) => {
  * Método para obtener el dui de un clientes
  */
 const getClienteDui = async (req, res) => {
-    try {
-        // realizar consulta
-        const CLIENTES = await execute('SELECT id_cliente, dui FROM clientes');
-        // verificar respuesta satisfactoria, para enviar los datos
-        for (let i = 0; i < CLIENTES.length; i++) {
-            id = {
-                id_cliente: getBinary(CLIENTES, 'id_cliente')[i]
-            }
-            Object.assign(CLIENTES[i], id);
+    if (req.headers.authorization) {
+        try {
+            // realizar consulta
+            const CLIENTES = await execute('SELECT id_cliente, dui FROM clientes');
+            // verificar respuesta satisfactoria, para enviar los datos
+            for (let i = 0; i < CLIENTES.length; i++) {
+                id = {
+                    id_cliente: getBinary(CLIENTES, 'id_cliente')[i]
+                }
+                Object.assign(CLIENTES[i], id);
 
+            }
+            if (res.status(200)) res.json(CLIENTES);
+        } catch (error) {
+            res.status(500).send(getError(error));
         }
-        if (res.status(200)) res.json(CLIENTES);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Surgio un problema en el servidor');
+    } else {
+        res.status(401).send('Debe auntenticarse antes');
     }
 }
 
@@ -69,35 +72,43 @@ const getClienteDui = async (req, res) => {
 * Método  para obtener los datos del cliente por su DUI
 */
 const getObtenerClientes = async (req, res) => {
-    try {
-        // realizar consulta
-        const CLIENTES = await execute('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
-        // verificar respuesta satisfactoria, para enviar los datos
-        if (res.status(200)) res.json(CLIENTES);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Surgio un problema en el servidor');
+    if (req.headers.authorization) {
+        try {
+            // realizar consulta
+            const CLIENTES = await execute('SELECT nombres, apellidos FROM clientes WHERE id_cliente = $1',);
+            // verificar respuesta satisfactoria, para enviar los datos
+            if (res.status(200)) res.json(CLIENTES);
+        } catch (error) {
+            res.status(500).send(getError(error));
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 /**
  * Método para crear una orden
  */
 const store = (req, res) => {
-    try {
-        // obtener los datos del req
-        const { cliente } = req.body;
-        let estado = 1
-        // realizar query o insert y enviarle los parametros
-        execute('INSERT INTO ordenes(id_orden ,fecha, hora, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, CURRENT_TIME, ?, ?)',
-            [estado, convertToBin(cliente)])
-            .then(() => {
-                res.status(201).send('Orden agregada')
-            }).catch(rej => { console.log(rej); res.status(406).send({ error: getError(rej) }); })
-    } catch (error) {
-        console.log(error)
-        res.status(500).send('Surgio un problema en el servidor')
+    if (req.headers.authorization) {
+        try {
+            // obtener los datos del req
+            const { cliente } = req.body;
+            let estado = 1
+            // realizar query o insert y enviarle los parametros
+            execute('INSERT INTO ordenes(id_orden ,fecha, hora, estado, id_cliente) VALUES (UUID(), CURRENT_DATE, CURRENT_TIME, ?, ?)',
+                [estado, convertToBin(cliente)])
+                .then(() => {
+                    res.status(201).send('Orden agregada')
+                }).catch(rej => { console.log(rej); res.status(500).send({ error: getError(rej) }); })
+        } catch (error) {
+            res.status(500).send(getError(error))
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes');
     }
+
 }
 
 
@@ -105,6 +116,11 @@ const store = (req, res) => {
  * Método para actualizar los datos de la orden
  */
 const change = (req, res) => {
+    if (req.headers.authorization) {
+
+    } else {
+
+    }
     try {
         // obtener id 
         const IDORDEN = req.params.id;
@@ -116,10 +132,10 @@ const change = (req, res) => {
             .then(() => {
                 res.status(201).send('Orden modificada');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(500).send(getError(rej))
             })
     } catch (error) {
-        console.log(error);
+        res.status
     }
 }
 
@@ -139,7 +155,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).send('Orden eliminada');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(500).send({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);
@@ -165,8 +181,7 @@ const one = async (req, res) => {
         }
         if (res.status(200)) res.send(ORDEN[0]);
     } catch (error) {
-        console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
+        res.status(500).send(getError(error));
     }
 }
 
