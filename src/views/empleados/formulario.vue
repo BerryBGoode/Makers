@@ -86,27 +86,27 @@ export default {
   const newPassword = this.model.empleado.clave;
   const confirmPassword = this.model.empleado.confirmarClave;
 
-  // Validate that both fields are not empty and that they match
+  // Validamos que ambos campos no estén vacíos y que coincidan
   if (!newPassword || !confirmPassword) {
     this.msg = 'No se permiten campos vacíos';
   } else if (newPassword !== confirmPassword) {
     this.msg = 'Las contraseñas no coinciden';
   } else {
     try {
-      // Call an API to update the user's password
+     // Llama a una API para actualizar la contraseña del usuario
       const res = await axios.post('http://localhost:3000/api/change-password', {
         newPassword,
         confirmPassword,
       });
       if (res.data.success) {
-        // Show a success message to the user
+   // Mostrar un mensaje de éxito al usuario
         this.msg = 'Contraseña actualizada correctamente';
       } else {
-        // Show an error message to the user
+      // Mostrar un mensaje de error al usuario
         this.msg = res.data.msg;
       }
     } catch (error) {
-      // Show an error message to the user
+      // Mostrar un mensaje de error al usuario
       this.msg = 'Ocurrió un error al actualizar la contraseña';
     }
   }
