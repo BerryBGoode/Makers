@@ -203,9 +203,4 @@ export const notificationQuestion = (txt, time, button, deny = null, txtdeny = n
     })
 
 }
-
-// crear evento que detectar cuando se elimina el token del localStorage
-export const STORAGE = window.addEventListener('storage', (e) => {
-    return (e.key === 'auth' && e.oldValue !== e.newValue)
-})
 </script>

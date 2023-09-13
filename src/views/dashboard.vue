@@ -33,7 +33,7 @@ import { RouterLink, RouterView } from 'vue-router';
 // exportar componente hijo
 export default {
     // nombre del componente
-    name: "dashboard",
+    name: 'dashboard',
     components: { sidebar, buscador, cuenta },
     // método que retorna el componente
     data() {

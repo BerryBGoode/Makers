@@ -59,7 +59,6 @@ import cookies from 'vue-cookies';
 import dashboard from './views/dashboard.vue';
 import login from './views/login.vue';
 import axios from 'axios';
-import primerUso from './views/primerUso.vue';
 import { mapState, mapActions } from 'vuex';
 import { RouterView } from 'vue-router';
 import store from './store/';
@@ -68,7 +67,7 @@ import { alertInfo, notificationError } from './components/alert.vue';
 
 export default {
     name: 'app',
-    components: { dashboard, login, cookies, axios, primerUso, store, RouterView },
+    components: { dashboard, login, cookies, axios, store, RouterView },
     data() {
 
         let state = window.addEventListener('storage', (e) => {
