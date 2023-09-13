@@ -237,9 +237,9 @@ export default {
                         } else {
                             notificationError('No se encontraron resultados', 5000)
                         }
-                    }).catch(e => { alert(e) })
+                    }).catch(e => { notificationError(e.response.data) })
             } else {
-                alert('Mes invalido')
+                notificationError('Mes invalido');
             }
         },
         // método para obtener las ventas
@@ -265,7 +265,7 @@ export default {
                         notificationError('No se encontraron resultados', 5000)
                     }
 
-                }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+                }).catch(e => { notificationError(e.response.data) })
         },
         getOrdenesByMes() {
             // como mes enero es 0, al mes seleccionado sumarle uno
@@ -285,9 +285,9 @@ export default {
                             notificationError('No se encontraron resultados', 5000)
                         }
 
-                    }).catch(e => alert(e))
+                    }).catch(e => notificationError(e.response.data))
             } else {
-                alert('Mes invalido')
+                notificationError('Mes invalido')
             }
 
         },
@@ -305,7 +305,7 @@ export default {
                     } else {
                         notificationError('No se encontraron resultados', 5000)
                     }
-                }).catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+                }).catch(e => { notificationError(e.response.data) })
         },
         getClientesTop() {
             axios.get('http://localhost:3000/api/graficas/clientestop', store.state.config)
@@ -322,7 +322,7 @@ export default {
                         notificationError('No se encontraron resultados', 5000)
                     }
                 })
-                .catch(e => { (e.response.data.error) ? alert(e.response.data.error) : alert(e) })
+                .catch(e => { notificationError(e.response.data) })
         },
         getHoraMes() {
             if (this.mesgraphora <= 11) {
@@ -344,7 +344,7 @@ export default {
                         }
                     })
             } else {
-                alert('Mes invalido');
+                notificationError('Mes invalido');
             }
         },
         getTiposServicios() {
@@ -354,7 +354,7 @@ export default {
                     this.tipo = res.data[0].id_tipo_servicio;
                     this.getServiciosTop();
                 })
-                .catch(e => console.log(e));
+                .catch(e => notificationError(e.response.data));
         },
         getServiciosTop() {
             axios.get('http://localhost:3000/api/graficas/servicosvendido/' + this.tipo, store.state.config)
@@ -370,7 +370,7 @@ export default {
                         notificationError('No se encontraron resultados', 5000)
                     }
                 })
-                .catch(e => { alert(e) })
+                .catch(e => { notificationError(e.response.data) })
         },
         async EmpleadosCargos() {
             // realizar petición según el reporte
@@ -386,14 +386,14 @@ export default {
                 const colData = ROWS.map(row => [row.nombres, row.apellidos, row.cargo]);
 
                 if (colData.length > 0) {
-                    generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData)
+                    generateTablePDF('EmpleadosCargos', 'Empleados por cargo', colNames, colData);
                     // llamando al método para generar reportes
                 } else {
-                    notificationError('No se encontraron resultados', 5000)
+                    notificationError('No se encontraron resultados', 5000);
                 }
 
             } catch (e) {
-                (e.response.data.error) ? alert(e.response.data.error) : alert(e)
+                notificationError(e.response.data);
             }
         },
         async proxReservaciones() {
@@ -417,7 +417,7 @@ export default {
                 }
 
             } catch (e) {
-                (e.response.data.error) ? alert(e.response.data.error) : alert(e)
+                notificationError(e.response.data);
             }
         },
         async prevReservaciones() {
@@ -439,7 +439,7 @@ export default {
                     notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data);
             }
         },
         async lessProductos() {
@@ -460,7 +460,7 @@ export default {
                     notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data);
             }
         },
         async getVentasDia() {
@@ -480,8 +480,7 @@ export default {
                     notificationError('No se encontraron resultados', 5000)
                 }
             } catch (error) {
-
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data);
             }
         },
         async getReservacionesMes() {
@@ -506,13 +505,13 @@ export default {
                             'Reservaciones de ' + this.meses[this.mesreportreserv], names, VALUES
                         );
                     } else {
-                        notificationError('No se encontraron resultados', 5000)
+                        notificationError('No se encontraron resultados', 5000);
                     }
                 } else {
-                    alert('Mes invalido')
+                    notificationError('Mes invalido');
                 }
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data);
             }
         },
         async getVentasMes() {
@@ -532,13 +531,13 @@ export default {
                     if (VALUES.length > 0) {
                         generateTablePDF('ventas de ' + this.meses[this.mesreportventas].toLowerCase(), 'Ventas de ' + this.meses[this.mesreportventas], names, VALUES)
                     } else {
-                        notificationError('No se encontraron resultados', 5000)
+                        notificationError('No se encontraron resultados', 5000);
                     }
                 } else {
-                    alert('Mes invalido');
+                    notificationError('Mes invalido');
                 }
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data);
             }
         },
     },

@@ -45,7 +45,7 @@
 
                     <div class="buttons-login">
                         <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
-                        <a @click="selectMetodo" class="href-makers">Restablecer contraseña</a>
+                        <a @click="selectMethod" class="href-makers">Restablecer contraseña</a>
                     </div>
                 </div>
             </div>
@@ -58,9 +58,9 @@ import axios from 'axios';
 // importar para configurar rutas
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
-import { alertQuestion, notificationInfo, notificationSuccess } from '../components/alert.vue';
+import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
-
+import { alertRequest } from './recuperacion/form.vue';
 
 export default {
     // nombre del componente
@@ -86,9 +86,13 @@ export default {
         }
     },
     methods: {
-        async selectMetodo() {
+        async selectMethod() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
-            console.log(notif)
+            if (notif) {
+
+            } else {
+                alertRequest()
+            }
 
 
         },
@@ -118,7 +122,7 @@ export default {
                     }
 
                 } catch (error) {
-                    alert(e.response.data.error)
+                    notificationError(e.response.data)
 
                 }
 

@@ -162,10 +162,10 @@ export default {
                 // o la obtenido en la petición (Network)
                 const colData = ROWS.map(row => [row.nombre_sucursal, row.nombre_servicio, row.cantidad]);
                 // llamando al método para generar reportes
-                generateTablePDF('ProducSucursales', 'Porductos por sucursales', colNames, colData)
+                generateTablePDF('ProducSucursales', 'Porductos por sucursales', colNames, colData);
 
             } catch (e) {
-                alert(e.response.data.error)
+                notificationError(e.response.data);
             }
         }
     },
