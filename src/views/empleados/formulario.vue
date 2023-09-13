@@ -94,7 +94,7 @@ export default {
   } else {
     try {
      // Llama a una API para actualizar la contraseña del usuario
-      const res = await axios.post('http://localhost:3000/api/change-password', {
+      const res = await axios.post('http://localhost:3000/api/auth', {
         newPassword,
         confirmPassword,
       });
