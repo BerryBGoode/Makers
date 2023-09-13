@@ -81,48 +81,36 @@ export default {
     },
    
         // método para buscar a un empleado con esos datos
-        async checkEmpleado() {
-            // limpiar mensaje
-            this.msg = '';
-            // validar datos vacios
-            if (!this.model.empleado.clave) {
-                this.msg = 'No se permite campos vacíos';
+        async changePassword() {
+  // Get the values of the two input fields
+  const newPassword = this.model.empleado.clave;
+  const confirmPassword = this.model.empleado.confirmarClave;
 
-            } else {
-                try {
-                    let res = await axios.post('http://localhost:3000/api/auth', this.model.empleado);
-                    if (!res.data.auth) this.msg = res.data.msg;
-                    // creando token
-                    if (res.data.auth !== false) {
-                        // asginar estado de la autenticación
-                        this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                        // crear cookie
-                        this.crearCookie(res.data.token)
-                        // mostrar mensaje
-                        this.msg = res.data.msg
-                        // redireccionar al inicio
-                        this.$router.push('/inicio');
-                        await notificationSuccess('Sesión iniciada correctamente', 5000);
-                    }
-
-                } catch (error) {
-                    alert(e.response.data.error)
-
-                }
-
-            }
-        },
-        crearCookie(token) {
-
-            // creando cookie
-            // this.$cookies.set('auth', token, { experies: '1d' });
-            // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
-            // componente realiza y el dato
-            // this.$emit('getCookie', this.$cookies.get('auth'));
-            localStorage.setItem('auth', token);
-
-        },
+  // Validate that both fields are not empty and that they match
+  if (!newPassword || !confirmPassword) {
+    this.msg = 'No se permiten campos vacíos';
+  } else if (newPassword !== confirmPassword) {
+    this.msg = 'Las contraseñas no coinciden';
+  } else {
+    try {
+      // Call an API to update the user's password
+      const res = await axios.post('http://localhost:3000/api/change-password', {
+        newPassword,
+        confirmPassword,
+      });
+      if (res.data.success) {
+        // Show a success message to the user
+        this.msg = 'Contraseña actualizada correctamente';
+      } else {
+        // Show an error message to the user
+        this.msg = res.data.msg;
+      }
+    } catch (error) {
+      // Show an error message to the user
+      this.msg = 'Ocurrió un error al actualizar la contraseña';
     }
-
+  }
+}
+}
 
 </script>
