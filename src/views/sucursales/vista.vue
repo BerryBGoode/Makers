@@ -74,11 +74,7 @@
                                         stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
 
-                                <div class="container-graph">
-                                    <button @click.prevent="ProducSucursales(sucursal.id_sucursal)">Generar pdf</button>    
-                                </div>
-
-                            </div> 
+                            </div>
 
                         </div>
                     </div>
@@ -104,9 +100,11 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { mapState } from 'vuex';
+import store from '../../store';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
 // componente para vista
 export default {
-    name: 'reservaciones',
+    name: 'sucursales',
     data() {
         return {
             // para cargar las sucursales
@@ -117,26 +115,25 @@ export default {
     methods: {
         // método para cargar las 
         getSucursales() {
-            axios.get('http://localhost:3000/api/sucursales/')
+            axios.get('http://localhost:3000/api/sucursales/', store.state.config)
                 .then(res => {
                     this.sucursales = res.data;
                     this.filters = res.data;
                 })
-                .catch(e => { alert(e); console.log(e) })
+                .catch(e => { notificationError(e); })
         },
-        eliminarSucursal(sucursal) {
+        async eliminarSucursal(sucursal) {
             // esperar confirmación
-            if (confirm('Desea eliminar esta sucursal?')) {
-                axios.delete('http://localhost:3000/api/sucursales/' + sucursal)
+            if (await notificationQuestion('Desea eliminar esta sucursal?')) {
+                axios.delete('http://localhost:3000/api/sucursales/' + sucursal, store.state.config)
                     .then(res => {
                         // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        notificationSuccess(res.data);
                         // cargar
                         this.getSucursales();
                     })
                     .catch(e => {
-                        alert(e);
-                        console.log(e)
+                        notificationError(e.response.data);
                     })
             }
         },

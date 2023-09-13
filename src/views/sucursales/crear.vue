@@ -62,9 +62,11 @@
 <script>
 import axios from 'axios'
 import { onlyLtrs } from '../../validator'
+import store from '../../store'
+import { notificationError, notificationSuccess } from '../../components/alert.vue'
 // definir componente 
 export default {
-    name: "crearSucursal",
+    name: 'crearSucursal',
     data() {
         return {
             sucursal: {
@@ -87,16 +89,13 @@ export default {
             else if (this.sucursal.direccion && this.sucursal.tel && this.sucursal.nombre &&
                 this.sucursal.inicio && this.sucursal.cierre) {
                 // realizar petición
-                axios.post('http://localhost:3000/api/sucursales/', this.sucursal)
+                axios.post('http://localhost:3000/api/sucursales/', this.sucursal, store.state.config)
                     .then(res => {
-                        if (res.data.error) {
-                            alert(res.data.error)
-                            console.log(res.data.error)
-                        } else {
-                            alert(res.data);
-                            this.$router.push('/sucursales');
-                        }
+                        notificationSuccess(res.data);
+                        this.$router.push('/sucursales');
 
+                    }).catch(e => {
+                        notificationError(e.response.data)
                     })
             }
             else this.msg = 'No se permiten campos vacíos'

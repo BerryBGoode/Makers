@@ -95,6 +95,8 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import store from '../../store';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
 export default {
     name: 'servicios',
     data() {
@@ -105,26 +107,24 @@ export default {
     },
     methods: {
         getServicios() {
-            axios.get('http://localhost:3000/api/servicios/')
+            axios.get('http://localhost:3000/api/servicios/', store.state.config)
                 .then(res => {
                     this.servicios = res.data;
                     this.filters = res.data
                 })
-                .catch(e => alert(e));
+                .catch(e => notificationError(e.response.data));
         },
-        eliminarServicio(servicio) {
+        async eliminarServicio(servicio) {
             // verificar sí el usuario lo decea eliminar
-            if (confirm('Desea eliminar este servicio?')) {
+            if (await notificationQuestion('Desea eliminar este servicio?', 7500)) {
                 // realizar petición
-                axios.delete('http://localhost:3000/api/servicios/' + servicio)
+                axios.delete('http://localhost:3000/api/servicios/' + servicio, store.state.config)
                     .then(res => {
-                        // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-
+                        notificationSuccess(res.data);
                         // cargar
                         this.getServicios();
                     })
-                    .catch(e => { alert(e.response.data.error); console.log(e) })
+                    .catch(e => { notificationError(e.response.data); })
             }
         },
         buscar(dato) {

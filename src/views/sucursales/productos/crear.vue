@@ -69,6 +69,8 @@
 
 <script>
 import axios from 'axios'
+import store from '../../../store';
+import { notificationError, notificationSuccess } from '../../../components/alert.vue';
 export default {
     // nombre del componente
     name: "crearProductoSucursal",
@@ -121,11 +123,11 @@ export default {
         },
         cargarProductos() {
             // realizar petición
-            axios.get('http://localhost:3000/api/sucursales/productos/productos')
+            axios.get('http://localhost:3000/api/sucursales/productos/productos', store.state.config)
                 .then(res => {
                     this.servicios = res.data;
                 })
-                .catch(e => { alert(e.response.data.error) })
+                .catch(e => { notificationError(e.response.data) })
         },
         crear() {
             this.msg = '';
@@ -144,26 +146,23 @@ export default {
                 if (!this.input.stock) this.model.servicio.cantidad = 1;
 
                 // validar datos
-                axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio)
+                axios.post('http://localhost:3000/api/sucursales/productos/', this.model.servicio, store.state.config)
                     .then(res => {
-                        if (res.data.error) {
-                            this.msg = res.data.error
-                        }
                         // cuando si se realizo la tarea deceada y se creo algo 
                         // 201 es usado en método post y put
-                        if (res.status === 201 && !res.data.error) {
+                        if (res.status === 201) {
                             // limpiar valores 
                             this.model.producto = {
                                 cantidad: '',
                                 producto: 'Seleccionar',
-                            }
+                            };
+                            notificationSuccess(res.data);
                             // redireccionar
-                            alert('Producto agregado')
                             this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
                         }
                     })
                     .catch(err => {
-                        alert(err.response.data.error)
+                        notificationError(err.response.data);
                     })
             }
         }
