@@ -263,37 +263,43 @@ const destroy = (req, res) => {
 
 }
 
-/**
- * Método para validar sí los datos que se envian del login existen
- */
-const validateUsuario = async (req, res) => {
+const validatePassword = async (req, res) => {
     // variables para enviar 1 mensaje al hacer la petición 
     let auth = false, msg, token, status = '', clave_db;
     // obtener los datos
     const { clave } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave FROM empleados WHERE clave = ? AND cambio_contraseña = ?', [ clave,cambio_contraseña])
+        const CLAVE = await execute('SELECT clave, cambio_contraseña FROM empleados WHERE clave = ?', [ clave ])
         if (CLAVE) {
-
-            // obtener clave cuando
+            // obtener clave y cambio_contraseña
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
+                cambio_contraseña = CLAVE[i]['cambio_contraseña'];
             }
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
                 // clave correcta
                 // obtener los datos del empleado encontrado
 
-                // crear token
-                token = await getToken(dui, correo, clave_db)
-                // enviar el estado de la autenticación
-                auth = true;
-                // setear token a la cookie
-                res.cookie('token', token, { httpOnly: true });
+                // calcular la diferencia entre la fecha actual y cambio_contraseña
+                const diffTime = Math.abs(new Date() - cambio_contraseña);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
 
+                if (diffDays > 85) {
+                    msg = 'Debe cambiar su contraseña';
+                    auth = false;
+                    token = '';
+                } else {
+                    // crear token
+                    token = await getToken(dui, correo, clave_db)
+                    // enviar el estado de la autenticación
+                    auth = true;
+                    // setear token a la cookie
+                    res.cookie('token', token, { httpOnly: true });
+                }
             } else {
-                msg = 'Usuario o contraseña incorrecta';
+                msg = 'Contraseña incorrecta';
                 auth = false;
                 token = '';
             }
