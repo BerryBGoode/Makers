@@ -124,7 +124,8 @@
 // importar axios para realizar peticiones
 import axios from 'axios';
 import { mapState } from 'vuex';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 
 export default {
     name: 'empleados',
@@ -134,18 +135,13 @@ export default {
             empleados: [],
             // arreglo para guardar los datos a buscar
             filters: [],
-            config: {
-                headers: {
-                    authorization: localStorage.getItem('auth')
-                }
-            },
         }
     },
     methods: {
         // método para obtener los empleados
         getEmpledos() {
             // hacer petición
-            axios.get('http://localhost:3000/api/empleados/', this.config)
+            axios.get('http://localhost:3000/api/empleados/', store.state.config)
                 .then(res => { this.empleados = res.data; this.filters = res.data })
                 .catch(e => { notificationError(e.response.data, 3500) })
 
@@ -153,9 +149,9 @@ export default {
         // método para eliminar el empleado seleccionado
         async eliminarEmpleado(idempleado) {
             // validar la respuesta del usuario
-            if (confirm('Desea eliminar a este empleado?')) {
+            if (await notificationQuestion('Desea eliminar a este empleado?', 3500)) {
                 // realizar petición                
-                axios.delete('http://localhost:3000/api/empleados/' + idempleado)
+                axios.delete('http://localhost:3000/api/empleados/' + idempleado, store.state.config)
                     .then(res => {
                         // mostrar mensaje
                         notificationSuccess(res.data, 3500);

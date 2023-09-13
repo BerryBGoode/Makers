@@ -61,7 +61,7 @@ export default {
                         }
                     })
                     .catch(e => {
-                        notificationError(e.response);
+                        notificationError(e.response.data);
                     })
             }
         },
@@ -71,7 +71,7 @@ export default {
                     this.cargo = res.data
                 })
                 .catch(e => {
-                    notificationError(e);
+                    notificationError(e.response.data);
                 })
         }
     }

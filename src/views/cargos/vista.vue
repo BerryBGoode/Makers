@@ -112,7 +112,7 @@ export default {
                         this.getCargos();
                     })
                     .catch(rej => {
-                        if (rej.response.data.error) notificationError(rej.response.data.error);
+                        notificationError(rej.response.data);
                     })
             }
         },

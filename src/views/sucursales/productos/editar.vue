@@ -69,6 +69,8 @@
 
 <script>
 import axios from 'axios'
+import store from '../../../store';
+import { notificationError, notificationSuccess } from '../../../components/alert.vue';
 export default {
     // nombre del componente
     name: "editarProductoSucursal",
@@ -107,7 +109,7 @@ export default {
         select(event) {
             // verificar sí el servicio seleccionado es un producto
             // para habilitar unos campos
-            
+
             if (event.target.options[event.target.selectedIndex].dataset.tipo_servicio === 'Producto') {
                 // habilitar agregar cantidad
                 this.input.read = false;
@@ -130,24 +132,22 @@ export default {
         },
         cargarServicios() {
             // realizar petición
-            axios.get('http://localhost:3000/api/sucursales/productos/productos')
+            axios.get('http://localhost:3000/api/sucursales/productos/productos', store.state.config)
                 .then(res => {
                     this.servicios = res.data;
                 })
-                .catch(e => { alert(e.response.data.error) })
+                .catch(e => { notificationError(e.response.data) })
         },
         cargar(detalle) {
-            axios.get('http://localhost:3000/api/sucursales/productos/detalle/' + detalle)
+            axios.get('http://localhost:3000/api/sucursales/productos/detalle/' + detalle, store.state.config)
                 .then(res => {
                     // cargar los valores
-                    // const DETALLE = res.data[0];
-                    // console.log(DETALLE);
                     this.model.servicio = {
                         servicio: res.data.id_servicio,
                         cantidad: res.data.cantidad
                     }
                 })
-                .catch(e => { alert(e.response.data.error) })
+                .catch(e => { notificationError(e.response.data) })
         },
         modificarServicio() {
             this.msg = '';
@@ -164,28 +164,24 @@ export default {
             let id = this.$route.params.detalle;
             // validar datos
             // realizar petición
-            
-            axios.put('http://localhost:3000/api/sucursales/productos/' + id, this.model.servicio)
+
+            axios.put('http://localhost:3000/api/sucursales/productos/' + id, this.model.servicio, store.state.config)
                 .then(res => {
-                    // verificar errores
-                    if (res.data.error) {
-                        this.msg = res.data.error
-                    }
                     // verificar sí se realizo la tarea como se deceaba
                     // status = 201 en post y put
-                    if (res.status === 201 && !res.data.error) {
+                    if (res.status === 201) {
                         // limipiar campos
                         this.model.servicio = {
                             cantidad: '',
                             servicio: 'Seleccionar'
                         }
                         // redireccionar
-                        alert('Detalle modificado');
+                        notificationSuccess(res.data);
                         this.msg = '';
                         this.$router.push('/sucursales/' + this.$route.params.id + '/productos');
                     }
                 })
-                .catch(err => { alert(err.response.data.error);  console.log(err)})
+                .catch(err => { notificationError(err.response.data); })
         }
 
     }

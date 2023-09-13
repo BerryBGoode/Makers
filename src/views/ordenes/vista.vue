@@ -20,7 +20,7 @@
             </router-link>
         </div>
         <hr>
-        
+
         <div class="data p-2" v-if="ordenes.length > 0">
             <!-- recorrer los clientes encontrados -->
 
@@ -42,7 +42,7 @@
                             </router-link>
                         </div>
                         <div class="col-md-1 more-info">
-                            
+
                             <!-- editar -->
                             <div v-if="orden.factura">
                                 <router-link class="btn btn-makers btn-table"
@@ -117,6 +117,8 @@
 <script>
 import axios from 'axios'
 import { mapState } from 'vuex'
+import store from '../../store'
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue'
 
 export default {
     name: 'ordenes',
@@ -129,35 +131,34 @@ export default {
     methods: {
         // metodo para cargar las ordenes
         getOrdenes() {
-            axios.get('http://localhost:3000/api/ordenes/')
+            axios.get('http://localhost:3000/api/ordenes/', store.state.config)
                 .then(res => {
                     this.ordenes = res.data;
                     this.filters = res.data;
                 })
-                .catch(e => alert(e.response.data.error))
+                .catch(e => notificationError(e.response.data))
         },
-        eliminarOrden(orden) {
-            if (confirm('Desea eliminar esta orden?')) {
+        async eliminarOrden(orden) {
+            if (await notificationQuestion('Desea eliminar esta orden?', 7500)) {
                 axios.delete('http://localhost:3000/api/ordenes/' + orden)
                     .then(res => {
-                        // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
+                        notificationSuccess(res.data);
                         // cargar
                         this.getOrdenes();
                     })
                     .catch(e => {
-                        alert(e.response.data.error)                        
+                        notificationSuccess(e.response.data)
                     })
             }
         },
         buscar(dato) {
             // crear constante que va ahacer igual a los datos en limpio filtrados según los especificado
-            const ORDENES = this.ordenes.filter((orden) => { 
-                return(
+            const ORDENES = this.ordenes.filter((orden) => {
+                return (
                     // retornar los que cumplan la condición de que cualquier caracter similiar
                     // con la cadena de texto
-                    orden.nombres.toLowerCase().indexOf(dato) !== -1 || 
-                    orden.apellidos.toLowerCase().indexOf(dato) !== -1 || 
+                    orden.nombres.toLowerCase().indexOf(dato) !== -1 ||
+                    orden.apellidos.toLowerCase().indexOf(dato) !== -1 ||
                     orden.dui.indexOf(dato) !== -1 || orden.fecha.indexOf(dato) !== -1
                 )
             })

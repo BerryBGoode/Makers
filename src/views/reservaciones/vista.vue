@@ -11,7 +11,7 @@
                 Agregar
             </router-link>
         </div>
-        
+
         <hr>
 
         <div class="data p-2" v-if="reservaciones.length > 0">
@@ -90,9 +90,10 @@
 <script>
 //importar el axios
 import axios from 'axios';
-import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { mapState } from 'vuex';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 
 // componente para vista
 export default {
@@ -108,27 +109,24 @@ export default {
         //método para obtener las reservaciones
         getReservaciones() {
             //realizar la petición
-            axios.get('http://localhost:3000/api/reservaciones/')
+            axios.get('http://localhost:3000/api/reservaciones/', store.state.config)
                 .then(res => {
                     this.reservaciones = res.data;
                     this.filters = res.data;
                 })
-                .catch(e => alert(e.response.data.error));
+                .catch(e => notificationError(e.response.data));
         },
-        eliminarReservacion(reservacion) {
+        async eliminarReservacion(reservacion) {
             // esperar confirmación
-            if (confirm('Desea eliminar la reservación? Una vez eliminada no podrá recuperarla')) {
+            if (await notificationQuestion('Desea eliminar la reservación? Una vez eliminada no podrá recuperarla', 7500)) {
                 //realizar petición
-                axios.delete('http://localhost:3000/api/reservaciones/' + reservacion)
+                axios.delete('http://localhost:3000/api/reservaciones/' + reservacion, store.state.config)
                     .then(res => {
-
-                        //verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-
+                        notificationSuccess(res.data);
                         //cargar
                         this.getReservaciones();
                     })
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data) })
             }
         },
         buscar(dato) {
@@ -149,7 +147,7 @@ export default {
             // asignar a los del filters
             this.filters = RESREVACIONES;
         },
-        
+
     },
     mounted() {
         this.getReservaciones();

@@ -44,7 +44,7 @@
                                         v-model="sucursal.cierre" aria-placeholder="a" placeholder="HH:mm AM/PM">
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <hr>
@@ -62,9 +62,11 @@
 </template>
 <script>
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
-    name: "crearSucursal",    
+    name: 'crearSucursal',
     data() {
         return {
             sucursal: {
@@ -83,18 +85,12 @@ export default {
             if ((this.sucursal.direccion !== null) && this.sucursal.nombre && this.sucursal.tel &&
                 this.sucursal.inicio && this.sucursal.cierre && (this.sucursal.inicio < this.sucursal.cierre)) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/sucursales/' + this.$route.params.id, this.sucursal)
+                axios.put('http://localhost:3000/api/sucursales/' + this.$route.params.id, this.sucursal, store.state.config)
                     .then(res => {
-                        if (res.data.error) {
-                            alert(res.data.error)
-                            console.log(res.data.error)
-                        } else {
-                            alert(res.data);
-                            this.$router.push('/sucursales');
-                        }
-
+                        notificationSuccess(res.data);
+                        this.$router.push('/sucursales');
                     })
-                    .catch(e => { alert(e.response.data.error);})
+                    .catch(e => { notificationError(e.response.data); })
             }
             else this.msg = 'No se permiten campos vacíos'
             // validar que la hora tenga lógica
@@ -106,9 +102,8 @@ export default {
         getSucursal() {
             // realizar petición
 
-            axios.get('http://localhost:3000/api/sucursales/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/sucursales/' + this.$route.params.id, store.state.config)
                 .then(res => {
-
                     const SUCURSAL = res.data;
                     // let horario = SUCURSAL.horario.split(' - ');
                     // let h_inicio = horario[0].split(' ')[0];
@@ -122,12 +117,12 @@ export default {
                     }
                 })
                 .catch(e => {
-                    alert(e.response.data.error);
+                    notificationError(e.response.data);
                 })
-        },        
+        },
     },
     mounted() {
-        this.getSucursal();                
+        this.getSucursal();
     }
 }
 

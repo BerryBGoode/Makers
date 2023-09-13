@@ -85,9 +85,11 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 
 export default {
-    name: 'horarios',    
+    name: 'horarios',
     data() {
         return {
             horarios: [],
@@ -100,23 +102,20 @@ export default {
         // método para cargar los horarios
         getHorarios() {
             // realizar petición
-            axios.get('http://localhost:3000/api/horarios/')
+            axios.get('http://localhost:3000/api/horarios/', store.state.config)
                 .then(res => { this.horarios = res.data; this.filters = res.data })
-                .catch(e => { alert(e.response.data.error); console.log(e) });
+                .catch(e => { notificationError(e.response.data); });
         },
         eliminarHorario(horario) {
             // esperar confirmación del usuario
             if (confirm('Desea eliminar el horario?')) {
-                axios.delete('http://localhost:3000/api/horarios/' + horario)
+                axios.delete('http://localhost:3000/api/horarios/' + horario, store.state.config)
                     .then(res => {
-                        
-                        // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-
+                        notificationSuccess(res.data);
                         // cargar
                         this.getHorarios();
                     })
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data); })
             }
         },
         buscar(dato) {

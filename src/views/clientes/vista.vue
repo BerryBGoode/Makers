@@ -158,12 +158,6 @@ export default {
             // arreglo con los clientes
             clientes: [],
             filters: [],
-            // configuración para enviar el token de acceso en las peticiones
-            config: {
-                headers: {
-                    authorization: localStorage.getItem('auth')
-                }
-            }
         }
     },
     // mounted se llaman los métodos que se quiere ejecutar en el load 
@@ -176,7 +170,7 @@ export default {
         // método para obtener los clientes
         async obtenerClientes() {
             // hacer la petición con promesas
-            axios.get('http://localhost:3000/api/clientes/', this.config)
+            axios.get('http://localhost:3000/api/clientes/', store.state.config)
                 .then(res => {
                     // obtener los datos
                     if (res.status === 200) {
@@ -184,7 +178,7 @@ export default {
                         this.filters = res.data
                     }
                     if (res.status === 401) {
-                        alert(res.data.error)
+                        notificationError(res.data.error)
                     }
                 })
                 .catch(e => { console.error(e); })
@@ -221,7 +215,7 @@ export default {
         async historialCompras(id) {
             try {
                 // realizando la petición sobre las ordenes que tiene el cliente
-                const COMPRAS = await axios.get('http://localhost:3000/api/reportes/historialcompras/' + id)
+                const COMPRAS = await axios.get('http://localhost:3000/api/reportes/historialcompras/' + id, store.state.config)
                 // sí se realizo con exito que obtenga los datos de la petición
                 const ROWS = COMPRAS.data;
                 // definiendo los headers para el reporte
@@ -231,13 +225,13 @@ export default {
                 // creando reporte
                 generateTablePDF('compras', 'Historial de compras', names, VALUES);
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data)
             }
         },
         async historialRerservaciones(id) {
             try {
                 // realizando la petición sobre las ordenes que tiene el cliente
-                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/historialreservaciones/' + id)
+                const RESERVACIONES = await axios.get('http://localhost:3000/api/reportes/historialreservaciones/' + id, store.state.config)
                 // sí se realizo con exito que obtenga los datos de la petición
                 const ROWS = RESERVACIONES.data;
                 // definiendo los headers para el reporte
@@ -247,7 +241,7 @@ export default {
                 // creando reporte
                 generateTablePDF('reservaciones', 'Historial de reservaciones', names, VALUES);
             } catch (error) {
-                (error.response.data.error) ? alert(error.response.data.error) : alert(error)
+                notificationError(error.response.data)
             }
         }
     },

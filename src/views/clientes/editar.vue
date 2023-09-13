@@ -200,7 +200,7 @@ export default {
                             if (res.status === 201) this.$router.push('/clientes');
                         }
                     })
-                    .catch(e => { console.error(e) });
+                    .catch(e => { notificationError(e.response.data) });
                 // limpiar espacio de mensajes de advertencia
             } else {
                 this.msg = 'No se permite datos vacíos';

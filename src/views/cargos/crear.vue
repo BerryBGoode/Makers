@@ -31,7 +31,7 @@
 import axios from 'axios'
 import { onlyLtrs } from '../../validator';
 import store from '../../store';
-import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
     name: "crearCargo",
@@ -57,7 +57,7 @@ export default {
                         }
                     })
                     .catch(e => {
-                        notificationError(e, 2500);
+                        notificationError(e.response.data, 2500);
                     })
             }
         }

@@ -93,6 +93,7 @@ import axios from 'axios'
 import cookies from 'vue-cookies';
 import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapState, mapActions } from 'vuex';
+import store from '../store';
 // exportar componente
 export default {
     name: 'configuracion',
@@ -107,11 +108,6 @@ export default {
                 correo: '',
                 clave: '',
                 alias: ''
-            },
-            config: {
-                headers: {
-                    authorization: localStorage.getItem('auth')
-                }
             },
             msg: '',
             lastpath: '',
@@ -140,7 +136,7 @@ export default {
             this.$router.go(-1);
         },
         getEmpleado() {
-            axios.get('http://localhost:3000/api/auth/config', this.config)
+            axios.get('http://localhost:3000/api/auth/config', store.state.config)
                 .then(res => {
                     // obtener datos
                     let empleado = res.data;
@@ -156,17 +152,13 @@ export default {
                 })
         },
         modificar() {
-            axios.put('http://localhost:3000/api/auth/', this.empleado, this.config)
+            axios.put('http://localhost:3000/api/auth/', this.empleado, store.state.config)
                 .then(res => {
-                    if (res.data.error) {
-                        this.msg = res.data.error;
-
-                        // console.log(res.data)
-                    }
+                    // enviar al estado general el nuevo nombre de usuario que cargará en el componente de cuenta
                     this.setUsuario(this.empleado.alias)
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
+                    if (res.status === 201) {
                         // limpiar valores 
                         this.empleado = {
                             alias: '',

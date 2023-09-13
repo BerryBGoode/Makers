@@ -26,7 +26,7 @@
     justify-content: space-around;
 }
 </style>
-<template>    
+<template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
             <span class="bold">Productos</span>
@@ -40,9 +40,9 @@
                 </router-link>
             </div>
         </div>
-        <hr>        
+        <hr>
         <div class="data p-2" v-if="productos.length > 0">
-            
+
 
             <div class="card" v-for="(producto, i) in filters" :key="i">
                 <div class="card-body">
@@ -111,14 +111,15 @@
             <span class="bold">
                 No se encontraron resultados
             </span>
-        </div>        
+        </div>
     </div>
-    
 </template>
 <script>
 import axios from 'axios'
 
 import { mapState } from 'vuex';
+import { notificationError, notificationInfo, notificationQuestion, notificationSuccess } from '../../../components/alert.vue';
+import store from '../../../store';
 export default {
     name: 'productosSucursales',
     data() {
@@ -138,11 +139,11 @@ export default {
         getProductos(sucursal) {
             // validar sí hay una sucursal seleccionada
             if (!sucursal) {
-                alert('Debe seleccionar una sucursal');
+                notificationInfo('Debe seleccionar una sucursal');
                 this.$router.push('/sucursales')
             }
             // realizar petición
-            axios.get('http://localhost:3000/api/sucursales/productos/' + sucursal)
+            axios.get('http://localhost:3000/api/sucursales/productos/' + sucursal, store.state.config)
                 // obtener los datos recuperados
                 .then(res => {
                     this.productos = res.data;
@@ -150,22 +151,22 @@ export default {
                 })
                 // por sí algún error
                 .catch(e => {
-                    alert(e)
+                    notificationError(e.response.data)
                 })
         },
         // método para eliminar el registro obtenido
-        eliminarDetalle(detalle) {
+        async eliminarDetalle(detalle) {
             // validar la respuesta del usuario
-            if (confirm('Desea eliminar este detalle?')) {
+            if (await notificationQuestion('Desea eliminar este detalle?', 7500)) {
                 // realizar petición
-                axios.delete('http://localhost:3000/api/sucursales/productos/' + detalle)
+                axios.delete('http://localhost:3000/api/sucursales/productos/' + detalle, store.state.config)
                     .then(res => {
                         // mostrar mensaje
-                        alert(res.data);
+                        notificationSuccess(res.data);
                         // cargar datos
                         this.getProductos(this.$route.params.id);
                     })
-                    .catch(e => alert(e.response.data.error));
+                    .catch(e => notificationError(e.response.data));
             }
         },
         buscar(dato) {
@@ -181,7 +182,7 @@ export default {
             })
             this.filters = PRODUCTOS;
         },
-        
+
     },
     watch: {
         buscador() {

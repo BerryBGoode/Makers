@@ -11,7 +11,6 @@
 .w-25 {
     width: 25%;
 }
-
 </style>
 <template>
     <div class="container servicios component-servicio component-render">
@@ -68,6 +67,8 @@
 </template>
 <script>
 import axios from 'axios'
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
     name: "crearProducto",
@@ -86,19 +87,19 @@ export default {
         }
     },
     methods: {
-        setFile(e){
-            
+        setFile(e) {
+
         },
         agregarProducto() {
-            
+
             // verificar sí no hay campos vacíos
             if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
                 // realizar petición
-                axios.post('http://localhost:3000/api/productos', this.producto)
+                axios.post('http://localhost:3000/api/productos', this.producto, store.state.config)
                     .then(res => {
                         // verificar q no venga ningún error
                         if (res.status === 201) {
-                            alert(res.data);
+                            notificationSuccess(res.data);
                             // limpiar campos
                             this.producto = {
                                 // entidades de la tabla, que se modificarán desde los inputs
@@ -112,7 +113,7 @@ export default {
                             this.$router.push('/productos')
                         }
                     })
-                    .catch(e => { alert(e.response.data.error) });
+                    .catch(e => { notificationError(e.response.data) });
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }

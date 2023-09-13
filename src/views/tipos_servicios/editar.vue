@@ -35,6 +35,8 @@
 <script>
 import axios from 'axios'
 import { onlyLtrs } from '../../validator'
+import store from '../../store'
+import { notificationError, notificationSuccess } from '../../components/alert.vue'
 // definir componente 
 export default {
     name: "crearTipoServicio",
@@ -51,30 +53,27 @@ export default {
             if (!onlyLtrs(this.tipos.tipo)) {
                 this.msg = 'Solo se permiten letras'
             } else {
-                axios.put('http://localhost:3000/api/tipos/' + this.$route.params.id, this.tipos)
+                axios.put('http://localhost:3000/api/tipos/' + this.$route.params.id, this.tipos, store.state.config)
                     .then(res => {
-                        if (res.data.error) this.msg = res.data.error;
-                        else {
-                            alert(res.data);
-                            this.$router.push('/servicios/tipos');
-                        }
+                        notificationSuccess(res.data);
+                        this.$router.push('/servicios/tipos');
                     })
                     .catch(e => {
-                        alert(e.response.data.error);
+                        notificationError(e.response.data);
                     })
             }
         },
         getTipo() {
 
             // obtener de la ruta el parametro llamada id
-            axios.get('http://localhost:3000/api/tipos/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/tipos/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     this.tipos = {
                         tipo: res.data.tipo_servicio
-                    }
+                    };
                 })
                 .catch(e => {
-                    alert(e)
+                    notificationError(e.response.data);
                 })
         }
     },
