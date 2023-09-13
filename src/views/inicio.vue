@@ -171,8 +171,8 @@ import axios from 'axios';
 import { generateTablePDF } from './reports'
 import { formatDateToYYYYMMDD } from '../validator';
 import { lineGraph, barGraph, doughnutGraph, pieGraph, linealGraph } from './charts';
-import { notificationError } from '../components/alert.vue';
 import store from '../store';
+import { notificationError } from '../components/alert.vue';
 
 export default {
     name: 'inicio',

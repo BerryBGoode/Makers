@@ -67,6 +67,8 @@
 </template>
 <script>
 import axios from 'axios'
+import store from '../../store'
+import { notificationError, notificationSuccess } from '../../components/alert.vue'
 // definir componente 
 export default {
     name: "crearProducto",
@@ -86,7 +88,7 @@ export default {
     methods: {
         getProducto() {
             // realizar petición            
-            axios.get('http://localhost:3000/api/productos/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/productos/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     // cargar los datos
                     this.producto = {
@@ -96,7 +98,7 @@ export default {
                         precio: res.data.precio
                     }
                 })
-                .catch(e => console.log(e))
+                .catch(e => notificationError(e.response.data))
 
         },
         modificarProducto() {
@@ -104,11 +106,11 @@ export default {
             // verificar sí no hay campos vacíos
             if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/productos/' + this.$route.params.id, this.producto)
+                axios.put('http://localhost:3000/api/productos/' + this.$route.params.id, this.producto, store.state.config)
                     .then(res => {
                         // verificar q no venga ningún error
                         if (res.status === 201) {
-                            alert(res.data);
+                            notificationSuccess(res.data);
                             // limpiar campos
                             this.producto = {
                                 // entidades de la tabla, que se modificarán desde los inputs
@@ -121,9 +123,8 @@ export default {
                             // redireccionar
                             this.$router.push('/productos')
                         }
-                        console.log(res.data)
                     })
-                    .catch(e => { console.log(e) });
+                    .catch(e => { notificationError(e.response.data) });
             } else {
                 this.msg = 'No se permiten campos vacíos'
             }

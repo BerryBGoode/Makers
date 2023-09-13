@@ -92,6 +92,8 @@
 <script>
 import axios from 'axios';
 import { mapState } from 'vuex';
+import store from '../../store';
+import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
 export default {
     name: 'productos',
     data() {
@@ -105,27 +107,24 @@ export default {
         // método para obtener los productos
         getProductos() {
             // realizar petición
-            axios.get('http://localhost:3000/api/productos/')
+            axios.get('http://localhost:3000/api/productos/', store.state.config)
                 .then(res => {
                     this.productos = res.data;
                     this.filters = res.data;
                 })
-                .catch(e => alert(e.response.data.error));
+                .catch(e => notificationError(e.response.data));
         },
-        eliminarProducto(producto) {
+        async eliminarProducto(producto) {
             // esperar confirmación
-            if (confirm('Desea eliminar este producto?')) {
+            if (await notificationQuestion('Desea eliminar este producto?', 7500)) {
                 // realizar petición
-                axios.delete('http://localhost:3000/api/productos/' + producto)
+                axios.delete('http://localhost:3000/api/productos/' + producto, store.state.config)
                     .then(res => {
-
-                        // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-
+                        notificationSuccess(res.data);
                         // cargar
                         this.getProductos();
                     })
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data) })
             }
         },
         buscar(dato) {

@@ -191,6 +191,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 <script>
 //importar axios para realizar peticiones
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 //exportar componenete
 export default {
     // nombre del componente
@@ -243,26 +245,24 @@ export default {
     },
     methods: {
         getCliente() {
-            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.reservacion.cliente)
+            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.reservacion.cliente, store.state.config)
                 .then(res => { this.cliente.nombre = res.data.nombres; this.cliente.apellido = res.data.apellidos })
-                .catch(e => { console.log(e) });
+                .catch(e => { notificationError(e.response.data) });
         },
         getEmpleado() {
-            console.log(this.empleado.dui)
-            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.reservacion.empleado)
+            axios.get('http://localhost:3000/api/reservaciones/empleados/' + this.model.reservacion.empleado, store.state.config)
                 .then(res => { this.empleado.nombre = res.data.nombres; this.empleado.apellido = res.data.apellidos })
-                .catch(e => { console.log(e) })
+                .catch(e => { notificationError(e.response.data) })
         },
         //método para obtener los clientes
         cargarClientes() {
             try {
                 //hacer petición para obtener clientes
-                axios.get('http://localhost:3000/api/reservaciones/clientes')
+                axios.get('http://localhost:3000/api/reservaciones/clientes', store.state.config)
                     .then(res => {
                         this.clientes = res.data;
-                        console.log(this.clientes)
                     }) //obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { notificationError(e.response.data) })
             } catch (error) {
                 console.error(error);
             }
@@ -271,16 +271,16 @@ export default {
         cargarEmpleados() {
             try {
                 //hacer petición para obtener empleados
-                axios.get('http://localhost:3000/api/reservaciones/empleados')
+                axios.get('http://localhost:3000/api/reservaciones/empleados', store.state.config)
                     .then(res => { this.empleados = res.data }) //obtener los datos de la petición
-                    .catch(e => { console.log(e) })
+                    .catch(e => { notificationError(e.response.data) })
             } catch (error) {
                 console.error(error);
             }
         },
         //metodo para obtener los datos de la reservación seleecionada
         getReservacion(idreservacion) {
-            axios.get('http://localhost:3000/api/reservaciones/' + idreservacion)
+            axios.get('http://localhost:3000/api/reservaciones/' + idreservacion, store.state.config)
                 .then(res => {
                     //guardar en una constante los datos obtenidos
                     const RESERVACION = res.data;
@@ -303,7 +303,7 @@ export default {
                 })
                 .catch(e => {
                     //validar reservacion inexistente
-                    alert(e.response.data.error);
+                    notificationError(e.response.data);
                 })
         },
         //método para agregar una reservación
@@ -314,16 +314,11 @@ export default {
             //TODO: validar datos
 
             //realizar petición al servidor
-            axios.put('http://localhost:3000/api/reservaciones/' + idreservacion, this.model.reservacion)
+            axios.put('http://localhost:3000/api/reservaciones/' + idreservacion, this.model.reservacion, store.state.config)
                 .then(res => {
-                    //cuando hay un error 400 que no realizó lo que se debía
-                    if (res.data.errir) {
-                        this.msg = res.data.error;
-                    }
-
                     //cuando si se realizó la tarea deseada y se creó algo
                     //201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
+                    if (res.status === 201) {
                         //limpiar valores
                         this.model.reservacion = {
                             fecha: '',
@@ -332,12 +327,12 @@ export default {
                             empleado: 'Seleccionar',
                         }
                         //redireccionar
-                        alert(res.data);
+                        notificationSuccess(res.data);
                         this.msg = '';
                         this.$router.push('/reservaciones');
                     }
                 })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
         }
     }
 }
