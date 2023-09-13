@@ -315,4 +315,4 @@ const validatePassword = async (req, res) => {
 
 
 // exportación de modulos
-module.exports = { get, getSucursales, getHorarios, getCargos, store, one, change, destroy }
+module.exports = { get, getSucursales, validatePassword, getHorarios, getCargos, store, one, change, destroy }
