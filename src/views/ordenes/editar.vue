@@ -37,8 +37,8 @@
                         v-if="clientes.length > 0" v-model="this.model.ordenes.cliente">
                         <option selected disabled>Seleccionar</option>
                         <!-- recorrer los datos de clientes -->
-                        <option v-for="(clientes, i) in clientes" :key="i" 
-                                :value="clientes.id_cliente">{{ clientes.dui }}</option>
+                        <option v-for="(clientes, i) in clientes" :key="i" :value="clientes.id_cliente">{{ clientes.dui }}
+                        </option>
                     </select>
                     <!-- sino existe el dui del cliente -->
                     <select class="form-select mb-3" name="error" v-else>
@@ -80,6 +80,8 @@
 </template>
 <script>
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 
 // exportar componente
 export default {
@@ -111,9 +113,9 @@ export default {
     },
     methods: {
         getCliente() {
-            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
+            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente, store.state.config)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         },
         // método para obtener el dui del cliente
@@ -122,39 +124,34 @@ export default {
                 // hacer petición para obtener dui de clientes
                 axios.get('http://localhost:3000/api/ordenes/clientes')
                     .then(res => { this.clientes = res.data }) // obtener los datos de la petición
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data) })
             } catch (error) {
                 console.error(error);
             }
-        },    
+        },
         getOrden() {
-            axios.get('http://localhost:3000/api/ordenes/'+this.$route.params.id)
+            axios.get('http://localhost:3000/api/ordenes/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     // cargar datos
                     this.model.ordenes = {
                         cliente: res.data.id_cliente,
                         fecha: res.data.fecha
-                    }  
+                    }
                     this.cliente = {
                         apellidos: res.data.apellidos,
                         nombres: res.data.nombres
                     }
-                }).catch(e => { alert(e.response.data.error)})
+                }).catch(e => { notificationError(e.response.data) })
         },
         // método para agregar una nueva orden
         modificar() {
             // validar datos
             // realizar petición y enviando datos
-            axios.put('http://localhost:3000/api/ordenes/'+ this.$route.params.id, this.model.ordenes)
+            axios.put('http://localhost:3000/api/ordenes/' + this.$route.params.id, this.model.ordenes, store.state.config)
                 .then(res => {
-                    // cuando hay un error 400 que no realizo lo que se debía
-                    if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                        // console.log(res.data)
-                    }
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
+                    if (res.status === 201) {
                         // limpiar valores 
                         this.model.ordenes = {
                             fecha: '',
@@ -164,11 +161,11 @@ export default {
                             apellidos: 'Seleccionar',
                         }
                         // redireccionar
-                        alert('Orden modificada')
+                        notificationSuccess(res.data)
                         this.$router.push('/ordenes');
-                    }                    
+                    }
                 })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         }
     }

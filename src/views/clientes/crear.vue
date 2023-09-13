@@ -84,7 +84,7 @@ import axios from 'axios';
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
 import store from '../../store/index.js';
-import { notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 
 // exportando el componente principal
 export default {
@@ -194,7 +194,7 @@ export default {
                         }
 
                     })
-                    .catch(e => { console.error(e) });
+                    .catch(e => { notificationError(e.response.data) });
                 // limpiar espacio de mensajes de advertencia
             } else {
                 this.msg = 'No se permite datos vacíos';

@@ -243,10 +243,10 @@ export default {
                         // sí la respuesta fue la esperada, redirección a la vista principal
                         // if (res.status === 201) this.$router.push('/empleados');
                     })
-                    .catch(e => { alert(e) });
+                    .catch(e => { notificationError(e.response.data) });
 
             } else {
-                this.msg = 'No se permiten campos vacíos';
+                notificationError('No se permiten campos vacíos');
             }
         }
     }

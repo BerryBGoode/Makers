@@ -64,7 +64,7 @@ const get = async (req, response) => {
             })
             .catch(rej => response.status(500).json(rej));
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        response.status(401).send('Debe autenticarse antes');
     }
 }
 

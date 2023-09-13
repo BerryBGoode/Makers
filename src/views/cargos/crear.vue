@@ -57,7 +57,7 @@ export default {
                         }
                     })
                     .catch(e => {
-                        notificationError(e, 2500);
+                        notificationError(e.response.data, 2500);
                     })
             }
         }

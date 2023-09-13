@@ -68,6 +68,8 @@
 </template>
 <script>
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 
 // exportar componente
 export default {
@@ -100,18 +102,18 @@ export default {
     methods: {
         getCliente() {
 
-            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente)
+            axios.get('http://localhost:3000/api/reservaciones/clientes/' + this.model.ordenes.cliente, store.state.config)
                 .then(res => { this.cliente.nombres = res.data.nombres; this.cliente.apellidos = res.data.apellidos })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         },
         // método para obtener el dui del cliente
         cargarClienteDui() {
             try {
                 // hacer petición para obtener dui de clientes
-                axios.get('http://localhost:3000/api/ordenes/clientes')
+                axios.get('http://localhost:3000/api/ordenes/clientes', store.state.config)
                     .then(res => { this.clientes = res.data; }) // obtener los datos de la petición
-                    .catch(e => { alert(e.response.data.error) })
+                    .catch(e => { notificationError(e.response.data) })
             } catch (error) {
                 console.error(error);
             }
@@ -121,16 +123,11 @@ export default {
         crear() {
             // validar datos
             // realizar petición y enviando datos
-            axios.post('http://localhost:3000/api/ordenes', this.model.ordenes)
+            axios.post('http://localhost:3000/api/ordenes', this.model.ordenes, store.state.config)
                 .then(res => {
-                    // cuando hay un error 400 que no realizo lo que se debía
-                    if (res.data.error) {
-                        this.msg = 'Error con algún dato enviado';
-                        // console.log(res.data)
-                    }
                     // cuando si se realizo la tarea deceada y se creo algo 
                     // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
+                    if (res.status === 201) {
                         // limpiar valores 
                         this.model.ordenes = {
                             hora: '',
@@ -139,15 +136,11 @@ export default {
                             apellidos: 'Seleccionar',
                         }
                         // redireccionar
-                        alert('orden agregada')
+                        notificationSuccess(res.data);
                         this.$router.push('/ordenes');
                     }
-                    // console.log(res)
-
-                    // sí la respuesta fue la esperada, redirección a la vista principal
-                    // if (res.status === 201) this.$router.push('/ordenes');
                 })
-                .catch(e => { alert(e.response.data.error) });
+                .catch(e => { notificationError(e.response.data) });
 
         }
     }

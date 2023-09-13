@@ -44,6 +44,8 @@
 </template>
 <script>
 import axios from 'axios';
+import store from '../../store';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
     name: "crearHorario",
@@ -58,35 +60,33 @@ export default {
     },
     methods: {
         getHorario() {
-            axios.get('http://localhost:3000/api/horarios/' + this.$route.params.id)
+            axios.get('http://localhost:3000/api/horarios/' + this.$route.params.id, store.state.config)
                 .then(res => {
                     // cargar los datos
                     this.msg = '';
                     this.horario.cierre = res.data.cierre;
                     this.horario.inicio = res.data.inicio;
 
-                  
+
                 })
-                .catch(e => {alert(e.response.data.error); console.log(e)})
+                .catch(e => { notificationError(e.response.data); })
         },
         modificarHorario() {
             // verificar que el horario de inicio sea menor al de cierre y que ambos tengan algún valor
             if (this.horario.inicio < this.horario.cierre && (this.horario.inicio && this.horario.cierre)) {
                 // realizar petición
-                axios.put('http://localhost:3000/api/horarios/'+ this.$route.params.id, this.horario)
+                axios.put('http://localhost:3000/api/horarios/' + this.$route.params.id, this.horario, store.state.config)
                     .then(res => {
-                        // verificar síno hay errores
-                        if (!res.data.error) {
-                            alert(res.data);
-                            this.horario = {
-                                inicio: '',
-                                cierre: '',
-                            },
-                                this.msg = '';
-                            this.$router.push('/horarios');
-                        }
+                        notificationSuccess(res.data);
+                        this.horario = {
+                            inicio: '',
+                            cierre: '',
+                        };
+                        this.msg = '';
+                        this.$router.push('/horarios');
+
                     })
-                    .catch(e => { alert(e.response.data.error); console.log(e) });
+                    .catch(e => { notificationError(e.response.data); });
 
             } else {
                 this.msg = 'Horario ilogico';
