@@ -6,15 +6,14 @@
                 <router-link to="/servicios" type="button" class="btn btn-makers">
                     Volver
                 </router-link>
-                <router-link to="/servicios/tipos/crear" type="button"
-                    class="btn btn-makers">
+                <router-link to="/servicios/tipos/crear" type="button" class="btn btn-makers">
                     Agregar
                 </router-link>
             </div>
         </div>
         <hr>
-        
-        <div class="data p-2" v-if="tipos.length > 0">        
+
+        <div class="data p-2" v-if="tipos.length > 0">
             <div class="card" v-for="(tipo, i) in filters" :key="i">
                 <div class="card-body">
                     <div class="row fila">
@@ -79,6 +78,7 @@
 <script>
 import axios from 'axios'
 import { mapState } from 'vuex';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 
 export default {
     name: 'tipos',
@@ -95,18 +95,17 @@ export default {
                     this.tipos = res.data;
                     this.filters = res.data;
                 })
-                .catch(e => alert(e));
+                .catch(e => notificationError(e.response.data));
         },
         eliminarTipo(tipo) {
             if (confirm('Desea eliminar este tipo de servicio?')) {
                 axios.delete('http://localhost:3000/api/tipos/' + tipo)
                     .then(res => {
                         // verificar errores
-                        (res.data.error) ? alert(res.data.error) : alert(res.data);
-                        console.log(res)
+                        notificationSuccess(res.data);
                         // cargar
                         this.getTipos();
-                    }).catch(e => {alert(e.response.data.error)})
+                    }).catch(e => { notificationError(e.response.data) })
             }
         },
         buscar(dato) {
@@ -124,7 +123,7 @@ export default {
     watch: {
         buscador() {
             // verificar sí esta vacío el input
-            (this.buscador.trim() === '') ? this.filters = this.tipos : this.buscar(this.buscador); 
+            (this.buscador.trim() === '') ? this.filters = this.tipos : this.buscar(this.buscador);
         }
     },
     computed: {

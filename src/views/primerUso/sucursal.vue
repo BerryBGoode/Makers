@@ -15,7 +15,7 @@
                             <input type="text" class="form-control" id="direccion" v-model="sucursal.direccion" required>
                         </div>
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre</label>
+                            <label for="nombre" class="form-label">Nombre de sucursal</label>
                             <input type="text" class="form-control" id="nombre" v-model="sucursal.nombre" required>
                         </div>
                         <div class="mb-3">
