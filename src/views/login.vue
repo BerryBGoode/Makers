@@ -89,11 +89,11 @@ export default {
         async selectMethod() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             if (notif) {
-
+                alertRequest();
             } else {
-                alertRequest()
+                let confirm = await alertRequest();
+                console.log(confirm)
             }
-
 
         },
         // método para buscar a un empleado con esos datos
@@ -122,8 +122,7 @@ export default {
                     }
 
                 } catch (error) {
-                    notificationError(e.response.data)
-
+                    notificationError(e.response.data);
                 }
 
             }

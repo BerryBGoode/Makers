@@ -103,7 +103,6 @@ export default {
                     .then(res => {
                         // verificar errores
                         notificationSuccess(res.data);
-                        console.log(res)
                         // cargar
                         this.getTipos();
                     }).catch(e => { notificationError(e.response.data) })

@@ -270,6 +270,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     border-radius: 7px;
 }
 
+.msm-container {
+    width: 50%;
+}
+
 .btn-makers {
     background: #393534;
     color: white;

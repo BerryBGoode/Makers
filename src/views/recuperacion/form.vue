@@ -9,8 +9,8 @@ import Swal from 'sweetalert2';
 import logo from '../../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png';
 // options api
 
-export const alertRequest = () => {
-    Swal.fire({
+export const alertRequest = (request, from) => {
+    return Swal.fire({
         title: 'Ingresa tus datos',
         showCancelButton: true,
         confirmButtonText: 'Verficar',
@@ -32,10 +32,6 @@ export const alertRequest = () => {
                                     <label for="alias" class="form-label">Alias</label>
                                     <input type="text" class="form-control" id="alias" maxlength="20" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="pin" class="form-label">PIN</label>
-                                    <input type="password" class="form-control" id="pin" maxlength="15" minlength="10" required>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -44,28 +40,31 @@ export const alertRequest = () => {
         color: '#fff',
         iconColor: '#767676',
         confirmButtonColor: '#393534',
-        preConfirm: (login) => {
-            return fetch(`//api.github.com/users/${login}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(response.statusText)
-                    }
-                    return response.json()
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(
-                        `Request failed: ${error}`
-                    )
-                })
-        },
+        preConfirm: request,
+        //  (login) => {
+        //     return fetch(`//api.github.com/users/${login}`)
+        //         .then(response => {
+        //             if (!response.ok) {
+        //                 throw new Error(response.statusText)
+        //             }
+        //             return response.json()
+        //         })
+        //         .catch(error => {
+        //             Swal.showValidationMessage(
+        //                 `Request failed: ${error}`
+        //             )
+        //         })
+        // },
         allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: `${result.value.login}'s avatar`,
-                imageUrl: result.value.avatar_url
-            })
-        }
+    }).then((res) => {
+        return res.isConfirmed;
+        // if (result.isConfirmed) {
+        //     console.log('xd');
+        //     // Swal.fire({
+        //     //     // title: `${result.value.login}'s avatar`,
+        //     //     // imageUrl: result.value.avatar_url
+        //     // })
+        // }
     })
 }
 </script>

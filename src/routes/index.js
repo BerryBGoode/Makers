@@ -80,7 +80,7 @@ const ROUTER = createRouter({
             path: '/login',
             component: () => import('../views/login.vue')
         },
-        { name: 'formulario', path: '/recuperacion', component: () => import('../views/recuperacion/form.vue') }
+        { name: 'msm', path: '/recuperacion/msm', component: () => import('../views/recuperacion/msm.vue') }
         ,
         {
             name: '404',
