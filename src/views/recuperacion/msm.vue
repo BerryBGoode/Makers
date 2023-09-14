@@ -30,12 +30,14 @@
 
 <template>
     <section class="flex items-center w-100 h-100 ">
-        <form class="msm-container container p-5 login-container " @submit.prevent="checkEmpleado">
+        <!-- agregar evento para verificar pin -->
+        <form class="msm-container container p-5 login-container ">
             <span class="msg">{{ msg }}</span>
             <div class="col h-100 flex wrap">
                 <div class="row-6 p-3 w-100 h-100 align-center view-pin">
                     <div class="text-center">
                         <h3>Revisa el buzón de mensajes</h3>
+                        <!-- sustituir por el número recuperado según la verificación anterior -->
                         <span>al número {{ numero }}</span>
                     </div>
                     <div class="form-pin">
@@ -69,7 +71,8 @@ export default {
     },
     methods: {
         onMounted() {
-            // algoritmo para separar las primeros 4 dígitos y sustituirlos
+            // agregar este código en el backend para retornar ese número 
+            // separar las primeros 4 dígitos y sustituirlos
             for (let i = this.numero.length; i > 5; i--) {
                 console.log(i)
                 let first = this.numero.slice(0, -4);
