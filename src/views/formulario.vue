@@ -26,9 +26,8 @@
                             <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui" required>
                         </div>
                         <div class="mb-3">
-                            <label for="correo" class="form-label">Confirmar Contraseña</label>
-                            <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo"
-                                required>
+                            <label for="confirmarClave" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="confirmarClave" v-model="model.empleado.confirmarClave" required>   
                         </div>
                     </div>
 
@@ -39,8 +38,8 @@
                     </div>
 
                     <div class="buttons-login">
-                        <button type="submit" class="btn btn-makers w-100 bold">Iniciar Sesión</button>
-                        <a @click="selectMetodo" class="href-makers">Restablecer contraseña</a>
+                        <button type="submit" class="btn btn-makers w-100 bold">Cambiar Contraseña</button>
+                        <a @click="changePassword" class="href-makers">Restablecer contraseña</a>
                     </div>
                 </div>
             </div>
