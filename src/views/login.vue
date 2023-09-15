@@ -33,7 +33,7 @@
                         <div class="mb-3">
                             <label for="clave" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                maxlength="15" minlength="10" required>
+                                maxlength="72" minlength="8" required>
                         </div>
                     </div>
 

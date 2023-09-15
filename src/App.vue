@@ -69,11 +69,29 @@ export default {
     name: 'app',
     components: { dashboard, login, cookies, axios, store, RouterView },
     data() {
+        // validaciones del DOM
 
+        // validar que cuando se modifique o elimine el storage redireccionar al login 
         let state = window.addEventListener('storage', (e) => {
             if (e.key === 'auth' && e.oldValue !== e.newValue) {
                 this.$router.push('/login')
                 alertInfo('Acto sospechoso', 'Aceptar', 7500, 'Debido a actividad sospechosa se ha redireccionado')
+            }
+        })
+        // validar que no se puedan hacer algunas acciones en los inputs
+        window.addEventListener('keyup', (event) => {
+            // verificar sí el input es de tipo password 
+            if (event.target.type === 'password') {
+                event.target.value = event.target.value.trim();
+            }
+        })
+        // evento que previene que el usuario pueda utilizar la tecla ctrl en los inputs
+        window.addEventListener('keydown', (event) => {
+            // validar que desahiblite la tecla ctrl
+            if (event.ctrlKey) {
+                // Deshabilitar la tecla Ctrl
+                event.preventDefault();
+                return;
             }
         })
         return {
@@ -96,11 +114,6 @@ export default {
         },
         setEmpleado(data) {
             this.actionEmpleado(data)
-        },
-        // método para evaludar sí existe un cookie en el evento padre
-        // así ir verificando y actualizar el valor de la cookie cuando exista
-        checkTokenCookie() {
-
         },
         checkTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
@@ -154,7 +167,6 @@ export default {
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
-        this.checkTokenCookie();
         this.verficarEmpleados();
         this.verificarSucursales();
         this.checkTokenStorage();

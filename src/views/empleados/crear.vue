@@ -143,6 +143,7 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
+import { password } from '../../validator'
 import store from '../../store';
 import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
@@ -217,11 +218,19 @@ export default {
         crear() {
 
             this.msg = '';
+            // verificando sí las contraseñas coincidan
             if (this.model.empleado.clave !== this.model.empleado.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir')
             }
+            // verificando sí siguen la longitud esperada
             else if (this.model.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.model.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // verificando sí siguen con el formato adecuando
+            else if (!password(this.model.empleado.clave)) {
+                notificationInfo(`La contraseña no cumple con los requisitos.
+                                Debe contenter al menos una letra mayúscula, una letra minúscula,
+                                un número, un carácter especial y ningún espacio`, 9500);
+            }
             else if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
                 this.model.empleado.cargo !== 'Seleccionar' && this.model.empleado.sucursal !== 'Seleccionar' && this.model.empleado.horario !== 'Seleccionar'
                 && this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&

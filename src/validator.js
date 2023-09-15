@@ -9,6 +9,8 @@ let nums = /^[0-9]+$/;
 let dui = /^[0-9]{8}[-][0-9]{1}$/;
 // exp. regular para correo
 let mail = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+// variable con la expresión regular para contraseña
+let clave = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}$/;
 /**
  * Método para validar que la cadena de texto solamente tenga letras
  */
@@ -16,6 +18,16 @@ export const onlyLtrs = value => {
     // verificar sí el valor es una cadena de texto
     return (ltrs.test(value));
 
+}
+/**
+ * Método para validar sí la contraseña cumple el formato 8-72 caracteres,
+ * min: 1 minscula, 1 mayuscula, 1 digito, 1 caracter especial, 
+ * 0 espacios
+ * @param {*} value 
+ */
+export const password = value => {
+    // verificar sí la contraseña coincide
+    return (clave.test(value));
 }
 
 export const onlyNumb = value => {

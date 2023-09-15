@@ -91,7 +91,7 @@
 import axios from 'axios';
 
 // importando validador de datos
-import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
+import { onlyLtrs, formatDui, formatEmail, password } from '../../validator.js';
 import store from '../../store/index.js';
 import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 
@@ -176,11 +176,19 @@ export default {
         crearCliente() {
             // obtener los valores
             let cliente = this.model.cliente;
+            // validando q las contraseñas coincidan
             if (cliente.clave !== cliente.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');
             }
+            // validando la longitud de la clave
             else if (cliente.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (cliente.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // validando q la clave tenga los requisitos
+            else if (!password(cliente.clave)) {
+                notificationInfo(`La contraseña no cumple con los requisitos.
+                                Debe contenter al menos una letra mayúscula, una letra minúscula,
+                                un número, un carácter especial y ningún espacio`, 9500);
+            }
             else if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
                 axios.post('http://localhost:3000/api/clientes', cliente, store.state.config)
                     // sí todo paso de manera correcta

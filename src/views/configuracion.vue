@@ -98,6 +98,7 @@ import cookies from 'vue-cookies';
 import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapState, mapActions } from 'vuex';
 import store from '../store';
+import { password } from '../validator';
 // exportar componente
 export default {
     name: 'configuracion',
@@ -162,8 +163,15 @@ export default {
             if (this.empleado.clave !== this.empleado.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');
             }
+            // verificar la longitud de la contraseña
             else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // verificar sí cumple con el estandar de seguridad la contraseña
+            else if (!password(this.empleado.clave)) {
+                notificationInfo(`La contraseña no cumple con los requisitos.
+                                Debe contenter al menos una letra mayúscula, una letra minúscula,
+                                un número, un carácter especial y ningún espacio`, 9500);
+            }
             // verificar campos vacíos
             else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
                 !this.empleado.nombres || !this.empleado.telefono) {
