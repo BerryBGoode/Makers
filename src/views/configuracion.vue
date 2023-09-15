@@ -158,7 +158,6 @@ export default {
                 })
         },
         modificar() {
-            console.log(this.empleado.clave.length)
             // verificar la coincidencia de contraseñas
             if (this.empleado.clave !== this.empleado.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');

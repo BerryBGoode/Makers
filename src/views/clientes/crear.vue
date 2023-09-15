@@ -61,9 +61,18 @@
                     Cuenta
                 </span>
                 <div action="" class="form-2 w-70 flex wp sp-bet">
-                    <label for="clave">Contraseña</label>
-                    <input type="password" class="form-control" id="clave" maxlength="15" minlength="10"
-                        v-model="model.cliente.clave" required>
+                    <div class="mb3 input-container">
+                        <label for="clave">Contraseña</label>
+                        <input type="password" class="form-control" id="clave" v-model="model.cliente.clave" required
+                            minlength="8" maxlength="72">
+                    </div>
+                    <div class="mb3 input-container">
+                        <label for="confirmar">Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="confirmar" v-model="model.cliente.confirmar"
+                            required minlength="8" maxlength="72">
+                    </div>
+
+
                 </div>
             </div>
             <hr>
@@ -84,7 +93,7 @@ import axios from 'axios';
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
 import store from '../../store/index.js';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 
 // exportando el componente principal
 export default {
@@ -100,6 +109,7 @@ export default {
                     telefono: '',
                     correo: '', // valido valores vacíos
                     clave: '',
+                    confirmar: '',
                     estado: 1
                 }
             },
@@ -131,18 +141,14 @@ export default {
             if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
                 // validar campos alphabeticos
                 if (!onlyLtrs(cliente.nombres) || !onlyLtrs(cliente.apellidos)) {
-                    this.msg = 'No se permiten números en los nombres'
+                    notificationInfo('No se permiten números en los nombres');
                 }
                 // la secuencia que siguen las validaciones es
                 // verificar sí no es nulo el valor 
                 // para después validar según cada campo
-                // validar contraseña mayor a 10 caracteres
-                if (cliente.clave) {
-                    !(cliente.clave.length > 10) ? this.msg = 'Contraseña debe ser mayor a 10 caracteres' : this.msg = ''; this.validate = true
-                }
                 // validar formato del correo 
                 if (cliente.correo) {
-                    (!formatEmail(cliente.correo)) ? this.msg = 'Formato de correo incorrecto' : this.msg = ''; this.validate = true
+                    (!formatEmail(cliente.correo)) ? notificationInfo('Formato de correo incorrecto') : this.msg = ''; this.validate = true
                 }
 
                 // validar dui : al final porque teniene más prioridad al ser una validación personalizada  
@@ -153,13 +159,13 @@ export default {
 
                     } else {
 
-                        this.msg = 'Formato de DUI incorrecto'
+                        notificationInfo('Formato de DUI incorrecto');
                         this.validate = false;
                     }
                 }
 
             } else {
-                this.msg = 'No se permite campos vacíos';
+                notificationInfo('No se permite campos vacíos');
             }
             // después de verificar sí todo está correcto hacer inserción
             if (this.validate !== false) {
@@ -170,7 +176,12 @@ export default {
         crearCliente() {
             // obtener los valores
             let cliente = this.model.cliente;
-            if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
+            if (cliente.clave !== cliente.confirmar) {
+                notificationInfo('Las contraseñas deben coincidir');
+            }
+            else if (cliente.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+            else if (cliente.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            else if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
                 axios.post('http://localhost:3000/api/clientes', cliente, store.state.config)
                     // sí todo paso de manera correcta
                     .then(res => {
