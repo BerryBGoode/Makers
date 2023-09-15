@@ -163,8 +163,8 @@ export default {
             if (this.empleado.clave !== this.empleado.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');
             }
-            else if (this.empleado.clave.length >= 8) { notificationInfo('Longitud mínima superada') }
-            else if (this.empleado.clave.length < 72) { notificationInfo('Longitud máxima superada') }
+            else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
             // verificar campos vacíos
             else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
                 !this.empleado.nombres || !this.empleado.telefono) {

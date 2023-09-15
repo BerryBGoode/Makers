@@ -123,7 +123,7 @@ export default {
         async registrarPrimerEmpleado() {
 
             // validar datos
-            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las constraseñas deben coincidir', 5000, 'Aceptar'); }
+            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las contraseñas deben coincidir', 5000, 'Aceptar'); }
             else if (this.empleado.clave.length >= 8) { notificationInfo('Longitud mínima superada') }
             else if (this.empleado.clave.length < 72) { notificationInfo('Longitud máxima superada') }
             else if (!this.empleado.alias && !this.empleado.apellidos && !this.empleado.clave,

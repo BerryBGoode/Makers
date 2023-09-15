@@ -117,12 +117,12 @@
                             <div class="mb-3 width-32">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                    maxlength="15" minlength="10" required>
+                                    required>
                             </div>
                             <div class="mb-3 width-32">
                                 <label for="confirmar" class="form-label">Confirmar contraseña</label>
                                 <input type="password" class="form-control" id="confirmar"
-                                    v-model="this.model.empleado.confirmar" maxlength="15" minlength="10" required>
+                                    v-model="this.model.empleado.confirmar" required>
                             </div>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
 // importar axios para realizar peticiones
 import axios from 'axios';
 import store from '../../store';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
 export default {
     name: 'crearEmpleado',
@@ -215,8 +215,14 @@ export default {
         },
         // método para agregar un nuevo empleado
         crear() {
+
             this.msg = '';
-            if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
+            if (this.model.empleado.clave !== this.model.empleado.confirmar) {
+                notificationInfo('Las contraseñas deben coincidir')
+            }
+            else if (this.model.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.model.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            else if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
                 this.model.empleado.cargo !== 'Seleccionar' && this.model.empleado.sucursal !== 'Seleccionar' && this.model.empleado.horario !== 'Seleccionar'
                 && this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&
                 this.model.empleado.planilla && this.model.empleado.confirmar) {
