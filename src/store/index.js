@@ -6,8 +6,8 @@ const store = createStore({
     state: {
         buscador: '',
         usuario: '',
-        empleados: 0,
-        sucursales: 0,
+        empleados: null,
+        sucursales: null,
         config: {
             headers: {
                 authorization: localStorage.getItem('auth')

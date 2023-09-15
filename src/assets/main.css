@@ -157,6 +157,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 35%;
 }
 
+.width-32 {
+    width: 32%;
+}
+
 .input-container-3 {
     width: 31%;
 }

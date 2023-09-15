@@ -51,12 +51,13 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" v-model="empleado.clave" class="form-control" id="clave" required>
+                                <input type="password" v-model="empleado.clave" class="form-control" id="clave" required
+                                    minlength="8" maxlength="72">
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="confirmar" class="form-label">Confirmar contraseña *</label>
                                 <input type="password" v-model="empleado.confirmar" class="form-control" id="confirmar"
-                                    required>
+                                    required minlength="8" maxlength="72">
                             </div>
 
                         </div>
@@ -122,7 +123,9 @@ export default {
         async registrarPrimerEmpleado() {
 
             // validar datos
-            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las constraseñas no coinciden', 5000, 'Aceptar'); }
+            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las contraseñas deben coincidir', 5000, 'Aceptar'); }
+            else if (this.empleado.clave.length >= 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.empleado.clave.length < 72) { notificationInfo('Longitud máxima superada') }
             else if (!this.empleado.alias && !this.empleado.apellidos && !this.empleado.clave,
                 !this.empleado.clave && !this.empleado.confirmar &&
                 !this.empleado.correo && !this.empleado.dui,

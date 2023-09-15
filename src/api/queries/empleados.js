@@ -22,7 +22,7 @@ const get = async (req, res) => {
     if (TOKEN) {
 
         // obtener id
-        const ID = decodeBase64(jwt.decode(TOKEN))
+        const ID = jwt.decode(TOKEN)
         // guardar los datos recuperados            
         let data = [];
         let i = 0;
@@ -180,7 +180,7 @@ const one = async (req, res) => {
     if (req.headers.authorization) {
         try {
             // obtener el id del que esta logeado
-            const ID = decodeBase64(jwt.decode(req.headers.authorization))
+            const ID = jwt.decode(req.headers.authorization)
             // obtener del parametro de la url el id
             const IDEMPLEADO = req.params.id;
             // esperar la respuesta cuando se haga la consulta
@@ -214,7 +214,7 @@ const change = (req, res) => {
     if (req.headers.authorization) {
         try {
             // obtener el id del empleado loggeado
-            const ID = decodeBase64(jwt.decode(req.headers.authorization))
+            const ID = jwt.decode(req.headers.authorization)
             // obtener id 
             const IDEMPLEADO = req.params.id;
             // obtener los datos enviados del frontend
@@ -244,7 +244,7 @@ const destroy = (req, res) => {
     if (req.headers.authorization) {
         try {
             // obtener el empleado logeado
-            const ID = decodeBase64(jwt.decode(req.headers.authorization))
+            const ID = jwt.decode(req.headers.authorization);
             // obtener el idempleado
             const IDEMPLEADO = req.params.id;
             // realizar transferencia sql o delete en este caso

@@ -15,7 +15,7 @@
                         info.
                         Personal
                     </span>
-                    <div class="form-2 w-70">
+                    <div class="w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
@@ -47,12 +47,12 @@
                     </div>
                 </div>
                 <hr>
-                <div class="form-data mb-9vh">
+                <div class="form-data">
                     <span class="bold">
                         Especificaciones
                     </span>
 
-                    <div class="form-2 w-70">
+                    <div class="w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="sucursales" class="form-label">Sucursal</label>
@@ -107,15 +107,22 @@
                                 <input type="text" class="form-control" id="planilla" v-model="this.model.empleado.planilla"
                                     required>
                             </div>
-                            <div class="mb-3 width-35 input-container">
+                        </div>
+                        <div class="load">
+                            <div class="mb-3 width-32">
                                 <label for="alias" class="form-label">Alias</label>
                                 <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
                                     maxlength="50" required>
                             </div>
-                            <div class="mb-3 width-35 input-container">
+                            <div class="mb-3 width-32">
                                 <label for="clave" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                    maxlength="15" minlength="10" required>
+                                    required>
+                            </div>
+                            <div class="mb-3 width-32">
+                                <label for="confirmar" class="form-label">Confirmar contraseña</label>
+                                <input type="password" class="form-control" id="confirmar"
+                                    v-model="this.model.empleado.confirmar" required>
                             </div>
                         </div>
                     </div>
@@ -137,7 +144,7 @@
 // importar axios para realizar peticiones
 import axios from 'axios';
 import store from '../../store';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
 export default {
     name: 'crearEmpleado',
@@ -155,6 +162,7 @@ export default {
                     apellidos: '',
                     dui: '',
                     clave: '',
+                    confirmar: '',
                     planilla: '',
                     telefono: '',
                     correo: '',
@@ -207,11 +215,17 @@ export default {
         },
         // método para agregar un nuevo empleado
         crear() {
+
             this.msg = '';
-            if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
+            if (this.model.empleado.clave !== this.model.empleado.confirmar) {
+                notificationInfo('Las contraseñas deben coincidir')
+            }
+            else if (this.model.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.model.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            else if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
                 this.model.empleado.cargo !== 'Seleccionar' && this.model.empleado.sucursal !== 'Seleccionar' && this.model.empleado.horario !== 'Seleccionar'
                 && this.model.empleado.dui && this.model.empleado.clave && this.model.empleado.correo &&
-                this.model.empleado.planilla && this.model.empleado.clave) {
+                this.model.empleado.planilla && this.model.empleado.confirmar) {
                 // realizar petición y enviando datos
                 axios.post('http://localhost:3000/api/empleados', this.model.empleado, store.state.config)
                     .then(res => {
@@ -228,6 +242,7 @@ export default {
                                 apellidos: '',
                                 dui: '',
                                 clave: '',
+                                confirmar: '',
                                 planilla: '',
                                 telefono: '',
                                 correo: '',

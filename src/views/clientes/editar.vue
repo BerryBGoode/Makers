@@ -37,7 +37,7 @@
                 </div>
             </div>
             <hr>
-            <div class="form-data">
+            <div class="form-data mb-17vh">
                 <span class="bold">
                     Contacto
                 </span>
@@ -52,17 +52,6 @@
                             <input type="email" class="form-control" id="correo" v-model="model.cliente.correo">
                         </div>
                     </div>
-                </div>
-            </div>
-            <hr>
-            <div class="mb-17vh form-data">
-                <span class="bold">
-                    Cuenta
-                </span>
-                <div action="" class="form-2 w-70 flex wp sp-bet">
-                    <label for="clave">Contraseña</label>
-                    <input type="password" class="form-control" id="clave" maxlength="15" minlength="10"
-                        v-model="model.cliente.clave" readonly>
                 </div>
             </div>
             <hr>
@@ -97,7 +86,6 @@ export default {
                     dui: '', // valido valores vacíos
                     telefono: '',
                     correo: '', // valido valores vacíos
-                    clave: '',
                     estado: 1
                 }
             },
@@ -136,7 +124,7 @@ export default {
             let cliente = this.model.cliente;
             // console.log(cliente)
             // validar datos vacíos
-            if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
+            if ((cliente.nombres && cliente.apellidos && cliente.telefono) !== '') {
                 // validar campos alphabeticos
                 if (!onlyLtrs(cliente.nombres) || !onlyLtrs(cliente.apellidos)) {
                     this.msg = 'No se permiten números en los nombres'
@@ -144,10 +132,6 @@ export default {
                 // la secuencia que siguen las validaciones es
                 // verificar sí no es nulo el valor 
                 // para después validar según cada campo
-                // validar contraseña mayor a 10 caracteres
-                if (cliente.clave) {
-                    !(cliente.clave.length > 10) ? this.msg = 'Contraseña debe ser mayor a 10 caracteres' : this.msg = ''; this.validate = true
-                }
                 // validar formato del correo 
                 if (cliente.correo) {
                     (!formatEmail(cliente.correo)) ? this.msg = 'Formato de correo incorrecto' : this.msg = ''; this.validate = true
@@ -178,7 +162,7 @@ export default {
         modificarCliente() {
             // obtener los valores
             let cliente = this.model.cliente;
-            if ((cliente.nombres && cliente.apellidos && cliente.clave && cliente.telefono) !== '') {
+            if ((cliente.nombres && cliente.apellidos && cliente.telefono) !== '') {
                 // hacer la petición post, enviando parametro los datos del formulario
                 axios.put('http://localhost:3000/api/clientes/' + this.$route.params.id, this.model.cliente, store.state.config)
                     // sí todo paso de manera correcta
@@ -192,7 +176,6 @@ export default {
                                 dui: '',
                                 telefono: '',
                                 correo: '',
-                                clave: '',
                                 estado: 1
                             }
                             notificationSuccess(res.data, 3500)
