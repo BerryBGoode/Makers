@@ -36,6 +36,9 @@ export const notificationInfo = (txt, time, button) => {
     if (!button) {
         button = 'Aceptar';
     }
+    if (!time) {
+        time = 3500;
+    }
     return Swal.fire({
         toast: true,
         background: '#1B1716',

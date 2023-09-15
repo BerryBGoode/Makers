@@ -447,6 +447,21 @@ ROUTER.beforeEach((to, from, next) => {
     else if (to.fullPath === '/' && from.path === '/login' && !localStorage.getItem('auth')) {
         next('/login');
     }
+    else if (to.fullPath === '/' && from.path === '/404') {
+        // verificar sí existen sucursales
+        if (store.state.sucursales <= 0) {
+            // direccionar a primer sucursal
+            next('/primer/sucursal');
+        }
+        // verificando sí existen empleados
+        else if (store.state.empleados <= 0) {
+            // direcccionar a primer empleado
+            next('primer/empleado');
+        } else {
+            // verificar sí existe autenticación para direccionar a login o inicio
+            (localStorage.getItem('auth')) ? next('/inicio') : next('/login');
+        }
+    }
     // verificar sí se quiere ir a la '/' desde primer uso
     else if (to.fullPath === '/' && (from.path === '/primer/empleado' || from.path === '/primer/sucursal')) {
         // verificar sí existen empleados, para mandar a crear primer empleado o mandar a crear primer sucursal

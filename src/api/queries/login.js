@@ -4,7 +4,7 @@ const { mysql, pg } = require('../db');
 const { compareSync } = require('bcryptjs')
 // requeriendo jwt o jsonwebtoken, para crear token cuando se inicie sesión
 const jwt = require('jsonwebtoken');
-const { encrypt, convertToBase64, decodeBase64 } = require('../helpers/encrypt');
+const { encrypt, convertToBase64, } = require('../helpers/encrypt');
 
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
@@ -15,7 +15,7 @@ const { getError } = require('../helpers/errors');
  */
 /**
  * Método para comprar la clave que front, con la clave de la database
- * @param {*} client clave que ingreso el cliente en el login
+ * @param {*} client clave que ingreso el cliente en el body de la petición
  * @param {*} db clave obtenida de la database
  * @returns 
  */
@@ -90,7 +90,7 @@ const getToken = async (dui, correo, clave) => {
             // obtener id del empleado encontrado
         }
         // convertir id a base 64
-        id = convertToBase64(EMPLEADO[0]['id_empleado']);
+        id = EMPLEADO[0]['id_empleado'];
         token = jwt.sign(id, process.env.SECRET, { algorithm: 'HS512' })
         return token
     }
@@ -104,7 +104,7 @@ const getConfig = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener id del empleado
-            const ID = decodeBase64(jwt.decode(TOKEN));
+            const ID = jwt.decode(TOKEN);
             // realizar query
             const EMPLEADO = await execute('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empleados_view WHERE id_empleado = ?', [ID])
             // retornar los datos sí la respuesta es la esperada
@@ -127,7 +127,7 @@ const getInfo = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener id del empleado (deficando base64)
-            const ID = decodeBase64(jwt.decode(TOKEN));
+            const ID = jwt.decode(TOKEN);
             // realizar query
             execute('SELECT alias FROM empleados_view WHERE id_empleado = ?', [ID])
                 // retornar los datos sí la respuesta es la esperada
@@ -145,6 +145,16 @@ const getInfo = async (req, res) => {
 }
 
 /**
+ * Método para obtener la contraseña anterior para validar que la nueva sea diferente que la antiguaß
+ */
+const getClaveDB = async (id_empleado) => {
+    // obtener la clave de la db cuando el id_empleado sea al que se decea actualizar
+    const CLAVE = await execute(`SELECT clave FROM empleados WHERE id_empleado = ?`, [id_empleado]);
+    // retornar la clave   
+    return CLAVE[0].clave;
+}
+
+/**
  * Método para modificar los datos en la vista de configuración
  */
 const change = async (req, res) => {
@@ -154,7 +164,7 @@ const change = async (req, res) => {
     if (TOKEN) {
         try {
             // obtener usuario
-            const ID = decodeBase64(jwt.decode(TOKEN));
+            const ID = jwt.decode(TOKEN);
             // obtener los datos del cuerpo de la petición
             let { nombres, apellidos, dui, telefono, correo, clave, alias } = req.body;
             // verificar no sí viene clave nueva,  asignar la clave no midificada
@@ -169,14 +179,19 @@ const change = async (req, res) => {
 
             }
             else {
-                clave = encrypt(clave);
-                execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ? WHERE id_empleado = ?',
-                    [nombres, apellidos, dui, telefono, correo, clave, alias, ID])
-                    .then(() => {
-                        res.status(201).send('Datos modificados');
-                    }).catch(rej => {
-                        res.status(500).send(getError(rej));
-                    })
+                if (!compareSync(clave, await getClaveDB(ID))) {
+                    clave = encrypt(clave);
+                    execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ? WHERE id_empleado = ?',
+                        [nombres, apellidos, dui, telefono, correo, clave, alias, ID])
+                        .then(() => {
+                            res.status(201).send('Datos modificados');
+                        }).catch(rej => {
+                            res.status(500).send(getError(rej));
+                        })
+                } else {
+                    res.status(500).send('La nueva contraseña debe ser diferente a la actual');
+                }
+
             }
         } catch (error) {
             res.status(500).send('Surgio un problema en el servidor');

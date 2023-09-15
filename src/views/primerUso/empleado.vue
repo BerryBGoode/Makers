@@ -122,7 +122,7 @@ export default {
         async registrarPrimerEmpleado() {
 
             // validar datos
-            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las constraseñas no coinciden', 5000, 'Aceptar'); }
+            if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las constraseñas deben coincidir', 5000, 'Aceptar'); }
             else if (!this.empleado.alias && !this.empleado.apellidos && !this.empleado.clave,
                 !this.empleado.clave && !this.empleado.confirmar &&
                 !this.empleado.correo && !this.empleado.dui,

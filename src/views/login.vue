@@ -61,6 +61,7 @@ import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-r
 import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
 import { alertRequest } from './recuperacion/form.vue';
+import store from '../store';
 
 export default {
     // nombre del componente
@@ -112,13 +113,15 @@ export default {
                     if (res.data.auth !== false) {
                         // asginar estado de la autenticación
                         this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                        // crear cookie
-                        this.crearCookie(res.data.token)
+                        //guardando token
+                        localStorage.setItem('auth', res.data.token);
+                        // asignar token al estado general
+                        store.state.config.headers.authorization = res.data.token;
                         // mostrar mensaje
                         this.msg = res.data.msg
                         // redireccionar al inicio
                         this.$router.push('/inicio');
-                        await notificationSuccess('Sesión iniciada correctamente', 5000);
+                        await notificationSuccess('Sesión iniciada correctamente', 3500);
                     }
 
                 } catch (error) {
@@ -126,16 +129,6 @@ export default {
                 }
 
             }
-        },
-        crearCookie(token) {
-
-            // creando cookie
-            // this.$cookies.set('auth', token, { experies: '1d' });
-            // evitar datos a componente padre, especificando el nombre que se pondrá el evento de este
-            // componente realiza y el dato
-            // this.$emit('getCookie', this.$cookies.get('auth'));
-            localStorage.setItem('auth', token);
-
         },
     },
 }

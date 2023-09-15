@@ -1,6 +1,6 @@
 <style>
-.mb-14vh {
-    margin-bottom: 14vh;
+.mb-4vh {
+    margin-bottom: 4vh;
 }
 </style>
 
@@ -54,23 +54,25 @@
                 </div>
             </div>
             <hr>
-            <div class="form-data mb-14vh">
+            <div class="form-data mb-4vh">
                 <span class="bold">
                     Cuenta
                 </span>
 
                 <div class="form-2 w-70">
+                    <div class="mb-3">
+                        <label for="alias" class="form-label">Alias</label>
+                        <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50" required>
+                    </div>
 
                     <div class="load">
                         <div class="mb-3 input-container">
-                            <label for="alias" class="form-label">Alias</label>
-                            <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50"
-                                required>
+                            <label for="clave" class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="clave" v-model="empleado.clave">
                         </div>
                         <div class="mb-3 input-container">
-                            <label for="clave" class="form-label">Nueva contraseña</label> <label class="form-label">*no
-                                obligatorio</label>
-                            <input type="password" class="form-control" id="clave" v-model="empleado.clave">
+                            <label for="clave" class="form-label">Confirmar contraseña</label>
+                            <input type="password" class="form-control" id="clave" v-model="empleado.confirmar">
                         </div>
 
 
@@ -107,7 +109,9 @@ export default {
                 telefono: '',
                 correo: '',
                 clave: '',
-                alias: ''
+                confirmar: '',
+                alias: '',
+
             },
             msg: '',
             lastpath: '',
@@ -152,35 +156,46 @@ export default {
                 })
         },
         modificar() {
-            axios.put('http://localhost:3000/api/auth/', this.empleado, store.state.config)
-                .then(res => {
-                    // enviar al estado general el nuevo nombre de usuario que cargará en el componente de cuenta
-                    this.setUsuario(this.empleado.alias)
-                    // cuando si se realizo la tarea deceada y se creo algo 
-                    // 201 es usado en método post y put
-                    if (res.status === 201) {
-                        // limpiar valores 
-                        this.empleado = {
-                            alias: '',
-                            nombres: '',
-                            apellidos: '',
-                            dui: '',
-                            telefono: '',
-                            correo: '',
-                            clave: '',
+            // verificar la coincidencia de contraseñas
+            if (this.empleado.clave !== this.empleado.confirmar) {
+                notificationInfo('Las contraseñas deben coincidir');
+            }
+            // verificar campos vacíos
+            else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
+                !this.empleado.nombres || !this.empleado.telefono) {
+                notificationInfo('No se permiten campos vacíos');
+            }
+            else {
+                axios.put('http://localhost:3000/api/auth/', this.empleado, store.state.config)
+                    .then(res => {
+                        // enviar al estado general el nuevo nombre de usuario que cargará en el componente de cuenta
+                        this.setUsuario(this.empleado.alias)
+                        // cuando si se realizo la tarea deceada y se creo algo 
+                        // 201 es usado en método post y put
+                        if (res.status === 201) {
+                            // limpiar valores 
+                            this.empleado = {
+                                alias: '',
+                                nombres: '',
+                                apellidos: '',
+                                dui: '',
+                                telefono: '',
+                                correo: '',
+                                clave: '',
+                            }
+                            // redireccionar
+
+                            this.msg = '';
+                            this.$router.go(-1);
+                            // emitir info que se modifico algo, a componente de cuenta
                         }
-                        // redireccionar
 
-                        this.msg = '';
-                        this.$router.go(-1);
-                        // emitir info que se modifico algo, a componente de cuenta
-                    }
-
-                    notificationInfo(res.data, 7000, 'Aceptar')
-                })
-                .catch(e => {
-                    console.log(e);
-                })
+                        notificationSuccess(res.data, 3500, 'Aceptar')
+                    })
+                    .catch(e => {
+                        notificationInfo(e.response.data)
+                    })
+            }
         }
     },
     mounted() {
