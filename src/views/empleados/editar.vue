@@ -33,7 +33,7 @@
                         info.
                         Personal
                     </span>
-                    <form action="" class="form-2 w-70">
+                    <form action="" class="w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
@@ -123,15 +123,11 @@
                                 <input type="text" class="form-control" id="planilla"
                                     v-model="this.model.empleado.planilla">
                             </div>
-                            <div class="mb-3 width-35 input-container">
-                                <label for="alias" class="form-label">Alias</label>
-                                <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
-                                    maxlength="50" required>
-                            </div>
-                            <div class="mb-3 input-container width-35">
-                                <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" class="form-control" id="clave" readonly>
-                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="alias" class="form-label">Alias</label>
+                            <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                maxlength="50" required>
                         </div>
                     </form>
 
@@ -168,7 +164,6 @@ export default {
                     nombres: '',
                     apellidos: '',
                     dui: '',
-                    clave: '',
                     planilla: '',
                     telefono: '',
                     correo: '',
@@ -275,7 +270,6 @@ export default {
                             nombres: '',
                             apellidos: '',
                             dui: '',
-                            clave: '',
                             planilla: '',
                             telefono: '',
                             correo: '',

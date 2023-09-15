@@ -157,6 +157,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 35%;
 }
 
+.width-32 {
+    width: 32%;
+}
+
 .input-container-3 {
     width: 31%;
 }
@@ -272,10 +276,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .msm-container {
     width: 50%;
-}
-
-.mb-4vh {
-    margin-bottom: 4vh;
 }
 
 .btn-makers {

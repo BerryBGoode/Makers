@@ -68,11 +68,13 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="clave" class="form-label">Nueva contraseña</label>
-                            <input type="password" class="form-control" id="clave" v-model="empleado.clave">
+                            <input type="password" class="form-control" id="clave" v-model="empleado.clave" minlength="8"
+                                maxlength="72">
                         </div>
                         <div class="mb-3 input-container">
-                            <label for="clave" class="form-label">Confirmar contraseña</label>
-                            <input type="password" class="form-control" id="clave" v-model="empleado.confirmar">
+                            <label for="confirmar" class="form-label">Confirmar contraseña</label>
+                            <input type="password" class="form-control" id="confirmar" v-model="empleado.confirmar"
+                                minlength="8" maxlength="72">
                         </div>
 
 
@@ -156,10 +158,13 @@ export default {
                 })
         },
         modificar() {
+            console.log(this.empleado.clave.length)
             // verificar la coincidencia de contraseñas
             if (this.empleado.clave !== this.empleado.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');
             }
+            else if (this.empleado.clave.length >= 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.empleado.clave.length < 72) { notificationInfo('Longitud máxima superada') }
             // verificar campos vacíos
             else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
                 !this.empleado.nombres || !this.empleado.telefono) {
@@ -190,10 +195,10 @@ export default {
                             // emitir info que se modifico algo, a componente de cuenta
                         }
 
-                        notificationSuccess(res.data, 3500, 'Aceptar')
+                        notificationSuccess(res.data, 3500, 'Aceptar');
                     })
                     .catch(e => {
-                        notificationInfo(e.response.data)
+                        notificationInfo(e.response.data);
                     })
             }
         }
