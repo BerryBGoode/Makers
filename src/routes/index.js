@@ -397,14 +397,12 @@ const getEmpleados = async () => {
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
-    console.log(store.state)
     // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
         // obtener la cantidad de sucursales existentes
         await getSucursales();
         // obteniendo la cantidad de empleados existentes cuando no hay registro
         await getEmpleados();
-        console.log(store.state)
         // verificando que si no hay sucursales y se quiere ir a la de sucursales
         if (store.state.sucursales <= 0 && to.path === '/primer/sucursal') {
             next();
