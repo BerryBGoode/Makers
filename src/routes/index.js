@@ -397,20 +397,37 @@ const getEmpleados = async () => {
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
-    console.log(store.state.empleados)
-    console.log(store.state.sucursales)
+    console.log(store.state)
+    // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
+        // obtener la cantidad de sucursales existentes
         await getSucursales();
+        // obteniendo la cantidad de empleados existentes cuando no hay registro
         await getEmpleados();
-        console.log(store.state.empleados)
-        console.log(store.state.sucursales)
+        console.log(store.state)
+        // verificando que si no hay sucursales y se quiere ir a la de sucursales
         if (store.state.sucursales <= 0 && to.path === '/primer/sucursal') {
             next();
-        } else if (store.state.empleados <= 0 && to.path === '/primer/empleado') {
+        }
+        // verifiicando sí se quiere ir a primer empleado cuando y no hay empleados registrados
+        else if (store.state.empleados <= 0 && to.path === '/primer/empleado') {
             next();
-        } else if (store.state.sucursales >= 0 && store.state.empleados >= 0 && to.path !== '/login') {
+        }
+        // verificando sí hay más sucursales y empleados y no se quiere ir a login
+        else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
             (localStorage.getItem('auth')) ? next() : next('/login');
-        } else {
+        } else if (store.state.sucursales === 0) {
+            if (localStorage.getItem('auth')) {
+                localStorage.clear();
+            }
+            next('/primer/sucursal')
+        } else if (store.state.empleados === 0) {
+            if (localStorage.getItem('auth')) {
+                localStorage.clear();
+            }
+            next('/primer/empleado')
+        }
+        else {
             next();
         }
     }
