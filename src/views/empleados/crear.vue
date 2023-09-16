@@ -225,6 +225,14 @@ export default {
             // verificando sí siguen la longitud esperada
             else if (this.model.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.model.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // verificando sí la contraseña contiene datos del usuario
+            else if (this.model.empleado.clave.includes(this.model.empleado.alias) || this.model.empleado.clave.includes(this.model.empleado.apellidos) ||
+                this.model.empleado.clave.includes(this.model.empleado.cargo) || this.model.empleado.clave.includes(this.model.empleado.correo) ||
+                this.model.empleado.clave.includes(this.model.empleado.dui) || this.model.empleado.clave.includes(this.model.empleado.nombres) ||
+                this.model.empleado.clave.includes(this.model.empleado.sucursal) || this.model.empleado.clave.includes(this.model.empleado.telefono)) {
+                notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
+                                no contenga datos personales o información fácil de identificar`);
+            }
             // verificando sí siguen con el formato adecuando
             else if (!password(this.model.empleado.clave)) {
                 notificationInfo(`La contraseña no cumple con los requisitos.

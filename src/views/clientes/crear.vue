@@ -183,6 +183,16 @@ export default {
             // validando la longitud de la clave
             else if (cliente.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (cliente.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // verificando sí la contraseña contiene datos del usuario
+            else if (cliente.clave.includes(cliente.apellidos) ||
+                cliente.clave.includes(cliente.cargo) ||
+                cliente.clave.includes(cliente.correo) ||
+                cliente.clave.includes(cliente.dui) ||
+                cliente.clave.includes(cliente.nombres) ||
+                cliente.clave.includes(cliente.telefono)) {
+                notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
+                                no contenga datos personales o información fácil de identificar`);
+            }
             // validando q la clave tenga los requisitos
             else if (!password(cliente.clave)) {
                 notificationInfo(`La contraseña no cumple con los requisitos.

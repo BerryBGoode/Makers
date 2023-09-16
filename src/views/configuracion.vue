@@ -166,6 +166,14 @@ export default {
             // verificar la longitud de la contraseña
             else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            // verificando sí la contraseña contiene datos del usuario
+            else if (this.empleado.clave.includes(this.empleado.alias) || this.empleado.clave.includes(this.empleado.apellidos) ||
+                this.empleado.clave.includes(this.empleado.cargo) || this.empleado.clave.includes(this.empleado.correo) ||
+                this.empleado.clave.includes(this.empleado.dui) || this.empleado.clave.includes(this.empleado.nombres) ||
+                this.empleado.clave.includes(this.empleado.sucursal) || this.empleado.clave.includes(this.empleado.telefono)) {
+                notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
+                                no contenga datos personales o información fácil de identificar`);
+            }
             // verificar sí cumple con el estandar de seguridad la contraseña
             else if (!password(this.empleado.clave)) {
                 notificationInfo(`La contraseña no cumple con los requisitos.
