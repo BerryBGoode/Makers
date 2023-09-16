@@ -373,17 +373,19 @@ const ROUTER = createRouter({
                     component: () => import('../views/configuracion.vue'),
                     meta: { requiresAuth: true }
                 },
+
             ]
         },
     ]
 })
 
-/**
- * TODO: REVERISAR CUANDO DE INICIO SE REDIRECCIONA A OTRA, EJEMPLO: PRODUCTOS, QUE DIRECCIONÉ A PRODUCTOS NO A INICIO.
- * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO 
- */
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach((to, from, next) => {
+    // console.log(store.state.empleados)
+    // console.log(store.state.empleados)
+    console.log(to)
+    // localStorage.clear()
+    // console.log(store.state.sucursales)
     // tiene como parametro la autenticación
     if (to.matched.some(route => route.meta.requiresAuth)) {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
@@ -394,11 +396,11 @@ ROUTER.beforeEach((to, from, next) => {
         // cuando se desea ir a la ruta de primera sucursal
         // validar otra ves la cantidad de sucursales que se encontraron
         // verificar sí existen sucursales
-        if (store.state.sucursales <= 0) {
+        if (store.state.sucursales === 0) {
             next();
         }
         // verificando sí existen empleados para direccionar al que se deceaba
-        else if (store.state.empleados <= 0) {
+        else if (store.state.empleados === 0) {
             next('/primer/empleado');
         }
         // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
@@ -496,6 +498,5 @@ ROUTER.beforeEach((to, from, next) => {
     }
 
 })
-
 // exportando ruteado
 export default ROUTER;

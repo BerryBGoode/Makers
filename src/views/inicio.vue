@@ -540,12 +540,15 @@ export default {
                 notificationError(error.response.data);
             }
         },
+        speech() {
+            let recognition = new webkitSpeechRecognition();
+            console.log(recognition)
+        },
     },
     mounted() {
         this.getVentasPromise();
         this.getOrdenesByMes();
         this.getEmpleadosCargos();
-        // this.tipoServicios;
         this.getClientesTop();
         this.getTiposServicios();
         this.getHoraMes();

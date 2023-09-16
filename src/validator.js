@@ -17,7 +17,6 @@ let clave = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}$/;
 export const onlyLtrs = value => {
     // verificar sí el valor es una cadena de texto
     return (ltrs.test(value));
-
 }
 /**
  * Método para validar sí la contraseña cumple el formato 8-72 caracteres,

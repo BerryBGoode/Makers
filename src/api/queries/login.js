@@ -213,7 +213,7 @@ const verificarSucursales = async (req, res) => {
         let sucursales = await execute(` SELECT count(nombre_sucursal) as '$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC' FROM sucursales`);
         // retornar en la respuesta las sucursales encontradas
 
-        res.status(200).json(sucursales);
+        res.status(200).json(sucursales[0]['$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC']);
     } catch (error) {
         res.status(500).send(getError(error));
     }
@@ -229,8 +229,7 @@ const verificarEmpleados = async (req, res) => {
         // obtener los empleados registrados
         let empleados = await execute(`SELECT count(id_empleado) as '$2a$10$23bWlWgaHrD/uBy4p6Sj/eC0U73vpDJXkOs7KLmtpQxdF5nrasgdK' FROM empleados`);
         // retornar los empleados registrados
-
-        res.status(200).json(empleados)
+        res.status(200).json(empleados[0]['$2a$10$23bWlWgaHrD/uBy4p6Sj/eC0U73vpDJXkOs7KLmtpQxdF5nrasgdK'])
     } catch (error) {
         res.status(500).send(getError(error));
     }

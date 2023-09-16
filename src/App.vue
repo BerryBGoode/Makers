@@ -94,6 +94,7 @@ export default {
                 return;
             }
         })
+
         return {
             auth: localStorage.getItem('auth'),
             storage: '',
@@ -134,6 +135,7 @@ export default {
                 .then(rows => {
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
+                    console.log(rows.data)
                     this.setSucursal(rows.data);
                     // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
                     (rows.data <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
@@ -147,7 +149,7 @@ export default {
                 .then((rows) => {
                     // obtiendo los valores de la petición
                     this.empleados = rows.data;
-                    // setteando la cantidad de empleados que existen
+                    console.log(rows.data)
                     this.setEmpleado(this.empleados);
                     // verificando la existencia de los empleados, para redireccionara primer empleados, 
                     // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
@@ -167,8 +169,8 @@ export default {
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
-        this.verficarEmpleados();
         this.verificarSucursales();
+        this.verficarEmpleados();
         this.checkTokenStorage();
     },
 
