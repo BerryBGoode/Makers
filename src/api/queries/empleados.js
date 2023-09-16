@@ -150,7 +150,7 @@ const getCargos = async (req, res) => {
  * Método para crear un empleado
  */
 const store = (req, res) => {
-    if (req.headers.authorization) {
+    if (req.headers.authorization || (req.body.path === '/primer/empleado' && req.headers.origin === 'http://localhost:5173')) {
         try {
             // obtener los datos del req
             const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;

@@ -411,20 +411,22 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
         // verifiicando sí se quiere ir a primer empleado cuando y no hay empleados registrados
         else if (store.state.empleados <= 0 && to.path === '/primer/empleado') {
-            next();
+            (store.state.sucursales === 0) ? next('/primer/sucursal') : next();
         }
         // verificando sí hay más sucursales y empleados y no se quiere ir a login
         else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
             (localStorage.getItem('auth')) ? next() : next('/login');
-        } else if (store.state.sucursales === 0) {
-            if (localStorage.getItem('auth')) {
-                localStorage.clear();
-            }
+        }
+        // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
+        else if (store.state.sucursales === 0) {
+            // verificar sí hay un storage para remover
+            if (localStorage.getItem('auth')) { localStorage.clear(); }
+            // y direccionar a la primera sucursal
             next('/primer/sucursal')
         } else if (store.state.empleados === 0) {
-            if (localStorage.getItem('auth')) {
-                localStorage.clear();
-            }
+            // verificar sí hay un storage para remover
+            if (localStorage.getItem('auth')) { localStorage.clear(); }
+            // y direccionar al primer empleado
             next('/primer/empleado')
         }
         else {

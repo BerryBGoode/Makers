@@ -73,7 +73,8 @@ export default {
                 direccion: '',
                 tel: '',
                 inicio: '',
-                cierre: ''
+                cierre: '',
+                path: this.$route.path
             },
             cargo: {
                 cargo: '',
@@ -110,9 +111,9 @@ export default {
                         } else {
                             // las siguientes 2 líneas, realiza el método para crear el cargo 
                             // registro de cargo a la entidad respectiva
-                            this.registrarCargo(this.cargo)
+                            this.registrarCargo(Object.assign(this.cargo, this.sucursal))
                             // y el nuevo registro de horarioa la respectiva entidad
-                            this.registrarHorario(this.sucursal.inicio, this.sucursal.cierre)
+                            this.registrarHorario(this.sucursal.inicio, this.sucursal.cierre, this.sucursal.path)
                             // notificar el proceso exitoso
                             notificationSuccess(res.data, 2000, 'Aceptar');
                             // agregar al estado general 1 sucursal para poder acceder a la de primer empleado
@@ -128,12 +129,13 @@ export default {
             }
         },
         // método para agrega primer horario
-        registrarHorario(inicio, cierre) {
+        registrarHorario(inicio, cierre, path) {
             // verificar que el horario de inicio sea menor al de cierre y que ambos tengan algún valor
             if (inicio < cierre && (inicio && cierre)) {
                 let horario = {
                     inicio: inicio,
-                    cierre: cierre
+                    cierre: cierre,
+                    path: path
                 }
                 // realizar petición
                 axios.post('http://localhost:3000/api/horarios/', horario)
@@ -147,7 +149,7 @@ export default {
 
                         }
                     })
-                    .catch(e => { notificationError(e); console.log(e) });
+                    .catch(e => { notificationError(e.response.data); console.log(e) });
 
             } else {
                 notificationInfo('Horario ilogico', 5000, 'Aceptar');
@@ -166,7 +168,7 @@ export default {
                     }
                 })
                 .catch(e => {
-                    notificationError(e.response.data.error);
+                    notificationError(e.response.data);
                 })
         },
         verficarEmpleados() {
