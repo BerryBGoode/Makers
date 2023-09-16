@@ -1,6 +1,8 @@
 // archivo con las funciones para validar
 // ! VALIDA DATOS DEL FRONTEND
 
+import axios from "axios";
+import store from "./store";
 // variable con las letras
 let ltrs = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s']+$/;
 // variable con los números
@@ -64,13 +66,4 @@ export const formatDateToYYYYMMDD = date => {
     const year = date.getFullYear();
     // retornar la fecha en formato yyyy-mm-dd
     return `${year}-${month}-${day}`;
-}
-
-export const verificarSucursales = async () => {
-    try {
-        let sucursales = await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
-        console.log(sucursales);
-    } catch (error) {
-        console.log(error)
-    }
 }

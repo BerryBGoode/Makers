@@ -87,6 +87,14 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['actionSucursal']),
+        ...mapActions(['actionEmpleado']),
+        setSucursal(state) {
+            this.actionSucursal(state)
+        },
+        setEmpleado(state) {
+            this.actionEmpleado(state)
+        },
         async selectMethod() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
             if (notif) {
@@ -94,6 +102,43 @@ export default {
             } else {
                 let confirm = await alertRequest();
                 console.log(confirm)
+            }
+
+        },
+        verificarSucursales() {
+            if (store.state.sucursales === null) {
+                axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+                    .then(rows => {
+                        // guardar las sucursales encontradas
+                        this.setSucursal(rows.data);
+                        // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
+                        // (rows.data <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
+                    }).catch(rej => {
+                        console.log(rej);
+                    })
+            }
+
+
+        },
+        verficarEmpleados() {
+            if (store.state.empleados === null) {
+                axios.get('http://localhost:3000/api/auth/verificar/empleados')
+                    .then((rows) => {
+                        // obtiendo los valores de la petición
+                        this.setEmpleado(rows.data)
+                        // verificando la existencia de los empleados, para redireccionara primer empleados, 
+                        // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
+                        // if (rows.data <= 0) {
+                        //     this.$router.push('/primer/empleado')
+                        // } else {
+                        //     if (localStorage.getItem('auth')) {
+                        //         // console.log('s')
+                        //         this.$router.push('/inicio');
+                        //     }
+                        // }
+                    }).catch(e => {
+                        notificationError(e, 7000);
+                    })
             }
 
         },
@@ -131,6 +176,9 @@ export default {
             }
         },
     },
+    mounted() {
+        this.verificarSucursales();
+    }
 }
 
 </script>
