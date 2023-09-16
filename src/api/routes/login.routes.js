@@ -5,6 +5,7 @@ const {
     validateUsuario, getInfo, getConfig, change, verificarSucursales,
     verificarEmpleados, getDataPrimerEmpleado
 } = require('../queries/login')
+
 // inicializar router
 const LOGIN = Router();
 

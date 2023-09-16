@@ -62,14 +62,44 @@ import { alertInfo, notificationError } from './components/alert.vue';
 export default {
     name: 'app',
     components: { dashboard, login, cookies, axios, store, RouterView },
-    data() {
+    created() {
+        // // verificar sí no hay sucursales y empleados
+        // if (store.state.sucursales <= 0 || store.state.empleados <= 0) {
+        //     // para mandar a las vista de primer uso
+        //     // verificar sí no hay sucursales
+        //     (store.state.sucursales <= 0) ? this.$router.push('/primer/sucursal') : this.$router.push('/primer/empleado');
 
+        // } else {
+        //     (localStorage.getItem('auth')) ? this.$router.push('/inicio') : this.$router.push('/login');
+        // }
+    },
+    data() {
+        // validaciones del DOM
+
+        // validar que cuando se modifique o elimine el storage redireccionar al login 
         let state = window.addEventListener('storage', (e) => {
             if (e.key === 'auth' && e.oldValue !== e.newValue) {
                 this.$router.push('/login')
                 alertInfo('Acto sospechoso', 'Aceptar', 7500, 'Debido a actividad sospechosa se ha redireccionado')
             }
         })
+        // validar que no se puedan hacer algunas acciones en los inputs
+        window.addEventListener('keyup', (event) => {
+            // verificar sí el input es de tipo password 
+            if (event.target.type === 'password') {
+                event.target.value = event.target.value.trim();
+            }
+        })
+        // evento que previene que el usuario pueda utilizar la tecla ctrl en los inputs
+        window.addEventListener('keydown', (event) => {
+            // validar que desahiblite la tecla ctrl
+            if (event.ctrlKey) {
+                // Deshabilitar la tecla Ctrl
+                event.preventDefault();
+                return;
+            }
+        })
+
         return {
             auth: localStorage.getItem('auth'),
             storage: '',
@@ -91,11 +121,6 @@ export default {
         setEmpleado(data) {
             this.actionEmpleado(data)
         },
-        // método para evaludar sí existe un cookie en el evento padre
-        // así ir verificando y actualizar el valor de la cookie cuando exista
-        checkTokenCookie() {
-
-        },
         checkTokenStorage() {
             const STORAGE = this.getTokenStorage('auth');
             this.storage = STORAGE !== null;
@@ -110,47 +135,33 @@ export default {
         getTokenStorage(token) {
             return localStorage.getItem(token)
         },
-        verificarSucursales() {
-            axios.get('http://localhost:3000/api/auth/verificar/sucursal')
-                .then(rows => {
-                    // guardar las sucursales encontradas
-                    this.sucursales = rows.data;
-                    this.setSucursal(rows.data);
-                    // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
-                    (rows.data <= 0) ? this.$router.push('/primer/sucursal') : this.verficarEmpleados()
-                }).catch(rej => {
-                    console.log(rej);
-                })
+        // verificarSucursales() {
+        //     axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+        //         .then(rows => {
+        //             // guardar las sucursales encontradas
+        //             this.sucursales = rows.data;
+        //             // console.log(rows.data <= 0)
+        //             this.setSucursal(rows.data);
+        //         }).catch(rej => {
+        //             console.log(rej);
+        //         })
 
-        },
-        verficarEmpleados() {
-            axios.get('http://localhost:3000/api/auth/verificar/empleados')
-                .then((rows) => {
-                    // obtiendo los valores de la petición
-                    this.empleados = rows.data;
-                    // setteando la cantidad de empleados que existen
-                    this.setEmpleado(this.empleados);
-                    // verificando la existencia de los empleados, para redireccionara primer empleados, 
-                    // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                    if (this.empleados <= 0) {
-                        this.$router.push('/primer/empleado')
-                    } else {
-                        if (!localStorage.getItem('auth')) {
-                            // console.log('s')
-                            // this.$router.push('/inicio');
-                            this.$router.push('/login')
-                        }
-                    }
-                }).catch(e => {
-                    notificationError(e, 7000);
-                })
-        }
+        // },
+        // verficarEmpleados() {
+        //     axios.get('http://localhost:3000/api/auth/verificar/empleados')
+        //         .then((rows) => {
+        //             // obtiendo los valores de la petición
+        //             this.empleados = rows.data;
+        //             this.setEmpleado(this.empleados);
+        //         }).catch(e => {
+        //             notificationError(e, 7000);
+        //         })
+        // }
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
-        this.checkTokenCookie();
-        this.verficarEmpleados();
-        this.verificarSucursales();
+        // this.verificarSucursales();
+        // this.verficarEmpleados();
         this.checkTokenStorage();
     },
 

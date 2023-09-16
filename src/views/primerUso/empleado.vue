@@ -86,6 +86,7 @@ import {
     alertInfo, notificationInfo
 } from '../../components/alert.vue';
 import { mapState, mapActions } from 'vuex';
+import { password } from '../../validator';
 import logo from '../../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png';
 
 export default {
@@ -106,7 +107,8 @@ export default {
                 alias: '',
                 clave: '',
                 confirmar: '',
-                planilla: ''
+                planilla: '',
+                path: this.$route.path
             },
         }
     },
@@ -124,8 +126,14 @@ export default {
 
             // validar datos
             if (this.empleado.clave !== this.empleado.confirmar) { notificationInfo('Las contraseñas deben coincidir', 5000, 'Aceptar'); }
-            else if (this.empleado.clave.length >= 8) { notificationInfo('Longitud mínima superada') }
-            else if (this.empleado.clave.length < 72) { notificationInfo('Longitud máxima superada') }
+            // verificando sí siguen la longitud esperada
+            else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+            else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+            else if (!password(this.empleado.clave)) {
+                notificationInfo(`La contraseña no cumple con los requisitos.
+                                Debe contenter al menos una letra mayúscula, una letra minúscula,
+                                un número, un carácter especial y ningún espacio`, 9500);
+            }
             else if (!this.empleado.alias && !this.empleado.apellidos && !this.empleado.clave,
                 !this.empleado.clave && !this.empleado.confirmar &&
                 !this.empleado.correo && !this.empleado.dui,

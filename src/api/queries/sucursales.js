@@ -34,7 +34,7 @@ const get = async (req, res) => {
  * Método para agregar una sucursal
  */
 const store = (req, res) => {
-    if (req.headers.authorization) {
+    if (req.headers.authorization || (req.body.path === '/primer/sucursal' && req.headers.origin === 'http://localhost:5173')) {
         try {
             // obtener los datos de la petición
             const { tel, inicio, cierre, direccion, nombre } = req.body

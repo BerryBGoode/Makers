@@ -3,8 +3,7 @@
 // importación de modulos para el enrutamiento con vue
 import { createRouter, createWebHashHistory } from 'vue-router';
 import store from '../store';
-import cookies from 'vue-cookies';
-import { alertInfo } from '../components/alert.vue';
+import axios from 'axios';
 // importar interfaces, dashboard (inicio), servicios, productos, clientes
 //#region 
 // empleados, reservaciones, facturas, horarios, sucursales
@@ -57,9 +56,6 @@ import editarFactura from '../views/facturas/editar.vue';
 import editarCargo from '../views/cargos/editar.vue';
 import editarTipo from '../views/tipos_servicios/editar.vue';
 //#endregion
-
-// configuración
-
 // intancia del enrutador
 const ROUTER = createRouter({
     // configuración del historial dentro de la ejecucción
@@ -99,7 +95,7 @@ const ROUTER = createRouter({
             redirect: '/404',
         },
         {
-            name: 'index',
+            name: 'init',
             path: '/',
             // component: login,
         },
@@ -379,19 +375,73 @@ const ROUTER = createRouter({
                     component: () => import('../views/configuracion.vue'),
                     meta: { requiresAuth: true }
                 },
+
             ]
         },
     ]
 })
+const getSucursales = async () => {
+    await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+        .then(sucursales => {
+            console.log(sucursales.data)
+            store.state.sucursales = sucursales.data;
+        })
+        .catch((error) => {
+            console.log(error);
+            return 0
+        })
+}
 
-/**
- * TODO: REVERISAR CUANDO DE INICIO SE REDIRECCIONA A OTRA, EJEMPLO: PRODUCTOS, QUE DIRECCIONÉ A PRODUCTOS NO A INICIO.
- * TODO: REVISAR APP.VUE EN LA CONDICIÓN DE EMPLEADOS PARA REDIRECCIONAR A PRIMER USO 
- */
+const getEmpleados = async () => {
+    await axios.get('http://localhost:3000/api/auth/verificar/empleados')
+        .then(empleados => {
+            store.state.empleados = empleados.data;
+        }).catch(store.state.empleados = 0)
+
+
+}
+
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
-ROUTER.beforeEach((to, from, next) => {
+ROUTER.beforeEach(async (to, from, next) => {
+    console.log(store.state)
+    // verificando sí hay valores por defecto 
+    if (store.state.empleados === null || store.state.sucursales === null) {
+        // obtener la cantidad de sucursales existentes
+        await getSucursales();
+        // obteniendo la cantidad de empleados existentes cuando no hay registro
+        await getEmpleados();
+        console.log(store.state)
+        // verificando que si no hay sucursales y se quiere ir a la de sucursales
+        if (store.state.sucursales <= 0 && to.path === '/primer/sucursal') {
+            next();
+        }
+        // verifiicando sí se quiere ir a primer empleado cuando y no hay empleados registrados
+        else if (store.state.empleados <= 0 && to.path === '/primer/empleado') {
+            (store.state.sucursales === 0) ? next('/primer/sucursal') : next();
+        }
+        // verificando sí hay más sucursales y empleados y no se quiere ir a login
+        else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
+            (localStorage.getItem('auth')) ? next() : next('/login');
+        }
+        // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
+        else if (store.state.sucursales === 0) {
+            // verificar sí hay un storage para remover
+            if (localStorage.getItem('auth')) { localStorage.clear(); }
+            // y direccionar a la primera sucursal
+            next('/primer/sucursal')
+        } else if (store.state.empleados === 0) {
+            // verificar sí hay un storage para remover
+            if (localStorage.getItem('auth')) { localStorage.clear(); }
+            // y direccionar al primer empleado
+            next('/primer/empleado')
+        }
+        else {
+            next();
+        }
+    }
+
     // tiene como parametro la autenticación
-    if (to.matched.some(route => route.meta.requiresAuth)) {
+    else if (to.matched.some(route => route.meta.requiresAuth)) {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
     }
@@ -417,15 +467,15 @@ ROUTER.beforeEach((to, from, next) => {
     else if (to.path === '/primer/empleado') {
         // verificar sí existen sucursales
         if (store.state.sucursales <= 0) {
-            next('/primer/sucursal');
+            next('/primer/sucursal')
         }
         // verificando sí existen empleados para direccionar al que se deceaba
         else if (store.state.empleados <= 0) {
-            next();
+            next()
         }
         // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
         else {
-            (localStorage.getItem('auth')) ? next(from.path) : next('/login');
+            (localStorage.getItem('auth')) ? next(from.path) : next('/login')
         }
 
     }
@@ -435,13 +485,13 @@ ROUTER.beforeEach((to, from, next) => {
         //  cuando se desea ir a la ruta de primera sucursal
         // validar otra ves la cantidad de sucursales que se encontraron
         if (store.state.sucursales <= 0) {
-            next('/primer/sucursal');
+            next('/primer/sucursal')
         } else if (store.state.empleados <= 0) { next('/primer/empleado') }
         else {
             // verificar sí existe autencicación
             if (localStorage.getItem('auth')) {
                 // redireccionar al inicio sí existen autenticación
-                next({ name: 'inicio' });
+                next({ name: 'inicio' })
             } else {
                 next();
                 // en esta parte se aplica cuando forsosamente se decea ir al login
@@ -451,22 +501,7 @@ ROUTER.beforeEach((to, from, next) => {
     }
     // vericar sí no hay autenticación y este en login y se quiere ir a '/'
     else if (to.fullPath === '/' && from.path === '/login' && !localStorage.getItem('auth')) {
-        next('/login');
-    }
-    else if (to.fullPath === '/' && from.path === '/404') {
-        // verificar sí existen sucursales
-        if (store.state.sucursales <= 0) {
-            // direccionar a primer sucursal
-            next('/primer/sucursal');
-        }
-        // verificando sí existen empleados
-        else if (store.state.empleados <= 0) {
-            // direcccionar a primer empleado
-            next('primer/empleado');
-        } else {
-            // verificar sí existe autenticación para direccionar a login o inicio
-            (localStorage.getItem('auth')) ? next('/inicio') : next('/login');
-        }
+        next('/login')
     }
     // verificar sí se quiere ir a la '/' desde primer uso
     else if (to.fullPath === '/' && (from.path === '/primer/empleado' || from.path === '/primer/sucursal')) {
@@ -491,7 +526,6 @@ ROUTER.beforeEach((to, from, next) => {
                 // redirección sospechosa, cuando se elimina del localStorage
                 next();
             }
-            // next({ name: 'login' });
 
         }
     }
@@ -502,6 +536,5 @@ ROUTER.beforeEach((to, from, next) => {
     }
 
 })
-
 // exportando ruteado
 export default ROUTER;

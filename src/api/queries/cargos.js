@@ -48,7 +48,8 @@ const get = (req, res) => {
  * res, respuesta del servidor
  */
 const store = async (req, res) => {
-    if (req.headers.authorization) {
+
+    if (req.headers.authorization || (req.body.path === '/primer/sucursal' && req.headers.origin === 'http://localhost:5173')) {
         try {
             // asignar a u arreglo los valores del req
             const { cargo } = req.body;
@@ -59,6 +60,7 @@ const store = async (req, res) => {
                     // enviar mensaje exitoso
                     res.status(201).send('Cargo agregado');
                 }).catch(rej => {
+                    console.log(rej)
                     res.status(500).send('Surgio un problema en el servidor');
                 })
         } catch (error) {
