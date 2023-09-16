@@ -66,3 +66,11 @@ export const formatDateToYYYYMMDD = date => {
     return `${year}-${month}-${day}`;
 }
 
+export const verificarSucursales = async () => {
+    try {
+        let sucursales = await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+        console.log(sucursales);
+    } catch (error) {
+        console.log(error)
+    }
+}

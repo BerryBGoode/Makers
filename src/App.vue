@@ -130,11 +130,12 @@ export default {
         getTokenStorage(token) {
             return localStorage.getItem(token)
         },
-        verificarSucursales() {
-            axios.get('http://localhost:3000/api/auth/verificar/sucursal')
+        async verificarSucursales() {
+            await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
                 .then(rows => {
                     // guardar las sucursales encontradas
                     this.sucursales = rows.data;
+                    console.log('a')
                     console.log(rows.data)
                     this.setSucursal(rows.data);
                     // verificar sí no hay sucursales para redireccionar al login, sino que verificar la cantidad de empleados registrados
