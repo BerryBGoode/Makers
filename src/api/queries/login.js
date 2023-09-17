@@ -109,20 +109,19 @@ const validateUsuario = async (req, res) => {
                 else if ((DUI.length > 0 && CORREO.length <= 0 && USUARIO.length <= 0) ||
                     (CORREO.length <= 0 && DUI.length > 0 && USUARIO.length > 0)) {
                     // agregar intentos a usuario según dui
-                    agregarIntentoByDui(dui, alias);
+                    (DUI[0].alias === alias) ? agregarIntentoByDui(dui, alias) : agregandoSuplantacionByDui(dui);
                 }
                 // cuando es dui inexistente
                 // verificar sí se encontró usuario por medio del correo
                 else if ((CORREO.length > 0 && DUI.length <= 0 && USUARIO.length <= 0) ||
-                    (DUI.length <= 0 && CORREO.length >= 0 && USUARIO.length >= 0)) {
+                    (DUI.length <= 0 && CORREO.length > 0 && USUARIO.length > 0)) {
                     // agregar intentos a usuario según correo
-                    agregarIntentoByCorreo(correo, alias);
+                    (CORREO[0].alias === alias) ? agregarIntentoByCorreo(correo, alias) : agregandoSuplantacionByCorreo(correo);
                 }
                 // verificar sí se encontró un usuario por medio del nombre de usuario
                 else if (USUARIO.length > 0 && CORREO.length <= 0 && USUARIO.length <= 0) {
                     // agregando intentos a usuario por medio del correo y dui
                     // haciendo referencia que
-
                     agregandoIntentoByAlias(alias)
                 }
                 // cuando el usuario no existe
@@ -152,10 +151,20 @@ const validateUsuario = async (req, res) => {
 const agregarIntentoByCorreo = async (correo, alias) => {
     try {
         await execute('UPDATE empleados SET intentos = intentos + 1 WHERE correo = ? AND alias = ?', [correo, alias]);
+        let origin = {
+            correo: correo,
+            alias: alias,
+            case: 1
+        }
+        // verificar la cantidad de intetos para bloquear
+        if (await getIntentos(origin) > 3) {
+            execute('UPDATE empleados SET estado = 2 WHERE correo = ? AND alias = ?', [correo, alias]);
+        }
     } catch (error) {
         throw error;
     }
 }
+
 /**
  * Método para agregar intentos por medio del dui
  * @param {*} dui dui del usuario a agregar inteto
@@ -164,25 +173,86 @@ const agregarIntentoByCorreo = async (correo, alias) => {
 const agregarIntentoByDui = async (dui, alias) => {
     try {
         await execute('UPDATE empleados SET intentos = intentos + 1 WHERE dui = ? AND alias = ?', [dui, alias]);
+        let origin = {
+            alias: alias,
+            dui: dui,
+            case: 2
+        }
+        // verificar la cantidad de intetos para bloquear
+        if (await getIntentos(origin) > 3) {
+            execute('UPDATE empleados SET estado = 2 WHERE dui = ? AND alias = ?', [dui, alias]);
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+/**
+ * Método para agregar 1 intento cuando el alias sea el incorrecto
+ * @param {*} correo correo del usuario
+ * @param {*} dui dui del usuario
+ */
+const agregandoIntentoByNotAlias = async (correo, dui) => {
+    try {
+        await execute('UPDATE empleados SET intentos = intentos + 1 WHERE correo = ? AND dui = ?', [correo, dui]);
+        let origin = {
+            correo: correo,
+            dui: dui,
+            case: 3
+        }
+        // verificar la cantidad de intetos para bloquear
+        if (await getIntentos(origin) > 3) {
+            execute('UPDATE empleados SET estado = 2 WHERE correo = ? AND dui = ?', [correo, dui]);
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+/**
+ * Método para agregar intento solamente por el alias
+ * @param {*} alias alias del usuario
+ */
+const agregandoIntentoByAlias = async (alias) => {
+    try {
+        await execute('UPDATE empledos SET intentos = intentos + 1 WHERE alias = ?', [alias]);
+        let origin = {
+            alias: alias,
+            case: 4
+        }
+        // verificar la cantidad de intetos para bloquear
+        if (await getIntentos(origin) > 3) {
+            execute('UPDATE empleados SET estado = 2 WHERE alias = ?', [alias]);
+        }
     } catch (error) {
         throw error;
     }
 }
 
-const agregandoIntentoByNotAlias = async (correo, dui) => {
-    try {
-        await execute('UPDATE empleados SET intentos = intentos + 1 WHERE correo = ? AND dui = ?', [correo, dui]);
-    } catch (error) {
-        throw error;
+const getIntentos = async (origin) => {
+    let intentos;
+    switch (origin.case) {
+        case 1:
+            intentos = await execute('SELECT intentos FROM empleados WHERE correo = ? AND alias = ?',
+                [origin.correo, origin.alias]);
+            break;
+        case 2:
+            intentos = await execute('SELECT intentos FROM empleados WHERE dui = ? AND alias = ?',
+                [origin.dui, origin.alias]);
+            break;
+        case 3:
+            intentos = await execute('SELECT intentos FROM empleados WHERE correo = ? AND dui = ?',
+                [origin.correo, origin.dui]);
+            break;
+
+        case 4:
+            intentos = await execute('SELECT intentos FROM empleados WHERE alias = ?', [origin.alias])
+            break;
+        default:
+            intentos = 0;
+            break;
     }
+    return intentos[0].intentos;
 }
-const agregandoIntentoByAlias = async (alias) => {
-    try {
-        await execute('UPDATE empledos SET intentos = intentos + 1 WHERE alias = ?', [alias]);
-    } catch (error) {
-        throw error;
-    }
-}
+
 
 const agregandoSuplantacionByAlias = async (alias) => {
     try {
@@ -215,6 +285,7 @@ const agregandoSuplantacionByDui = async (dui) => {
         throw error;
     }
 }
+
 
 /**
  * Método para obtener el cliente según los parametros especificados por el método
