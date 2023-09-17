@@ -21,9 +21,6 @@ const getError = (err = null) => {
         case 1064:
             msg = 'Error en la sentencia';
             break;
-        case 1146:
-            msg = 'Entidad especificada inexistente';
-            break;
         case 1065:
             msg = 'Consulta vacía';
             break;
