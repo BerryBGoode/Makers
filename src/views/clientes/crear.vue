@@ -185,7 +185,6 @@ export default {
             else if (cliente.clave.length > 72) { notificationInfo('Longitud máxima superada') }
             // verificando sí la contraseña contiene datos del usuario
             else if (cliente.clave.includes(cliente.apellidos) ||
-                cliente.clave.includes(cliente.cargo) ||
                 cliente.clave.includes(cliente.correo) ||
                 cliente.clave.includes(cliente.dui) ||
                 cliente.clave.includes(cliente.nombres) ||

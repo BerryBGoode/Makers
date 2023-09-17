@@ -30,9 +30,9 @@ const validateUsuario = async (req, res) => {
     // variables para enviar 1 mensaje al hacer la petición 
     let auth = false, msg, token, status = '', clave_db;
     // obtener los datos
-    const { dui, correo, clave } = req.body;
+    const { dui, correo, clave, alias } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ?', [dui, correo])
+        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = 1', [dui, correo, alias])
         if (CLAVE) {
 
             // obtener clave cuando
@@ -54,6 +54,65 @@ const validateUsuario = async (req, res) => {
                 res.cookie('token', token, { httpOnly: true });
 
             } else {
+                // Apartir de aquí empizar los intentos 
+
+                // obteniendo el dui y usuario a partir del dui, para verificar sí existe empleado con esos datos
+                const DUI = await execute('SELECT alias FROM empleados WHERE dui = ?', [dui])
+                const CORREO = await execute('SELECT alias FROM empleados WHERE correo = ?', [correo])
+                // const USUARIO = await execute('SELECT correo, dui FROM empleados WHERE alias = ?', [alias])
+                console.log(DUI)
+                console.log(CORREO)
+                if (DUI.length > 0 && CORREO.length > 0) {
+                    switch (true) {
+                        case DUI[0].alias === CORREO[0].alias && DUI[0].alias !== alias:
+                            console.log('Usuario y contraseña incorrectos');
+                            // Agregar intento fallido para el usuario con alias DUI[0].alias
+                            break;
+
+                        case DUI[0].alias === alias && CORREO[0].alias !== alias:
+                            console.log('Correo o contraseña incorrectos');
+                            break;
+
+                        case CORREO[0].alias === alias && DUI[0].alias !== alias:
+                            console.log('DUI o contraseña incorrectos');
+                            break;
+
+                        case CORREO[0].alias === alias && DUI[0].alias === alias:
+                            console.log('Contraseña incorrecta');
+                            break;
+
+                        default:
+                            console.log('Credenciales de distintos usuarios');
+                            break;
+                    }
+
+                } else if (DUI.length > 0) {
+                    console.log('agrega intetos según dui')
+                    // agregar intentos a usuario según dui
+                }
+                else if (CORREO.length > 0) {
+                    console.log('agrega intetos según correo')
+                    // agregar intentos a usuario según correo
+                }
+                else {
+                    console.log('nothing')
+                }
+                // if (DUI && CORREO) {
+                //     // verificar sí al obtener los usuarios según dui, correo y dui con correo, para agregar intentos
+                //     if (DUI[0].alias === CORREO[0].alias && DUI[0].alias !== alias) {
+                //         console.log('usuario contraseña')
+                //         // console.log('agregar intento a ' + USUARIO[0].alias)
+                //     } else if (DUI[0].alias === alias && CORREO[0].alias !== alias) {
+                //         console.log('correo o contraseña incorrecta')
+                //     } else if (CORREO[0].alias === alias && DUI[0].alias !== alias) {
+                //         console.log('dui o contraseña incorrecta')
+                //     } else if (CORREO[0].alias === alias && DUI[0].alias === alias) {
+                //         console.log('contraseña incorrecta')
+                //     } else if (CORREO[0].alias !== alias && DUI[0].alias !== alias) {
+                //         console.log('credenciales de distintos usuarios')
+                //     }
+                // }
+
                 msg = 'Usuario o contraseña incorrecta';
                 auth = false;
                 token = '';
@@ -65,6 +124,10 @@ const validateUsuario = async (req, res) => {
     }
 }
 
+
+/**
+ * Método que agrega 1 a los intentos
+ */
 /**
  * Método para obtener el cliente según los parametros especificados por el método
  * @param {*} dui dui del empleado a buscar

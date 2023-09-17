@@ -31,6 +31,10 @@
                                 required>
                         </div>
                         <div class="mb-3">
+                            <label for="alias" class="form-label">Alias</label>
+                            <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="clave" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
                                 maxlength="72" minlength="8" required>
@@ -74,8 +78,9 @@ export default {
                 logo_lc: logo,
                 empleado: {
                     correo: '',
+                    dui: '',
                     clave: '',
-                    dui: ''
+                    alias: ''
                 },
                 auth: {
                     state: '',
@@ -170,7 +175,7 @@ export default {
                     }
 
                 } catch (error) {
-                    notificationError(e.response.data);
+                    notificationError(error.response.data);
                 }
 
             }
