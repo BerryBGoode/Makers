@@ -377,7 +377,6 @@ const ROUTER = createRouter({
 const getSucursales = async () => {
     await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
         .then(sucursales => {
-            console.log(sucursales.data)
             store.state.sucursales = sucursales.data;
         })
         .catch((error) => {

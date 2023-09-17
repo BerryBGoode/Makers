@@ -59,26 +59,43 @@ const validateUsuario = async (req, res) => {
                 // obteniendo el dui y usuario a partir del dui, para verificar sí existe empleado con esos datos
                 const DUI = await execute('SELECT alias FROM empleados WHERE dui = ?', [dui])
                 const CORREO = await execute('SELECT alias FROM empleados WHERE correo = ?', [correo])
-                // const USUARIO = await execute('SELECT correo, dui FROM empleados WHERE alias = ?', [alias])
+                const USUARIO = await execute('SELECT alias FROM empleados WHERE alias = ?', [alias])
                 console.log(DUI)
                 console.log(CORREO)
-                if (DUI.length > 0 && CORREO.length > 0) {
+                console.log(USUARIO)
+                // veirficar cuando todos los datos estan agregandos ya a la db
+                if (DUI.length > 0 && CORREO.length > 0 && USUARIO.length > 0) {
                     switch (true) {
-                        case DUI[0].alias === CORREO[0].alias && DUI[0].alias !== alias:
+                        // verficando cuando el alias del correo y dui son iguales
+                        // pero el ingresado por el usuario no
+                        case DUI[0].alias === CORREO[0].alias && DUI[0].alias !== USUARIO[0].alias:
+                            // agregar suplantación
+                            agregandoSuplantacionByAlias(alias);
+                            // agregar 1 intento por correo y dui
+                            agregandoIntentoByNotAlias(correo, dui)
                             console.log('Usuario y contraseña incorrectos');
                             // Agregar intento fallido para el usuario con alias DUI[0].alias
                             break;
 
+                        // cuando se puso el correo de un empleado o usuario existente direferente del que se quiere acceder
                         case DUI[0].alias === alias && CORREO[0].alias !== alias:
-                            console.log('Correo o contraseña incorrectos');
+                            // agregar notificación de suplantación
+                            agregandoSuplantacionByCorreo(correo);
+                            // agregando 1 intento
+                            agregarIntentoByDui(dui, alias);
                             break;
 
+                        // cuando se puso el dui de un empleado existente (suplantación)
                         case CORREO[0].alias === alias && DUI[0].alias !== alias:
-                            console.log('DUI o contraseña incorrectos');
+                            // agregando notificación de suplantación
+                            agregandoSuplantacionByDui(dui);
+                            // agregando 1 intento
+                            agregarIntentoByCorreo(correo, alias)
                             break;
-
+                        // cuando solamente la contraseña es incorrecta
                         case CORREO[0].alias === alias && DUI[0].alias === alias:
-                            console.log('Contraseña incorrecta');
+                            // agregar intento
+                            agregarIntentoByDui(dui, alias);
                             break;
 
                         default:
@@ -86,32 +103,34 @@ const validateUsuario = async (req, res) => {
                             break;
                     }
 
-                } else if (DUI.length > 0) {
-                    console.log('agrega intetos según dui')
+                }
+                // verificar sí se encontró usuario por medio del dui
+                // cuando el correo no existe
+                else if ((DUI.length > 0 && CORREO.length <= 0 && USUARIO.length <= 0) ||
+                    (CORREO.length <= 0 && DUI.length > 0 && USUARIO.length > 0)) {
                     // agregar intentos a usuario según dui
+                    agregarIntentoByDui(dui, alias);
                 }
-                else if (CORREO.length > 0) {
-                    console.log('agrega intetos según correo')
+                // cuando es dui inexistente
+                // verificar sí se encontró usuario por medio del correo
+                else if ((CORREO.length > 0 && DUI.length <= 0 && USUARIO.length <= 0) ||
+                    (DUI.length <= 0 && CORREO.length >= 0 && USUARIO.length >= 0)) {
                     // agregar intentos a usuario según correo
+                    agregarIntentoByCorreo(correo, alias);
                 }
-                else {
-                    console.log('nothing')
+                // verificar sí se encontró un usuario por medio del nombre de usuario
+                else if (USUARIO.length > 0 && CORREO.length <= 0 && USUARIO.length <= 0) {
+                    // agregando intentos a usuario por medio del correo y dui
+                    // haciendo referencia que
+
+                    agregandoIntentoByAlias(alias)
                 }
-                // if (DUI && CORREO) {
-                //     // verificar sí al obtener los usuarios según dui, correo y dui con correo, para agregar intentos
-                //     if (DUI[0].alias === CORREO[0].alias && DUI[0].alias !== alias) {
-                //         console.log('usuario contraseña')
-                //         // console.log('agregar intento a ' + USUARIO[0].alias)
-                //     } else if (DUI[0].alias === alias && CORREO[0].alias !== alias) {
-                //         console.log('correo o contraseña incorrecta')
-                //     } else if (CORREO[0].alias === alias && DUI[0].alias !== alias) {
-                //         console.log('dui o contraseña incorrecta')
-                //     } else if (CORREO[0].alias === alias && DUI[0].alias === alias) {
-                //         console.log('contraseña incorrecta')
-                //     } else if (CORREO[0].alias !== alias && DUI[0].alias !== alias) {
-                //         console.log('credenciales de distintos usuarios')
-                //     }
-                // }
+                // cuando el usuario no existe
+                else if (USUARIO.length <= 0 && CORREO.length > 0 && DUI.length > 0) {
+                    // agreando intento
+                    agregandoIntentoByNotAlias(correo, dui)
+                }
+
 
                 msg = 'Usuario o contraseña incorrecta';
                 auth = false;
@@ -126,8 +145,77 @@ const validateUsuario = async (req, res) => {
 
 
 /**
- * Método que agrega 1 a los intentos
+ * Método que agrega 1 a los intentos, por correo (UPDATE)
+ * @param {*} correo correo del usuario que se agrega un intento
+ * @param {*} alias alias del usuario que se agrega un intento
  */
+const agregarIntentoByCorreo = async (correo, alias) => {
+    try {
+        await execute('UPDATE empleados SET intentos = intentos + 1 WHERE correo = ? AND alias = ?', [correo, alias]);
+    } catch (error) {
+        throw error;
+    }
+}
+/**
+ * Método para agregar intentos por medio del dui
+ * @param {*} dui dui del usuario a agregar inteto
+ * @param {*} alias alias del usuario a agregar inteto
+ */
+const agregarIntentoByDui = async (dui, alias) => {
+    try {
+        await execute('UPDATE empleados SET intentos = intentos + 1 WHERE dui = ? AND alias = ?', [dui, alias]);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const agregandoIntentoByNotAlias = async (correo, dui) => {
+    try {
+        await execute('UPDATE empleados SET intentos = intentos + 1 WHERE correo = ? AND dui = ?', [correo, dui]);
+    } catch (error) {
+        throw error;
+    }
+}
+const agregandoIntentoByAlias = async (alias) => {
+    try {
+        await execute('UPDATE empledos SET intentos = intentos + 1 WHERE alias = ?', [alias]);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const agregandoSuplantacionByAlias = async (alias) => {
+    try {
+        await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE alias = ?', [alias])
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * Método para agregar uno a la cantidad de veces que se ha intentado ingresar a una cuenta
+ * y casualmente puso el correo de un usuario existente
+ * @param {*} correo 
+ */
+const agregandoSuplantacionByCorreo = async (correo) => {
+    try {
+        await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE correo = ?', [correo]);
+    } catch (error) {
+        throw error;
+    }
+}
+/**
+ * Método para agregar 1 a la cantidad de veces que se ha probado un dato existente diferente a la credencia
+ * @param {*} dui 
+ */
+const agregandoSuplantacionByDui = async (dui) => {
+    try {
+        await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE dui = ? ', [dui])
+    } catch (error) {
+        throw error;
+    }
+}
+
 /**
  * Método para obtener el cliente según los parametros especificados por el método
  * @param {*} dui dui del empleado a buscar

@@ -81,6 +81,8 @@ CREATE TABLE empleados(
     id_horario BINARY(16) NOT NULL,
     id_cargo BINARY(16) NOT NULL,
     estado INT NOT NULL DEFAULT 1,
+    intentos INT DEFAULT 0,
+    suplantaciones INT DEFAULT 0,
     CONSTRAINT fk_empleado_sucursal FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal),
     CONSTRAINT fk_empleado_horario FOREIGN KEY (id_horario) REFERENCES horarios(id_horario),
     CONSTRAINT fk_empleado_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo),
@@ -242,3 +244,7 @@ FROM ordenes o
 WHERE MONTH(o.fecha) = '08'
 GROUP BY YEAR(o.fecha), MONTH(o.fecha), DAY(o.fecha)
 ORDER BY o.fecha DESC;
+
+ALTER TABLE empleados 
+ADD COLUMN intentos INT DEFAULT 0,
+ADD COLUMN suplantaciones INT DEFAULT 0 
