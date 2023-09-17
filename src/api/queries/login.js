@@ -32,7 +32,7 @@ const validateUsuario = async (req, res) => {
     // obtener los datos
     const { dui, correo, clave, alias } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = 1', [dui, correo, alias])
+        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
         if (CLAVE) {
 
             // obtener clave cuando
@@ -43,9 +43,11 @@ const validateUsuario = async (req, res) => {
 
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
-                // clave correcta
-                // obtener los datos del empleado encontrado
 
+                // reinciar a 0 los intentos
+                await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+                // clave correcta
+                // obtener los datos del empleado encontrado 
                 // crear token
                 token = await getToken(dui, correo, clave_db)
                 // enviar el estado de la autenticación
@@ -60,9 +62,7 @@ const validateUsuario = async (req, res) => {
                 const DUI = await execute('SELECT alias FROM empleados WHERE dui = ?', [dui])
                 const CORREO = await execute('SELECT alias FROM empleados WHERE correo = ?', [correo])
                 const USUARIO = await execute('SELECT alias FROM empleados WHERE alias = ?', [alias])
-                console.log(DUI)
-                console.log(CORREO)
-                console.log(USUARIO)
+
                 // veirficar cuando todos los datos estan agregandos ya a la db
                 if (DUI.length > 0 && CORREO.length > 0 && USUARIO.length > 0) {
                     switch (true) {
@@ -73,7 +73,6 @@ const validateUsuario = async (req, res) => {
                             agregandoSuplantacionByAlias(alias);
                             // agregar 1 intento por correo y dui
                             agregandoIntentoByNotAlias(correo, dui)
-                            console.log('Usuario y contraseña incorrectos');
                             // Agregar intento fallido para el usuario con alias DUI[0].alias
                             break;
 
