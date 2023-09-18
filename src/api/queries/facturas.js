@@ -39,10 +39,10 @@ const get = async (req, res) => {
                 if (res.status(200)) res.json(data);
             })
             .catch(() => {
-                res.status(500).send('Surgio un problema en el servidor');
+                res.status(500).json('Surgio un problema en el servidor');
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -67,10 +67,10 @@ const getDirección = async (req, res) => {
                 if (res.status(200)) res.json(data)
             })
             .catch(() => {
-                res.status(500).send('Surgio un problema en el servidor');
+                res.status(500).json('Surgio un problema en el servidor');
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -87,13 +87,13 @@ const store = (req, res) => {
             execute('INSERT INTO facturas(id_factura, id_orden, id_empleado, id_sucursal, estado) VALUES (UUID(), ?, ?, ?, ?)',
                 [orden, empleado, sucursal, estado])
                 .then(() => {
-                    res.status(201).send('Factura agregada')
+                    res.status(201).json('Factura agregada')
                 }).catch(rej => { res.status(500).send(getError(rej)) })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -113,13 +113,13 @@ const change = (req, res) => {
             execute('UPDATE facturas SET id_sucursal = ?, id_empleado = ?, estado = ? WHERE id_factura = ?',
                 [sucursal, empleado, estado, IDFACTURA])
                 .then(() => {
-                    res.status(201).send('Factura modificada')
+                    res.status(201).json('Factura modificada')
                 }).catch(rej => res.status(500).send(getError(rej)));
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -153,11 +153,11 @@ const one = async (req, res) => {
                 res.status(200).json(data[0]);
             }).catch(rej => {
                 // reponder con la respuesta denegada con el código y el error
-                res.status(500).send(getError(rej));
+                res.status(500).json(getError(rej));
             })
     } else {
         // enviar mensaje que necesita de una autenticación
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
     // este arreglo data sirve para guardar los datos después de haber formateado y ordenado los datos para retorar la respuesta
 }
@@ -172,13 +172,13 @@ const destroy = (req, res) => {
         // realizar transferencia sql o delete en este caso
         execute('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA])
             .then(() => {
-                res.status(201).send('Factura eliminada');
+                res.status(201).json('Factura eliminada');
             }).catch(rej => {
-                res.status(500).send({ error: getError(rej) })
+                res.status(500).json({ error: getError(rej) })
             })
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor');
+        res.status(500).json('Surgio un problema en el servidor');
     }
 }
 
