@@ -85,7 +85,7 @@ const ROUTER = createRouter({
         },
         {
             name: 'contraseña',
-            path: '/recuperacion',
+            path: '/restablecer',
             component: () => import('../views/empleados/formulario.vue')
         },
         

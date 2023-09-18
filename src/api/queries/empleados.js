@@ -257,7 +257,7 @@ const validatePassword = async (req, res) => {
             msg = 'Debe cambiar su contraseña';
             auth = false;
             token = '';
-            res.redirect('/forumlario'); // Redirigir a la página de cambio de contraseña
+            res.redirect('/restablecer') // Redirigir a la página de cambio de contraseña
           } else {
             // crear token
             token = await getToken(dui, correo, clave_db);
