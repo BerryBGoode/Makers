@@ -23,17 +23,17 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="nombres" class="form-label">Nombres</label>
-                            <input type="text" class="form-control" id="nombres" v-model="model.cliente.nombres"
+                            <input type="text" autocomplete="off" class="form-control" id="nombres" v-model="model.cliente.nombres"
                                 @keyup="validInputText(model.cliente.nombres)" required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="apellidos" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" id="apellidos" v-model="model.cliente.apellidos"
+                            <input type="text" autocomplete="off" class="form-control" id="apellidos" v-model="model.cliente.apellidos"
                                 @keyup="validInputText(model.cliente.apellidos)" required>
                         </div>
                     </div>
                     <label for="dui">DUI</label>
-                    <input type="text" class="form-control" id="dui" v-model="model.cliente.dui">
+                    <input type="text" autocomplete="off" class="form-control" id="dui" v-model="model.cliente.dui">
                 </div>
             </div>
             <hr>
@@ -45,11 +45,11 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" v-model="model.cliente.telefono" required>
+                            <input type="text" autocomplete="off" class="form-control" id="telefono" v-model="model.cliente.telefono" required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="correo" class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="correo" v-model="model.cliente.correo">
+                            <input type="email" autocomplete="off" class="form-control" id="correo" v-model="model.cliente.correo">
                         </div>
                     </div>
                 </div>
