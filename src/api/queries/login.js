@@ -12,6 +12,9 @@ const md5 = require('md5');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
 
+// definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
+const SUPLANTACION_MSG = 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio avisamos que alguien ha intentado iniciar sesión y ha agregado un dato perteneciente a tú usuario.\nTe recomendamos estar muy alerta a cualquier situación';
+const SUPLANTACION_SUB = 'AVISO DE SUPLANTACIÓN...';
 /**
  * Método para comprar la clave que front, con la clave de la database
  * @param {*} client clave que ingreso el cliente en el body de la petición
@@ -95,8 +98,6 @@ const validateUsuario = async (req, res) => {
                 if (autenticacion) {
                     // generar un pin random
                     const PIN = generatePIN(6);
-                    // $2a$10$BWcmIm7TGeQWY7QzkX6MjOUfFIeQCfaab7Qr9GMlaiyS10tUymRaW
-                    // $2a$10$VuoOWchOlzDd1lZgqK0Wner5mxgA/x/Y1LzxZ.EJuRUGvctzaQ8DC
                     // hacer un update con PIN hasheado
                     await execute('UPDATE empleados SET PIN = ? WHERE id_empleado = ?', [encrypt(PIN), id])
                     // enviando correo
@@ -119,9 +120,9 @@ const validateUsuario = async (req, res) => {
                 // Apartir de aquí empizar los intentos 
 
                 // obteniendo el dui y usuario a partir del dui, para verificar sí existe empleado con esos datos
-                const DUI = await execute('SELECT alias FROM empleados WHERE dui = ?', [dui])
+                const DUI = await execute('SELECT alias, correo FROM empleados WHERE dui = ?', [dui])
                 const CORREO = await execute('SELECT alias FROM empleados WHERE correo = ?', [correo])
-                const USUARIO = await execute('SELECT alias FROM empleados WHERE alias = ?', [alias])
+                const USUARIO = await execute('SELECT alias, correo FROM empleados WHERE alias = ?', [alias])
 
                 // veirficar cuando todos los datos estan agregandos ya a la db
                 if (DUI.length > 0 && CORREO.length > 0 && USUARIO.length > 0) {
@@ -131,6 +132,8 @@ const validateUsuario = async (req, res) => {
                         case DUI[0].alias === CORREO[0].alias && DUI[0].alias !== USUARIO[0].alias:
                             // agregar suplantación
                             agregandoSuplantacionByAlias(alias);
+                            // enviando correo de aviso de suplantación
+                            sendMail(USUARIO[0].correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregar 1 intento por correo y dui
                             agregandoIntentoByNotAlias(correo, dui)
                             // Agregar intento fallido para el usuario con alias DUI[0].alias
@@ -140,6 +143,8 @@ const validateUsuario = async (req, res) => {
                         case DUI[0].alias === alias && CORREO[0].alias !== alias:
                             // agregar notificación de suplantación
                             agregandoSuplantacionByCorreo(correo);
+                            // enviando avisao de suplantación al usuario
+                            sendMail(correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregando 1 intento
                             agregarIntentoByDui(dui, alias);
                             break;
@@ -148,8 +153,10 @@ const validateUsuario = async (req, res) => {
                         case CORREO[0].alias === alias && DUI[0].alias !== alias:
                             // agregando notificación de suplantación
                             agregandoSuplantacionByDui(dui);
+                            // enviando notificación de suplantación
+                            sendMail(DUI[0].correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregando 1 intento
-                            agregarIntentoByCorreo(correo, alias)
+                            agregarIntentoByCorreo(correo, alias);
                             break;
                         // cuando solamente la contraseña es incorrecta
                         case CORREO[0].alias === alias && DUI[0].alias === alias:
