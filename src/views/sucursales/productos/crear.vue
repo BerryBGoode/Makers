@@ -47,7 +47,7 @@
                         <div class="mb-3">
                             <label for="" class="form-label">Cantidad</label>
                             <!-- en max obtener la existencias del producto -->
-                            <input type="number" class="form-control" min="1" :max="input.stock" :readonly="input.read"
+                            <input type="number" autocomplete="off" class="form-control" min="1" :max="input.stock" :readonly="input.read"
                                 v-model="this.model.servicio.cantidad">
                         </div>
                     </form>
