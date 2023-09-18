@@ -230,7 +230,61 @@ const destroy = (req, res) => {
         res.status(500).json('Surgio un problema en el servidor')
     }
 }
+const validatePassword = async (req, res) => {
+    // variables para enviar 1 mensaje al hacer la petición 
+    let auth = false, msg, token, status = '', clave_db, cambio_contraseña;
+    // obtener los datos
+    const { clave } = req.body;
+    try {
+      const CLAVE = await execute('SELECT clave, cambio_contraseña FROM empleados WHERE clave = ?', [ clave ]);
+      if (CLAVE) {
+        // obtener clave y cambio_contraseña
+        for (let i = 0; i < CLAVE.length; i++) {
+          // obtener la clave
+          clave_db = CLAVE[i]['clave'];
+          cambio_contraseña = CLAVE[i]['cambio_contraseña'];
+        }
+        // compara claves'
+        if (clave_db && compare(clave, clave_db)) {
+          // clave correcta
+          // obtener los datos del empleado encontrado
+  
+          // calcular la diferencia entre la fecha actual y cambio_contraseña
+          const diffTime = Math.abs(new Date() - cambio_contraseña);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+  
+          if (diffDays > 85) {
+            msg = 'Debe cambiar su contraseña';
+            auth = false;
+            token = '';
+            res.redirect('/forumlario'); // Redirigir a la página de cambio de contraseña
+          } else {
+            // crear token
+            token = await getToken(dui, correo, clave_db);
+            // enviar el estado de la autenticación
+            auth = true;
+            // setear token a la cookie
+            res.cookie('token', token, { httpOnly: true });
+          }
+        } else {
+          msg = 'Contraseña incorrecta';
+          auth = false;
+          token = '';
+        }
+        res.status(201).send({ msg, auth, token });
+      } else {
+        msg = 'No se encontró la clave';
+        auth = false;
+        token = '';
+        res.status(401).send({ msg, auth, token });
+      }
+    } catch (error) {
+      console.log('Error en la validación de la contraseña');
+      console.log(error);
+      res.status(500).send({ error: getError(error) });
+    }
+  };
 
 
 // exportación de modulos
-module.exports = { get, getSucursales, getHorarios, getCargos, store, one, change, destroy }
+module.exports = { get, getSucursales,validatePassword, getHorarios, getCargos, store, one, change, destroy }
