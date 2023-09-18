@@ -10,9 +10,8 @@ const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
 const md5 = require('md5');
 const { getError } = require('../helpers/errors');
-/**
- * método para compara claves
- */
+const { sendMail } = require('../helpers/mailer');
+
 /**
  * Método para comprar la clave que front, con la clave de la database
  * @param {*} client clave que ingreso el cliente en el body de la petición
@@ -23,26 +22,61 @@ const compare = (client, db) => {
     return (compareSync(client, db))
 }
 
+
+const generatePIN = (length) => {
+    // definiedo los caracteres que pueden ir en el pin
+    let caracters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    let result = '';
+
+    // agregando al result un random de los caracteres, según la longitud
+    for (let i = 0; i < length; i++) {
+
+        // creando el indice que sea el resultado de un número random * la cantidad de caracteres que tiene caracters
+        let index = Math.floor(Math.random() * caracters.length)
+
+        // alamenando el indice según el index encontrado de caracters
+        result += caracters.charAt(index);
+
+    }
+    // retornar PIN
+    return result
+}
+
 /**
  * Método para validar sí los datos que se envian del login existen
  */
 const validateUsuario = async (req, res) => {
     // variables para enviar 1 mensaje al hacer la petición 
-    let auth = false, msg, token, status = '', clave_db;
+    let auth = false, msg, token, status = '', clave_db, id;
     // obtener los datos
-    const { dui, correo, clave, alias } = req.body;
+    const { dui, correo, clave, alias, autenticacion } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+        const CLAVE = await execute('SELECT clave, id_empleado FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
         if (CLAVE) {
 
             // obtener clave cuando
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
+                // obteniendo el id del empleado encontrado
+                id = CLAVE[i]['id_empleado']
             }
 
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
+
+                // segunda autenticación
+
+                // verificar sí el usuario ha deceado autenticarse otra vez
+                if (autenticacion) {
+                    // generar un pin random
+                    const PIN = generatePIN(6);
+                    // hacer un update con PIN hasheado
+                    await execute('UPDATE empleados SET PIN = ? WHERE id_empleado = ?', [encrypt(PIN), id])
+                    // enviando correo
+
+                    sendMail(correo, 'Segunda autenticación', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio enviamos tú PIN para seguir con tú autenticación. \nTú PIN es: ' + PIN);
+                }
 
                 // reinciar a 0 los intentos
                 await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
@@ -140,7 +174,6 @@ const validateUsuario = async (req, res) => {
         res.status(500).send(getError(error))
     }
 }
-
 
 /**
  * Método que agrega 1 a los intentos, por correo (UPDATE)

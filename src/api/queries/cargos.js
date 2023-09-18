@@ -38,7 +38,7 @@ const get = (req, res) => {
             })
             .catch(er => { res.status(500).send('Surgio un problema en el servidor') });
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).json('Debe autenticarse antes')
     }
 
 }

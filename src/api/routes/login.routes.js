@@ -3,7 +3,7 @@ const { Router } = require('express')
 // requerir de los métodos para realizar queries
 const {
     validateUsuario, getInfo, getConfig, change, verificarSucursales,
-    verificarEmpleados, getDataPrimerEmpleado
+    verificarEmpleados, getDataPrimerEmpleado, authenCorreo
 } = require('../queries/login')
 
 // inicializar router

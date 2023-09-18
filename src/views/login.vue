@@ -80,7 +80,8 @@ export default {
                     correo: '',
                     dui: '',
                     clave: '',
-                    alias: ''
+                    alias: '',
+                    autenticacion: false
                 },
                 auth: {
                     state: '',
@@ -157,7 +158,11 @@ export default {
 
             } else {
                 try {
-                    let res = await axios.post('http://localhost:3000/api/auth', this.model.empleado);
+                    // verificando sí decea segunda autenticación
+                    if (await alertQuestion('Desea por mayor seguridad, autenticarse otra vez?', null, 'Aceptar', null, null, true)) {
+                        this.model.empleado.autenticacion = true;
+                    }
+                    let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);
                     if (!res.data.auth) this.msg = res.data.msg;
                     // creando token
                     if (res.data.auth !== false) {
@@ -173,6 +178,7 @@ export default {
                         this.$router.push('/inicio');
                         await notificationSuccess('Sesión iniciada correctamente', 3500);
                     }
+
 
                 } catch (error) {
                     notificationError(error.response.data);
