@@ -80,7 +80,7 @@ const getSucursales = async (req, res) => {
         if (res.status(200)) res.json(SUCURSALES);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).json('Surgio un problema en el servidor')
     }
 }
 
@@ -106,7 +106,7 @@ const getHorarios = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).json('Surgio un problema en el servidor')
     }
 }
 
@@ -130,7 +130,7 @@ const getCargos = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).json('Surgio un problema en el servidor')
     }
 }
 
@@ -146,10 +146,10 @@ const store = (req, res) => {
         execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
             .then(() => {
-                res.status(201).send('Empleado agregado')
+                res.status(201).json('Empleado agregado')
             })
             .catch(rej => {
-                res.status(406).send({ error: getError(rej) })
+                res.status(406).json({ error: getError(rej) })
             })
     } catch (e) {
         console.log(e)
@@ -183,7 +183,7 @@ const one = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un error en el servidor');
+        res.status(500).json('Surgio un error en el servidor');
     }
 }
 
@@ -200,10 +200,10 @@ const change = (req, res) => {
         execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, planilla = ?, telefono = ?, correo = ?, id_sucursal = ?, id_horario = ?, id_cargo = ?, alias = ? WHERE id_empleado = ?',
             [nombres, apellidos, dui, planilla, telefono, correo, sucursal, horario, cargo, alias, IDEMPLEADO])
             .then(() => {
-                res.status(201).send('Empleado modificado');
+                res.status(201).json('Empleado modificado');
             }).catch(rej => {
                 console.log(rej)
-                res.status(406).send({ error: getError(rej['errno']) })
+                res.status(406).json({ error: getError(rej['errno']) })
             })
     } catch (error) {
         console.log(error);
@@ -220,14 +220,14 @@ const destroy = (req, res) => {
         // realizar transferencia sql o delete en este caso
         execute('DELETE FROM empleados WHERE id_empleado = ?', [IDEMPLEADO])
             .then(() => {
-                res.status(201).send('Empleado eliminado');
+                res.status(201).json('Empleado eliminado');
             }).catch(rej => {
-                res.status(406).send({ error: getError(rej['errno']) })
+                res.status(406).json({ error: getError(rej['errno']) })
             })
 
     } catch (error) {
         console.log(error);
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).json('Surgio un problema en el servidor')
     }
 }
 
