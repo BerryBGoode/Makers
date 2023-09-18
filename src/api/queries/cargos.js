@@ -36,9 +36,9 @@ const get = (req, res) => {
                 });
                 if (res.status(200)) res.json(data)
             })
-            .catch(er => { res.status(500).send('Surgio un problema en el servidor') });
+            .catch(er => { res.status(500).json('Surgio un problema en el servidor') });
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).json('Debe autenticarse antes')
     }
 
 }
@@ -58,16 +58,16 @@ const store = async (req, res) => {
             execute('INSERT INTO  cargos(id_cargo, cargo) VALUES (UUID(), ?)', [cargo])
                 .then(() => {
                     // enviar mensaje exitoso
-                    res.status(201).send('Cargo agregado');
+                    res.status(201).json('Cargo agregado');
                 }).catch(rej => {
                     console.log(rej)
-                    res.status(500).send('Surgio un problema en el servidor');
+                    res.status(500).json('Surgio un problema en el servidor');
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
