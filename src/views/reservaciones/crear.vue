@@ -28,11 +28,11 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="nombres" v-model="cliente.nombre" readonly>
+                                <input type="text" autocomplete="off" class="form-control" id="nombres" v-model="cliente.nombre" readonly>
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
+                                <input type="text" autocomplete="off" class="form-control" id="apellidos" v-model="cliente.apellido" readonly>
                             </div>
                         </div>
                     </div>
@@ -59,11 +59,11 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" class="form-control" id="nombres" v-model="empleado.nombre" readonly>
+                                <input type="text" autocomplete="off" class="form-control" id="nombres" v-model="empleado.nombre" readonly>
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" id="apellidos" v-model="empleado.apellido" readonly>
+                                <input type="text" autocomplete="off" class="form-control" id="apellidos" v-model="empleado.apellido" readonly>
                             </div>
                         </div>
                     </div>
