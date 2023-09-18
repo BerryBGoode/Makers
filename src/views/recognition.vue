@@ -5,38 +5,28 @@
         <button type="button" class="btn btn-makers" @click="stop">Stop</button>
     </div>
 </template>
-<script setup>
-// const recognition = new webkitSpeechRecognition();
+<script>
 
+export default {
+    data() {
+        let audioctx = new AudioContext();
 
-// console.log(recognition)
+        let sample = audioctx.sampleRate;
+        let frames ;
+        return {
 
+        }
+    },
+    created() {
 
-
-const recognition = new webkitSpeechRecognition();
-
-recognition.lang = 'es-ES';
-recognition.continuos = true;
-recognition.interimResult = false;
-
-const start = () => {
-    recognition.start();
+    },
+    methods: {
+        start() {
+            this.recognition.start();
+        },
+        stop() {
+            this.recognition.stop();
+        }
+    }
 }
-
-const stop = () => {
-    recognition.abort();
-}
-recognition.onresult = event => {
-    const transcript = event.results[0][0].transcript;
-    console.log(transcript);
-
-    const utterance = new SpeechSynthesisUtterance(transcript);
-    utterance.onend = () => {
-        const pitch = utterance.pitch;
-        console.log(pitch);
-        // Aquí puedes utilizar el valor de pitch para identificar patrones únicos en la voz del usuario
-    };
-    window.speechSynthesis.speak(utterance);
-};
-
 </script>

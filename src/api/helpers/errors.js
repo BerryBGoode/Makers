@@ -18,17 +18,19 @@ const getError = (err = null) => {
         case 1451:
             msg = 'No se puede eliminar debido a que tiene datos asociados';
             break;
-        case 1064:
-            msg = 'Error en la sentencia';
-            break;
-        case 1065:
-            msg = 'Consulta vacía';
-            break;
+        // case 1064:
+        //     msg = 'Error en la sentencia';
+        //     break;
+        // case 1146:
+        //     msg = 'Entidad especificada inexistente';
+        // break;
+        // case 1065:
+        //     msg = 'Consulta vacía';
+        //     break;
         case -4078:
             msg = 'Error al conectar con el servidor de base de datos';
             break;
         default:
-
             msg = 'Surgio un problema en el servidor';
             break;
     }

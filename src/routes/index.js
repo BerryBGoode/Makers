@@ -94,6 +94,11 @@ const ROUTER = createRouter({
             // component: login,
         },
         {
+            name: 'recognition',
+            path: '/recognition',
+            component: () => import('../views/recognition.vue')
+        },
+        {
             name: 'primeraSucursal',
             path: '/primer/sucursal',
             component: () => import('../views/primerUso/sucursal.vue'),
