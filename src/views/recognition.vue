@@ -12,7 +12,7 @@ export default {
         let audioctx = new AudioContext();
 
         let sample = audioctx.sampleRate;
-        let frames ;
+        let frames;
         return {
 
         }

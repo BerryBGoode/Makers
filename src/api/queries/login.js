@@ -42,6 +42,31 @@ const generatePIN = (length) => {
     return result
 }
 
+
+const validatePIN = async (req, res) => {
+    // variable para identificar sí el pin es correcto
+    let auth = false, _pin, _id;
+    // obtener el pin enviado por el cliente y los datos del usuario
+    const { pin, dui, correo, alias } = req.body
+    // obteniendo el pin de la db
+    let db = await execute('SELECT PIN, id_empleado FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+    // recuperar de los arreglos los datos en seco
+    for (let i = 0; i < db.length; i++) {
+        // obteniendo el pin de la db
+        _pin = db[i]['PIN']
+        // obteniedl id de la db
+        _id = db[i]['id_empleado']
+    }
+    // comparar pin
+    if (db && compare(pin, _pin)) {
+        // reinciar a 0 los intentos
+        await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ? AND id_empleado = ?', [dui, correo, alias, 1, _id])
+        auth = true;
+        res.status(200).json(auth);
+    } else {
+        res.status(500).json('Surgio un problema al buscar PIN');
+    }
+}
 /**
  * Método para validar sí los datos que se envian del login existen
  */
@@ -61,7 +86,6 @@ const validateUsuario = async (req, res) => {
                 // obteniendo el id del empleado encontrado
                 id = CLAVE[i]['id_empleado']
             }
-
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
 
@@ -71,12 +95,14 @@ const validateUsuario = async (req, res) => {
                 if (autenticacion) {
                     // generar un pin random
                     const PIN = generatePIN(6);
+                    // $2a$10$BWcmIm7TGeQWY7QzkX6MjOUfFIeQCfaab7Qr9GMlaiyS10tUymRaW
+                    // $2a$10$VuoOWchOlzDd1lZgqK0Wner5mxgA/x/Y1LzxZ.EJuRUGvctzaQ8DC
                     // hacer un update con PIN hasheado
                     await execute('UPDATE empleados SET PIN = ? WHERE id_empleado = ?', [encrypt(PIN), id])
                     // enviando correo
-
                     sendMail(correo, 'Segunda autenticación', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio enviamos tú PIN para seguir con tú autenticación. \nTú PIN es: ' + PIN);
                 }
+
 
                 // reinciar a 0 los intentos
                 await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
@@ -515,5 +541,5 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN
 };
