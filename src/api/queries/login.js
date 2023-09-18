@@ -12,6 +12,7 @@ const md5 = require('md5');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
 
+
 // definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
 const SUPLANTACION_MSG = 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio avisamos que alguien ha intentado iniciar sesión y ha agregado un dato perteneciente a tú usuario.\nTe recomendamos estar muy alerta a cualquier situación';
 const SUPLANTACION_SUB = 'AVISO DE SUPLANTACIÓN...';
@@ -406,6 +407,68 @@ const getConfig = async (req, res) => {
     }
 }
 
+const restablecer = async (req, res) => {
+    const ID = req.headers.authorization;
+    if (ID) {
+        try {
+            // realizar query
+            const EMPLEADO = await execute('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empleados_view WHERE id_empleado = ?', [ID])
+            // retornar los datos sí la respuesta es la esperada
+            if (res.status(200)) res.send(EMPLEADO[0]);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Surgio un problema en el servidor');
+        }
+
+    } else {
+        res.status(401).send('Debe autenticarse antes')
+    }
+}
+
+const cambiarClave = async (req, res) => {
+    let { clave } = req.body;
+    if (req.headers.authorization) {
+        if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
+            clave = encrypt(clave);
+            execute('UPDATE empleados SET clave = ? WHERE id_empleado = ?',
+                [clave, req.headers.authorization])
+                .then(() => {
+                    console.log('modificada')
+                    res.status(201).send('Datos modificados');
+                }).catch(rej => {
+                    res.status(500).send(getError(rej));
+                })
+        } else {
+            res.status(500).send('La nueva contraseña debe ser diferente a la actual');
+        }
+    } else {
+        console.log('xd')
+    }
+
+}
+
+
+const validateRecuperación = async (req, res) => {
+    // obtener los datos
+    const { dui, alias, correo } = req.body;
+    console.log(req.body)
+    // verfiicar sí existe usuario
+    const EMPLEADO = await execute('SELECT id_empleado FROM empleados WHERE alias = ? AND dui = ? AND correo = ?', [alias, dui, correo])
+    if (EMPLEADO.length > 0) {
+        // obtener id
+
+        let id = {
+            id_empleado: getBinary(EMPLEADO, 'id_empleado')[0]
+        }
+        let url = 'http://localhost:5173/#/restablecer=' + id.id_empleado
+        // enviar correo con url
+        sendMail(correo, 'Recuperación de contraseña', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio te enviamos la direccionar para poder restablecer contraseña\n' + url)
+        res.status(200).json('Verificar correo');
+    } else {
+        res.status(500).json('Usuario no encontrado');
+    }
+}
+
 /**
  * Método para mostrar datos pequeños del usuario
  */
@@ -416,7 +479,7 @@ const getInfo = async (req, res) => {
             // obtener id del empleado (deficando base64)
             const ID = jwt.decode(TOKEN);
             // realizar query
-            execute('SELECT alias FROM empleados_view WHERE id_empleado = ?', [ID])
+            execute('SELECT alias,cargo FROM empleados_view WHERE id_empleado = ?', [ID])
                 // retornar los datos sí la respuesta es la esperada
                 .then(rows => { res.send(rows[0]); })
                 .catch(rej => { console.log(rej); res.send(getError(rej)) })
@@ -548,5 +611,5 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave
 };

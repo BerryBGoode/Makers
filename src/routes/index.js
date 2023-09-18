@@ -99,6 +99,11 @@ const ROUTER = createRouter({
             component: () => import('../views/recognition.vue')
         },
         {
+            name: 'Recuperacion',
+            path: '/restablecer=:id',
+            component: () => import('../views/recuperacion/correo.vue')
+        },
+        {
             name: 'primeraSucursal',
             path: '/primer/sucursal',
             component: () => import('../views/primerUso/sucursal.vue'),
@@ -407,6 +412,9 @@ ROUTER.beforeEach(async (to, from, next) => {
         await getSucursales();
         // obteniendo la cantidad de empleados existentes cuando no hay registro
         await getEmpleados();
+
+
+        console.log(to)
         // verificando que si no hay sucursales y se quiere ir a la de sucursales
         if (store.state.sucursales <= 0 && to.path === '/primer/sucursal') {
             next();
@@ -417,7 +425,12 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
         // verificando sí hay más sucursales y empleados y no se quiere ir a login
         else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
-            (localStorage.getItem('auth')) ? next() : next('/login');
+            // verificar sí se quiere ir a restablecer contraseña
+            if (to.path.includes('/restablecer')) {
+                next();
+            } else {
+                (localStorage.getItem('auth')) ? next() : next('/login');
+            }
         }
         // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
         else if (store.state.sucursales === 0) {

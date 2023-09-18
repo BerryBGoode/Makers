@@ -8,6 +8,7 @@ const store = createStore({
         usuario: '',
         empleados: null,
         sucursales: null,
+        cargo: '',
         config: {
             headers: {
                 authorization: localStorage.getItem('auth')

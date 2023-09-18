@@ -111,22 +111,42 @@ export default {
                         <div class="children-form">
                             <div class="mb-3">
                                 <label for="dui" class="form-label">DUI</label>
-                                <input type="text" class="form-control" id="dui" required>
+                                <input type="text" class="form-control" id="dui_rec" required name="dui">
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" required>
+                                <input type="email" class="form-control" id="correo_rec" required name="correo">
                             </div>
                             <div class="mb-3">
                                 <label for="alias" class="form-label">Alias</label>
-                                <input type="text" class="form-control" id="alias" maxlength="20" required>
+                                <input type="text" class="form-control" id="alias_rec" maxlength="20" required name="alias">
                             </div>
                         </div>
                     </div>
                 </div>
             </form>`;
             if (notif) {
-                alertRequest(null, null, html);
+                alertRequest(() => {
+                    // extraer los datos
+                    let data = {
+                        dui: document.getElementById('dui_rec').value,
+                        correo: document.getElementById('correo_rec').value,
+                        alias: document.getElementById('alias_rec').value
+                    }
+                    console.log(data)
+                    // realizar petición
+                    return axios.post('http://localhost:3000/api/auth/recuperacion/correo/', data)
+                        .then(res => {
+                            Swal.showValidationMessage(
+                                res.data
+                            )
+                        }).catch(rej => {
+                            Swal.showValidationMessage(
+                                `Request failed: ${rej}`
+                            )
+                        })
+
+                }, html);
             } else {
                 let confirm = await alertRequest(null, null, html);
                 console.log(confirm)
@@ -219,7 +239,6 @@ export default {
                                         if (response.statusText === 'OK') {
                                             this.beforeAuth(res.data.auth, res.data.token)
                                         }
-                                        console.log(res)
                                     }).catch(rej => {
                                         Swal.showValidationMessage(
                                             `Request failed: ${rej}`
