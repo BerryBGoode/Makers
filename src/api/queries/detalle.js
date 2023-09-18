@@ -37,9 +37,9 @@ const get = async (req, res) => {
                 // retornar los datos a la petición
                 if (res.status(200)) res.json(data)
             })
-            .catch(() => { res.status(500).send('Surgio un problema en el servidor'); })
+            .catch(() => { res.status(500).json('Surgio un problema en el servidor'); })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -66,13 +66,13 @@ const getServicios = async (req, res) => {
                     if (res.status(200)) res.json(filled)
                 })
                 .catch(() => {
-                    res.status(500).send('Surgio un problema en servidor');
+                    res.status(500).json('Surgio un problema en servidor');
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).json('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -90,19 +90,19 @@ const store = async (req, res) => {
                 execute('INSERT INTO detalles_ordenes(id_detalle, id_detalle_servicio, cantidad, descuento, id_orden) VALUES (UUID(), ?, ?, ?, ?)',
                     [servicio, cantidad, descuento, orden])
                     .then(() => {
-                        if (res.status(201)) res.send('Detalle agregado');
+                        if (res.status(201)) res.json('Detalle agregado');
                     })
                     .catch(rej => {
-                        res.status(500).send(getError(rej['errno']));
+                        res.status(500).json(getError(rej['errno']));
                     })
             } else {
                 res.send('Cantidad máxima superada')
             }
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -124,10 +124,10 @@ const change = async (req, res) => {
                     [servicio, cantidad, descuento, orden, DETALLE])
                     .then(() => {
                         // enviar la respuesta del servidor cuando el proceso se pudo realizar
-                        if (res.status(201)) res.send('Detalle modificado');
+                        if (res.status(201)) res.json('Detalle modificado');
                     }).catch(rej => {
                         // en caso de que suceda un error enviar un 500 y obtener el código de error y enviar mensaje
-                        res.status(500).send(getError(rej['errno']));
+                        res.status(500).json(getError(rej['errno']));
                     })
             } else {
                 // dado caso la cantidad exceda
@@ -135,11 +135,11 @@ const change = async (req, res) => {
             }
         } catch (error) {
             // sí llega a pasar un error enviar un 500 más el error
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).json('Surgio un problema en el servidor')
         }
     } else {
         // síno se ha iniciado sesión
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).json('Debe autenticarse antes')
     }
 }
 
@@ -175,7 +175,7 @@ const one = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).send({ error: 'Surgio un problema en el servidor' })
+        res.status(500).json({ error: 'Surgio un problema en el servidor' })
     }
 }
 
@@ -190,13 +190,13 @@ const destroy = (req, res) => {
         execute('DELETE FROM detalles_ordenes WHERE id_detalle = ?', [ID])
             // sí no huviera hubieron errores
             .then(() => {
-                res.status(201).send('Detalle eliminado')
+                res.status(201).json('Detalle eliminado')
             })
             .catch(rej => {
-                res.status(500).send(getError(rej))
+                res.status(500).json(getError(rej))
             })
     } catch (error) {
-        res.status(500).send('Surgio un problema en el servidor')
+        res.status(500).json('Surgio un problema en el servidor')
     }
 }
 
