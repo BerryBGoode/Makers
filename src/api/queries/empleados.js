@@ -156,7 +156,7 @@ const store = (req, res) => {
             const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
             let password = encrypt(clave)
             // realizar query o insert y enviarle los parametros
-            execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias, fecha_ingreso) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)',
                 [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
                 .then(() => {
                     res.status(201).send('Empleado agregado');

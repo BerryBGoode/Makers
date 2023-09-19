@@ -4,13 +4,16 @@ const { mysql, pg } = require('../db');
 const { compareSync } = require('bcryptjs')
 // requeriendo jwt o jsonwebtoken, para crear token cuando se inicie sesión
 const jwt = require('jsonwebtoken');
-const { encrypt, convertToBase64, } = require('../helpers/encrypt');
+const { encrypt, convertToBase64, convertToBin, } = require('../helpers/encrypt');
 
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
 const md5 = require('md5');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
+
+let current = new Date;
+const HOY = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
 
 
 // definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
@@ -71,32 +74,38 @@ const validatePIN = async (req, res) => {
         res.status(500).json('Surgio un problema al buscar PIN');
     }
 }
+
 /**
  * Método para validar sí los datos que se envian del login existen
  */
 const validateUsuario = async (req, res) => {
     // variables para enviar 1 mensaje al hacer la petición 
-    let auth = false, msg, token, status = '', clave_db, id;
+    let auth = false, msg, token, status = '', modif = false, clave_db, id, fecha;
     // obtener los datos
     const { dui, correo, clave, alias, autenticacion } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave, id_empleado FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+        const CLAVE = await execute('SELECT clave, id_empleado, fecha_ingreso FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
         if (CLAVE) {
 
             // obtener clave cuando
+            id = getBinary(CLAVE, 'id_empleado')[0];
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
                 // obteniendo el id del empleado encontrado
-                id = CLAVE[i]['id_empleado']
+                // obtener la fecha que se ingreso
+                fecha = CLAVE[i]['fecha_ingreso']
             }
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
 
+                console.log(CLAVE[0]['id_empleado'])
+                console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
                 // segunda autenticación
 
-                // verificar sí el usuario ha deceado autenticarse otra vez
-                if (autenticacion) {
+                console.log(id)
+                // // verificar sí el usuario ha deceado autenticarse otra vez
+                if (autenticacion === true) {
                     // generar un pin random
                     const PIN = generatePIN(6);
                     // hacer un update con PIN hasheado
@@ -114,9 +123,23 @@ const validateUsuario = async (req, res) => {
                 token = await getToken(dui, correo, clave_db)
                 // enviar el estado de la autenticación
                 auth = true;
-                // setear token a la cookie
-                res.cookie('token', token, { httpOnly: true });
 
+
+                // Crear dos objetos Date para representar las fechas que deseas comparar
+                let fecha1 = new Date(HOY);
+                let fecha2 = new Date(fecha);
+
+                // Calcular la diferencia en milisegundos
+                let diferenciaEnMilisegundos = fecha1 - fecha2;
+
+                // Calcular la diferencia en días
+                let diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+
+                // calculando diferencia
+                (Math.round(diferenciaEnDias) >= 1) ? modif = true : modif = false;
+
+                // verificar sí han pasado los días establecidos para cambiar la contraseña
+                // 
             } else {
                 // Apartir de aquí empizar los intentos 
 
@@ -196,13 +219,11 @@ const validateUsuario = async (req, res) => {
                     // agreando intento
                     agregandoIntentoByNotAlias(correo, dui)
                 }
-
-
                 msg = 'Usuario o contraseña incorrecta';
                 auth = false;
                 token = '';
             }
-            res.status(200).send({ msg, auth, token });
+            res.status(200).send({ msg, auth, token, modif, id });
         }
     } catch (error) {
         res.status(500).send(getError(error))
@@ -430,8 +451,8 @@ const cambiarClave = async (req, res) => {
     if (req.headers.authorization) {
         if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
             clave = encrypt(clave);
-            execute('UPDATE empleados SET clave = ? WHERE id_empleado = ?',
-                [clave, req.headers.authorization])
+            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
+                [clave, HOY, req.headers.authorization])
                 .then(() => {
                     console.log('modificada')
                     res.status(201).send('Datos modificados');
@@ -531,8 +552,9 @@ const change = async (req, res) => {
             else {
                 if (!compareSync(clave, await getClaveDB(ID))) {
                     clave = encrypt(clave);
-                    execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ? WHERE id_empleado = ?',
-                        [nombres, apellidos, dui, telefono, correo, clave, alias, ID])
+
+                    execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ?, fecha_ingreso = ? WHERE id_empleado = ?',
+                        [nombres, apellidos, dui, telefono, correo, clave, alias, HOY, ID])
                         .then(() => {
                             res.status(201).send('Datos modificados');
                         }).catch(rej => {

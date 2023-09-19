@@ -67,3 +67,33 @@ export const formatDateToYYYYMMDD = date => {
     // retornar la fecha en formato yyyy-mm-dd
     return `${year}-${month}-${day}`;
 }
+
+/**
+ * Método para convertir el binario de la consulta a binario
+ */
+export const convertToBin = (bin) => {
+    (bin) ? bin = Buffer.from(bin).toString('binary') : bin = null
+    return bin
+}
+
+/**
+ * método para obtener id en formato binario
+ * de los datos obtenidos
+ * @param {*} data respuesta con los datos recuperados
+ * @param {*} col  campo 'Buffer' extraido de la db, la col debe existir en el parametro data
+ * @returns binary
+ */
+export const getBinary = (data, col = null) => {
+    let id = [];
+    console.log(data)
+    // recorrer los datos obtenidos
+    if (col) {
+        data.forEach(element => {
+            // convertir a binario el elemento que se este recorriendo
+            id.push(convertToBin(element[col]));
+        });
+    } else {
+        id.push(convertToBin(data))
+    }
+    return id;
+}
