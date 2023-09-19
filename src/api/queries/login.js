@@ -229,6 +229,24 @@ const validateUsuario = async (req, res) => {
     }
 }
 
+// Método para obtener el cargo del empleado registrados
+const getCargo = async (req, res) => {
+    // verificar autenticación
+    if (req.headers.authorization) {
+        // obtener id del token
+        const ID = jwt.decode(req.headers.authorization);
+        // obtener el cargo
+        let cargo = await execute('SELECT cargo FROM empleados_view WHERE id_empleado = ?', [ID])
+        // verificar sí realizo la petición
+        if (cargo) {
+            // retornar respuesta
+            res.status(200).json(cargo[0].cargo)
+        }
+    } else {
+        res.status(401).json('Debe auntenticarse antes');
+    }
+}
+
 /**
  * Método que agrega 1 a los intentos, por correo (UPDATE)
  * @param {*} correo correo del usuario que se agrega un intento
@@ -632,5 +650,5 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave, getCargo
 };

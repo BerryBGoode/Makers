@@ -3,7 +3,8 @@ const { Router } = require('express')
 // requerir de los métodos para realizar queries
 const {
     validateUsuario, getInfo, getConfig, change, verificarSucursales,
-    verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave
+    verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave,
+    getCargo
 } = require('../queries/login')
 
 // inicializar router
@@ -19,6 +20,7 @@ LOGIN.get('/get/primerempleado', getDataPrimerEmpleado);
 LOGIN.post('/correo', validatePIN);
 LOGIN.post('/recuperacion/correo/', validateRecuperación);
 LOGIN.get('/restablecer', restablecer);
-LOGIN.post('/restablecer', cambiarClave)
+LOGIN.post('/restablecer', cambiarClave);
+LOGIN.get('/cargo', getCargo);
 
 module.exports = LOGIN

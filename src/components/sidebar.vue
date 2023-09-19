@@ -123,6 +123,15 @@ export default {
                                 { option: 'Ordenes', route: '/ordenes' }
                             ]
                             break;
+
+                        case 'Barbero':
+                            this.options = [
+                                { option: 'Inicio', route: '/inicio' },
+                                { option: 'Clientes', route: '/clientes' },
+                                { option: 'Reservaciones', route: '/reservaciones' },
+                                { option: 'Ordenes', route: '/ordenes' },
+                            ]
+                            break;
                         default:
                             break;
                     }
