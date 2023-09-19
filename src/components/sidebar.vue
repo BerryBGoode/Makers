@@ -70,27 +70,85 @@
 
 <script>
 // importando componentes para enrutar
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink, RouterView } from 'vue-router';
+import store from '../store';
+import { notificationError } from '../components/alert.vue';
+import axios from 'axios';
 // funcionalidades del componente
 export default {
     // nombre del componente
-    name: "sidebar",
+    name: 'sidebar',
     data() {
         return {
             // lista con las optiones que puede acceder el usuario
             options: [
-                { option: "Inicio", route: "/inicio" },
-                { option: "Servicios", route: "/servicios" },
-                { option: "Productos", route: "/productos" },
-                { option: "Clientes", route: "/clientes" },
-                { option: "Empleados", route: "/empleados" },
-                { option: "Reservaciones", route: "/reservaciones" },
-                { option: "Ordenes", route: "/ordenes" },
-                { option: "Sucursales", route: "/sucursales" },
-                { option: "Horarios", route: "/horarios" },
+
             ],
-            logo: './../src/assets/img/logos/logo_blanco.png'
+            logo: './../src/assets/img/logos/logo_blanco.png',
+            cargo: ''
         };
     },
+    methods: {
+        // método para obtener los datos del empleado loggeado
+        getEmpleado() {
+            // realizar petición
+            axios.get('http://localhost:3000/api/auth/', store.state.config)
+                .then(res => {
+                    store.state.cargo = res.data.cargo;
+
+                    switch (store.state.cargo) {
+                        case 'Gerente':
+                            this.options = [
+                                { option: 'Inicio', route: '/inicio' },
+                                { option: 'Servicios', route: '/servicios' },
+                                { option: 'Productos', route: '/productos' },
+                                { option: 'Clientes', route: '/clientes' },
+                                { option: 'Empleados', route: '/empleados' },
+                                { option: 'Reservaciones', route: '/reservaciones' },
+                                { option: 'Ordenes', route: '/ordenes' },
+                                { option: 'Sucursales', route: '/sucursales' },
+                                { option: 'Horarios', route: '/horarios' },
+                            ]
+
+                            break;
+
+                        case 'Cajero':
+                            this.options = [
+                                { option: 'Inicio', route: '/inicio' },
+                                { option: 'Servicios', route: '/servicios' },
+                                { option: 'Productos', route: '/productos' },
+                                { option: 'Clientes', route: '/clientes' },
+                                { option: 'Reservaciones', route: '/reservaciones' },
+                                { option: 'Ordenes', route: '/ordenes' }
+                            ]
+                            break;
+
+                        case 'Barbero':
+                            this.options = [
+                                { option: 'Inicio', route: '/inicio' },
+                                { option: 'Servicios', route: '/servicios' },
+                                { option: 'Productos', route: '/productos' },
+                                { option: 'Clientes', route: '/clientes' },
+                                { option: 'Reservaciones', route: '/reservaciones' },
+                                { option: 'Ordenes', route: '/ordenes' },
+                            ]
+                            break;
+                        default:
+                            break;
+                    }
+
+                })
+                .catch(e => {
+                    notificationError(e.response.data);
+                })
+        }
+    },
+    created() {
+        this.getEmpleado();
+    },
+    mounted() {
+        this.getEmpleado();
+        // console.log(store.state.cargo)
+    }
 };
 </script>

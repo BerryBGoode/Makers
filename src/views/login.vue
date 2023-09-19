@@ -62,10 +62,14 @@ import axios from 'axios';
 // importar para configurar rutas
 import dashboard from './dashboard.vue';
 import logo from '../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png'
-import { alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
+import { alertInfo, alertQuestion, notificationError, notificationInfo, notificationSuccess } from '../components/alert.vue';
 import { mapActions, mapState } from 'vuex';
 import { alertRequest } from './recuperacion/form.vue';
 import store from '../store';
+import Swal from 'sweetalert2';
+import empleadoVue from './primerUso/empleado.vue';
+import { getBinary } from '../validator';
+import { convertToBin } from '../validator';
 
 export default {
     // nombre del componente
@@ -80,11 +84,13 @@ export default {
                     correo: '',
                     dui: '',
                     clave: '',
-                    alias: ''
+                    alias: '',
+                    autenticacion: false
                 },
                 auth: {
                     state: '',
                     token: '',
+                    pin: 44
                 }
             },
             msg: '',
@@ -102,10 +108,49 @@ export default {
         },
         async selectMethod() {
             let notif = await alertQuestion('Seleccione método de recuperación', null, 'Correo electronico', true, 'Mensaje de texto', false);
+            let html = `<form class="container p-5 login-container h-100">
+                <div class="col h-100 flex wrap login">
+                    <div class="row-6 p-3 w-100 form align-center">
+                        <div class="children-form">
+                            <div class="mb-3">
+                                <label for="dui" class="form-label">DUI</label>
+                                <input type="text" class="form-control" id="dui_rec" required name="dui">
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo</label>
+                                <input type="email" class="form-control" id="correo_rec" required name="correo">
+                            </div>
+                            <div class="mb-3">
+                                <label for="alias" class="form-label">Alias</label>
+                                <input type="text" class="form-control" id="alias_rec" maxlength="20" required name="alias">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>`;
             if (notif) {
-                alertRequest();
+                alertRequest(() => {
+                    // extraer los datos
+                    let data = {
+                        dui: document.getElementById('dui_rec').value,
+                        correo: document.getElementById('correo_rec').value,
+                        alias: document.getElementById('alias_rec').value
+                    }
+                    // realizar petición
+                    return axios.post('http://localhost:3000/api/auth/recuperacion/correo/', data)
+                        .then(res => {
+                            Swal.showValidationMessage(
+                                res.data
+                            )
+                        }).catch(rej => {
+                            Swal.showValidationMessage(
+                                `Request failed: ${rej}`
+                            )
+                        })
+
+                }, html);
             } else {
-                let confirm = await alertRequest();
+                let confirm = await alertRequest(null, null, html);
                 console.log(confirm)
             }
 
@@ -157,29 +202,85 @@ export default {
 
             } else {
                 try {
-                    let res = await axios.post('http://localhost:3000/api/auth', this.model.empleado);
+                    // if (await lertQuestion('', null, 'Aceptar', true, 'denegar', false)) {
+                    //     this.model.empleado.autenticacion = true;
+                    // } else {
+                    //     this.model.empleado.autenticacion = false
+                    // }
+                    let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);
                     if (!res.data.auth) this.msg = res.data.msg;
                     // creando token
                     if (res.data.auth !== false) {
-                        // asginar estado de la autenticación
-                        this.model.auth.state = res.data.auth; this.model.auth.token = res.data.token
-                        //guardando token
-                        localStorage.setItem('auth', res.data.token);
-                        // asignar token al estado general
-                        store.state.config.headers.authorization = res.data.token;
-                        // mostrar mensaje
-                        this.msg = res.data.msg
-                        // redireccionar al inicio
-                        this.$router.push('/inicio');
-                        await notificationSuccess('Sesión iniciada correctamente', 3500);
+
+                        // segunda autenticación
+                        if (this.model.empleado.autenticacion) {
+                            let html = `<form class="container p-5 login-container h-100">
+                                                <div class="col h-100 flex wrap login">
+                                                    <div class="row-6 p-3 w-100 form align-center">
+                                                        <div class="children-form">
+                                                            <span class="center-text">Se envio un PIN a su correo</span>
+                                                            <div class="mb-3">
+                                                                <label for="pin" class="form-label">PIN</label>
+                                                                <input type="text" class="form-control" id="pin" v-model="model.auth.pin" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>`;
+                            // formulario para enviar PIN
+                            alertRequest(() => {
+                                let pin = document.getElementById('pin').value;
+                                let obj = {
+                                    pin: pin,
+                                    dui: this.model.empleado.dui,
+                                    correo: this.model.empleado.correo,
+                                    alias: this.model.empleado.alias,
+                                }
+                                // enviando petición
+                                return axios.post('http://localhost:3000/api/auth/correo', obj)
+                                    .then(response => {
+                                        // verificar sí el status es OK para tomar comportamiento por defecto
+                                        if (response.statusText === 'OK') {
+                                            this.beforeAuth(res.data.auth, res.data.token, res.data.modif, res.data.id)
+                                        }
+                                    }).catch(rej => {
+                                        Swal.showValidationMessage(
+                                            `Request failed: ${rej}`
+                                        )
+                                    })
+                            }, html)
+                        } else {
+                            this.beforeAuth(res.data.auth, res.data.token, res.data.modif, res.data.id)
+                        }
+
                     }
 
                 } catch (error) {
-                    notificationError(error.response.data);
+                    notificationError(error);
                 }
 
             }
         },
+        async beforeAuth(state, token, modif, id) {
+            // asginar estado de la autenticación
+            this.model.auth.state = state;
+            this.model.auth.token = token
+            //guardando token
+            localStorage.setItem('auth', token);
+            // asignar token al estado general
+            store.state.config.headers.authorization = token;
+            // verificar sí ya pasaron la cantidad de dias establecidos para restablecer contraseña
+            if (modif === false) {
+                this.$router.push('/inicio')
+                // mostrar notificacion
+                await notificationSuccess('Sesión iniciada correctamente', 2500);
+            }
+            else {
+                store.state.cambio_clave = true;
+                await alertInfo('Restablecimiento de contraseña', 'Aceptar', null, 'Se ha redireccionado para cambiar la contraseña, debido ha que han pasado 90 días en los cuales se le recomienda cambiar su contraseña')
+                this.$router.push('/restablecer=' + id);
+            }
+        }
     },
     mounted() {
         this.verificarSucursales();

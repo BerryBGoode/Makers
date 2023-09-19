@@ -13,7 +13,7 @@
             <span>{{ msg }}</span>
         </div>
         <hr>
-        <form @submit.prevent="modificar" class="container">
+        <form @submit.prevent="validarClave" class="container">
             <div class="form-data">
                 <span class="bold">
                     info.
@@ -158,64 +158,76 @@ export default {
                     }
                 })
         },
-        modificar() {
-            // verificar la coincidencia de contraseñas
-            if (this.empleado.clave !== this.empleado.confirmar) {
-                notificationInfo('Las contraseñas deben coincidir');
-            }
-            // verificar la longitud de la contraseña
-            else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
-            else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
-            // verificando sí la contraseña contiene datos del usuario
-            else if (this.empleado.clave.includes(this.empleado.alias) || this.empleado.clave.includes(this.empleado.apellidos) ||
-                this.empleado.clave.includes(this.empleado.cargo) || this.empleado.clave.includes(this.empleado.correo) ||
-                this.empleado.clave.includes(this.empleado.dui) || this.empleado.clave.includes(this.empleado.nombres) ||
-                this.empleado.clave.includes(this.empleado.sucursal) || this.empleado.clave.includes(this.empleado.telefono)) {
-                notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
-                                no contenga datos personales o información fácil de identificar`);
-            }
-            // verificar sí cumple con el estandar de seguridad la contraseña
-            else if (!password(this.empleado.clave)) {
-                notificationInfo(`La contraseña no cumple con los requisitos.
-                                Debe contenter al menos una letra mayúscula, una letra minúscula,
-                                un número, un carácter especial y ningún espacio`, 9500);
-            }
-            // verificar campos vacíos
-            else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
-                !this.empleado.nombres || !this.empleado.telefono) {
+        validarClave() {
+            // verficar campos vacíos
+            console.log(this.empleado.nombres)
+            if (this.empleado.alias && this.empleado.apellidos && this.empleado.correo && this.empleado.dui
+                && this.empleado.nombres && this.empleado.apellidos) {
+                if (this.empleado.clave || this.empleado.confirmar) {
+                    // verificar la coincidencia de contraseñas
+                    if (this.empleado.clave !== this.empleado.confirmar) {
+                        notificationInfo('Las contraseñas deben coincidir');
+                    }
+                    // verificar la longitud de la contraseña
+                    else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
+                    else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
+                    // verificando sí la contraseña contiene datos del usuario
+                    else if (this.empleado.clave.includes(this.empleado.alias) || this.empleado.clave.includes(this.empleado.apellidos) ||
+                        this.empleado.clave.includes(this.empleado.cargo) || this.empleado.clave.includes(this.empleado.correo) ||
+                        this.empleado.clave.includes(this.empleado.dui) || this.empleado.clave.includes(this.empleado.nombres) ||
+                        this.empleado.clave.includes(this.empleado.sucursal) || this.empleado.clave.includes(this.empleado.telefono)) {
+                        notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
+                                        no contenga datos personales o información fácil de identificar`);
+                    }
+                    // verificar sí cumple con el estandar de seguridad la contraseña
+                    else if (!password(this.empleado.clave)) {
+                        notificationInfo(`La contraseña no cumple con los requisitos.
+                                        Debe contenter al menos una letra mayúscula, una letra minúscula,
+                                        un número, un carácter especial y ningún espacio`, 9500);
+                    }
+                    // verificar campos vacíos
+                    else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||
+                        !this.empleado.nombres || !this.empleado.telefono) {
+                        notificationInfo('No se permiten campos vacíos');
+                    }
+                    else { this.modificar() }
+                } else {
+                    this.modificar();
+                }
+            } else {
                 notificationInfo('No se permiten campos vacíos');
             }
-            else {
-                axios.put('http://localhost:3000/api/auth/', this.empleado, store.state.config)
-                    .then(res => {
-                        // enviar al estado general el nuevo nombre de usuario que cargará en el componente de cuenta
-                        this.setUsuario(this.empleado.alias)
-                        // cuando si se realizo la tarea deceada y se creo algo 
-                        // 201 es usado en método post y put
-                        if (res.status === 201) {
-                            // limpiar valores 
-                            this.empleado = {
-                                alias: '',
-                                nombres: '',
-                                apellidos: '',
-                                dui: '',
-                                telefono: '',
-                                correo: '',
-                                clave: '',
-                            }
-                            // redireccionar
-
-                            this.msg = '';
-                            this.$router.go(-1);
-                            // emitir info que se modifico algo, a componente de cuenta
+        },
+        modificar() {
+            axios.put('http://localhost:3000/api/auth/', this.empleado, store.state.config)
+                .then(res => {
+                    // enviar al estado general el nuevo nombre de usuario que cargará en el componente de cuenta
+                    this.setUsuario(this.empleado.alias)
+                    // cuando si se realizo la tarea deceada y se creo algo 
+                    // 201 es usado en método post y put
+                    if (res.status === 201) {
+                        // limpiar valores 
+                        this.empleado = {
+                            alias: '',
+                            nombres: '',
+                            apellidos: '',
+                            dui: '',
+                            telefono: '',
+                            correo: '',
+                            clave: '',
                         }
+                        // redireccionar
 
-                        notificationSuccess(res.data, 3500, 'Aceptar');
-                    })
-                    .catch(e => {
-                        notificationInfo(e.response.data);
-                    })
-            }
+                        this.msg = '';
+                        this.$router.go(-1);
+                        // emitir info que se modifico algo, a componente de cuenta
+                    }
+
+                    notificationSuccess(res.data, 3500, 'Aceptar');
+                })
+                .catch(e => {
+                    notificationInfo(e.response.data);
+                })
         }
     },
     mounted() {

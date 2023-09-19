@@ -97,7 +97,17 @@ const ROUTER = createRouter({
         {
             name: 'init',
             path: '/',
-            // component: login,
+            // component: () => import('../views/login.vue'),
+        },
+        {
+            name: 'recognition',
+            path: '/recognition',
+            component: () => import('../views/recognition.vue')
+        },
+        {
+            name: 'Recuperacion',
+            path: '/restablecer=:id',
+            component: () => import('../views/recuperacion/correo.vue')
         },
         {
             name: 'primeraSucursal',
@@ -351,7 +361,7 @@ const ROUTER = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
-                    name: 'editarRervacion',
+                    name: 'editarReservacion',
                     path: '/reservaciones/editar/:id',
                     component: () => import('../views/reservaciones/editar.vue'),
                     meta: { requiresAuth: true }
@@ -380,6 +390,8 @@ const ROUTER = createRouter({
         },
     ]
 })
+
+// Método asincrono para obtener la cantidad de sucursales registradas, para validar primer uso
 const getSucursales = async () => {
     await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
         .then(sucursales => {
@@ -390,18 +402,35 @@ const getSucursales = async () => {
             return 0
         })
 }
-
+// Método asincrono para obtener la cantidad de empleados registrados para validar primer empleado
 const getEmpleados = async () => {
     await axios.get('http://localhost:3000/api/auth/verificar/empleados')
         .then(empleados => {
             store.state.empleados = empleados.data;
         }).catch(store.state.empleados = 0)
-
-
 }
+
+const getCargo = async () => {
+    await axios.get('http://localhost:3000/api/auth/cargo', store.state.config)
+        .then(cargo => {
+            store.state.cargo = cargo.data;
+        }).catch(store.state.cargo = 0)
+}
+
+// definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
+const ROUTES_BARBER = ['configuracion', 'inicio',
+    'clientes', 'crearCliente', 'editarCliente',
+    'reservaciones', 'crearReservacion', 'editarReservacion',
+    'ordenes', 'crearOrden', 'editarOrden',
+    'editarFactura', 'crearFactura',
+    'detallesOrden', 'crearDetalle', 'productos', 'servicios', 'productos'
+]
+// definendo arreglo con las rutas que puede acceder cajero
+const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
+
     // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
         // obtener la cantidad de sucursales existentes
@@ -418,7 +447,19 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
         // verificando sí hay más sucursales y empleados y no se quiere ir a login
         else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
-            (localStorage.getItem('auth')) ? next() : next('/login');
+            // verificar sí se quiere ir a restablecer contraseña
+
+            //  y verificar la ruta de la que viene
+            // sí es de '/' lo deje pasar, sino lo redirriga de la que viene
+            if (to.name === 'Recuperacion' && (from.fullPath === '/' || (from.fullPath === '/login' && store.state.cambio_clave === true))) {
+                next();
+            } else if (to.name === '/restablecer' && from.path !== '/') {
+                // sino hay aunteticación para redireccionar al login
+                (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
+            }
+            else {
+                (localStorage.getItem('auth')) ? next() : next('/login');
+            }
         }
         // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
         else if (store.state.sucursales === 0) {
@@ -433,14 +474,55 @@ ROUTER.beforeEach(async (to, from, next) => {
             next('/primer/empleado')
         }
         else {
+
+            // if (store.state.cargo === 'Barbero' && (to.path === '/inicio' || to.path === '/cliente'
+            //     || to.path === '' || to.path === '/ordenes')) {
+            //     next();
+            // } else {
+            //     next('/inicio')
+            // }
             next();
         }
     }
 
     // tiene como parametro la autenticación
     else if (to.matched.some(route => route.meta.requiresAuth)) {
+        // obtener el cargo
+        await getCargo();
+        // verificando sí el cargo es barbero y la ruta la que se quiere ir coincide con las que el usuario puede acceder
+        if (store.state.cargo === 'Barbero' && (!ROUTES_BARBER.includes(to.name))) {
+            // sí no coincide redireccionar de la página que venia
+            next(from.path);
+        } else if (store.state.cargo === 'Cajero' && (!ROUTERS_CAJ.includes(to.path))) {
+            next(from.path);
+        } else {
+            // (localStorage.getItem('auth')) ? next() : next('/login');
+            (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
+        }
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
-        (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
+    }
+    // verificar cuando se viene de la raíz '/' a la de restablecer
+    else if (to.name === 'Recuperacion' && from.path === '/') {
+        next();
+        console.log('happiness')
+    }
+    // verificar cuando se quiere ir a recuperacion y de otra página
+    else if (to.name === 'Recuperacion' && from.path !== '/') {
+        // verificar sucursales son 0 para redireccionar a primer uso
+        if (store.state.sucursales <= 0) {
+            next('/primer/sucursal');
+        }
+        // verificar sí no existen empleados para redireccionar a primer empleado
+        else if (store.state.empleados <= 0) {
+            next('/primer/sucursal');
+        } else if (store.state.cambio_clave) {
+            next();
+        } else {
+
+            // sino hay aunteticación para redireccionar al login sino de la dirección q se venga
+            (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
+
+        }
     }
     // verificar cuando se decea ir formulario de primera sucursal
     else if (to.path === '/primer/sucursal') {
@@ -490,6 +572,7 @@ ROUTER.beforeEach(async (to, from, next) => {
                 // redireccionar al inicio sí existen autenticación
                 next({ name: 'inicio' })
             } else {
+
                 next();
                 // en esta parte se aplica cuando forsosamente se decea ir al login
                 // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
@@ -526,10 +609,12 @@ ROUTER.beforeEach(async (to, from, next) => {
 
         }
     }
+    // verificar ruta de ida cuando solo cuanto es barbero
     else {
 
-        // ejecutar lo que debería pasar sí no necesita autenticación
+
         next();
+
     }
 
 })

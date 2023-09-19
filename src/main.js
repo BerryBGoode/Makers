@@ -20,7 +20,7 @@ import alert from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.all';
 import '@sweetalert2/theme-dark';
 // instancia del componente
-const APP = createApp(App)
+const APP = createApp(App);
 
 APP.use(cors);
 // usar el enrutado

@@ -4,15 +4,21 @@ const { mysql, pg } = require('../db');
 const { compareSync } = require('bcryptjs')
 // requeriendo jwt o jsonwebtoken, para crear token cuando se inicie sesión
 const jwt = require('jsonwebtoken');
-const { encrypt, convertToBase64, } = require('../helpers/encrypt');
+const { encrypt, convertToBase64, convertToBin, } = require('../helpers/encrypt');
 
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
 const md5 = require('md5');
 const { getError } = require('../helpers/errors');
-/**
- * método para compara claves
- */
+const { sendMail } = require('../helpers/mailer');
+
+let current = new Date;
+const HOY = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
+
+
+// definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
+const SUPLANTACION_MSG = 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio avisamos que alguien ha intentado iniciar sesión y ha agregado un dato perteneciente a tú usuario.\nTe recomendamos estar muy alerta a cualquier situación';
+const SUPLANTACION_SUB = 'AVISO DE SUPLANTACIÓN...';
 /**
  * Método para comprar la clave que front, con la clave de la database
  * @param {*} client clave que ingreso el cliente en el body de la petición
@@ -23,26 +29,91 @@ const compare = (client, db) => {
     return (compareSync(client, db))
 }
 
+
+const generatePIN = (length) => {
+    // definiedo los caracteres que pueden ir en el pin
+    let caracters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    let result = '';
+
+    // agregando al result un random de los caracteres, según la longitud
+    for (let i = 0; i < length; i++) {
+
+        // creando el indice que sea el resultado de un número random * la cantidad de caracteres que tiene caracters
+        let index = Math.floor(Math.random() * caracters.length)
+
+        // alamenando el indice según el index encontrado de caracters
+        result += caracters.charAt(index);
+
+    }
+    // retornar PIN
+    return result
+}
+
+
+const validatePIN = async (req, res) => {
+    // variable para identificar sí el pin es correcto
+    let auth = false, _pin, _id;
+    // obtener el pin enviado por el cliente y los datos del usuario
+    const { pin, dui, correo, alias } = req.body
+    // obteniendo el pin de la db
+    let db = await execute('SELECT PIN, id_empleado FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+    // recuperar de los arreglos los datos en seco
+    for (let i = 0; i < db.length; i++) {
+        // obteniendo el pin de la db
+        _pin = db[i]['PIN']
+        // obteniedl id de la db
+        _id = db[i]['id_empleado']
+    }
+    // comparar pin
+    if (db && compare(pin, _pin)) {
+        // reinciar a 0 los intentos
+        await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ? AND id_empleado = ?', [dui, correo, alias, 1, _id])
+        auth = true;
+        res.status(200).json(auth);
+    } else {
+        res.status(500).json('Surgio un problema al buscar PIN');
+    }
+}
+
 /**
  * Método para validar sí los datos que se envian del login existen
  */
 const validateUsuario = async (req, res) => {
     // variables para enviar 1 mensaje al hacer la petición 
-    let auth = false, msg, token, status = '', clave_db;
+    let auth = false, msg, token, status = '', modif = false, clave_db, id, fecha;
     // obtener los datos
-    const { dui, correo, clave, alias } = req.body;
+    const { dui, correo, clave, alias, autenticacion } = req.body;
     try {
-        const CLAVE = await execute('SELECT clave FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
+        const CLAVE = await execute('SELECT clave, id_empleado, fecha_ingreso FROM empleados WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
         if (CLAVE) {
 
             // obtener clave cuando
+            id = getBinary(CLAVE, 'id_empleado')[0];
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
+                // obteniendo el id del empleado encontrado
+                // obtener la fecha que se ingreso
+                fecha = CLAVE[i]['fecha_ingreso']
             }
-
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
+
+                // console.log(CLAVE[0]['id_empleado'])
+                // console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
+                // // segunda autenticación
+
+                // console.log(id)
+                // // verificar sí el usuario ha deceado autenticarse otra vez
+                if (autenticacion === true) {
+                    // generar un pin random
+                    const PIN = generatePIN(6);
+                    // hacer un update con PIN hasheado
+                    await execute('UPDATE empleados SET PIN = ? WHERE id_empleado = ?', [encrypt(PIN), id])
+                    // enviando correo
+                    sendMail(correo, 'Segunda autenticación', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio enviamos tú PIN para seguir con tú autenticación. \nTú PIN es: ' + PIN);
+                }
+
 
                 // reinciar a 0 los intentos
                 await execute('UPDATE empleados SET intentos = 0 WHERE dui = ? AND correo = ? AND alias = ? AND estado = ?', [dui, correo, alias, 1])
@@ -52,16 +123,29 @@ const validateUsuario = async (req, res) => {
                 token = await getToken(dui, correo, clave_db)
                 // enviar el estado de la autenticación
                 auth = true;
-                // setear token a la cookie
-                res.cookie('token', token, { httpOnly: true });
 
+
+                // Crear dos objetos Date para representar las fechas que deseas comparar
+                let fecha1 = new Date(HOY);
+                let fecha2 = new Date(fecha);
+
+                // Calcular la diferencia en milisegundos
+                let diferenciaEnMilisegundos = fecha1 - fecha2;
+
+                // Calcular la diferencia en días
+                let diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+                // calculando diferencia
+                (Math.round(diferenciaEnDias) > 1) ? modif = true : modif = false;
+
+                // verificar sí han pasado los días establecidos para cambiar la contraseña
+                // 
             } else {
                 // Apartir de aquí empizar los intentos 
 
                 // obteniendo el dui y usuario a partir del dui, para verificar sí existe empleado con esos datos
-                const DUI = await execute('SELECT alias FROM empleados WHERE dui = ?', [dui])
+                const DUI = await execute('SELECT alias, correo FROM empleados WHERE dui = ?', [dui])
                 const CORREO = await execute('SELECT alias FROM empleados WHERE correo = ?', [correo])
-                const USUARIO = await execute('SELECT alias FROM empleados WHERE alias = ?', [alias])
+                const USUARIO = await execute('SELECT alias, correo FROM empleados WHERE alias = ?', [alias])
 
                 // veirficar cuando todos los datos estan agregandos ya a la db
                 if (DUI.length > 0 && CORREO.length > 0 && USUARIO.length > 0) {
@@ -71,6 +155,8 @@ const validateUsuario = async (req, res) => {
                         case DUI[0].alias === CORREO[0].alias && DUI[0].alias !== USUARIO[0].alias:
                             // agregar suplantación
                             agregandoSuplantacionByAlias(alias);
+                            // enviando correo de aviso de suplantación
+                            sendMail(USUARIO[0].correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregar 1 intento por correo y dui
                             agregandoIntentoByNotAlias(correo, dui)
                             // Agregar intento fallido para el usuario con alias DUI[0].alias
@@ -80,6 +166,8 @@ const validateUsuario = async (req, res) => {
                         case DUI[0].alias === alias && CORREO[0].alias !== alias:
                             // agregar notificación de suplantación
                             agregandoSuplantacionByCorreo(correo);
+                            // enviando avisao de suplantación al usuario
+                            sendMail(correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregando 1 intento
                             agregarIntentoByDui(dui, alias);
                             break;
@@ -88,8 +176,10 @@ const validateUsuario = async (req, res) => {
                         case CORREO[0].alias === alias && DUI[0].alias !== alias:
                             // agregando notificación de suplantación
                             agregandoSuplantacionByDui(dui);
+                            // enviando notificación de suplantación
+                            sendMail(DUI[0].correo, SUPLANTACION_SUB, SUPLANTACION_MSG);
                             // agregando 1 intento
-                            agregarIntentoByCorreo(correo, alias)
+                            agregarIntentoByCorreo(correo, alias);
                             break;
                         // cuando solamente la contraseña es incorrecta
                         case CORREO[0].alias === alias && DUI[0].alias === alias:
@@ -128,19 +218,34 @@ const validateUsuario = async (req, res) => {
                     // agreando intento
                     agregandoIntentoByNotAlias(correo, dui)
                 }
-
-
                 msg = 'Usuario o contraseña incorrecta';
                 auth = false;
                 token = '';
             }
-            res.status(200).send({ msg, auth, token });
+            res.status(200).send({ msg, auth, token, modif, id });
         }
     } catch (error) {
         res.status(500).send(getError(error))
     }
 }
 
+// Método para obtener el cargo del empleado registrados
+const getCargo = async (req, res) => {
+    // verificar autenticación
+    if (req.headers.authorization) {
+        // obtener id del token
+        const ID = jwt.decode(req.headers.authorization);
+        // obtener el cargo
+        let cargo = await execute('SELECT cargo FROM empleados_view WHERE id_empleado = ?', [ID])
+        // verificar sí realizo la petición
+        if (cargo) {
+            // retornar respuesta
+            res.status(200).json(cargo[0].cargo)
+        }
+    } else {
+        res.status(401).json('Debe auntenticarse antes');
+    }
+}
 
 /**
  * Método que agrega 1 a los intentos, por correo (UPDATE)
@@ -340,6 +445,68 @@ const getConfig = async (req, res) => {
     }
 }
 
+const restablecer = async (req, res) => {
+    const ID = req.headers.authorization;
+    if (ID) {
+        try {
+            // realizar query
+            const EMPLEADO = await execute('SELECT nombres, apellidos, dui, telefono, correo, alias  FROM empleados_view WHERE id_empleado = ?', [ID])
+            // retornar los datos sí la respuesta es la esperada
+            if (res.status(200)) res.send(EMPLEADO[0]);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('Surgio un problema en el servidor');
+        }
+
+    } else {
+        res.status(401).send('Debe autenticarse antes')
+    }
+}
+
+const cambiarClave = async (req, res) => {
+    let { clave } = req.body;
+    if (req.headers.authorization) {
+        if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
+            clave = encrypt(clave);
+            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
+                [clave, HOY, req.headers.authorization])
+                .then(() => {
+                    console.log('modificada')
+                    res.status(201).send('Datos modificados');
+                }).catch(rej => {
+                    res.status(500).send(getError(rej));
+                })
+        } else {
+            res.status(500).send('La nueva contraseña debe ser diferente a la actual');
+        }
+    } else {
+        console.log('xd')
+    }
+
+}
+
+
+const validateRecuperación = async (req, res) => {
+    // obtener los datos
+    const { dui, alias, correo } = req.body;
+    console.log(req.body)
+    // verfiicar sí existe usuario
+    const EMPLEADO = await execute('SELECT id_empleado FROM empleados WHERE alias = ? AND dui = ? AND correo = ?', [alias, dui, correo])
+    if (EMPLEADO.length > 0) {
+        // obtener id
+
+        let id = {
+            id_empleado: getBinary(EMPLEADO, 'id_empleado')[0]
+        }
+        let url = 'http://localhost:5173/#/restablecer=' + id.id_empleado
+        // enviar correo con url
+        sendMail(correo, 'Recuperación de contraseña', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio te enviamos la direccionar para poder restablecer contraseña\n' + url)
+        res.status(200).json('Verificar correo');
+    } else {
+        res.status(500).json('Usuario no encontrado');
+    }
+}
+
 /**
  * Método para mostrar datos pequeños del usuario
  */
@@ -350,7 +517,7 @@ const getInfo = async (req, res) => {
             // obtener id del empleado (deficando base64)
             const ID = jwt.decode(TOKEN);
             // realizar query
-            execute('SELECT alias FROM empleados_view WHERE id_empleado = ?', [ID])
+            execute('SELECT alias,cargo FROM empleados_view WHERE id_empleado = ?', [ID])
                 // retornar los datos sí la respuesta es la esperada
                 .then(rows => { res.send(rows[0]); })
                 .catch(rej => { console.log(rej); res.send(getError(rej)) })
@@ -402,8 +569,9 @@ const change = async (req, res) => {
             else {
                 if (!compareSync(clave, await getClaveDB(ID))) {
                     clave = encrypt(clave);
-                    execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ? WHERE id_empleado = ?',
-                        [nombres, apellidos, dui, telefono, correo, clave, alias, ID])
+
+                    execute('UPDATE empleados SET nombres = ?, apellidos = ?, dui = ?, telefono = ?, correo = ?, clave = ?, alias = ?, fecha_ingreso = ? WHERE id_empleado = ?',
+                        [nombres, apellidos, dui, telefono, correo, clave, alias, HOY, ID])
                         .then(() => {
                             res.status(201).send('Datos modificados');
                         }).catch(rej => {
@@ -482,5 +650,5 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado
+    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave, getCargo
 };

@@ -165,7 +165,7 @@ export default {
         cargarClientes() {
             try {
                 //hacer petición para obtener clientes
-                axios.get('http://localhost:3000/api/reservaciones/clientes')
+                axios.get('http://localhost:3000/api/reservaciones/clientes', store.state.config)
                     .then(res => {
                         this.clientes = res.data;
                     }) //obtener los datos de la petición

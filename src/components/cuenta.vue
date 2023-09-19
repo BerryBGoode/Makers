@@ -37,6 +37,8 @@
 import axios from 'axios';
 import { RouterLink } from 'vue-router';
 import { mapState, mapActions } from 'vuex';
+import { notificationError } from './alert.vue';
+import store from '../store';
 
 // exportación del componente
 export default {
@@ -47,7 +49,8 @@ export default {
     data() {
         return {
             empleado: {
-                alias: ''
+                alias: '',
+                cargo: '',
             },
             config: {
                 headers: {
@@ -68,15 +71,16 @@ export default {
                 .then(res => {
                     this.empleado.alias = res.data.alias;
                     this.setUsuario(res.data.alias);
+                    store.state.cargo = res.data.cargo;
                 })
                 .catch(e => {
-                    console.log(e)
+                    notificationError(e.response.data);
                 })
         },
     },
     computed: {
         ...mapState({
-            store: state => state.usuario
+            store: state => state.usuario,
         })
     },
     mounted() {

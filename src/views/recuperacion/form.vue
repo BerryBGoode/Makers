@@ -9,33 +9,13 @@ import Swal from 'sweetalert2';
 import logo from '../../assets/img/logos/manual_de_marca_Makers_va_con_detalles-1-removebg-preview.png';
 // options api
 
-export const alertRequest = (request, from) => {
+export const alertRequest = (request, html) => {
     return Swal.fire({
         title: 'Ingresa tus datos',
         showCancelButton: true,
         confirmButtonText: 'Verficar',
         showLoaderOnConfirm: true,
-        html: `
-                <form class="container p-5 login-container h-100">
-                    <div class="col h-100 flex wrap login">
-                        <div class="row-6 p-3 w-100 form align-center">
-                            <div class="children-form">
-                                <div class="mb-3">
-                                    <label for="dui" class="form-label">DUI</label>
-                                    <input type="text" class="form-control" id="dui" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="correo" class="form-label">Correo</label>
-                                    <input type="email" class="form-control" id="correo" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="alias" class="form-label">Alias</label>
-                                    <input type="text" class="form-control" id="alias" maxlength="20" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>`,
+        html: html,
         background: '#1B1716',
         color: '#fff',
         iconColor: '#767676',

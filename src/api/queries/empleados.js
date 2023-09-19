@@ -138,7 +138,8 @@ const getCargos = async (req, res) => {
  * Método para crear un empleado
  */
 const store = (req, res) => {
-    try {
+    if (req.headers.authorization || (req.body.path === '/primer/empleado' && req.headers.origin === 'http://localhost:5173')) {
+        try {
         // obtener los datos del req
         const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
         let password = encrypt(clave)
@@ -149,11 +150,13 @@ const store = (req, res) => {
                 res.status(201).json('Empleado agregado')
             })
             .catch(rej => {
-                res.status(406).json({ error: getError(rej) })
+                res.status(406).json(getError(rej))
             })
-    } catch (e) {
-        console.log(e)
-        res.status(500).json({ error: e });
+        } catch (e) {
+            res.status(500).json('Surgio un problema en el servidor');
+        }
+    } else {
+        res.status(401).send('Debe autenticarse antes')
     }
 }
 
