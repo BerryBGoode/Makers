@@ -95,7 +95,6 @@ export default {
             axios.get('http://localhost:3000/api/auth/', store.state.config)
                 .then(res => {
                     store.state.cargo = res.data.cargo;
-                    console.log(store.state.cargo)
 
                     switch (store.state.cargo) {
                         case 'Gerente':
@@ -127,6 +126,8 @@ export default {
                         case 'Barbero':
                             this.options = [
                                 { option: 'Inicio', route: '/inicio' },
+                                { option: 'Servicios', route: '/servicios' },
+                                { option: 'Productos', route: '/productos' },
                                 { option: 'Clientes', route: '/clientes' },
                                 { option: 'Reservaciones', route: '/reservaciones' },
                                 { option: 'Ordenes', route: '/ordenes' },

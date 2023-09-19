@@ -271,12 +271,13 @@ export default {
             store.state.config.headers.authorization = token;
             // verificar sí ya pasaron la cantidad de dias establecidos para restablecer contraseña
             if (modif === false) {
+                this.$router.push('/inicio')
                 // mostrar notificacion
                 await notificationSuccess('Sesión iniciada correctamente', 2500);
-                this.$router.push('/inicio')
             }
             else {
-                await alertInfo('Restablecimiento de contraseña', 'Aceptar', null, 'Se ha redireccionado para cambiar la contraseña, debido ha que han pasado 90 días en los cuales se le comienda actualizar su contraseña')
+                store.state.cambio_clave = true;
+                await alertInfo('Restablecimiento de contraseña', 'Aceptar', null, 'Se ha redireccionado para cambiar la contraseña, debido ha que han pasado 90 días en los cuales se le recomienda cambiar su contraseña')
                 this.$router.push('/restablecer=' + id);
             }
         }

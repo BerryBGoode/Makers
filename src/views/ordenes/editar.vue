@@ -122,7 +122,7 @@ export default {
         cargarClienteDui() {
             try {
                 // hacer petición para obtener dui de clientes
-                axios.get('http://localhost:3000/api/ordenes/clientes')
+                axios.get('http://localhost:3000/api/ordenes/clientes', store.state.config)
                     .then(res => { this.clientes = res.data }) // obtener los datos de la petición
                     .catch(e => { notificationError(e.response.data) })
             } catch (error) {

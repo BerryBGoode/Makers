@@ -91,7 +91,7 @@ const ROUTER = createRouter({
         {
             name: 'init',
             path: '/',
-            // component: login,
+            // component: () => import('../views/login.vue'),
         },
         {
             name: 'recognition',
@@ -355,7 +355,7 @@ const ROUTER = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
-                    name: 'editarRervacion',
+                    name: 'editarReservacion',
                     path: '/reservaciones/editar/:id',
                     component: () => import('../views/reservaciones/editar.vue'),
                     meta: { requiresAuth: true }
@@ -411,14 +411,20 @@ const getCargo = async () => {
         }).catch(store.state.cargo = 0)
 }
 
+// definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
+const ROUTES_BARBER = ['configuracion', 'inicio',
+    'clientes', 'crearCliente', 'editarCliente',
+    'reservaciones', 'crearReservacion', 'editarReservacion',
+    'ordenes', 'crearOrden', 'editarOrden',
+    'editarFactura', 'crearFactura',
+    'detallesOrden', 'crearDetalle', 'productos', 'servicios', 'productos'
+]
+// definendo arreglo con las rutas que puede acceder cajero
+const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
 
-    // definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
-    const ROUTES_BARBER = ['/configuracion', '/inicio', '/clientes', '/reservaciones', '/ordenes']
-    // definendo arreglo con las rutas que puede acceder cajero
-    const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
     // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
         // obtener la cantidad de sucursales existentes
@@ -439,23 +445,14 @@ ROUTER.beforeEach(async (to, from, next) => {
 
             //  y verificar la ruta de la que viene
             // sí es de '/' lo deje pasar, sino lo redirriga de la que viene
-            if (to.name === 'Recuperacion' && from.fullPath === '/') {
+            if (to.name === 'Recuperacion' && (from.fullPath === '/' || (from.fullPath === '/login' && store.state.cambio_clave === true))) {
                 next();
             } else if (to.name === '/restablecer' && from.path !== '/') {
                 // sino hay aunteticación para redireccionar al login
                 (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
             }
             else {
-                // como ya hay auntenticación
-                // obtener el cargo
-                // await getCargo();
-                // if (store.state.cargo === 'Barbero' && (to.path !== '/inicio' || to.path !== '/cliente'
-                //     || to.path !== '/reservaciones' || to.path !== '/ordenes')) {
-                //     next(from.path);
-                // } else {
                 (localStorage.getItem('auth')) ? next() : next('/login');
-                // }
-
             }
         }
         // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
@@ -487,7 +484,7 @@ ROUTER.beforeEach(async (to, from, next) => {
         // obtener el cargo
         await getCargo();
         // verificando sí el cargo es barbero y la ruta la que se quiere ir coincide con las que el usuario puede acceder
-        if (store.state.cargo === 'Barbero' && (!ROUTES_BARBER.includes(to.path))) {
+        if (store.state.cargo === 'Barbero' && (!ROUTES_BARBER.includes(to.name))) {
             // sí no coincide redireccionar de la página que venia
             next(from.path);
         } else if (store.state.cargo === 'Cajero' && (!ROUTERS_CAJ.includes(to.path))) {
@@ -500,6 +497,7 @@ ROUTER.beforeEach(async (to, from, next) => {
     }
     // verificar cuando se viene de la raíz '/' a la de restablecer
     else if (to.name === 'Recuperacion' && from.path === '/') {
+        next();
         console.log('happiness')
     }
     // verificar cuando se quiere ir a recuperacion y de otra página
@@ -511,7 +509,10 @@ ROUTER.beforeEach(async (to, from, next) => {
         // verificar sí no existen empleados para redireccionar a primer empleado
         else if (store.state.empleados <= 0) {
             next('/primer/sucursal');
+        } else if (store.state.cambio_clave) {
+            next();
         } else {
+
             // sino hay aunteticación para redireccionar al login sino de la dirección q se venga
             (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
 

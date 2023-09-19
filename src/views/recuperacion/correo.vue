@@ -44,6 +44,7 @@
 import axios from 'axios';
 import { password } from '../../validator';
 import { alertInfo, notificationInfo, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 export default {
     data() {
         return {
@@ -110,6 +111,8 @@ export default {
                     .then(res => {
                         notificationSuccess(res.data, 3500, 'Aceptar');
                         alertInfo('Aceptar', true, 4500, 'Ahora que la contraseña se restablecio correctamente, intente iniciar sesión')
+                        // acutalizando el estado para que no se puede acceder a restablecer desde login
+                        store.state.cambio_clave = false;
                         this.$router.push('/login')
                     }).catch(e => {
                         console.log(e)
