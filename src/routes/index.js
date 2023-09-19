@@ -418,7 +418,7 @@ ROUTER.beforeEach(async (to, from, next) => {
     // definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
     const ROUTES_BARBER = ['/configuracion', '/inicio', '/clientes', '/reservaciones', '/ordenes']
     // definendo arreglo con las rutas que puede acceder cajero
-    const ROUTERS_CAJ = [];
+    const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
     // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
         // obtener la cantidad de sucursales existentes
@@ -488,7 +488,9 @@ ROUTER.beforeEach(async (to, from, next) => {
         await getCargo();
         // verificando sí el cargo es barbero y la ruta la que se quiere ir coincide con las que el usuario puede acceder
         if (store.state.cargo === 'Barbero' && (!ROUTES_BARBER.includes(to.path))) {
-            console.log('xd')
+            // sí no coincide redireccionar de la página que venia
+            next(from.path);
+        } else if (store.state.cargo === 'Cajero' && (!ROUTERS_CAJ.includes(to.path))) {
             next(from.path);
         } else {
             // (localStorage.getItem('auth')) ? next() : next('/login');
