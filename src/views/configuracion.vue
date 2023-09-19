@@ -23,15 +23,17 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="nombres" class="form-label">Nombres</label>
-                            <input type="text" class="form-control" id="nombres" v-model="empleado.nombres">
+                            <input type="text" class="form-control" id="nombres" v-model="empleado.nombres"
+                                autocomplete="off">
                         </div>
                         <div class="mb-3 input-container">
                             <label for="apellidos" class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" id="apellidos" v-model="empleado.apellidos">
+                            <input type="text" class="form-control" id="apellidos" v-model="empleado.apellidos"
+                                autocomplete="off">
                         </div>
                     </div>
                     <label for="dui">DUI</label>
-                    <input type="text" class="form-control" id="dui" v-model="empleado.dui">
+                    <input type="text" class="form-control" id="dui" v-model="empleado.dui" autocomplete="off">
                 </div>
             </div>
             <hr>
@@ -44,11 +46,13 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" v-model="empleado.telefono">
+                            <input type="text" class="form-control" id="telefono" v-model="empleado.telefono"
+                                autocomplete="off">
                         </div>
                         <div class="mb-3 input-container">
                             <label for="correo" class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="correo" v-model="empleado.correo">
+                            <input type="email" class="form-control" id="correo" v-model="empleado.correo"
+                                autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -62,7 +66,8 @@
                 <div class="form-2 w-70">
                     <div class="mb-3">
                         <label for="alias" class="form-label">Alias</label>
-                        <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50" required>
+                        <input type="text" class="form-control" id="alias" v-model="empleado.alias" maxlength="50" required
+                            autocomplete="off">
                     </div>
 
                     <div class="load">

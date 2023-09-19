@@ -119,7 +119,8 @@ export default {
                                 { option: 'Productos', route: '/productos' },
                                 { option: 'Clientes', route: '/clientes' },
                                 { option: 'Reservaciones', route: '/reservaciones' },
-                                { option: 'Ordenes', route: '/ordenes' }
+                                { option: 'Ordenes', route: '/ordenes' },
+                                { option: 'Sucursales', route: '/sucursales' }
                             ]
                             break;
 
@@ -131,6 +132,7 @@ export default {
                                 { option: 'Clientes', route: '/clientes' },
                                 { option: 'Reservaciones', route: '/reservaciones' },
                                 { option: 'Ordenes', route: '/ordenes' },
+
                             ]
                             break;
                         default:

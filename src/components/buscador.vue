@@ -43,7 +43,7 @@
             <path d="M26.711 27.0001L21.5087 22.1221" stroke="#B4B0AF" stroke-width="4" stroke-linecap="round"
                 stroke-linejoin="round" />
         </svg>
-        <input type="search" name="buscar" id="buscar" v-model="buscar" placeholder="Buscar">
+        <input type="search" name="buscar" id="buscar" v-model="buscar" placeholder="Buscar" autocomplete="off">
     </div>
 </template>
 <script>
@@ -61,7 +61,7 @@ export default {
     methods: {
         // referenciar el acción del store
         ...mapActions(['actionBuscador']),
-        nuevoEstadoBuscador(estado){
+        nuevoEstadoBuscador(estado) {
             // enviar nuevo valor
             this.actionBuscador(estado)
         }

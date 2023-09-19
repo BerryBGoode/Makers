@@ -76,19 +76,11 @@ const ROUTER = createRouter({
             path: '/login',
             component: () => import('../views/login.vue')
         },
-        { name: 'msm', path: '/recuperacion/msm', component: () => import('../views/recuperacion/msm.vue') }
-        ,
         {
             name: '404',
             path: '/404',
             component: () => import('../views/404.vue')
         },
-        {
-            name: 'contraseña',
-            path: '/restablecer',
-            component: () => import('../views/empleados/formulario.vue')
-        },
-        
         // ruta cuando no se encontró la ruta
         {
             path: '/:pathMatch(.*)*',
