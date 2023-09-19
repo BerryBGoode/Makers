@@ -43,12 +43,6 @@ main {
 
 
 <template>
-    <!-- <template v-if="access === null">
-        <login />
-    </template>
-    <template v-else>
-        <dashboard />
-    </template> -->
     <router-view />
 </template>
 <script>

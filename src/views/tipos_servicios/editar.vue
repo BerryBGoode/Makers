@@ -17,7 +17,7 @@
                 <form action="" class="form-1">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Tipo de servicio</label>
-                        <input type="text" class="form-control" id="tipo" v-model="tipos.tipo" required>
+                        <input type="text" autocomplete="off" class="form-control" id="tipo" v-model="tipos.tipo" required>
                     </div>
                 </form>
                 <hr>

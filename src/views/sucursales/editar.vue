@@ -22,18 +22,18 @@
                     <div class="form-1">
                         <div class="mb-3">
                             <label for="direccion" class="form-label">Direccion</label>
-                            <input type="text" class="form-control" id="direccion" required v-model="sucursal.direccion">
+                            <input type="text" class="form-control" autocomplete="off" id="direccion" required v-model="sucursal.direccion">
                         </div>
 
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre" required v-model="sucursal.nombre">
+                            <input type="text" class="form-control" autocomplete="off" id="nombre" required v-model="sucursal.nombre">
                         </div>
 
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="telefono" required v-model="sucursal.tel">
+                                <input type="text" class="form-control" autocomplete="off" id="telefono" required v-model="sucursal.tel">
                             </div>
                             <div class="mb-3 flex-col input-container">
                                 <label for="hora" class="form-label">Hora</label>

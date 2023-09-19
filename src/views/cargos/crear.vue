@@ -12,7 +12,7 @@
                 <div class="form-1">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Cargo</label>
-                        <input type="text" class="form-control" id="nombre" v-model="cargo.cargo" required>
+                        <input type="text" autocomplete="off" class="form-control" id="nombre" v-model="cargo.cargo" required>
                     </div>
                 </div>
                 <hr>

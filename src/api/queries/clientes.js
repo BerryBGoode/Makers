@@ -43,7 +43,7 @@ const get = async (req, res) => {
             .catch(rej => res.status(500).json({ error: rej }))
 
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -61,17 +61,17 @@ const store = (req, res) => {
             execute('INSERT INTO clientes (id_cliente, nombres, apellidos, dui, telefono, correo, clave, estado) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
                 [nombres, apellidos, dui, telefono, correo, encrypt(clave), estado])
                 .then(() => {
-                    if (res.status(201)) res.send('Cliente agregado');
+                    if (res.status(201)) res.json('Cliente agregado');
                 }).catch(rej => {
-                    res.status(500).send({ error: getError(rej) });
+                    res.status(500).json({ error: getError(rej) });
                 })
 
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
 
     } else {
-        res.status(401).send('Debe  antes');
+        res.status(401).json('Debe  antes');
     }
 }
 
@@ -96,17 +96,17 @@ const one = async (req, res) => {
                         }
                         Object.assign(filled[i], id)
                     }
-                    if (res.status(200)) res.send(filled[0])
+                    if (res.status(200)) res.json(filled[0])
                 })
                 .catch(rej => {
-                    res.status(500).send(getError(rej));
+                    res.status(500).json(getError(rej));
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
 
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -127,16 +127,16 @@ const change = (req, res) => {
                 [nombres, apellidos, dui, telefono, correo, estado, IDCLIENTE])
                 .then(() => {
                     // sí la petición fue exitosa mandar mensaje al cliente
-                    res.status(201).send('Cliente modificado')
+                    res.status(201).json('Cliente modificado')
                 }).catch(rej => {
                     // de lo contrario enviar error obtenido del catch
-                    res.status(500).send({ error: getError(rej) })
+                    res.status(500).json({ error: getError(rej) })
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).json('Debe autenticarse antes')
     }
 
 }
@@ -155,16 +155,16 @@ const destroy = (req, res) => {
             // realizar consulta, enviar un array con los parametros y metodo para capturar error
             execute('DELETE FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
                 .then(() => {
-                    res.status(200).send('Cliente eliminado');
+                    res.status(200).json('Cliente eliminado');
                 }).catch(rej => {
-                    res.status(500).send(getError(rej));
+                    res.status(500).json(getError(rej));
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema con el servidor');
+            res.status(500).json('Surgio un problema con el servidor');
         }
 
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).json('Debe autenticarse antes')
     }
 }
 // exportar funciones

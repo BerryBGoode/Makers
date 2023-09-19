@@ -19,12 +19,12 @@
                         <div class="load">
                             <div class="mb-3 flex-col input-container">
                                 <label for="apertura" class="form-label">Apertura</label>
-                                <input type="time" name="apertura" id="apertura" class="form-control"
+                                <input type="time" autocomplete="off" name="apertura" id="apertura" class="form-control"
                                     v-model="horario.inicio" required>
                             </div>
                             <div class="mb-3 flex-col input-container">
                                 <label for="cierre" class="form-label">Cierre</label>
-                                <input type="time" name="cierre" id="cierre" class="form-control" required
+                                <input type="time" autocomplete="off" name="cierre" id="cierre" class="form-control" required
                                     v-model="horario.cierre">
                             </div>
                         </div>

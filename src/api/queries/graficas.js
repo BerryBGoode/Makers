@@ -19,10 +19,10 @@ const getVentas = (req, res) => {
                 res.status(200).json(rows)
             }).catch(rej => {
                 // enviar error interno
-                res.status(500).send(getError(rej))
+                res.status(500).json(getError(rej))
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -50,10 +50,10 @@ const ordenesByMes = async (req, res) => {
             }
         } catch (error) {
             // enviar error en la petición
-            res.status(500).send(getError(error))
+            res.status(500).json(getError(error))
         }
     } else {
-        res.status(401).send('Debe iniciar sesió antes');
+        res.status(401).json('Debe iniciar sesió antes');
     }
 
 }
@@ -84,10 +84,10 @@ const getCliente = (req, res) => {
                 res.status(200).json(rows);
             }).catch(rej => {
                 // respuesta con el error
-                res.status(500).send(getError(rej));
+                res.status(500).json(getError(rej));
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 
@@ -100,10 +100,10 @@ const getFacturasSucursales = (req, res) => {
             .then(row => {
                 res.status(200).json(row)
             }).catch(rej => {
-                res.status(500).send(getError(rej))
+                res.status(500).json(getError(rej))
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -129,10 +129,10 @@ const getServiciosVendidos = (req, res) => {
             .then(rows => {
                 res.status(200).json(rows)
             }).catch(rej => {
-                res.status(500).send({ error: getError(rej) })
+                res.status(500).json({ error: getError(rej) })
             })
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -151,7 +151,7 @@ const getProductosVendidos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(500).send({ error: getError(rej) })
+            res.status(500).json({ error: getError(rej) })
         })
 }
 
@@ -173,7 +173,7 @@ const getClienteporfecha = (req, res) => {
         .then(row => {
             es.status(200).json(rows)
         }).catch(rej => {
-            res.status(500).send({ error: getError(rej) })
+            res.status(500).json({ error: getError(rej) })
         })
 
 }
@@ -188,7 +188,7 @@ const getEmpleadoCargos = (req, res) => {
         .then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(500).send({ error: getError(rej) })
+            res.status(500).json({ error: getError(rej) })
         })
 }
 
@@ -204,7 +204,7 @@ const getHoraMes = (req, res) => {
     `, [mes]).then(rows => {
         res.status(200).json(rows)
     }).catch(rej => {
-        res.status(500).send({ error: getError(rej) });
+        res.status(500).json({ error: getError(rej) });
     })
 }
 
