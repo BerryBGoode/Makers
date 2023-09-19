@@ -23,21 +23,23 @@
                     <div class="children-form">
                         <div class="mb-3">
                             <label for="dui" class="form-label">DUI</label>
-                            <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui" required>
+                            <input type="text" class="form-control" id="dui" v-model="this.model.empleado.dui" required
+                                autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="correo" class="form-label">Correo</label>
                             <input type="email" class="form-control" id="correo" v-model="this.model.empleado.correo"
-                                required>
+                                autocomplete="off" required>
                         </div>
                         <div class="mb-3">
                             <label for="alias" class="form-label">Alias</label>
-                            <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias" required>
+                            <input type="text" class="form-control" id="alias" v-model="this.model.empleado.alias"
+                                autocomplete="off" required>
                         </div>
                         <div class="mb-3">
                             <label for="clave" class="form-label">Contraseña</label>
                             <input type="password" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                maxlength="72" minlength="8" required>
+                                autocomplete="off" maxlength="72" minlength="8" required>
                         </div>
                     </div>
 

@@ -22,7 +22,7 @@ const get = async (req, res) => {
     if (TOKEN) {
 
         // obtener id
-        const ID = decodeBase64(jwt.decode(TOKEN))
+        const ID = jwt.decode(TOKEN)
         // guardar los datos recuperados            
         let data = [];
         let i = 0;
@@ -140,18 +140,18 @@ const getCargos = async (req, res) => {
 const store = (req, res) => {
     if (req.headers.authorization || (req.body.path === '/primer/empleado' && req.headers.origin === 'http://localhost:5173')) {
         try {
-        // obtener los datos del req
-        const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
-        let password = encrypt(clave)
-        // realizar query o insert y enviarle los parametros
-        execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
-            .then(() => {
-                res.status(201).json('Empleado agregado')
-            })
-            .catch(rej => {
-                res.status(406).json(getError(rej))
-            })
+            // obtener los datos del req
+            const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
+            let password = encrypt(clave)
+            // realizar query o insert y enviarle los parametros
+            execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
+                .then(() => {
+                    res.status(201).json('Empleado agregado')
+                })
+                .catch(rej => {
+                    res.status(406).json(getError(rej))
+                })
         } catch (e) {
             res.status(500).json('Surgio un problema en el servidor');
         }
@@ -233,61 +233,7 @@ const destroy = (req, res) => {
         res.status(500).json('Surgio un problema en el servidor')
     }
 }
-const validatePassword = async (req, res) => {
-    // variables para enviar 1 mensaje al hacer la petición 
-    let auth = false, msg, token, status = '', clave_db, cambio_contraseña;
-    // obtener los datos
-    const { clave } = req.body;
-    try {
-      const CLAVE = await execute('SELECT clave, cambio_contraseña FROM empleados WHERE clave = ?', [ clave ]);
-      if (CLAVE) {
-        // obtener clave y cambio_contraseña
-        for (let i = 0; i < CLAVE.length; i++) {
-          // obtener la clave
-          clave_db = CLAVE[i]['clave'];
-          cambio_contraseña = CLAVE[i]['cambio_contraseña'];
-        }
-        // compara claves'
-        if (clave_db && compare(clave, clave_db)) {
-          // clave correcta
-          // obtener los datos del empleado encontrado
-  
-          // calcular la diferencia entre la fecha actual y cambio_contraseña
-          const diffTime = Math.abs(new Date() - cambio_contraseña);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-  
-          if (diffDays > 85) {
-            msg = 'Debe cambiar su contraseña';
-            auth = false;
-            token = '';
-            res.status(200).json({'/restablecer'}); // Redirigir a la página de cambio de contraseña
-          } else {
-            // crear token
-            token = await getToken(dui, correo, clave_db);
-            // enviar el estado de la autenticación
-            auth = true;
-            // setear token a la cookie
-            res.cookie('token', token, { httpOnly: true });
-          }
-        } else {
-          msg = 'Contraseña incorrecta';
-          auth = false;
-          token = '';
-        }
-        res.status(201).send({ msg, auth, token });
-      } else {
-        msg = 'No se encontró la clave';
-        auth = false;
-        token = '';
-        res.status(401).send({ msg, auth, token });
-      }
-    } catch (error) {
-      console.log('Error en la validación de la contraseña');
-      console.log(error);
-      res.status(500).send({ error: getError(error) });
-    }
-  };
 
 
 // exportación de modulos
-module.exports = { get, getSucursales,validatePassword, getHorarios, getCargos, store, one, change, destroy }
+module.exports = { get, getSucursales, getHorarios, getCargos, store, one, change, destroy }
