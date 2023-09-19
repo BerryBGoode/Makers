@@ -99,11 +99,11 @@ const validateUsuario = async (req, res) => {
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
 
-                console.log(CLAVE[0]['id_empleado'])
-                console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
-                // segunda autenticación
+                // console.log(CLAVE[0]['id_empleado'])
+                // console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
+                // // segunda autenticación
 
-                console.log(id)
+                // console.log(id)
                 // // verificar sí el usuario ha deceado autenticarse otra vez
                 if (autenticacion === true) {
                     // generar un pin random
@@ -134,9 +134,8 @@ const validateUsuario = async (req, res) => {
 
                 // Calcular la diferencia en días
                 let diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
-
                 // calculando diferencia
-                (Math.round(diferenciaEnDias) >= 1) ? modif = true : modif = false;
+                (Math.round(diferenciaEnDias) > 1) ? modif = true : modif = false;
 
                 // verificar sí han pasado los días establecidos para cambiar la contraseña
                 // 

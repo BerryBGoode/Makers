@@ -241,7 +241,7 @@ export default {
                                     .then(response => {
                                         // verificar sí el status es OK para tomar comportamiento por defecto
                                         if (response.statusText === 'OK') {
-                                            this.beforeAuth(res.data.auth, res.data.token, res.data)
+                                            this.beforeAuth(res.data.auth, res.data.token, res.data.modif, res.data.id)
                                         }
                                     }).catch(rej => {
                                         Swal.showValidationMessage(
@@ -250,7 +250,7 @@ export default {
                                     })
                             }, html)
                         } else {
-                            this.beforeAuth(res.data.auth, res.data.token, res.data, res.data.id)
+                            this.beforeAuth(res.data.auth, res.data.token, res.data.modif, res.data.id)
                         }
 
                     }

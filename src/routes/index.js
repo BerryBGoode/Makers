@@ -406,15 +406,14 @@ const getEmpleados = async () => {
 
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
+    console.log(to)
+    console.log(from)
     // verificando sí hay valores por defecto 
     if (store.state.empleados === null || store.state.sucursales === null) {
         // obtener la cantidad de sucursales existentes
         await getSucursales();
         // obteniendo la cantidad de empleados existentes cuando no hay registro
         await getEmpleados();
-
-
-        console.log(to)
         // verificando que si no hay sucursales y se quiere ir a la de sucursales
         if (store.state.sucursales <= 0 && to.path === '/primer/sucursal') {
             next();
@@ -426,9 +425,28 @@ ROUTER.beforeEach(async (to, from, next) => {
         // verificando sí hay más sucursales y empleados y no se quiere ir a login
         else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
             // verificar sí se quiere ir a restablecer contraseña
-            if (to.path.includes('/restablecer')) {
+
+            //  y verificar la ruta de la que viene
+            console.log(to)
+            console.log(from)
+            // sí es de '/' lo deje pasar, sino lo redirriga de la que viene
+            if (to.name === 'Recuperacion' && from.fullPath === '/') {
                 next();
-            } else {
+            } else if (to.name === '/restablecer' && from.path !== '/') {
+                // verificar sucursales son 0 para redireccionar a primer uso
+                if (store.state.sucursales <= 0) {
+                    next('/primer/sucursal');
+                }
+                // verificar sí no existen empleados para redireccionar a primer empleado
+                else if (store.state.empleados <= 0) {
+                    next('/primer/sucursal');
+                } else {
+                    // sino hay aunteticación para redireccionar al login
+                    (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
+                }
+
+            }
+            else {
                 (localStorage.getItem('auth')) ? next() : next('/login');
             }
         }
@@ -453,6 +471,25 @@ ROUTER.beforeEach(async (to, from, next) => {
     else if (to.matched.some(route => route.meta.requiresAuth)) {
         // verificar sí se tiene autenciación para redireccionar a la que se deceaba, sino al login
         (localStorage.getItem('auth') !== null) ? next() : next({ name: 'login' });
+    }
+    // verificar cuando se viene de la raíz '/' a la de restablecer
+    else if (to.name === 'Recuperacion' && from.path === '/') {
+        console.log('happiness')
+    }
+    // verificar cuando se quiere ir a recuperacion y de otra página
+    else if (to.name === 'Recuperacion' && from.path !== '/') {
+        // verificar sucursales son 0 para redireccionar a primer uso
+        if (store.state.sucursales <= 0) {
+            next('/primer/sucursal');
+        }
+        // verificar sí no existen empleados para redireccionar a primer empleado
+        else if (store.state.empleados <= 0) {
+            next('/primer/sucursal');
+        } else {
+            // sino hay aunteticación para redireccionar al login sino de la dirección q se venga
+            (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
+
+        }
     }
     // verificar cuando se decea ir formulario de primera sucursal
     else if (to.path === '/primer/sucursal') {
@@ -502,6 +539,7 @@ ROUTER.beforeEach(async (to, from, next) => {
                 // redireccionar al inicio sí existen autenticación
                 next({ name: 'inicio' })
             } else {
+
                 next();
                 // en esta parte se aplica cuando forsosamente se decea ir al login
                 // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
@@ -539,7 +577,6 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
     }
     else {
-
         // ejecutar lo que debería pasar sí no necesita autenticación
         next();
     }
