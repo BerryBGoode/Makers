@@ -87,7 +87,7 @@ export default {
                     dui: '',
                     clave: '',
                     alias: '',
-                    autenticacion: false
+                    autenticacion: true
                 },
                 auth: {
                     state: '',
@@ -204,11 +204,7 @@ export default {
 
             } else {
                 try {
-                    // if (await lertQuestion('', null, 'Aceptar', true, 'denegar', false)) {
-                    //     this.model.empleado.autenticacion = true;
-                    // } else {
-                    //     this.model.empleado.autenticacion = false
-                    // }
+
                     let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);
                     if (!res.data.auth) this.msg = res.data.msg;
                     // creando token

@@ -1,8 +1,6 @@
 // archivo con las funciones para validar
 // ! VALIDA DATOS DEL FRONTEND
 
-import axios from "axios";
-import store from "./store";
 // variable con las letras
 let ltrs = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s']+$/;
 // variable con los números

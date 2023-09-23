@@ -60,9 +60,9 @@ const validatePIN = async (req, res) => {
     // recuperar de los arreglos los datos en seco
     for (let i = 0; i < db.length; i++) {
         // obteniendo el pin de la db
-        _pin = db[i]['PIN']
+        _pin = db[i]['PIN'];
         // obteniedl id de la db
-        _id = db[i]['id_empleado']
+        _id = db[i]['id_empleado'];
     }
     // comparar pin
     if (db && compare(pin, _pin)) {
@@ -89,6 +89,7 @@ const validateUsuario = async (req, res) => {
 
             // obtener clave cuando
             id = getBinary(CLAVE, 'id_empleado')[0];
+            // enviando un id encriptado para tener un valor unico en el id
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
@@ -498,7 +499,7 @@ const validateRecuperación = async (req, res) => {
         let id = {
             id_empleado: getBinary(EMPLEADO, 'id_empleado')[0]
         }
-        let url = 'http://localhost:5173/#/restablecer=' + id.id_empleado
+        let url = 'http://localhost:5173/#/restablecer=' + encrypt(id.id_empleado)
         // enviar correo con url
         sendMail(correo, 'Recuperación de contraseña', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio te enviamos la direccionar para poder restablecer contraseña\n' + url)
         res.status(200).json('Verificar correo');

@@ -410,7 +410,8 @@ const getCargo = async () => {
 }
 
 // definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
-const ROUTES_BARBER = ['configuracion', 'inicio',
+const ROUTES_BARBER = [
+    'configuracion', 'inicio',
     'clientes', 'crearCliente', 'editarCliente',
     'reservaciones', 'crearReservacion', 'editarReservacion',
     'ordenes', 'crearOrden', 'editarOrden',
@@ -418,8 +419,17 @@ const ROUTES_BARBER = ['configuracion', 'inicio',
     'detallesOrden', 'crearDetalle', 'productos', 'servicios', 'productos'
 ]
 // definendo arreglo con las rutas que puede acceder cajero
-const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
-
+const ROUTERS_CAJ = [
+    'configuracion', 'inicio',
+    'productos', 'crearProducto',
+    'servicios', 'crearServicio',
+    'clientes', 'crearCliente',
+    'reservaciones', 'crearReservacion', 'editarReservacion',
+    'ordenes', 'crearOrden', 'editarOrden',
+    'crearFactura', 'editarFactura',
+    'detallesOrden', 'crearDetalle', 'editarDetalleOrden',
+    'sucursales', 'productosSucursales', 'crearProductoSucursal', 'editarProductoSucursal'
+];
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
 
