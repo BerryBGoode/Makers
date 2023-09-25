@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // importando método para hashear contraseñass
 const { encrypt } = require('../helpers/encrypt');
 const { execute } = require('../MySQL');
-const { getBinary } = require('../helpers/validateHelpers');
+const { getBinary, convertToBinary } = require('../helpers/validateHelpers');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
 
@@ -29,7 +29,7 @@ const compare = (client, db) => {
 }
 
 
-const generatePIN = (length) => {
+const generatePIN = length => {
     // definiedo los caracteres que pueden ir en el pin
     let caracters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
     let result = '';
@@ -99,12 +99,7 @@ const validateUsuario = async (req, res) => {
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
 
-                // console.log(CLAVE[0]['id_empleado'])
-                // console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
-                // // segunda autenticación
-
-                // console.log(id)
-                // // verificar sí el usuario ha deceado autenticarse otra vez
+                // verificar sí el usuario ha deceado autenticarse otra vez
                 if (autenticacion === true) {
                     // generar un pin random
                     const PIN = generatePIN(6);
@@ -315,7 +310,7 @@ const agregandoIntentoByNotAlias = async (correo, dui) => {
  * Método para agregar intento solamente por el alias
  * @param {*} alias alias del usuario
  */
-const agregandoIntentoByAlias = async (alias) => {
+const agregandoIntentoByAlias = async alias => {
     try {
         await execute('UPDATE empledos SET intentos = intentos + 1 WHERE alias = ?', [alias]);
         let origin = {
@@ -331,7 +326,7 @@ const agregandoIntentoByAlias = async (alias) => {
     }
 }
 
-const getIntentos = async (origin) => {
+const getIntentos = async origin => {
     let intentos;
     switch (origin.case) {
         case 1:
@@ -357,7 +352,7 @@ const getIntentos = async (origin) => {
     return intentos[0].intentos;
 }
 
-const agregandoSuplantacionByAlias = async (alias) => {
+const agregandoSuplantacionByAlias = async alias => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE alias = ?', [alias])
     } catch (error) {
@@ -370,7 +365,7 @@ const agregandoSuplantacionByAlias = async (alias) => {
  * y casualmente puso el correo de un usuario existente
  * @param {*} correo 
  */
-const agregandoSuplantacionByCorreo = async (correo) => {
+const agregandoSuplantacionByCorreo = async correo => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE correo = ?', [correo]);
     } catch (error) {
@@ -382,7 +377,7 @@ const agregandoSuplantacionByCorreo = async (correo) => {
  * Método para agregar 1 a la cantidad de veces que se ha probado un dato existente diferente a la credencia
  * @param {*} dui 
  */
-const agregandoSuplantacionByDui = async (dui) => {
+const agregandoSuplantacionByDui = async dui => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE dui = ? ', [dui])
     } catch (error) {
@@ -464,16 +459,15 @@ const restablecer = async (req, res) => {
 
 const cambiarClave = async (req, res) => {
     // obtener la clave del body de la petición
-    let { clave } = req.body;
+    let { clave, id } = req.body;
     // verificar sí se ha enviado algo para autenticarse
     if (req.headers.authorization) {
-        // decodificar token
-        console.log(req.headers.authorization)
-        console.log(compareSync(id, jwt.decode(req.headers.authorization)))
-        if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
+        // decodficar id
+        id = convertToBinary(id)
+        if (!compareSync(clave, await getClaveDB(id))) {
             clave = encrypt(clave);
             execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
-                [clave, HOY, req.headers.authorization])
+                [clave, HOY, id])
                 .then(() => {
                     res.status(201).send('Datos modificados');
                 }).catch(rej => {
@@ -488,32 +482,44 @@ const cambiarClave = async (req, res) => {
 }
 
 const validateUsuarioBloqueado = async (req, res) => {
+    // objeto para guardar al empleado encontrado y después retornar como respuesta
+    let $2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = {};
     // variable que cambia cuando el id de la db coincide con el extraido de la request
     let found = false;
     // verificar sí se obtiene el token
     if (req.headers.authorization) {
         // obtener los ids de los empleados que estan bloqueados
-        let empleados = await execute('SELECT id_empleado FROM empleados WHERE estado = ?', [2])
+        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias FROM empleados WHERE estado = ?', [2])
         // verificar sí existen empleados bloqueados
         if (empleados.length > 0) {
             //      verificar por cada id encontrado sí coincide con el obtenido del frontend
             // decodificar todos id a binary
-            empleados = getBinary(empleados, 'id_empleado')
-            // console.log(empleados)
+            let id = getBinary(empleados, 'id_empleado')
             // extrayendo el token a string
             let token = jwt.decode(req.headers.authorization).id
             for (let i = 0; i < empleados.length; i++) {
+                // guardando en otra propieda el valor del id del empleado para no enviar la col de manera cruda
+                empleados[i].GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = empleados[i].id_empleado;
+                // eliminando la propiedad id de objeto con los empleados encontrados con estado bloqueado
+                delete empleados[i].id_empleado;
                 // asginando id a esta variable para que sea un string y 'compaseSync' no generé conflictos
-                let empleado = empleados[i].toString();
                 // verificando la coincidencia de id de la db con el obtenido del frontend
                 // asignando el encontrado a la variable q busca
-                found = compareSync(empleado, token.toString())
-                // vericar sí se encontró usuario bloqueado
-                if (found === true) { break; }
+                found = compareSync(id[i].toString(), token.toString())
+                // vericar sí se encontró usuario bloqueado y con el id que viene del request
+                if (found === true) {
+                    // al objeto vacío asignar los datos que tiene el objeto que coincidio la comparación
+                    // del id que viene del request con el de la db
+                    Object.assign($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC, empleados[i])
+                    // y romper el ciclo for, sí se encontró empleado bloqueado con el que coincida el id del request
+                    break;
+                }
             }
+
             // verificar sí se encontró un usuario con ese id y que este bloqueado
             // para mandar respuesta para mandar a otro lado o dejar que restablezca la contraseña
-            (found) ? res.status(200).json({ msg: 'Usuario encontrado', found }) : res.status(200).json({ msg: 'Usuario no encontrado', found })
+            // sí se encuntra usuario mandar datos para que sean diferentes a sus datos personales     
+            (found) ? res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC) : res.status(200).json({ msg: 'Usuario no encontrado', found })
         } else {
             res.status(404).json('Usuario no encontrado');
         }
@@ -526,7 +532,6 @@ const validateUsuarioBloqueado = async (req, res) => {
 const validateRecuperación = async (req, res) => {
     // obtener los datos
     const { dui, alias, correo } = req.body;
-    console.log(req.body)
     // verfiicar sí existe usuario
     const EMPLEADO = await execute('SELECT id_empleado FROM empleados WHERE alias = ? AND dui = ? AND correo = ?', [alias, dui, correo])
     if (EMPLEADO.length > 0) {
