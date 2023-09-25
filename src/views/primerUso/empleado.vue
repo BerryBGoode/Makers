@@ -130,7 +130,7 @@ export default {
             else if (this.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
             // verificando sí la contraseña contiene datos del usuario
-            else if (this.empleado.clave.includes(this.empleado.alias) || this.empleado.clave.includes(this.empleado.apellidos)  || this.empleado.clave.includes(this.empleado.correo) ||
+            else if (this.empleado.clave.includes(this.empleado.alias) || this.empleado.clave.includes(this.empleado.apellidos) || this.empleado.clave.includes(this.empleado.correo) ||
                 this.empleado.clave.includes(this.empleado.dui) || this.empleado.clave.includes(this.empleado.nombres) ||
                 this.empleado.clave.includes(this.empleado.telefono)) {
                 notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
@@ -155,7 +155,7 @@ export default {
                     this.empleado = Object.assign(this.empleado, datos.data)
                     // enviar registro al servidor
                     axios.post('http://localhost:3000/api/empleados', Object.assign(this.empleado, datos.data))
-                        .then((res) => {
+                        .then(res => {
                             // mostrar mensaje de error sí encuentra
                             (res.data.error) ? notificationInfo(res.data.error, 5000, 'Aceptar') : alertInfo(res.data, 'Aceptar', 6500, 'Ahora procedera a iniciar sesión con el empleado creado');
                             // agregando 1 empleado al estado general de los empleados existentes

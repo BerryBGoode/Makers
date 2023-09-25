@@ -1,20 +1,19 @@
-// requerir de los attrs de la conexión para realizar las transacciónes SQL
-const { mysql, pg } = require('../db');
 // requeriendo bcrpypt para verificar contraseña
 const { compareSync } = require('bcryptjs')
 // requeriendo jwt o jsonwebtoken, para crear token cuando se inicie sesión
 const jwt = require('jsonwebtoken');
-const { encrypt, convertToBase64, convertToBin, } = require('../helpers/encrypt');
-
+// importando método para hashear contraseñass
+const { encrypt } = require('../helpers/encrypt');
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
-const md5 = require('md5');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
 
 let current = new Date;
 const HOY = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
 
+// variable global para almacenar el id del usuario que se espera que restablezca la contraseña
+let id;
 
 // definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
 const SUPLANTACION_MSG = 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio avisamos que alguien ha intentado iniciar sesión y ha agregado un dato perteneciente a tú usuario.\nTe recomendamos estar muy alerta a cualquier situación';
@@ -127,16 +126,16 @@ const validateUsuario = async (req, res) => {
 
 
                 // Crear dos objetos Date para representar las fechas que deseas comparar
-                let fecha1 = new Date(HOY);
-                let fecha2 = new Date(fecha);
+                let today = new Date(HOY);
+                let fechadb = new Date(fecha);
 
                 // Calcular la diferencia en milisegundos
-                let diferenciaEnMilisegundos = fecha1 - fecha2;
+                let deltamls = today - fechadb;
 
                 // Calcular la diferencia en días
-                let diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+                let deltadias = deltamls / (1000 * 60 * 60 * 24);
                 // calculando diferencia
-                (Math.round(diferenciaEnDias) > 1) ? modif = true : modif = false;
+                (Math.round(deltadias) > 1) ? modif = true : modif = false;
 
                 // verificar sí han pasado los días establecidos para cambiar la contraseña
                 // 
@@ -358,7 +357,6 @@ const getIntentos = async (origin) => {
     return intentos[0].intentos;
 }
 
-
 const agregandoSuplantacionByAlias = async (alias) => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE alias = ?', [alias])
@@ -379,6 +377,7 @@ const agregandoSuplantacionByCorreo = async (correo) => {
         throw error;
     }
 }
+
 /**
  * Método para agregar 1 a la cantidad de veces que se ha probado un dato existente diferente a la credencia
  * @param {*} dui 
@@ -390,7 +389,6 @@ const agregandoSuplantacionByDui = async (dui) => {
         throw error;
     }
 }
-
 
 /**
  * Método para obtener el cliente según los parametros especificados por el método
@@ -413,7 +411,7 @@ const getToken = async (dui, correo, clave) => {
                 id_empleado: _empleado[i]
             }
             // funsionar obj con los datos recuperados con el de los ids limpiados
-            Object.assign(EMPLEADO[i], id)
+            Object.assign(EMPLEADO[i], id);
             // obtener id del empleado encontrado
         }
         // convertir id a base 64
@@ -460,19 +458,23 @@ const restablecer = async (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
 const cambiarClave = async (req, res) => {
+    // obtener la clave del body de la petición
     let { clave } = req.body;
+    // verificar sí se ha enviado algo para autenticarse
     if (req.headers.authorization) {
+        // decodificar token
+        console.log(req.headers.authorization)
+        console.log(compareSync(id, jwt.decode(req.headers.authorization)))
         if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
             clave = encrypt(clave);
             execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
                 [clave, HOY, req.headers.authorization])
                 .then(() => {
-                    console.log('modificada')
                     res.status(201).send('Datos modificados');
                 }).catch(rej => {
                     res.status(500).send(getError(rej));
@@ -481,11 +483,45 @@ const cambiarClave = async (req, res) => {
             res.status(500).send('La nueva contraseña debe ser diferente a la actual');
         }
     } else {
-        console.log('xd')
+        res.status(401).json('Debe autenticarse antes');
     }
-
 }
 
+const validateUsuarioBloqueado = async (req, res) => {
+    // variable que cambia cuando el id de la db coincide con el extraido de la request
+    let found = false;
+    // verificar sí se obtiene el token
+    if (req.headers.authorization) {
+        // obtener los ids de los empleados que estan bloqueados
+        let empleados = await execute('SELECT id_empleado FROM empleados WHERE estado = ?', [2])
+        // verificar sí existen empleados bloqueados
+        if (empleados.length > 0) {
+            //      verificar por cada id encontrado sí coincide con el obtenido del frontend
+            // decodificar todos id a binary
+            empleados = getBinary(empleados, 'id_empleado')
+            // console.log(empleados)
+            // extrayendo el token a string
+            let token = jwt.decode(req.headers.authorization).id
+            for (let i = 0; i < empleados.length; i++) {
+                // asginando id a esta variable para que sea un string y 'compaseSync' no generé conflictos
+                let empleado = empleados[i].toString();
+                // verificando la coincidencia de id de la db con el obtenido del frontend
+                // asignando el encontrado a la variable q busca
+                found = compareSync(empleado, token.toString())
+                // vericar sí se encontró usuario bloqueado
+                if (found === true) { break; }
+            }
+            // verificar sí se encontró un usuario con ese id y que este bloqueado
+            // para mandar respuesta para mandar a otro lado o dejar que restablezca la contraseña
+            (found) ? res.status(200).json({ msg: 'Usuario encontrado', found }) : res.status(200).json({ msg: 'Usuario no encontrado', found })
+        } else {
+            res.status(404).json('Usuario no encontrado');
+        }
+
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
+}
 
 const validateRecuperación = async (req, res) => {
     // obtener los datos
@@ -495,14 +531,27 @@ const validateRecuperación = async (req, res) => {
     const EMPLEADO = await execute('SELECT id_empleado FROM empleados WHERE alias = ? AND dui = ? AND correo = ?', [alias, dui, correo])
     if (EMPLEADO.length > 0) {
         // obtener id
-
-        let id = {
+        let objid = {
             id_empleado: getBinary(EMPLEADO, 'id_empleado')[0]
         }
-        let url = 'http://localhost:5173/#/restablecer=' + encrypt(id.id_empleado)
+        // almancenando id esperado para poder modificar la contraseña
+        id = objid.id_empleado;
+        objid.id_empleado = encrypt(objid.id_empleado);
+        // creando token con algoritmo HS256 con el tiempo definido en segundos
+        const token = jwt.sign({ id: objid.id_empleado }, process.env.SECRET, { algorithm: 'HS256', expiresIn: 1800 });
+        // enviar url para restablecer contraseña con id hasheado
+        // enviando token hasheado para poder acceder a restablecer contraseña:
+        /**
+         * * Dentro de restablecer contraseña
+         * 1: en el mounted mandar id al servidor
+         * 1.1 servidor: decodificar token
+         * 1.2           obtener id del token y comparar con el id que se esperaba obtener   
+         */
+        let url = 'http://localhost:5173/#/restablecer=' + token
         // enviar correo con url
         sendMail(correo, 'Recuperación de contraseña', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio te enviamos la direccionar para poder restablecer contraseña\n' + url)
         res.status(200).json('Verificar correo');
+
     } else {
         res.status(500).json('Usuario no encontrado');
     }
@@ -651,5 +700,8 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave, getCargo
+    validateUsuario, getInfo, getConfig, change, verificarSucursales,
+    verificarEmpleados, getDataPrimerEmpleado, validatePIN,
+    validateRecuperación, restablecer, cambiarClave, getCargo,
+    validateUsuarioBloqueado
 };

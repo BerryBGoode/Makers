@@ -79,6 +79,7 @@
 import axios from 'axios'
 import { mapState } from 'vuex';
 import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import store from '../../store';
 
 export default {
     name: 'tipos',
@@ -90,7 +91,7 @@ export default {
     },
     methods: {
         getTipos() {
-            axios.get('http://localhost:3000/api/tipos')
+            axios.get('http://localhost:3000/api/tipos', store.state.config)
                 .then(res => {
                     this.tipos = res.data;
                     this.filters = res.data;
@@ -99,7 +100,7 @@ export default {
         },
         eliminarTipo(tipo) {
             if (confirm('Desea eliminar este tipo de servicio?')) {
-                axios.delete('http://localhost:3000/api/tipos/' + tipo)
+                axios.delete('http://localhost:3000/api/tipos/' + tipo, store.state.config)
                     .then(res => {
                         // verificar errores
                         notificationSuccess(res.data);

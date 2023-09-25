@@ -1,0 +1,13 @@
+Estandares de Javascript:
+1. Variables en minusculas
+2. Constantes mayusculas
+3. (en métodos) CamelCase ejemplo crearUsuario
+4. Uso de funciones flecha o arroy function () => { } 
+5. Cuando las funciones flecha solo tienen un parametro y no tiene un valor por defecto, los parametros no van dentro de parentesis
+6. Parametros en minusculas
+7. Uso de comillas simples ''
+8. Uso de ; después de cada linea
+9. Las llaves en la misma línea de donde se declara las funciones
+10. Objetos en minusculas y declarados con la palabra reservada "let"
+11. Métodos declarados con la palabra reservada "const"
+12. Uso de las rutas (.routes.js) de api/routes se separan de las funciones que se ejecuta cuando se llamada dicha ruta

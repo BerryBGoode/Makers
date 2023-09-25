@@ -119,10 +119,25 @@ export default {
                         notificationInfo(e.response.data);
                     })
             }
+        },
+        usuarioBloqueado() {
+            // esta variable sirve para identificar sí se ha encontrado un usuario o no
+            let found
+            // validar empleado que decea restablecer constraseña
+            axios.get('http://localhost:3000/api/auth/usuario-bloqueado', this.config)
+                .then(res => {
+                    // verificar sí se encontró un usuario bloqueado con el id establecido
+                    // para redireccionar al login
+                    if (res.data.found === false) this.$router.push('/login')
+                }).catch(rej => { notificationInfo(rej.response.data) });
+
         }
     },
     mounted() {
         this.getEmpleado();
+    },
+    created() {
+        this.usuarioBloqueado();
     }
 }
 </script>

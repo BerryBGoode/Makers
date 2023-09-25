@@ -27,9 +27,10 @@ const sendMail = async (gmail, subject, msg) => {
             text: msg
         }
         // creando el transportador que enviará el correo
-        const transport = MAILER.createTransport(mail);
+        const TRANSPORT = MAILER.createTransport(mail);
         // espernado que se envie el mensaje
-        await transport.sendMail(send)
+        await TRANSPORT.sendMail(send)
+
     } catch (error) {
         console.log(error);
     }

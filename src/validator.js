@@ -69,7 +69,7 @@ export const formatDateToYYYYMMDD = date => {
 /**
  * Método para convertir el binario de la consulta a binario
  */
-export const convertToBin = (bin) => {
+export const convertToBin = bin => {
     (bin) ? bin = Buffer.from(bin).toString('binary') : bin = null
     return bin
 }

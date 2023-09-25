@@ -164,7 +164,7 @@ export const alertQuestion = (txt, time, button, deny = null, txtdeny = null, ca
         confirmButtonColor: '#393534',
         denyButtonColor: '#393534',
         // verificar sí se confirma el mensaje
-    }).then((res) => {
+    }).then(res => {
         // retornar el resultado de la pregunta
         return res.isConfirmed
     })
@@ -200,7 +200,7 @@ export const notificationQuestion = (txt, time, button, deny = null, txtdeny = n
         iconColor: '#767676',
         confirmButtonColor: '#393534',
         // verificar sí se confirma el mensaje
-    }).then((res) => {
+    }).then(res => {
         // retornar el resultado de la pregunta
         return res.isConfirmed
     })

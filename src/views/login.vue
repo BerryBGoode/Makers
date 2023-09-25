@@ -175,19 +175,11 @@ export default {
         verficarEmpleados() {
             if (store.state.empleados === null) {
                 axios.get('http://localhost:3000/api/auth/verificar/empleados')
-                    .then((rows) => {
+                    .then(rows => {
                         // obtiendo los valores de la petición
                         this.setEmpleado(rows.data)
                         // verificando la existencia de los empleados, para redireccionara primer empleados, 
                         // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                        // if (rows.data <= 0) {
-                        //     this.$router.push('/primer/empleado')
-                        // } else {
-                        //     if (localStorage.getItem('auth')) {
-                        //         // console.log('s')
-                        //         this.$router.push('/inicio');
-                        //     }
-                        // }
                     }).catch(e => {
                         notificationError(e, 7000);
                     })
