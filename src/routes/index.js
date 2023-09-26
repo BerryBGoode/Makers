@@ -382,28 +382,36 @@ const ROUTER = createRouter({
 
 // Método asincrono para obtener la cantidad de sucursales registradas, para validar primer uso
 const getSucursales = async () => {
+    // estado de cargo
+    store.state.sucursalesload = false;
     await axios.get('http://localhost:3000/api/auth/verificar/sucursal')
         .then(sucursales => {
             store.state.sucursales = sucursales.data;
         })
         .catch(error => {
             console.log(error);
-            return 0
+            return 0;
         })
+        .finally(() => store.state.sucursalesload = true);
 }
 // Método asincrono para obtener la cantidad de empleados registrados para validar primer empleado
 const getEmpleados = async () => {
+    // inicializar estado de carga
+    store.state.empleadosload = false;
     await axios.get('http://localhost:3000/api/auth/verificar/empleados')
         .then(empleados => {
             store.state.empleados = empleados.data;
         }).catch(store.state.empleados = 0)
+        .finally(() => {
+            store.state.empleadosload = true;
+        })
 }
 
 const getCargo = async () => {
+    store.state.cargosload = false;
     await axios.get('http://localhost:3000/api/auth/cargo', store.state.config)
-        .then(cargo => {
-            store.state.cargo = cargo.data;
-        }).catch(store.state.cargo = 0)
+        .then(cargo => { store.state.cargo = cargo.data; })
+        .catch(store.state.cargo = 0)
 }
 
 // definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder

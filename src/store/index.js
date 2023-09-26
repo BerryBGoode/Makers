@@ -14,7 +14,9 @@ const store = createStore({
             headers: {
                 authorization: localStorage.getItem('auth')
             }
-        }
+        },
+        empleadosload: false,
+        sucursalesload: false
 
     },
     mutations: {

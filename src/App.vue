@@ -43,7 +43,8 @@ main {
 
 
 <template>
-    <router-view />
+    <load v-if="!isloadempleados || !isloadsucursales" />
+    <router-view v-else />
 </template>
 <script>
 //  setup solo se utiliza en el componente principal,
@@ -57,22 +58,12 @@ import { mapState, mapActions } from 'vuex';
 import { RouterView } from 'vue-router';
 import store from './store/';
 import { alertInfo, notificationError } from './components/alert.vue';
+import load from './components/load.vue';
 
 
 export default {
     name: 'app',
-    components: { dashboard, login, cookies, axios, store, RouterView },
-    created() {
-        // // verificar sí no hay sucursales y empleados
-        // if (store.state.sucursales <= 0 || store.state.empleados <= 0) {
-        //     // para mandar a las vista de primer uso
-        //     // verificar sí no hay sucursales
-        //     (store.state.sucursales <= 0) ? this.$router.push('/primer/sucursal') : this.$router.push('/primer/empleado');
-
-        // } else {
-        //     (localStorage.getItem('auth')) ? this.$router.push('/inicio') : this.$router.push('/login');
-        // }
-    },
+    components: { dashboard, login, RouterView, load, store },
     data() {
         // validaciones del DOM
 
@@ -105,7 +96,7 @@ export default {
             storage: '',
             sucursales: [],
             empleados: [],
-            state
+            state,
         }
     },
     methods: {
@@ -138,10 +129,14 @@ export default {
     },
     mounted() {
         // verificar sí existe una cookie cuando cargue el componente         
-        // this.verificarSucursales();
-        // this.verficarEmpleados();
         this.checkTokenStorage();
     },
+    computed: {
+        ...mapState({
+            isloadempleados: state => state.empleadosload,
+            isloadsucursales: state => state.sucursalesload
+        })
+    }
 
 }
 </script>
