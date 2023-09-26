@@ -20,16 +20,11 @@
             </router-link>
         </div>
         <hr>
-        <template v-if="load === false">
-            <div id="container-gif">
-                <img class="gif" src="../../assets/gif/navaja_sm.gif" alt="">
-                cargando...
-            </div>
+        <template v-if="!load">
+            <load />
         </template>
         <template v-else>
             <div class="data p-2" v-if="ordenes.length > 0">
-                <!-- recorrer los clientes encontrados -->
-
                 <div class="card" v-for="(orden, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
@@ -111,18 +106,6 @@
                         </div>
                     </div>
                 </div>
-
-
-            </div>
-            <div class="data p-2" v-else-if="ordenes.length === 0">
-                <span class="bold">
-                    No se encontraron existencias
-                </span>
-            </div>
-            <div class="data p-2" v-if="filters.length === 0 && ordenes.length > 0">
-                <span class="bold">
-                    No se encontraron resultados
-                </span>
             </div>
         </template>
 
@@ -133,6 +116,8 @@ import axios from 'axios'
 import { mapState } from 'vuex'
 import store from '../../store'
 import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue'
+import load from '../../components/load.vue'
+
 
 export default {
     name: 'ordenes',
@@ -143,6 +128,7 @@ export default {
             load: false
         }
     },
+    components: { load },
     methods: {
         // metodo para cargar las ordenes
         getOrdenes() {
