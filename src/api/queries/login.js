@@ -466,8 +466,13 @@ const cambiarClave = async (req, res) => {
         id = convertToBinary(id)
         if (!compareSync(clave, await getClaveDB(id))) {
             clave = encrypt(clave);
-            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
-                [clave, HOY, id])
+            // modificar datos del empleado
+            //  * nueva clave
+            //  * nueva fecha de contraseña
+            //  * intentos a 0
+            //  * cambio de estado a desbloqueado
+            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ?, estado = ?, intentos = ? WHERE id_empleado = ?',
+                [clave, HOY, 1, 0, id])
                 .then(() => {
                     res.status(201).send('Datos modificados');
                 }).catch(rej => {

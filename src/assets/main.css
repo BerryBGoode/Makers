@@ -335,6 +335,18 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     position: absolute;
 }
 
+#container-gif {
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.gif {
+    width: 25%;
+}
 
 @media screen and (max-width: 725px) {
     .login {

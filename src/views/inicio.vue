@@ -6,12 +6,9 @@
     height: 100%;
     /* border: solid 1px #b4b0af; */
     border-radius: 7px;
-
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    grid-column-gap: 5px;
-    grid-row-gap: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .container-graph {
@@ -20,77 +17,75 @@
     border-radius: 7px;
 }
 
+.container-area-2-3,
+.container-area-4-5,
+.container-area-8-9 {
+    display: flex;
+    gap: 5px;
+}
+
 .area-1 {
     padding: .5%;
-    width: 81.9vw;
-    grid-area: 1 / 1 / 2 / 6;
-}
-
-.area-2 {
-    width: 38vw;
-}
-
-.area-3 {
-    width: 43.5vw;
-}
-
-.area-4 {
     width: 100%;
-    grid-area: 3/ 1 / 3/ 3;
 }
 
-.area-5 {
-    width: 100%;
-    grid-area: 4/ 1/ 4/ 3;
+
+.area-4,
+.area-5,
+.area-3,
+.area-2,
+.area-8,
+.area-9 {
+    width: 50%;
 }
 
 .area-6 {
-    width: 50%;
-    grid-area: 5/ 1/ 6/3;
+    width: 100%;
 }
 
 .area-7 {
-    width: 93%;
-    margin-left: 6.8%;
-    grid-area: 5/ 2/ 6/ 3;
+    width: 100%;
 }
 
-.area-8 {
-    /* width: 45vw; */
-    grid-area: 6/ 1/ 6/ 1;
-}
+
 
 .area-9 {
     padding: 3%;
-    grid-area: 6/ 2/ 6/ 2;
+    /* grid-area: 6/ 2/ 6/ 2; */
 }
 </style>
 <template>
     <div class="container graph-lineal-sales">
 
-        <div class="container-graph container-ventas-graph area-1">
-            <canvas id="ventas"></canvas>
+        <div class="container-area-1">
+            <div class="container-graph container-ventas-graph area-1">
+                <canvas id="ventas"></canvas>
+            </div>
         </div>
 
-        <div class="container-graph area-2">
-            <canvas id="clientes"></canvas>
-        </div>
-        <div class="container-graph area-3">
-            <canvas id="productos"></canvas>
-        </div>
-
-
-        <div class="container-graph area-4">
-            <canvas id="cargos"></canvas>
+        <div class="container-area-2-3">
+            <div class="container-graph area-2">
+                <canvas id="clientes"></canvas>
+            </div>
+            <div class="container-graph area-3">
+                <canvas id="productos"></canvas>
+            </div>
         </div>
 
-        <div class="container-graph area-5">
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
-                @change="getServiciosTop" v-model="tipo">
-                <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}</option>
-            </select>
+        <div class="container-area-4-5">
+            <div class="container-graph area-4">
+                <canvas id="cargos"></canvas>
+            </div>
 
-            <canvas id="servicios"></canvas>
+            <div class="container-graph area-5">
+                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
+                    @change="getServiciosTop" v-model="tipo">
+                    <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}
+                    </option>
+                </select>
+
+                <canvas id="servicios"></canvas>
+            </div>
         </div>
 
         <div class="container-graph area-6">
@@ -110,57 +105,59 @@
             <canvas id="reservaciones"></canvas>
         </div>
 
-        <div class="container-graph area-8">
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                v-model="mesgraphora" @change="getHoraMes">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <canvas id="horas"></canvas>
-        </div>
-
-        <div class="container-graph area-9">
-            <div class="mb-3">
-                <span>Próximas reservaciones</span>
-                <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
-
-            </div>
-            <div class="mb-">
-                <span>Reservaciones previas</span>
-                <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
-            </div>
-            <div class="mb-3">
-                <span>Productos a punto de agotarse</span>
-                <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+        <div class="container-area-8-9">
+            <div class="container-graph area-8">
+                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                    v-model="mesgraphora" @change="getHoraMes">
+                    <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+                </select>
+                <canvas id="horas"></canvas>
             </div>
 
-            <div class="mb-3">
-                <span>Empleados</span>
-                <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
-            </div>
+            <div class="container-graph area-9">
+                <div class="mb-3">
+                    <span>Próximas reservaciones</span>
+                    <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
 
-            <div class="mb-3 flex-col input-container">
-                <input type="date" name="" id="" class="form-control" v-model="today">
-                <div class="mb3">
-                    <span>Ventas del día </span>
-                    <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
                 </div>
-            </div>
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                v-model="mesreportventas">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <div class="mb3">
-                <span>Ventas del mes</span>
-                <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
-            </div>
+                <div class="mb-">
+                    <span>Reservaciones previas</span>
+                    <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
+                </div>
+                <div class="mb-3">
+                    <span>Productos a punto de agotarse</span>
+                    <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+                </div>
 
-            <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
+                <div class="mb-3">
+                    <span>Empleados</span>
+                    <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
+                </div>
 
-            <div class="mb-3">
-                <span>Reservaciones del mes</span>
-                <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
+                <div class="mb-3 flex-col input-container">
+                    <input type="date" name="" id="" class="form-control" v-model="today">
+                    <div class="mb3">
+                        <span>Ventas del día </span>
+                        <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
+                    </div>
+                </div>
+                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                    v-model="mesreportventas">
+                    <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+                </select>
+                <div class="mb3">
+                    <span>Ventas del mes</span>
+                    <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+                </div>
+
+                <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
+                    <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+                </select>
+
+                <div class="mb-3">
+                    <span>Reservaciones del mes</span>
+                    <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
+                </div>
             </div>
         </div>
 
