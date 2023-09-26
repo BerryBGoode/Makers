@@ -45,7 +45,7 @@ const compareProductos = async (servicio, cantidad) => {
         if (SERVICIO[0].id_tipo_servicio === TPRODUCTO[0].id_tipo_servicio) {
             // comparar sí las existencias son menos o igual4                                
             return (cantidad <= SERVICIO[0].existencias)
-        } else {            
+        } else {
             return true;
         }
     } catch (error) {
@@ -79,13 +79,23 @@ const compareProductosSucursal = async (servicio, cantidad) => {
  */
 const getBinary = (data, col) => {
     let id = [];
+    console.log(data)
     // recorrer los datos obtenidos
     data.forEach(element => {
+        console.log(element)
         // convertir a binario el elemento que se este recorriendo
         id.push(convertToBin(element[col]));
     });
     return id;
 }
 
+/**
+ * Método para convertir una cadena hexctadecimal a binario
+ * @param {*} hex arreglo con los valores enteros (cadena hexctadecimal) INCLUIR EL OBJETO COMPLETO CON type: 'Buffer'
+ * @returns retorna valor hex a binario
+ */
+const convertToBinary = hex => {
+    return Buffer.from(hex).toString('binary');
+}
 // exportar
-module.exports = { validate, compareProductos, compareProductosSucursal, getBinary };
+module.exports = { validate, compareProductos, compareProductosSucursal, getBinary, convertToBinary };

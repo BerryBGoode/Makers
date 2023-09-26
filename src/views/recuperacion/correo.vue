@@ -56,7 +56,8 @@ export default {
                 apellidos: '',
                 correo: '',
                 dui: '',
-                telefono: ''
+                telefono: '',
+                id: ''
             },
             config: {
                 headers: {
@@ -106,23 +107,47 @@ export default {
                                 Debe contenter al menos una letra mayúscula, una letra minúscula,
                                 un número, un carácter especial y ningún espacio`, 9500);
             } else {
-
                 axios.post('http://localhost:3000/api/auth/restablecer', this.empleado, this.config)
                     .then(res => {
                         notificationSuccess(res.data, 3500, 'Aceptar');
-                        alertInfo('Aceptar', true, 4500, 'Ahora que la contraseña se restablecio correctamente, intente iniciar sesión')
+                        alertInfo('Aceptar', 'Aceptar', 4500, 'Ahora que la contraseña se restablecio correctamente, intente iniciar sesión')
                         // acutalizando el estado para que no se puede acceder a restablecer desde login
                         store.state.cambio_clave = false;
                         this.$router.push('/login')
                     }).catch(e => {
-                        console.log(e)
                         notificationInfo(e.response.data);
                     })
             }
+        },
+        usuarioBloqueado() {
+            // validar empleado que decea restablecer constraseña
+            axios.get('http://localhost:3000/api/auth/usuario-bloqueado', this.config)
+                .then(res => {
+                    // verificar sí se encontró un usuario bloqueado con el id establecido
+                    // para redireccionar al login
+                    if (res.data.found === false) {
+                        this.$router.push('/login')
+                    } else {
+                        // extraer los datos del empleado
+                        // obtener datos
+                        let empleado = res.data;
+                        // asignar                    
+                        this.empleado = {
+                            alias: empleado.alias,
+                            nombres: empleado.nombres,
+                            apellidos: empleado.apellidos,
+                            correo: empleado.correo,
+                            dui: empleado.dui,
+                            telefono: empleado.telefono,
+                            id: empleado.GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC
+                        }
+                    }
+                }).catch(rej => { notificationInfo(rej.response.data) });
+
         }
     },
-    mounted() {
-        this.getEmpleado();
+    created() {
+        this.usuarioBloqueado();
     }
 }
 </script>

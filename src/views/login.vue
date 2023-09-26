@@ -87,7 +87,7 @@ export default {
                     dui: '',
                     clave: '',
                     alias: '',
-                    autenticacion: false
+                    autenticacion: true
                 },
                 auth: {
                     state: '',
@@ -175,19 +175,11 @@ export default {
         verficarEmpleados() {
             if (store.state.empleados === null) {
                 axios.get('http://localhost:3000/api/auth/verificar/empleados')
-                    .then((rows) => {
+                    .then(rows => {
                         // obtiendo los valores de la petición
                         this.setEmpleado(rows.data)
                         // verificando la existencia de los empleados, para redireccionara primer empleados, 
                         // sino verificar sí hay autenticación para así o redireccionar al login o a inicio
-                        // if (rows.data <= 0) {
-                        //     this.$router.push('/primer/empleado')
-                        // } else {
-                        //     if (localStorage.getItem('auth')) {
-                        //         // console.log('s')
-                        //         this.$router.push('/inicio');
-                        //     }
-                        // }
                     }).catch(e => {
                         notificationError(e, 7000);
                     })
@@ -204,11 +196,7 @@ export default {
 
             } else {
                 try {
-                    // if (await lertQuestion('', null, 'Aceptar', true, 'denegar', false)) {
-                    //     this.model.empleado.autenticacion = true;
-                    // } else {
-                    //     this.model.empleado.autenticacion = false
-                    // }
+
                     let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);
                     if (!res.data.auth) this.msg = res.data.msg;
                     // creando token

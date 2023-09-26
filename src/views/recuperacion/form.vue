@@ -21,30 +21,9 @@ export const alertRequest = (request, html) => {
         iconColor: '#767676',
         confirmButtonColor: '#393534',
         preConfirm: request,
-        //  (login) => {
-        //     return fetch(`//api.github.com/users/${login}`)
-        //         .then(response => {
-        //             if (!response.ok) {
-        //                 throw new Error(response.statusText)
-        //             }
-        //             return response.json()
-        //         })
-        //         .catch(error => {
-        //             Swal.showValidationMessage(
-        //                 `Request failed: ${error}`
-        //             )
-        //         })
-        // },
         allowOutsideClick: () => !Swal.isLoading()
-    }).then((res) => {
+    }).then(res => {
         return res.isConfirmed;
-        // if (result.isConfirmed) {
-        //     console.log('xd');
-        //     // Swal.fire({
-        //     //     // title: `${result.value.login}'s avatar`,
-        //     //     // imageUrl: result.value.avatar_url
-        //     // })
-        // }
     })
 }
 </script>

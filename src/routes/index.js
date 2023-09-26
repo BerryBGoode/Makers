@@ -15,7 +15,6 @@ import empleados from '../views/empleados/vista.vue';
 import reservaciones from '../views/reservaciones/vista.vue';
 import sucursales from '../views/sucursales/vista.vue';
 import horarios from '../views/horarios/vista.vue';
-import tipos from '../views/tipos_servicios/vista.vue';
 import cargos from '../views/cargos/vista.vue';
 import ordenes from '../views/ordenes/vista.vue';
 // vista de los formularios hijos
@@ -30,7 +29,6 @@ import crearServicio from '../views/servicios/crear.vue';
 import crearProducto from '../views/productos/crear.vue';
 import crearCliente from '../views/clientes/crear.vue';
 import crearEmpleado from '../views/empleados/crear.vue';
-import crearTipo from '../views/tipos_servicios/crear.vue';
 import crearCargo from '../views/cargos/crear.vue';
 import crearOrden from '../views/ordenes/crear.vue';
 import crearSucursal from '../views/sucursales/crear.vue';
@@ -54,7 +52,6 @@ import editarRervacion from '../views/reservaciones/editar.vue'
 import editarOrden from '../views/ordenes/editar.vue'
 import editarFactura from '../views/facturas/editar.vue';
 import editarCargo from '../views/cargos/editar.vue';
-import editarTipo from '../views/tipos_servicios/editar.vue';
 //#endregion
 // intancia del enrutador
 const ROUTER = createRouter({
@@ -174,7 +171,7 @@ const ROUTER = createRouter({
                 {
                     name: 'tiposServicios',
                     path: '/servicios/tipos',
-                    component: () => import('../views/tipos_servicios/vista.vue'),
+                    component: () => import('../views/tiposServicios/vista.vue'),
                     meta: { requiresAuth: true }
                 },
                 // cargos
@@ -244,7 +241,7 @@ const ROUTER = createRouter({
                 {
                     name: 'crearTipoServicio',
                     path: '/servicios/tipos/crear',
-                    component: () => import('../views/tipos_servicios/crear.vue'),
+                    component: () => import('../views/tiposServicios/crear.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
@@ -307,7 +304,7 @@ const ROUTER = createRouter({
                 {
                     name: 'editarTipoServicio',
                     path: '/servicios/tipos/editar/:id',
-                    component: () => import('../views/tipos_servicios/editar.vue'),
+                    component: () => import('../views/tiposServicios/editar.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
@@ -389,7 +386,7 @@ const getSucursales = async () => {
         .then(sucursales => {
             store.state.sucursales = sucursales.data;
         })
-        .catch((error) => {
+        .catch(error => {
             console.log(error);
             return 0
         })
@@ -410,7 +407,8 @@ const getCargo = async () => {
 }
 
 // definiendo arreglo donde guardar el nombre de las rutas a las cuales los barberos pueden acceder
-const ROUTES_BARBER = ['configuracion', 'inicio',
+const ROUTES_BARBER = [
+    'configuracion', 'inicio',
     'clientes', 'crearCliente', 'editarCliente',
     'reservaciones', 'crearReservacion', 'editarReservacion',
     'ordenes', 'crearOrden', 'editarOrden',
@@ -418,8 +416,17 @@ const ROUTES_BARBER = ['configuracion', 'inicio',
     'detallesOrden', 'crearDetalle', 'productos', 'servicios', 'productos'
 ]
 // definendo arreglo con las rutas que puede acceder cajero
-const ROUTERS_CAJ = ['/configuracion', '/inicio', '/servicios', '/productos', '/clientes', '/reservaciones', '/ordenes'];
-
+const ROUTERS_CAJ = [
+    'configuracion', 'inicio',
+    'productos', 'crearProducto',
+    'servicios', 'crearServicio',
+    'clientes', 'crearCliente',
+    'reservaciones', 'crearReservacion', 'editarReservacion',
+    'ordenes', 'crearOrden', 'editarOrden',
+    'crearFactura', 'editarFactura',
+    'detallesOrden', 'crearDetalle', 'editarDetalleOrden',
+    'sucursales', 'productosSucursales', 'crearProductoSucursal', 'editarProductoSucursal'
+];
 // se ejecuta antes de ejecuta antes de realizar una acción o leer una ruta
 ROUTER.beforeEach(async (to, from, next) => {
 
@@ -440,7 +447,6 @@ ROUTER.beforeEach(async (to, from, next) => {
         // verificando sí hay más sucursales y empleados y no se quiere ir a login
         else if (store.state.sucursales > 0 && store.state.empleados > 0 && to.path !== '/login') {
             // verificar sí se quiere ir a restablecer contraseña
-
             //  y verificar la ruta de la que viene
             // sí es de '/' lo deje pasar, sino lo redirriga de la que viene
             if (to.name === 'Recuperacion' && (from.fullPath === '/' || (from.fullPath === '/login' && store.state.cambio_clave === true))) {
@@ -466,7 +472,6 @@ ROUTER.beforeEach(async (to, from, next) => {
             next('/primer/empleado')
         }
         else {
-
             // if (store.state.cargo === 'Barbero' && (to.path === '/inicio' || to.path === '/cliente'
             //     || to.path === '' || to.path === '/ordenes')) {
             //     next();
@@ -496,7 +501,6 @@ ROUTER.beforeEach(async (to, from, next) => {
     // verificar cuando se viene de la raíz '/' a la de restablecer
     else if (to.name === 'Recuperacion' && from.path === '/') {
         next();
-        console.log('happiness')
     }
     // verificar cuando se quiere ir a recuperacion y de otra página
     else if (to.name === 'Recuperacion' && from.path !== '/') {
@@ -510,10 +514,8 @@ ROUTER.beforeEach(async (to, from, next) => {
         } else if (store.state.cambio_clave) {
             next();
         } else {
-
             // sino hay aunteticación para redireccionar al login sino de la dirección q se venga
             (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
-
         }
     }
     // verificar cuando se decea ir formulario de primera sucursal
@@ -530,7 +532,6 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
         // sí tanto como hay sucursales como empleados entonces va a verificar sí existen token para direccionar a la ruta debida
         else {
-
             (localStorage.getItem('auth')) ? next(from.path) : next('/login')
         }
     }
@@ -548,7 +549,6 @@ ROUTER.beforeEach(async (to, from, next) => {
         else {
             (localStorage.getItem('auth')) ? next(from.path) : next('/login')
         }
-
     }
     // verificar cuando se va a navegar al login
     // cuando redirecciona al inicio
@@ -564,7 +564,6 @@ ROUTER.beforeEach(async (to, from, next) => {
                 // redireccionar al inicio sí existen autenticación
                 next({ name: 'inicio' })
             } else {
-
                 next();
                 // en esta parte se aplica cuando forsosamente se decea ir al login
                 // next(); //bug : cuando inicia sesión, cuando de inicio -> primera sucursal y manda al login
@@ -598,17 +597,12 @@ ROUTER.beforeEach(async (to, from, next) => {
                 // redirección sospechosa, cuando se elimina del localStorage
                 next();
             }
-
         }
     }
     // verificar ruta de ida cuando solo cuanto es barbero
     else {
-
-
         next();
-
     }
-
 })
 // exportando ruteado
 export default ROUTER;

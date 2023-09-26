@@ -44,16 +44,16 @@ export default {
             inactividad: null,
         }
     },
-    created(){
+    created() {
         //Crear evento para detectar actividad del usuario
         window.addEventListener('mousemove', this.reinicioContador);
         window.addEventListener('keydown', this.reinicioContador);
 
         //inicia el contador de actividad
-        this.iniciarContador();
+        // this.iniciarContador();
     },
 
-    beforeDestroy(){
+    beforeDestroy() {
         //linpiar los eventos antes de destruir el componente
         window.removeEventListener('mousemove', this.reinicioContador);
         window.removeEventListener('keydown', this.reinicioContador);
@@ -65,13 +65,13 @@ export default {
             this.datos = now
         },
         //Funcion para reiniciar el temporizador de inactividad
-        reinicioContador(){
+        reinicioContador() {
             clearTimeout(this.inactividad);
             this.iniciarContador();
         },
         //funcion para iniciar el temporizador de inactividad
-        iniciarContador(){
-            this.inactividad= setTimeout(() => {
+        iniciarContador() {
+            this.inactividad = setTimeout(() => {
                 //Logica para cerrar sesion automaticamente
                 //por inactividad se redirige al login y se cierra sesion
                 // remover token de autenticación

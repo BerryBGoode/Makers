@@ -4,7 +4,7 @@ const { Router } = require('express')
 const {
     validateUsuario, getInfo, getConfig, change, verificarSucursales,
     verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave,
-    getCargo
+    getCargo, validateUsuarioBloqueado
 } = require('../queries/login')
 
 // inicializar router
@@ -21,6 +21,7 @@ LOGIN.post('/correo', validatePIN);
 LOGIN.post('/recuperacion/correo/', validateRecuperación);
 LOGIN.get('/restablecer', restablecer);
 LOGIN.post('/restablecer', cambiarClave);
+LOGIN.get('/usuario-bloqueado', validateUsuarioBloqueado)
 LOGIN.get('/cargo', getCargo);
 
 module.exports = LOGIN

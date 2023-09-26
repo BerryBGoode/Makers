@@ -1,20 +1,19 @@
-// requerir de los attrs de la conexión para realizar las transacciónes SQL
-const { mysql, pg } = require('../db');
 // requeriendo bcrpypt para verificar contraseña
 const { compareSync } = require('bcryptjs')
 // requeriendo jwt o jsonwebtoken, para crear token cuando se inicie sesión
 const jwt = require('jsonwebtoken');
-const { encrypt, convertToBase64, convertToBin, } = require('../helpers/encrypt');
-
+// importando método para hashear contraseñass
+const { encrypt } = require('../helpers/encrypt');
 const { execute } = require('../MySQL');
-const { getBinary } = require('../helpers/validateHelpers');
-const md5 = require('md5');
+const { getBinary, convertToBinary } = require('../helpers/validateHelpers');
 const { getError } = require('../helpers/errors');
 const { sendMail } = require('../helpers/mailer');
 
 let current = new Date;
 const HOY = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
 
+// variable global para almacenar el id del usuario que se espera que restablezca la contraseña
+let id;
 
 // definiendo estructura básica del mensaje se que enviará cuando alguien haya ingresado algún dato perteneciente a otro usuario
 const SUPLANTACION_MSG = 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio avisamos que alguien ha intentado iniciar sesión y ha agregado un dato perteneciente a tú usuario.\nTe recomendamos estar muy alerta a cualquier situación';
@@ -30,7 +29,7 @@ const compare = (client, db) => {
 }
 
 
-const generatePIN = (length) => {
+const generatePIN = length => {
     // definiedo los caracteres que pueden ir en el pin
     let caracters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
     let result = '';
@@ -60,9 +59,9 @@ const validatePIN = async (req, res) => {
     // recuperar de los arreglos los datos en seco
     for (let i = 0; i < db.length; i++) {
         // obteniendo el pin de la db
-        _pin = db[i]['PIN']
+        _pin = db[i]['PIN'];
         // obteniedl id de la db
-        _id = db[i]['id_empleado']
+        _id = db[i]['id_empleado'];
     }
     // comparar pin
     if (db && compare(pin, _pin)) {
@@ -89,6 +88,7 @@ const validateUsuario = async (req, res) => {
 
             // obtener clave cuando
             id = getBinary(CLAVE, 'id_empleado')[0];
+            // enviando un id encriptado para tener un valor unico en el id
             for (let i = 0; i < CLAVE.length; i++) {
                 // obtener la clave
                 clave_db = CLAVE[i]['clave'];
@@ -99,12 +99,7 @@ const validateUsuario = async (req, res) => {
             // compara claves'
             if (clave_db && compare(clave, clave_db)) {
 
-                // console.log(CLAVE[0]['id_empleado'])
-                // console.log(convertToBin('Buffer 36 32 37 63 32 62 33 30 2d 31 66 39 63 2d 31 31'))
-                // // segunda autenticación
-
-                // console.log(id)
-                // // verificar sí el usuario ha deceado autenticarse otra vez
+                // verificar sí el usuario ha deceado autenticarse otra vez
                 if (autenticacion === true) {
                     // generar un pin random
                     const PIN = generatePIN(6);
@@ -126,16 +121,16 @@ const validateUsuario = async (req, res) => {
 
 
                 // Crear dos objetos Date para representar las fechas que deseas comparar
-                let fecha1 = new Date(HOY);
-                let fecha2 = new Date(fecha);
+                let today = new Date(HOY);
+                let fechadb = new Date(fecha);
 
                 // Calcular la diferencia en milisegundos
-                let diferenciaEnMilisegundos = fecha1 - fecha2;
+                let deltamls = today - fechadb;
 
                 // Calcular la diferencia en días
-                let diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24);
+                let deltadias = deltamls / (1000 * 60 * 60 * 24);
                 // calculando diferencia
-                (Math.round(diferenciaEnDias) > 1) ? modif = true : modif = false;
+                (Math.round(deltadias) > 1) ? modif = true : modif = false;
 
                 // verificar sí han pasado los días establecidos para cambiar la contraseña
                 // 
@@ -315,7 +310,7 @@ const agregandoIntentoByNotAlias = async (correo, dui) => {
  * Método para agregar intento solamente por el alias
  * @param {*} alias alias del usuario
  */
-const agregandoIntentoByAlias = async (alias) => {
+const agregandoIntentoByAlias = async alias => {
     try {
         await execute('UPDATE empledos SET intentos = intentos + 1 WHERE alias = ?', [alias]);
         let origin = {
@@ -331,7 +326,7 @@ const agregandoIntentoByAlias = async (alias) => {
     }
 }
 
-const getIntentos = async (origin) => {
+const getIntentos = async origin => {
     let intentos;
     switch (origin.case) {
         case 1:
@@ -357,8 +352,7 @@ const getIntentos = async (origin) => {
     return intentos[0].intentos;
 }
 
-
-const agregandoSuplantacionByAlias = async (alias) => {
+const agregandoSuplantacionByAlias = async alias => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE alias = ?', [alias])
     } catch (error) {
@@ -371,25 +365,25 @@ const agregandoSuplantacionByAlias = async (alias) => {
  * y casualmente puso el correo de un usuario existente
  * @param {*} correo 
  */
-const agregandoSuplantacionByCorreo = async (correo) => {
+const agregandoSuplantacionByCorreo = async correo => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE correo = ?', [correo]);
     } catch (error) {
         throw error;
     }
 }
+
 /**
  * Método para agregar 1 a la cantidad de veces que se ha probado un dato existente diferente a la credencia
  * @param {*} dui 
  */
-const agregandoSuplantacionByDui = async (dui) => {
+const agregandoSuplantacionByDui = async dui => {
     try {
         await execute('UPDATE empleados SET suplantaciones = suplantaciones + 1 WHERE dui = ? ', [dui])
     } catch (error) {
         throw error;
     }
 }
-
 
 /**
  * Método para obtener el cliente según los parametros especificados por el método
@@ -412,7 +406,7 @@ const getToken = async (dui, correo, clave) => {
                 id_empleado: _empleado[i]
             }
             // funsionar obj con los datos recuperados con el de los ids limpiados
-            Object.assign(EMPLEADO[i], id)
+            Object.assign(EMPLEADO[i], id);
             // obtener id del empleado encontrado
         }
         // convertir id a base 64
@@ -459,19 +453,27 @@ const restablecer = async (req, res) => {
         }
 
     } else {
-        res.status(401).send('Debe autenticarse antes')
+        res.status(401).send('Debe autenticarse antes');
     }
 }
 
 const cambiarClave = async (req, res) => {
-    let { clave } = req.body;
+    // obtener la clave del body de la petición
+    let { clave, id } = req.body;
+    // verificar sí se ha enviado algo para autenticarse
     if (req.headers.authorization) {
-        if (!compareSync(clave, await getClaveDB(req.headers.authorization))) {
+        // decodficar id
+        id = convertToBinary(id)
+        if (!compareSync(clave, await getClaveDB(id))) {
             clave = encrypt(clave);
-            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ? WHERE id_empleado = ?',
-                [clave, HOY, req.headers.authorization])
+            // modificar datos del empleado
+            //  * nueva clave
+            //  * nueva fecha de contraseña
+            //  * intentos a 0
+            //  * cambio de estado a desbloqueado
+            execute('UPDATE empleados SET clave = ?, fecha_ingreso = ?, estado = ?, intentos = ? WHERE id_empleado = ?',
+                [clave, HOY, 1, 0, id])
                 .then(() => {
-                    console.log('modificada')
                     res.status(201).send('Datos modificados');
                 }).catch(rej => {
                     res.status(500).send(getError(rej));
@@ -480,28 +482,86 @@ const cambiarClave = async (req, res) => {
             res.status(500).send('La nueva contraseña debe ser diferente a la actual');
         }
     } else {
-        console.log('xd')
+        res.status(401).json('Debe autenticarse antes');
     }
-
 }
 
+const validateUsuarioBloqueado = async (req, res) => {
+    // objeto para guardar al empleado encontrado y después retornar como respuesta
+    let $2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = {};
+    // variable que cambia cuando el id de la db coincide con el extraido de la request
+    let found = false;
+    // verificar sí se obtiene el token
+    if (req.headers.authorization) {
+        // obtener los ids de los empleados que estan bloqueados
+        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias FROM empleados WHERE estado = ?', [2])
+        // verificar sí existen empleados bloqueados
+        if (empleados.length > 0) {
+            //      verificar por cada id encontrado sí coincide con el obtenido del frontend
+            // decodificar todos id a binary
+            let id = getBinary(empleados, 'id_empleado')
+            // extrayendo el token a string
+            let token = jwt.decode(req.headers.authorization).id
+            for (let i = 0; i < empleados.length; i++) {
+                // guardando en otra propieda el valor del id del empleado para no enviar la col de manera cruda
+                empleados[i].GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = empleados[i].id_empleado;
+                // eliminando la propiedad id de objeto con los empleados encontrados con estado bloqueado
+                delete empleados[i].id_empleado;
+                // asginando id a esta variable para que sea un string y 'compaseSync' no generé conflictos
+                // verificando la coincidencia de id de la db con el obtenido del frontend
+                // asignando el encontrado a la variable q busca
+                found = compareSync(id[i].toString(), token.toString())
+                // vericar sí se encontró usuario bloqueado y con el id que viene del request
+                if (found === true) {
+                    // al objeto vacío asignar los datos que tiene el objeto que coincidio la comparación
+                    // del id que viene del request con el de la db
+                    Object.assign($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC, empleados[i])
+                    // y romper el ciclo for, sí se encontró empleado bloqueado con el que coincida el id del request
+                    break;
+                }
+            }
+
+            // verificar sí se encontró un usuario con ese id y que este bloqueado
+            // para mandar respuesta para mandar a otro lado o dejar que restablezca la contraseña
+            // sí se encuntra usuario mandar datos para que sean diferentes a sus datos personales     
+            (found) ? res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC) : res.status(200).json({ msg: 'Usuario no encontrado', found })
+        } else {
+            res.status(404).json('Usuario no encontrado');
+        }
+
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
+}
 
 const validateRecuperación = async (req, res) => {
     // obtener los datos
     const { dui, alias, correo } = req.body;
-    console.log(req.body)
     // verfiicar sí existe usuario
     const EMPLEADO = await execute('SELECT id_empleado FROM empleados WHERE alias = ? AND dui = ? AND correo = ?', [alias, dui, correo])
     if (EMPLEADO.length > 0) {
         // obtener id
-
-        let id = {
+        let objid = {
             id_empleado: getBinary(EMPLEADO, 'id_empleado')[0]
         }
-        let url = 'http://localhost:5173/#/restablecer=' + id.id_empleado
+        // almancenando id esperado para poder modificar la contraseña
+        id = objid.id_empleado;
+        objid.id_empleado = encrypt(objid.id_empleado);
+        // creando token con algoritmo HS256 con el tiempo definido en segundos
+        const token = jwt.sign({ id: objid.id_empleado }, process.env.SECRET, { algorithm: 'HS256', expiresIn: 1800 });
+        // enviar url para restablecer contraseña con id hasheado
+        // enviando token hasheado para poder acceder a restablecer contraseña:
+        /**
+         * * Dentro de restablecer contraseña
+         * 1: en el mounted mandar id al servidor
+         * 1.1 servidor: decodificar token
+         * 1.2           obtener id del token y comparar con el id que se esperaba obtener   
+         */
+        let url = 'http://localhost:5173/#/restablecer=' + token
         // enviar correo con url
         sendMail(correo, 'Recuperación de contraseña', 'Te saludamos de parte de Makers esperando que se encuentres bien, por este medio te enviamos la direccionar para poder restablecer contraseña\n' + url)
         res.status(200).json('Verificar correo');
+
     } else {
         res.status(500).json('Usuario no encontrado');
     }
@@ -650,5 +710,8 @@ const getDataPrimerEmpleado = async (req, res) => {
 }
 // exportar modulos
 module.exports = {
-    validateUsuario, getInfo, getConfig, change, verificarSucursales, verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave, getCargo
+    validateUsuario, getInfo, getConfig, change, verificarSucursales,
+    verificarEmpleados, getDataPrimerEmpleado, validatePIN,
+    validateRecuperación, restablecer, cambiarClave, getCargo,
+    validateUsuarioBloqueado
 };

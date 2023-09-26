@@ -1,48 +1,32 @@
-<style>
-.column {
-    flex-direction: column;
-}
-</style>
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
-            <span class="bold">Reservaciones</span>
-            <router-link to="/reservaciones/crear" type="button" class="btn btn-makers">
-                Agregar
-            </router-link>
+            <span class="bold">Tipos de servicios</span>
+            <div class="buttons-top">
+                <router-link to="/servicios" type="button" class="btn btn-makers">
+                    Volver
+                </router-link>
+                <router-link to="/servicios/tipos/crear" type="button" class="btn btn-makers">
+                    Agregar
+                </router-link>
+            </div>
         </div>
-
         <hr>
 
         <template v-if="!isload">
             <load />
         </template>
         <template v-else>
-            <div class="data p-2" v-if="reservaciones.length > 0">
-                <!-- recorrer las reservaciones encontradas -->
-
-                <div class="card" v-for="(reservacion, i) in filters" :key="i">
+            <div class="data p-2" v-if="tipos.length > 0">
+                <div class="card" v-for="(tipo, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-2">
-                                <h5 class="card-title bold mb-1">{{ reservacion.fecha }}</h5>
-                                <span class="card-text mb-0 smaller">{{ reservacion.hora }}</span>
-                                <!-- <p class="card-text mb-0 smaller">{{ servicio.descripcion }} </p> -->
-                                <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
-                            </div>
-                            <div class="col-md-3 flex column">
-                                <span>{{ reservacion.cliente_n }}</span>
-                                <span>{{ reservacion.cliente_a }}</span>
-                                <span>{{ reservacion.cliente_d }}</span>
-                            </div>
-                            <div class="col-md-3 flex column">
-                                <span>{{ reservacion.empleado_n }}</span>
-                                <span>{{ reservacion.empleado_a }}</span>
-                                <span>{{ reservacion.empleado_d }}</span>
+                            <div class="col-md-6">
+                                <h5 class="card-title bold mb-1">{{ tipo.tipo_servicio }}</h5>
                             </div>
                             <div class="col-md-2 card-buttons">
                                 <div class="buttons">
-                                    <router-link :to="{ path: '/reservaciones/editar/' + reservacion.id_reservacion }">
+                                    <router-link :to="{ path: '/servicios/tipos/editar/' + tipo.id_tipo_servicio }">
                                         <svg width="40" height="40" class="button" viewBox="0 0 40 40" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -58,9 +42,9 @@
                                                 stroke-linecap="round" stroke-linejoin="round" />
                                         </svg>
                                     </router-link>
-                                    <svg @click.prevent="eliminarReservacion(reservacion.id_reservacion)" width="40"
-                                        height="40" class="button" viewBox="0 0 40 40" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
+
+                                    <svg @click="eliminarTipo(tipo.id_tipo_servicio)" width="40" height="40" class="button"
+                                        viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                             stroke="white" stroke-width="2" stroke-linecap="round"
@@ -78,99 +62,84 @@
                                             stroke="white" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
-            <div class="data p-2" v-else-if="reservaciones.length === 0">
+            <div class="data p-2" v-else-if="tipos.length === 0">
                 <span class="bold">
                     No se encontraron existencias
                 </span>
             </div>
-            <div class="data p-2" v-if="filters.length === 0 && reservaciones.length > 0">
+            <div class="data p-2" v-if="filters.length === 0 && tipos.length > 0">
                 <span class="bold">
                     No se encontraron resultados
                 </span>
             </div>
         </template>
+
     </div>
 </template>
 <script>
-//importar el axios
-import axios from 'axios';
-import 'jspdf-autotable';
+import axios from 'axios'
 import { mapState } from 'vuex';
-import { notificationError, notificationQuestion, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationSuccess } from '../../components/alert.vue';
 import store from '../../store';
 import load from '../../components/load.vue';
 
 
-// componente para vista
 export default {
-    name: 'reservaciones',
+    name: 'tipos',
     components: { load },
     data() {
         return {
-            //arreglo vacío para guardar datos
-            reservaciones: [],
+            tipos: [],
             filters: [],
-            // propiedad para identificar cuando una petición se termino de realizar
             isload: false
         }
     },
     methods: {
-        //método para obtener las reservaciones
-        getReservaciones() {
-            //realizar la petición
-            axios.get('http://localhost:3000/api/reservaciones/', store.state.config)
+        getTipos() {
+            axios.get('http://localhost:3000/api/tipos', store.state.config)
                 .then(res => {
-                    this.reservaciones = res.data;
+                    this.tipos = res.data;
                     this.filters = res.data;
                 })
                 .catch(e => notificationError(e.response.data))
-                .finally(() => this.isload = true);
+                .finally(() => { this.isload = true });
         },
-        async eliminarReservacion(reservacion) {
-            // esperar confirmación
-            if (await notificationQuestion('Desea eliminar la reservación? Una vez eliminada no podrá recuperarla', 7500)) {
-                //realizar petición
-                axios.delete('http://localhost:3000/api/reservaciones/' + reservacion, store.state.config)
+        eliminarTipo(tipo) {
+            if (confirm('Desea eliminar este tipo de servicio?')) {
+                axios.delete('http://localhost:3000/api/tipos/' + tipo, store.state.config)
                     .then(res => {
+                        // verificar errores
                         notificationSuccess(res.data);
-                        //cargar
-                        this.getReservaciones();
-                    })
-                    .catch(e => { notificationError(e.response.data) })
+                        // cargar
+                        this.getTipos();
+                    }).catch(e => { notificationError(e.response.data) })
             }
         },
         buscar(dato) {
-            // guardar en una constante los datos filtrados
-            const RESREVACIONES = this.reservaciones.filter(reservacion => {
-                // retornar los que cumplan las siguientes condiciones
+            const TIPOS = this.tipos.filter(tipo => {
                 return (
-                    reservacion.cliente_a.toLowerCase().indexOf(dato) !== -1 ||
-                    reservacion.cliente_n.toLowerCase().indexOf(dato) !== -1 ||
-                    reservacion.cliente_d.indexOf(dato) !== -1 ||
-                    reservacion.empleado_a.toLowerCase().indexOf(dato) !== -1 ||
-                    reservacion.empleado_n.toLowerCase().indexOf(dato) !== -1 ||
-                    reservacion.empleado_d.indexOf(dato) !== -1 ||
-                    reservacion.fecha.indexOf(dato) !== -1 ||
-                    reservacion.hora.indexOf(dato) !== -1
+                    tipo.tipo_servicio.toLowerCase().indexOf(dato) !== -1
                 )
             })
-            // asignar a los del filters
-            this.filters = RESREVACIONES;
-        },
-
+            this.filters = TIPOS;
+        }
     },
     mounted() {
-        this.getReservaciones();
+        this.getTipos();
     },
     watch: {
         buscador() {
-            (this.buscador.trim() === '') ? this.filters = this.reservaciones : this.buscar(this.buscador);
+            // verificar sí esta vacío el input
+            (this.buscador.trim() === '') ? this.filters = this.tipos : this.buscar(this.buscador);
         }
     },
     computed: {
