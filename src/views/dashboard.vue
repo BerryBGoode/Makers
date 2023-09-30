@@ -46,8 +46,8 @@ export default {
     },
     created() {
         //Crear evento para detectar actividad del usuario
-        window.addEventListener('mousemove', this.reinicioContador);
-        window.addEventListener('keydown', this.reinicioContador);
+        // window.addEventListener('mousemove', this.reinicioContador);
+        // window.addEventListener('keydown', this.reinicioContador);
 
         //inicia el contador de actividad
         // this.iniciarContador();
@@ -55,8 +55,8 @@ export default {
 
     beforeDestroy() {
         //linpiar los eventos antes de destruir el componente
-        window.removeEventListener('mousemove', this.reinicioContador);
-        window.removeEventListener('keydown', this.reinicioContador);
+        // window.removeEventListener('mousemove', this.reinicioContador);
+        // window.removeEventListener('keydown', this.reinicioContador);
     },
     methods: {
         // metodo para asignar el valor de la prop a enviar el valor recibido del buscador

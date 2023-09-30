@@ -1,11 +1,11 @@
 // requerir de enrutador de express
-const { Router } = require('express')
+const { Router } = require('express');
 // requerir de los métodos para realizar queries
 const {
     validateUsuario, getInfo, getConfig, change, verificarSucursales,
     verificarEmpleados, getDataPrimerEmpleado, validatePIN, validateRecuperación, restablecer, cambiarClave,
     getCargo, validateUsuarioBloqueado
-} = require('../queries/login')
+} = require('../queries/login');
 
 // inicializar router
 const LOGIN = Router();
