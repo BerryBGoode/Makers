@@ -45,7 +45,7 @@ const store = async (req, res) => {
                 console.log(sucursales[0].cantidad)
                 //  verificar la cantidad de estas q se han encontrado
                 if (sucursales[0].cantidad >= 1) {
-                    res.status(500).json('No se puede agregar sucursal debido que ya existe una');
+                    res.status(500).json('No se puede agregar sucursal debido a que ya existe una');
                 } else {
                     // realizar query 
                     execute('INSERT INTO sucursales(id_sucursal, telefono, horario, nombre_sucursal, direccion) VALUES (UUID(), ?, ?, ?, ?)',
