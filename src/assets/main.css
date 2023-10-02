@@ -303,6 +303,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     align-items: center;
 }
 
+.content-center {
+    justify-content: center;
+}
+
 .wrap {
     flex-wrap: wrap;
 }

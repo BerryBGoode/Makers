@@ -12,14 +12,89 @@
     border-color: #b4b0af !important;
     color: #b4b0af !important;
 }
+
+.form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    padding: 1rem;
+}
+
+.func {
+    height: 100%;
+    width: 50%;
+    padding: 1rem;
+}
+
+.logo-2 {
+    display: none;
+}
+
+/* responsive en tablets: max-width, px de ancho que se quiere para abajo +1  */
+@media screen and (max-width: 992px) {
+    .login-container {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+    }
+
+    .login {
+        flex-direction: row;
+    }
+
+
+    .form {
+        height: 73%;
+    }
+
+    .func {
+        height: 16%;
+    }
+
+    .func,
+    .form {
+        /* height: 50%; */
+        width: 100% !important;
+    }
+
+    .func {
+        display: block;
+    }
+
+    .view {
+        width: 100vw;
+    }
+
+    .logo-2 {
+        display: flex;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .img-fun-2 {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+}
 </style>
 
 <template>
-    <section class="flex items-center w-100 h-100 ">
+    <section class="flex view items-center content-center w-100 h-100 ">
         <form class="container p-5 login-container" @submit.prevent="checkEmpleado">
-            <span class="msg">{{ msg }}</span>
             <div class="col h-100 flex wrap login">
-                <div class="row-6 p-3 w-50 form align-center">
+
+                <div class="img-fun-2 align-center">
+                    <img :src="model.logo_lc" class="logo-2" alt="Logo" draggable="false">
+                </div>
+
+                <div class="form align-center">
                     <div class="children-form">
                         <div class="mb-3">
                             <label for="dui" class="form-label">DUI</label>
@@ -44,9 +119,9 @@
                     </div>
 
                 </div>
-                <div class="row-6 p-3 w-50 func">
+                <div class="func">
                     <div class="img-fun align-center">
-                        <img :src="model.logo_lc" alt="Logo" draggable="false">
+                        <img :src="model.logo_lc" class="logo" alt="Logo" draggable="false">
                     </div>
 
                     <div class="buttons-login">
@@ -75,7 +150,7 @@ import { convertToBin } from '../validator';
 
 export default {
     // nombre del componente
-    name: "login",
+    name: 'login',
     components: { logo },
     // método que retorna el componente
     data() {
@@ -188,18 +263,16 @@ export default {
         },
         // método para buscar a un empleado con esos datos
         async checkEmpleado() {
-            // limpiar mensaje
-            this.msg = '';
             // validar datos vacios
             if (!this.model.empleado.correo && !this.model.empleado.clave && !this.model.empleado.dui) {
-                this.msg = 'No se permite campos vacíos';
+                notificationInfo('No se permite campos vacíos');
 
             } else {
                 (await alertQuestion('Desea aplicar segunda autenticación?', null, 'Aceptar', true, 'Cancelar', false)) ? this.model.empleado.autenticacion = true : this.model.empleado.autenticacion = false;
                 try {
 
                     let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);
-                    if (!res.data.auth) this.msg = res.data.msg;
+                    if (!res.data.auth) notificationInfo(res.data.msg);
                     // creando token
                     if (res.data.auth !== false) {
 
