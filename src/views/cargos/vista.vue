@@ -1,3 +1,19 @@
+<style>
+@keyframes FadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    animation: FadeIn 1s ease 0s 1 normal forwards;
+}
+</style>
+
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
@@ -18,7 +34,7 @@
         <templete v-else>
             <!-- Apartir de aquí verificar sí hay datos o servicios -->
             <div class="data p-2" v-if="cargos.length >= 0">
-                <div class="card" v-for="(cargo, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(cargo, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-6">

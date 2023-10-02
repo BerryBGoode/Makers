@@ -53,8 +53,8 @@
     <div class="container-sidebar">
         <div class="logo-sidebar">
             <picture>
-                <source srcset="../assets/img/logos/logo_blanco.png" type="image/png">
-                <img :src="logo" srcset="../assets/img/logos/logo_blanco.png" draggable="false" />
+                <source type="image/png">
+                <img :src="logo" draggable="false" />
             </picture>
         </div>
         <ul class="ul-lista">
@@ -74,6 +74,7 @@ import { RouterLink, RouterView } from 'vue-router';
 import store from '../store';
 import { notificationError } from '../components/alert.vue';
 import axios from 'axios';
+
 // funcionalidades del componente
 export default {
     // nombre del componente
@@ -81,10 +82,9 @@ export default {
     data() {
         return {
             // lista con las optiones que puede acceder el usuario
-            options: [
-
-            ],
-            logo: './../src/assets/img/logos/logo_blanco.png',
+            options: [],
+            logo: '',
+            // logomin: './../src/assets/img/logos/logo_blanco_nav.png',
             cargo: ''
         };
     },
@@ -143,10 +143,29 @@ export default {
                 .catch(e => {
                     notificationError(e.response.data);
                 })
+        },
+        validateWindow(width) {
+            // verificar el width para asignar el valor a logo, iconos, lado del sidabar etc
+            if (width >= 1280) {
+                this.logo = './../src/assets/img/logos/logo_blanco.png'
+            } else if (width >= 1280 || width < 1280) {
+                this.logo = './../src/assets/img/logos/logo_blanco_nav.png'
+            }
+
+            if (width <= 930) {
+                this.options.forEach(elements => {
+                    console.log(elements)
+                })
+            }
+            // eva
         }
     },
     created() {
-        this.getEmpleado();
+        // crear evento cuando se cambia de ancho la pantalla
+        window.addEventListener('resize', event => {
+            this.validateWindow(document.documentElement.clientWidth)
+        })
+        this.validateWindow(document.documentElement.clientWidth);
     },
     mounted() {
         this.getEmpleado();

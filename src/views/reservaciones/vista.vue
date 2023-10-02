@@ -21,7 +21,7 @@
             <div class="data p-2" v-if="reservaciones.length > 0">
                 <!-- recorrer las reservaciones encontradas -->
 
-                <div class="card" v-for="(reservacion, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(reservacion, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-2">

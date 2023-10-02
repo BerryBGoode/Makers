@@ -169,6 +169,7 @@ const store = async (req, res) => {
                         res.status(201).json('Empleado agregado')
                     })
                     .catch(rej => {
+                        console.log(rej)
                         res.status(500).json(getError(rej))
                     })
             }
@@ -226,7 +227,7 @@ const change = (req, res) => {
                 res.status(201).json('Empleado modificado');
             }).catch(rej => {
                 console.log(rej)
-                res.status(500).json({ error: getError(rej['errno']) })
+                res.status(500).json(getError(rej))
             })
     } catch (error) {
         console.log(error);
@@ -245,7 +246,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).json('Empleado eliminado');
             }).catch(rej => {
-                res.status(500).json({ error: getError(rej['errno']) })
+                res.status(500).json(getError(rej))
             })
 
     } catch (error) {

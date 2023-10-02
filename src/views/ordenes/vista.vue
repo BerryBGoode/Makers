@@ -25,7 +25,7 @@
         </template>
         <template v-else>
             <div class="data p-2" v-if="ordenes.length > 0">
-                <div class="card" v-for="(orden, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(orden, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-5">
