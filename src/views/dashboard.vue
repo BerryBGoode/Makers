@@ -46,17 +46,17 @@ export default {
     },
     created() {
         //Crear evento para detectar actividad del usuario
-        // window.addEventListener('mousemove', this.reinicioContador);
-        // window.addEventListener('keydown', this.reinicioContador);
+        window.addEventListener('mousemove', this.reinicioContador);
+        window.addEventListener('keydown', this.reinicioContador);
 
         //inicia el contador de actividad
-        // this.iniciarContador();
+        this.iniciarContador();
     },
 
     beforeDestroy() {
         //linpiar los eventos antes de destruir el componente
-        // window.removeEventListener('mousemove', this.reinicioContador);
-        // window.removeEventListener('keydown', this.reinicioContador);
+        window.removeEventListener('mousemove', this.reinicioContador);
+        window.removeEventListener('keydown', this.reinicioContador);
     },
     methods: {
         // metodo para asignar el valor de la prop a enviar el valor recibido del buscador
@@ -78,7 +78,7 @@ export default {
                 localStorage.clear();
                 this.$router.push('/login');
                 notificationInfo('Sesion cerrada por inactividad.');
-            }, 300000)
+            }, /*300000 */ 100000)
         }
     },
 }
