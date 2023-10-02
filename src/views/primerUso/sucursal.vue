@@ -125,7 +125,7 @@ export default {
 
                         }
 
-                    })
+                    }).catch(rej => { notificationError(rej.response.data); })
             }
         },
         // método para agrega primer horario
@@ -196,6 +196,13 @@ export default {
         ...mapState({
             sucursales: state => state.sucursales,
         })
+    },
+    watch: {
+        // cuando se detecté un cambio en el estado de sucursales 
+        sucursales() {
+            // redireccionar a primer/empleado
+            this.$router.push('/primer/empleado');
+        }
     },
     mounted() {
         // verificar la cantidad de sucursales para mostrar o no el mensaje

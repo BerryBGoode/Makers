@@ -195,6 +195,7 @@ export default {
                 this.msg = 'No se permite campos vacíos';
 
             } else {
+                (await alertQuestion('Desea aplicar segunda autenticación?', null, 'Aceptar', true, 'Cancelar', false)) ? this.model.empleado.autenticacion = true : this.model.empleado.autenticacion = false;
                 try {
 
                     let res = await axios.post('http://localhost:3000/api/auth/', this.model.empleado);

@@ -165,29 +165,26 @@ const one = async (req, res) => {
  * Método para eliminar la factura seleccionada
  */
 const destroy = (req, res) => {
-    // verificar
-    try {
-        // obtener el idFacturas
-        const IDFACTURA = req.params.id;
-        // realizar transferencia sql o delete en este caso
-        execute('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA])
-            .then(() => {
-                res.status(201).json('Factura eliminada');
-            }).catch(rej => {
-                res.status(500).json({ error: getError(rej) })
-            })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json('Surgio un problema en el servidor');
+    // verificar autenticación
+    if (req.headers.authorization) {
+        try {
+            // obtener el idFacturas
+            const IDFACTURA = req.params.id;
+            // realizar transferencia sql o delete en este caso
+            execute('DELETE FROM facturas WHERE id_factura = ?', [IDFACTURA])
+                .then(() => {
+                    res.status(201).json('Factura eliminada');
+                }).catch(rej => {
+                    res.status(500).json({ error: getError(rej) })
+                })
+        } catch (error) {
+            console.log(error);
+            res.status(500).json('Surgio un problema en el servidor');
+        }
+    } else {
+        res.status(401).json('Debe autenticarse antes');
     }
 }
-
-
-
-
-
-
-
 
 // exportación de modulos
 module.exports = { get, getDirección, change, destroy, store, one }

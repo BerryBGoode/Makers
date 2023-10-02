@@ -1,5 +1,4 @@
 // requiriendo la pool con los attrs de la conexión
-const POOL = require('../db');
 
 const { execute } = require('../MySQL');
 const { getBinary } = require('../helpers/validateHelpers');
@@ -117,25 +116,24 @@ const store = (req, res) => {
  */
 const change = (req, res) => {
     if (req.headers.authorization) {
-
+        try {
+            // obtener id 
+            const IDORDEN = req.params.id;
+            // obtener los datos enviados del frontend
+            const { fecha, cliente } = req.body;
+            // realizar transacción sql
+            execute('UPDATE ordenes SET fecha = ?, id_cliente = ? WHERE id_orden = ?',
+                [fecha, cliente, IDORDEN])
+                .then(() => {
+                    res.status(201).send('Orden modificada');
+                }).catch(rej => {
+                    res.status(500).send(getError(rej))
+                })
+        } catch (error) {
+            res.status(401).send(getError(error))
+        }
     } else {
-
-    }
-    try {
-        // obtener id 
-        const IDORDEN = req.params.id;
-        // obtener los datos enviados del frontend
-        const { fecha, cliente } = req.body;
-        // realizar transacción sql
-        execute('UPDATE ordenes SET fecha = ?, id_cliente = ? WHERE id_orden = ?',
-            [fecha, cliente, IDORDEN])
-            .then(() => {
-                res.status(201).send('Orden modificada');
-            }).catch(rej => {
-                res.status(500).send(getError(rej))
-            })
-    } catch (error) {
-        res.status(401).send(getError(error))
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -193,10 +191,6 @@ const one = async (req, res) => {
     }
 
 }
-
-
-
-
 
 // exportación de modulos
 module.exports = { get, getClienteDui, getObtenerClientes, change, destroy, store, one }

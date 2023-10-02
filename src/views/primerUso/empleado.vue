@@ -154,7 +154,7 @@ export default {
                     // fusionar con el objeto con los datos del empleado
                     this.empleado = Object.assign(this.empleado, datos.data)
                     // enviar registro al servidor
-                    axios.post('http://localhost:3000/api/empleados', Object.assign(this.empleado, datos.data))
+                    axios.post('http://localhost:3000/api/empleados/', Object.assign(this.empleado, datos.data))
                         .then(res => {
                             // mostrar mensaje de error sí encuentra
                             (res.data.error) ? notificationInfo(res.data.error, 5000, 'Aceptar') : alertInfo(res.data, 'Aceptar', 6500, 'Ahora procedera a iniciar sesión con el empleado creado');
@@ -164,7 +164,7 @@ export default {
                             this.$router.push('/login');
                         }).catch(e => {
                             // mostrar mensaje de exception sí encuentra
-                            (e.response) ? notificationInfo(e.response, 5000, 'Aceptar') : notificationInfo(e, 5000, 'Aceptar')
+                            (e.response) ? notificationInfo(e.response.data, 5000, 'Aceptar') : notificationInfo(e, 5000, 'Aceptar')
                         })
                 }
 
