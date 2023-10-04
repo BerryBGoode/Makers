@@ -362,8 +362,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
 }
 
-.blink {
-    animation: FadeIn 1s ease 0s 1 normal forwards;
+.fadeIn {
+    animation: FadeIn .5s ease 0s 1 normal forwards;
 }
 
 @media screen and (max-width: 725px) {
@@ -375,6 +375,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     .form {
         height: 50%;
         width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 930px) {
+    main {
+        margin-left: 8vw;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        max-width: 100% !important;
     }
 }
 
