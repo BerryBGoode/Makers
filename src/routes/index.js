@@ -518,7 +518,7 @@ ROUTER.beforeEach(async (to, from, next) => {
         }
         // verificar sí no existen empleados para redireccionar a primer empleado
         else if (store.state.empleados <= 0) {
-            next('/primer/sucursal');
+            next('/primer/empleado');
         } else if (store.state.cambio_clave) {
             next();
         } else {

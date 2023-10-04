@@ -56,7 +56,7 @@ const get = async (req, res) => {
                 });
                 if (res.status(200)) res.json(data);
             })
-            .catch(rej => res.status(406).json({ error: rej }))
+            .catch(rej => res.status(500).json({ error: rej }))
     } else {
         res.status(401).json({ error: 'Debe iniciar sesión antes' })
     }
@@ -137,21 +137,41 @@ const getCargos = async (req, res) => {
 /**
  * Método para crear un empleado
  */
-const store = (req, res) => {
+const store = async (req, res) => {
     if (req.headers.authorization || (req.body.path === '/primer/empleado' && req.headers.origin === 'http://localhost:5173')) {
         try {
             // obtener los datos del req
             const { nombres, apellidos, dui, clave, planilla, telefono, correo, sucursal, horario, cargo, alias } = req.body;
-            let password = encrypt(clave)
-            // realizar query o insert y enviarle los parametros
-            execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
-                .then(() => {
-                    res.status(201).json('Empleado agregado')
-                })
-                .catch(rej => {
-                    res.status(406).json(getError(rej))
-                })
+            let password = encrypt(clave);
+            // verificar que el origen de la petición es el registro de primer empleados
+            if (req.body.path === '/primer/empleado') {
+                // obtener sucursales
+                let empleados = await execute('SELECT count(id_empleado) as cantidad FROM empleados');
+                // verificar la cantidad de empleados encontrados
+                if (empleados[0].cantidad >= 1) {
+                    res.status(500).json('No se puede agregar empleado, debido a que ya existe uno');
+                } else {
+                    // realizar query o insert y enviarle los parametros
+                    execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
+                        .then(() => {
+                            res.status(201).json('Empleado agregado')
+                        })
+                        .catch(rej => {
+                            res.status(500).json(getError(rej))
+                        })
+                }
+            } else {
+                // realizar query o insert y enviarle los parametros
+                execute('INSERT INTO empleados(id_empleado, nombres, apellidos, dui, clave, planilla, telefono, correo,id_sucursal, id_horario, id_cargo, alias) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    [nombres, apellidos, dui, password, planilla, telefono, correo, sucursal, horario, cargo, alias])
+                    .then(() => {
+                        res.status(201).json('Empleado agregado')
+                    })
+                    .catch(rej => {
+                        res.status(500).json(getError(rej))
+                    })
+            }
         } catch (e) {
             res.status(500).json('Surgio un problema en el servidor');
         }
@@ -206,7 +226,7 @@ const change = (req, res) => {
                 res.status(201).json('Empleado modificado');
             }).catch(rej => {
                 console.log(rej)
-                res.status(406).json({ error: getError(rej['errno']) })
+                res.status(500).json({ error: getError(rej['errno']) })
             })
     } catch (error) {
         console.log(error);
@@ -225,7 +245,7 @@ const destroy = (req, res) => {
             .then(() => {
                 res.status(201).json('Empleado eliminado');
             }).catch(rej => {
-                res.status(406).json({ error: getError(rej['errno']) })
+                res.status(500).json({ error: getError(rej['errno']) })
             })
 
     } catch (error) {

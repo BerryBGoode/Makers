@@ -137,75 +137,100 @@ const getServiciosVendidos = (req, res) => {
 }
 
 const getProductosVendidos = (req, res) => {
+
     // verificar autenticiación
-    execute(`
-            SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
-            FROM servicios s
-            LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
-            LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
-            LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
-            WHERE t.tipo_servicio = 'Producto'
-            GROUP BY s.nombre_servicio
-            ORDER BY cantidad DESC LIMIT 7`
-        ,)
-        .then(rows => {
-            res.status(200).json(rows)
-        }).catch(rej => {
-            res.status(500).json({ error: getError(rej) })
-        })
+    if (req.headers.authorization) {
+        execute(`
+                SELECT COUNT(d.id_detalle) AS cantidad, s.nombre_servicio
+                FROM servicios s
+                LEFT JOIN detalles_servicios_sucursales ds ON ds.id_servicio = s.id_servicio
+                LEFT JOIN detalles_ordenes d ON d.id_detalle_servicio = ds.id_detalle
+                LEFT JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
+                WHERE t.tipo_servicio = 'Producto'
+                GROUP BY s.nombre_servicio
+                ORDER BY cantidad DESC LIMIT 7`
+            ,)
+            .then(rows => {
+                res.status(200).json(rows)
+            }).catch(rej => {
+                res.status(500).json({ error: getError(rej) })
+            })
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
 }
 
 const reservacionesMes = (req, res) => {
-    let mes = req.params.mes;
-    execute(`
-        SELECT COUNT(*) reservaciones, DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha
-        FROM reservaciones r
-        WHERE YEAR(r.fecha) = YEAR(CURRENT_DATE) AND MONTH(r.fecha) = ?
-        GROUP BY fecha
-        ORDER BY reservaciones DESC LIMIT 10
-    `, [mes])
-        .then(rows => { res.status(200).json(rows) })
-        .catch(rej => { res.status(500).send({ error: getError(rej) }) });
+    // verificando autenticación para poder regir instrucciones
+    if (req.headers.authorization) {
+        let mes = req.params.mes;
+        execute(`
+            SELECT COUNT(*) reservaciones, DATE_FORMAT(r.fecha, '%Y-%m-%d') as fecha
+            FROM reservaciones r
+            WHERE YEAR(r.fecha) = YEAR(CURRENT_DATE) AND MONTH(r.fecha) = ?
+            GROUP BY fecha
+            ORDER BY reservaciones DESC LIMIT 10
+        `, [mes])
+            .then(rows => { res.status(200).json(rows) })
+            .catch(rej => { res.status(500).send({ error: getError(rej) }) });
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
 }
 
 const getClienteporfecha = (req, res) => {
-    execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
-        .then(row => {
-            es.status(200).json(rows)
-        }).catch(rej => {
-            res.status(500).json({ error: getError(rej) })
-        })
+    if (req.headers.authorization) {
+        execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
+            .then(row => {
+                es.status(200).json(rows)
+            }).catch(rej => {
+                res.status(500).json({ error: getError(rej) })
+            })
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
 
 }
 
 const getEmpleadoCargos = (req, res) => {
-    execute(`SELECT count(e.id_cargo) as count, c.cargo
-            FROM cargos c
-            LEFT JOIN empleados e ON c.id_cargo = e.id_cargo
-            GROUP BY c.cargo
-            ORDER BY count DESC`
-    )
-        .then(rows => {
-            res.status(200).json(rows)
-        }).catch(rej => {
-            res.status(500).json({ error: getError(rej) })
-        })
+
+    if (req.headers.authorization) {
+        execute(`SELECT count(e.id_cargo) as count, c.cargo
+                FROM cargos c
+                LEFT JOIN empleados e ON c.id_cargo = e.id_cargo
+                GROUP BY c.cargo
+                ORDER BY count DESC`
+        )
+            .then(rows => {
+                res.status(200).json(rows)
+            }).catch(rej => {
+                res.status(500).json({ error: getError(rej) })
+            })
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
+
 }
 
 const getHoraMes = (req, res) => {
-    let mes = req.params.mes;
-    execute(`
-        SELECT COUNT(*) as ventas, 
-        CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
-        FROM ordenes o
-        WHERE YEAR(o.fecha) = YEAR(CURRENT_DATE) AND MONTH(o.fecha) = ?
-        GROUP BY HOUR(o.hora)
-        ORDER BY ventas DESC LIMIT 7        
-    `, [mes]).then(rows => {
-        res.status(200).json(rows)
-    }).catch(rej => {
-        res.status(500).json({ error: getError(rej) });
-    })
+
+    if (req.headers.authorization) {
+        let mes = req.params.mes;
+        execute(`
+            SELECT COUNT(*) as ventas, 
+            CONCAT(TIME_FORMAT(o.hora, '%h:%i'), ' ', IF(TIME_FORMAT(o.hora, '%h:%i') < 12, 'AM', 'PM')) as hora
+            FROM ordenes o
+            WHERE YEAR(o.fecha) = YEAR(CURRENT_DATE) AND MONTH(o.fecha) = ?
+            GROUP BY HOUR(o.hora)
+            ORDER BY ventas DESC LIMIT 7        
+        `, [mes]).then(rows => {
+            res.status(200).json(rows)
+        }).catch(rej => {
+            res.status(500).json({ error: getError(rej) });
+        })
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
 }
 
 

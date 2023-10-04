@@ -494,14 +494,16 @@ const validateUsuarioBloqueado = async (req, res) => {
     // verificar sí se obtiene el token
     if (req.headers.authorization) {
         // obtener los ids de los empleados que estan bloqueados
-        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias FROM empleados WHERE estado = ?', [2])
+        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias, fecha_ingreso, estado FROM empleados', [2])
         // verificar sí existen empleados bloqueados
         if (empleados.length > 0) {
             //      verificar por cada id encontrado sí coincide con el obtenido del frontend
             // decodificar todos id a binary
             let id = getBinary(empleados, 'id_empleado')
+            let token;
+            // dependiendo sí venga en formato de jwt extraer del token o no
             // extrayendo el token a string
-            let token = jwt.decode(req.headers.authorization).id
+            (jwt.decode(req.headers.authorization)) ? token = jwt.decode(req.headers.authorization).id : token = req.headers.authorization
             for (let i = 0; i < empleados.length; i++) {
                 // guardando en otra propieda el valor del id del empleado para no enviar la col de manera cruda
                 empleados[i].GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = empleados[i].id_empleado;
@@ -520,11 +522,27 @@ const validateUsuarioBloqueado = async (req, res) => {
                     break;
                 }
             }
+            // Crear dos objetos Date para representar las fechas que deseas comparar
+            let today = new Date(HOY);
+            let fechadb = new Date($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.fecha_ingreso);
+
+            // Calcular la diferencia en milisegundos
+            let deltamls = today - fechadb;
+
+            // Calcular la diferencia en días
+            let deltadias = deltamls / (1000 * 60 * 60 * 24);
+            // // calculando diferencia
+            // (Math.round(deltadias) > 1) ? modif = true : modif = false;
+
+            // verificar el estado del empleado es bloqueado o que la fecha para cambio de contraseña pasé la fecha establecida
+            ($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.estado === 2 || Math.round(deltadias >= 1)) ?
+                res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC)
+                :
+                res.status(200).json({ msg: 'Usuario no encontrado', found: false });
 
             // verificar sí se encontró un usuario con ese id y que este bloqueado
             // para mandar respuesta para mandar a otro lado o dejar que restablezca la contraseña
             // sí se encuntra usuario mandar datos para que sean diferentes a sus datos personales     
-            (found) ? res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC) : res.status(200).json({ msg: 'Usuario no encontrado', found })
         } else {
             res.status(404).json('Usuario no encontrado');
         }
@@ -658,7 +676,7 @@ const change = async (req, res) => {
 const verificarSucursales = async (req, res) => {
     try {
         // obtener las Sucursales para verificar sí existen registradas
-        let sucursales = await execute(` SELECT count(nombre_sucursal) as '$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC' FROM sucursales`);
+        let sucursales = await execute(`SELECT count(nombre_sucursal) as '$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC' FROM sucursales`);
         // retornar en la respuesta las sucursales encontradas
 
         res.status(200).json(sucursales[0]['$2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC']);

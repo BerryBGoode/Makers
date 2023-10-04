@@ -19,37 +19,56 @@ const get = async (req, res) => {
                         }
                         Object.assign(sucursales[i], id);
                     }
-                    res.status(200).send(sucursales)
-                }).catch(rej => { console.log(rej); res.status(500).send(getError(rej)) })
+                    res.status(200).json(sucursales)
+                }).catch(rej => { console.log(rej); res.status(500).json(getError(rej)) })
 
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).json('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe auntenticarse antes');
+        res.status(401).json('Debe auntenticarse antes');
     }
 }
 
 /**
  * Método para agregar una sucursal
  */
-const store = (req, res) => {
+const store = async (req, res) => {
     if (req.headers.authorization || (req.body.path === '/primer/sucursal' && req.headers.origin === 'http://localhost:5173')) {
         try {
             // obtener los datos de la petición
             const { tel, inicio, cierre, direccion, nombre } = req.body
-            // realizar query 
-            execute('INSERT INTO sucursales(id_sucursal, telefono, horario, nombre_sucursal, direccion) VALUES (UUID(), ?, ?, ?, ?)',
-                [tel, inicio + ' - ' + cierre, nombre, direccion])
-                .then(() => {
-                    res.status(201).send('Sucursal agregada')
-                }).catch(rej => { res.status(500).send(getError(rej)) })
+            // verificar sí se viene de primer uso para verificar sí no existe una sucursal antes de ingresar a la primera
+            if (req.body.path === '/primer/sucursal') {
+                // obtener las sucursales
+                let sucursales = await execute('SELECT count(id_sucursal) as cantidad FROM sucursales');
+                console.log(sucursales[0].cantidad)
+                //  verificar la cantidad de estas q se han encontrado
+                if (sucursales[0].cantidad >= 1) {
+                    res.status(500).json('No se puede agregar sucursal debido a que ya existe una');
+                } else {
+                    // realizar query 
+                    execute('INSERT INTO sucursales(id_sucursal, telefono, horario, nombre_sucursal, direccion) VALUES (UUID(), ?, ?, ?, ?)',
+                        [tel, inicio + ' - ' + cierre, nombre, direccion])
+                        .then(() => {
+                            res.status(201).json('Sucursal agregada')
+                        }).catch(rej => { res.status(500).json(getError(rej)) })
+                }
+            } else {
+                // realizar query 
+                execute('INSERT INTO sucursales(id_sucursal, telefono, horario, nombre_sucursal, direccion) VALUES (UUID(), ?, ?, ?, ?)',
+                    [tel, inicio + ' - ' + cierre, nombre, direccion])
+                    .then(() => {
+                        res.status(201).json('Sucursal agregada')
+                    }).catch(rej => { res.status(500).json(getError(rej)) })
+            }
+
         } catch (error) {
             console.log(error);
-            res.status(500).send('Surgio un problema en el servidor')
+            res.status(500).json('Surgio un problema en el servidor')
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 
 }
@@ -68,12 +87,12 @@ const one = async (req, res) => {
             for (let i = 0; i < SUCURSAL.length; i++) {
                 Object.assign(SUCURSAL[i], { id_sucursal: getBinary(SUCURSAL, 'id_sucursal')[i] });
             }
-            if (res.status(200)) res.send(SUCURSAL[0]);
+            if (res.status(200)) res.json(SUCURSAL[0]);
         } catch (error) {
-            res.status(500).send(getError(error))
+            res.status(500).json(getError(error))
         }
     } else {
-        res.status(401).send('Debe auntenticarse antes');
+        res.status(401).json('Debe auntenticarse antes');
     }
 }
 
@@ -90,15 +109,15 @@ const change = (req, res) => {
             // realizar query 
             execute('UPDATE sucursales SET telefono = ?, horario = ?, nombre_sucursal = ?, direccion = ? WHERE id_sucursal = ?',
                 [tel, inicio + ' - ' + cierre, nombre, direccion, ID])
-                .then(() => { res.status(201).send('Sucursal modificada') })
+                .then(() => { res.status(201).json('Sucursal modificada') })
                 .catch(rej => {
-                    res.status(500).send(getError(rej))
+                    res.status(500).json(getError(rej))
                 })
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 
@@ -113,14 +132,14 @@ const destroy = (req, res) => {
             const ID = req.params.id;
             // realizar delete
             execute('DELETE FROM sucursales WHERE id_sucursal = ?', [ID])
-                .then(() => { res.status(201).send('Sucursal eliminada') })
-                .catch(rej => res.status(500).send(getError(rej)));
+                .then(() => { res.status(201).json('Sucursal eliminada') })
+                .catch(rej => res.status(500).json(getError(rej)));
         } catch (error) {
-            res.status(500).send('Surgio un problema en el servidor');
+            res.status(500).json('Surgio un problema en el servidor');
         }
 
     } else {
-        res.status(401).send('Debe autenticarse antes');
+        res.status(401).json('Debe autenticarse antes');
     }
 }
 module.exports = { get, store, one, change, destroy }

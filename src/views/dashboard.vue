@@ -50,7 +50,7 @@ export default {
         window.addEventListener('keydown', this.reinicioContador);
 
         //inicia el contador de actividad
-        // this.iniciarContador();
+        this.iniciarContador();
     },
 
     beforeDestroy() {
@@ -78,7 +78,7 @@ export default {
                 localStorage.clear();
                 this.$router.push('/login');
                 notificationInfo('Sesion cerrada por inactividad.');
-            }, 300000)
+            }, /*300000 */ 100000)
         }
     },
 }

@@ -79,10 +79,8 @@ const compareProductosSucursal = async (servicio, cantidad) => {
  */
 const getBinary = (data, col) => {
     let id = [];
-    console.log(data)
     // recorrer los datos obtenidos
     data.forEach(element => {
-        console.log(element)
         // convertir a binario el elemento que se este recorriendo
         id.push(convertToBin(element[col]));
     });
