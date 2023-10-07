@@ -513,6 +513,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
     }
 
+    body.swal2-toast-shown .swal2-container.swal2-top-end,
+    body.swal2-toast-shown .swal2-container.swal2-top-right {
+        width: 55vw !important;
+    }
+
+    .swal2-popup.swal2-toast.swal2-show {
+        font-size: small;
+    }
 
 }
 

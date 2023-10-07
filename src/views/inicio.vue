@@ -99,10 +99,10 @@
                                         <div class="card fadeIn" v-for="(cliente, i) in clientes" :key="i">
                                             <div class="card-body">
                                                 <div class="row fila">
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-6">
                                                         <h5 class="card-title bold mb-1">{{ cliente.cliente }}</h5>
                                                     </div>
-                                                    <div class="col-md-1">
+                                                    <div class="col-md-6">
                                                         <span>ordenes: </span>
                                                         <span class="bold">{{ cliente.ordenes }}</span>
                                                     </div>
