@@ -196,18 +196,10 @@ export default {
             // eva
         }
     },
-    watch: {
-        width(now, old) {
-            console.log(now)
-            console.log(old)
-        }
-    },
     created() {
         // crear evento cuando se cambia de ancho la pantalla
         window.addEventListener('resize', event => {
             this.validateWindow(document.documentElement.clientWidth)
-            console.log(window.innerWidth)
-            console.log(document.documentElement.clientWidth)
         })
         this.validateWindow(document.documentElement.clientWidth);
     },

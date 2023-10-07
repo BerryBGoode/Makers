@@ -1,5 +1,8 @@
 <style scoped>
 .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
     margin-top: 3vh;
     height: 87vh;
 }

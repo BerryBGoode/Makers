@@ -1,4 +1,4 @@
-<style>
+<style scoped>
 .component-render {
     height: 100%;
     position: relative;
@@ -38,11 +38,13 @@
                         <div class="load">
                             <div class="mb-3 input-container-3">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input v-model="servicio.nombre" autocomplete="off" type="text" class="form-control" id="nombre" required>
+                                <input v-model="servicio.nombre" autocomplete="off" type="text" class="form-control"
+                                    id="nombre" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="precio" class="form-label">Precio</label>
-                                <input v-model="servicio.precio" autocomplete="off" type="text" class="form-control" id="precio" required>
+                                <input v-model="servicio.precio" autocomplete="off" type="text" class="form-control"
+                                    id="precio" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="" class="form-label">Tipo de servicio</label>
@@ -61,8 +63,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción</label>
-                            <input v-model="servicio.descripcion" autocomplete="off" type="text" class="form-control" id="descripcion"
-                                required>
+                            <input v-model="servicio.descripcion" autocomplete="off" type="text" class="form-control"
+                                id="descripcion" required>
                         </div>
                     </div>
                     <hr>

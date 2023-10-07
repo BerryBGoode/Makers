@@ -173,7 +173,6 @@ export const barGraph = (dom, title, x, y) => {
 
 export const doughnutGraph = (dom, title, studio, names, values) => {
 
-    console.log(getColors(35))
     let data = {
         labels: names,
         datasets: [{

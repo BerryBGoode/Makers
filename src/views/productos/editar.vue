@@ -8,10 +8,6 @@
     width: 100%;
 }
 
-.w-25 {
-    width: 25%;
-}
-
 .mb-40vh {
     margin-bottom: 40vh !important;
 }
@@ -32,12 +28,13 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input v-model="producto.nombre" autocomplete="off" type="text" class="form-control" id="nombre" required>
+                                <input v-model="producto.nombre" autocomplete="off" type="text" class="form-control"
+                                    id="nombre" required>
                             </div>
                             <div class="mb-3 input-container w-25">
                                 <label for="precio" class="form-label">Precio</label>
-                                <input v-model="producto.precio" autocomplete="off" type="text" class="form-control" id="precio" required
-                                    min="1">
+                                <input v-model="producto.precio" autocomplete="off" type="text" class="form-control"
+                                    id="precio" required min="1">
                             </div>
                             <div class="mb-3 input-container w-25">
                                 <label for="existencias" class="form-label">Existencias</label>
@@ -47,8 +44,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción</label>
-                            <input v-model="producto.descripcion" autocomplete="off" type="text" class="form-control" id="descripcion"
-                                required>
+                            <input v-model="producto.descripcion" autocomplete="off" type="text" class="form-control"
+                                id="descripcion" required>
                         </div>
                     </div>
                     <hr>

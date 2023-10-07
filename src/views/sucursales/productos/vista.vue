@@ -21,7 +21,6 @@
 }
 
 .buttons-top {
-    width: 15%;
     display: flex;
     justify-content: space-around;
 }

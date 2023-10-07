@@ -12,6 +12,10 @@ body {
     overflow: hidden;
 }
 
+.w-25 {
+    width: 25%;
+}
+
 .content {
     height: 90%;
 }
@@ -311,7 +315,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .component-servicio {
-    margin-top: 2.5%;
     border-radius: 7px;
 }
 
@@ -407,6 +410,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     animation: FadeIn .5s ease 0s 1 normal forwards;
 }
 
+.h-91 {
+    overflow: auto;
+}
 
 @media screen and (max-width: 725px) {
     .login {
@@ -453,7 +459,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
 
     .li-lista {
-        margin: 0;
+        border-radius: 7px !important;
     }
 
     .container {
@@ -461,8 +467,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
 
     .content {
+        gap: 10vw !important;
         margin-top: 8vh !important;
-        height: 88% !important;
+        height: 90% !important;
+    }
+
+    .h-86 {
+        height: 89.8% !important;
     }
 
     aside {
@@ -519,9 +530,44 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
 
     .swal2-popup.swal2-toast.swal2-show {
-        font-size: small;
+        font-size: smaller;
     }
 
+    .btn-makers {
+        font-size: smaller !important;
+    }
+
+    .form-data {
+        margin: 0 !important;
+    }
+
+    .buttons-servicio {
+        position: relative !important;
+    }
+
+    div.form-data>span.bold {
+        display: none;
+    }
+
+    .form-2 {
+        width: 100% !important;
+    }
+
+    .form-2>.load {
+        flex-direction: column;
+    }
+
+    .load>.input-container,
+    .load>.input-container-3,
+    .form-data>.w-70,
+    .width-32,
+    .input-container {
+        width: 100% !important;
+    }
+
+    .component-servicio {
+        overflow: auto;
+    }
 }
 
 /* estilos por defecto de vue */

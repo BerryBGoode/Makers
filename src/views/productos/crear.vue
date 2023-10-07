@@ -7,10 +7,6 @@
 .form-1 {
     width: 100%;
 }
-
-.w-25 {
-    width: 25%;
-}
 </style>
 <template>
     <div class="container servicios component-servicio component-render">
