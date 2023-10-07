@@ -20,6 +20,7 @@ body {
     display: none;
 }
 
+
 /* espacio para los estilos */
 aside {
     float: left;
@@ -43,10 +44,47 @@ main {
     z-index: 100;
 }
 
+.clientes-destacados {
+    margin: 5% 0;
+    height: 95% !important;
+}
+
 .container-main {
     width: 100vw;
     height: 98.7vh;
     padding: 1% 1% 1% 1%;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #b4b0af !important;
+    background-color: #393534;
+    /* box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color); */
+}
+
+.accordion-button::after {
+
+    background-image: url(../assets/img/arrow.png) !important;
+}
+
+.accordion-body {
+    padding: .5rem !important;
+}
+
+.accordion-button {
+    background-color: #393534 !important;
+    border-radius: 7px !important;
+}
+
+.accordion-item {
+    border-radius: 7px !important;
+    background-color: #b4b0af10 !important;
+}
+
+.accordion-button:focus {
+    border-color: #b4b0af !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.25rem rgba(84, 84, 84, 0.48) !important;
+
 }
 
 .container-top {
@@ -75,7 +113,8 @@ hr,
 }
 
 .form-select {
-    background: transparent url(../../assets/img/arrow.png) no-repeat right 0.75rem center;
+    background-image: url(../assets/img/arrow.png) !important;
+    background: transparent no-repeat right 0.75rem center;
     color: white;
     border: solid 1px #767676;
 }
@@ -368,6 +407,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     animation: FadeIn .5s ease 0s 1 normal forwards;
 }
 
+
 @media screen and (max-width: 725px) {
     .login {
         flex-direction: column;
@@ -430,8 +470,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         width: 100%;
         height: 11%;
         z-index: 500;
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: hidden;
     }
 
     .logo-sidebar {
@@ -444,6 +483,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         gap: 20%;
         margin: 0 20px;
         width: 100%;
+        overflow: auto;
     }
 
     main {
@@ -470,7 +510,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     .area-8,
     .area-9 {
         width: 100% !important;
+
     }
+
 
 }
 
