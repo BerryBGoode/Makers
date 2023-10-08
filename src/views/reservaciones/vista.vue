@@ -1,6 +1,22 @@
-<style>
+<style scoped>
 .column {
     flex-direction: column;
+}
+
+@media screen and (max-width: 600px) {
+    .reservacion {
+        flex-direction: row;
+    }
+
+    .empleado-reservacion,
+    .cliente-reservacion {
+        width: 50%;
+    }
+
+    .fecha {
+        width: 100%;
+    }
+
 }
 </style>
 <template>
@@ -23,17 +39,17 @@
 
                 <div class="card fadeIn" v-for="(reservacion, i) in filters" :key="i">
                     <div class="card-body">
-                        <div class="row fila">
-                            <div class="col-md-2">
+                        <div class="row fila reservacion">
+                            <div class="col-md-2 fecha">
                                 <h5 class="card-title bold mb-1">{{ reservacion.fecha }}</h5>
                                 <span class="card-text mb-0 smaller">{{ reservacion.hora }}</span>
                             </div>
-                            <div class="col-md-3 col-sm-12 flex column">
+                            <div class="col-md-3 col-sm-12 flex column cliente-reservacion">
                                 <span>{{ reservacion.cliente_n }}</span>
                                 <span>{{ reservacion.cliente_a }}</span>
                                 <span>{{ reservacion.cliente_d }}</span>
                             </div>
-                            <div class="col-md-3 flex column">
+                            <div class="col-md-3 flex column empleado-reservacion">
                                 <span>{{ reservacion.empleado_n }}</span>
                                 <span>{{ reservacion.empleado_a }}</span>
                                 <span>{{ reservacion.empleado_d }}</span>

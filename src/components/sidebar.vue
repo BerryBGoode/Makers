@@ -171,9 +171,20 @@ export default {
         validateWindow(width) {
             // verificar el width para asignar el valor a logo, iconos, lado del sidabar etc
             if (width >= 1280) {
-                this.logo = './../src/assets/img/logos/logo_blanco.png'
+                this.logo = './../src/assets/img/logos/logo_blanco.png';
+                // cambiando el contenido del sidebar por texto
+                this.options.forEach(elements => {
+                    elements.option = elements.text
+                })
+                this.icons = false;
+
             } else if (width >= 1280 || width < 1280) {
-                this.logo = './../src/assets/img/logos/logo_blanco_nav.png'
+                this.logo = './../src/assets/img/logos/logo_blanco_nav.png';
+                // cambiando el contenido sidebar por iconos
+                this.options.forEach(elements => {
+                    elements.option = elements.icon;
+                })
+                this.icons = true;
             }
 
             if (width <= 930) {

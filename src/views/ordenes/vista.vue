@@ -10,6 +10,12 @@
 .data {
     gap: 5px !important;
 }
+
+@media screen and (max-width: 600px) {
+    .fila>.fecha-orden {
+        width: 50%;
+    }
+}
 </style>
 <template>
     <div class="container servicios component-servicio h-100">

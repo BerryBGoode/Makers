@@ -458,6 +458,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         display: none;
     }
 
+    .fila>.cliente {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
     .container-main {
         padding: 1% !important;
         height: 100%;
@@ -470,6 +475,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         display: flex;
         align-items: center;
     }
+
 
     .li-lista {
         border-radius: 7px !important;
@@ -574,6 +580,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         width: 100% !important;
     }
 
+    .fila>.card-buttons {
+        width: 30% !important;
+    }
+
+    .fila {
+        flex-direction: column;
+    }
 }
 
 @media screen and (max-width: 992px) {
@@ -605,7 +618,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 
     .fila>.fecha-orden {
-        width: 19% !important;
+        width: 19%;
     }
 
     .component-servicio {
@@ -648,10 +661,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
     .fila>.col-md-2 {
         width: 22%;
-    }
-
-    .fila>.col-md-3 {
-        width: 25%;
     }
 
     .fila>.more-info {
