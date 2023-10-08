@@ -44,12 +44,6 @@
 .logo-sidebar {
     margin: 0.5%;
 }
-
-@media screen and (max-width: 1280px) {
-    .li-lista {
-        width: 100%;
-    }
-}
 </style>
 
 <template>
@@ -69,7 +63,7 @@
                     <img :src="item.icon" alt="">
                 </router-link>
                 <router-link v-else class="item" :to="item.route">
-                    <template v-if="width <= 930">
+                    <template v-if="icons">
 
                         <img :src="item.icon" alt="">
                     </template>
@@ -114,6 +108,7 @@ export default {
             // logomin: './../src/assets/img/logos/logo_blanco_nav.png',
             cargo: '',
             width,
+            icons: '',
         };
     },
     methods: {
@@ -182,15 +177,18 @@ export default {
             }
 
             if (width <= 930) {
+                // cambiando el contenido sidebar por iconos
                 this.options.forEach(elements => {
-                    elements.option = elements.icon
-
+                    elements.option = elements.icon;
                 })
+                this.icons = true;
             }
             if (width > 930) {
+                // cambiando el contenido del sidebar por texto
                 this.options.forEach(elements => {
                     elements.option = elements.text
                 })
+                this.icons = false;
             }
 
             // eva

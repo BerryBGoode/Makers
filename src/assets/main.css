@@ -383,6 +383,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     position: absolute;
 }
 
+.h-91,
+.h-100 {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+
 #container-gif {
     width: 90%;
     height: 90%;
@@ -410,8 +416,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     animation: FadeIn .5s ease 0s 1 normal forwards;
 }
 
-.h-91 {
-    overflow: auto;
+.factura-pedidos {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 3%;
 }
 
 @media screen and (max-width: 725px) {
@@ -437,6 +446,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         margin-right: 0 !important;
         margin-left: 0 !important;
         max-width: 100% !important;
+    }
+
+    div.form-data>span.bold {
+        display: none;
     }
 }
 
@@ -545,10 +558,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         position: relative !important;
     }
 
-    div.form-data>span.bold {
-        display: none;
-    }
-
     .form-2 {
         width: 100% !important;
     }
@@ -565,8 +574,96 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         width: 100% !important;
     }
 
+}
+
+@media screen and (max-width: 992px) {
+
+    .load>.input-container,
+    .load>.width-32,
+    .load>.input-container-3,
+    .load>.w-25,
+    .form-data>.w-70,
+    .form-data>.form-2 {
+        width: 100% !important;
+    }
+
+    .fila>.factura,
+    .fila>.productos {
+        display: block !important;
+    }
+
+    .fila>.sucursal {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+    }
+
+    .fila>.cliente {
+        width: 33%;
+    }
+
+
+    .fila>.fecha-orden {
+        width: 19% !important;
+    }
+
     .component-servicio {
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    body.swal2-toast-shown .swal2-container.swal2-top-end,
+    body.swal2-toast-shown .swal2-container.swal2-top-right {
+        width: 35vw !important;
+    }
+
+    .swal2-popup.swal2-toast.swal2-show {
+        font-size: smaller;
+    }
+
+    .content>.h-86 {
+        height: 91%;
+    }
+
+    .fila>.col-md-1 {
+        display: none;
+    }
+
+    .col-md-4>span.smaller {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .fila>.cliente {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 33%;
+    }
+
+    .fila>.col-md-2 {
+        width: 22%;
+    }
+
+    .fila>.col-md-3 {
+        width: 25%;
+    }
+
+    .fila>.more-info {
+        width: 33%;
+    }
+
+    .existencias {
+        width: 30%;
+    }
+
+    .buttons-top {
+        width: 28%;
     }
 }
 

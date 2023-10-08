@@ -22,7 +22,7 @@
             <div class="data p-2" v-if="productos.length > 0">
                 <!-- recorrer los clientes encontrados -->
 
-                <div class="card fadeIn" v-for="(producto, i) in filters" :key="i">
+                <div class="card fadeIn " v-for="(producto, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-5">
@@ -31,7 +31,7 @@
                                 <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
                                 <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 existencias">
                                 <span>Existencias: </span>
                                 <span class="bold">
                                     {{ producto.existencias }}

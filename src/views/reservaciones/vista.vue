@@ -27,10 +27,8 @@
                             <div class="col-md-2">
                                 <h5 class="card-title bold mb-1">{{ reservacion.fecha }}</h5>
                                 <span class="card-text mb-0 smaller">{{ reservacion.hora }}</span>
-                                <!-- <p class="card-text mb-0 smaller">{{ servicio.descripcion }} </p> -->
-                                <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                             </div>
-                            <div class="col-md-3 flex column">
+                            <div class="col-md-3 col-sm-12 flex column">
                                 <span>{{ reservacion.cliente_n }}</span>
                                 <span>{{ reservacion.cliente_a }}</span>
                                 <span>{{ reservacion.cliente_d }}</span>

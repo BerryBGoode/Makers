@@ -28,23 +28,19 @@
                 <div class="card fadeIn" v-for="(orden, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-5">
+                            <div class="col-md-4 cliente">
                                 <h5 class="card-title bold mb-1">{{ orden.nombres }} {{ orden.apellidos }}</h5>
                                 <span class="card-text mb-0 smaller">{{ orden.dui }}</span>
                             </div>
-                            <div class="col-md-3">
+                            <div class="fecha-orden col-md-3">
                                 <span>{{ orden.fecha }}</span>
                             </div>
-                            <div class="col-md-1 more-info">
-
+                            <div class="col-md-2 factura-pedidos">
                                 <router-link class="btn btn-makers btn-table"
                                     :to="{ path: '/ordenes/' + orden.id_orden + '/detalles/' }">
 
                                     Pedidos
                                 </router-link>
-
-                            </div>
-                            <div class="col-md-1 more-info">
 
                                 <!-- editar -->
                                 <div v-if="orden.factura">
