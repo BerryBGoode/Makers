@@ -16,7 +16,7 @@
 
 <template>
     <section class="flex items-center w-100 h-100 ">
-        <form class="container p-5 login-container w-50" @submit.prevent="restablecer">
+        <form class="container p-5 login-container container-restablecer" @submit.prevent="restablecer">
 
             <div class="col h-100 flex wrap login">
                 <div class="row-6 p-3 w-100 form align-center">
@@ -147,7 +147,11 @@ export default {
         }
     },
     created() {
-        this.usuarioBloqueado();
+        // cuando recarga página el valor de este estado vuelve a false
+        console.log(store.state.cambio_clave)
+        if (!store.state.cambio_clave) {
+            this.usuarioBloqueado();
+        }
     }
 }
 </script>

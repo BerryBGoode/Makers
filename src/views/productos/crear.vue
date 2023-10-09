@@ -43,10 +43,12 @@
                             <input v-model="producto.descripcion" autocomplete="off" type="text" class="form-control"
                                 id="descripcion" required>
                         </div>
-                        <!--<div class="mb-3">
+                        <div class="mb-3">
                             <label for="formFile" class="form-label">Producto</label>
-                            <input class="form-control" autocomplete="off" type="file" id="formFile" @change="setFile">
-                        </div> -->
+                            <input class="form-control" autocomplete="off" type="file" id="formFile"
+                                accept=".jpg,.png, .jpeg" @change="loadFile">
+                            <span>*.jpg .png .jpeg</span>
+                        </div>
                     </div>
                     <hr>
                 </div>
@@ -65,7 +67,7 @@
 <script>
 import axios from 'axios'
 import store from '../../store';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
     name: "crearProducto",
@@ -77,20 +79,30 @@ export default {
                 descripcion: '',
                 precio: '',
                 existencias: '',
-                imagen: ''
+                img: '',
 
             },
+            format: [
+                'image/png',
+                'image/jpeg',
+                'image/jpg'
+            ],
             msg: ''
         }
     },
     methods: {
-        setFile(e) {
-
+        loadFile(e) {
+            // cargando el archivo a la propiedad que requiere un archivo
+            this.producto.img = e.target.files[0];
         },
         agregarProducto() {
 
+            // validando el formato de la imagen
+            if (!this.format.includes(this.producto.img.type)) {
+                notificationInfo('Formato de imagen inabilidatado');
+            }
             // verificar sí no hay campos vacíos
-            if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
+            else if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
                 // realizar petición
                 axios.post('http://localhost:3000/api/productos', this.producto, store.state.config)
                     .then(res => {
@@ -112,7 +124,7 @@ export default {
                     })
                     .catch(e => { notificationError(e.response.data) });
             } else {
-                this.msg = 'No se permiten campos vacíos'
+                notificationInfo('No se permiten campos vacíos');
             }
         }
     }

@@ -402,6 +402,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 25%;
 }
 
+.container-restablecer {
+    width: 50%;
+}
+
 @keyframes FadeIn {
     0% {
         opacity: 0;
@@ -456,6 +460,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 @media screen and (max-width: 600px) {
     .logo {
         display: none;
+    }
+
+    .container>.buttons-reservacion {
+        gap: 2%;
+    }
+
+    .container-restablecer {
+        width: 100% !important;
     }
 
     .fila>.cliente {
@@ -544,9 +556,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
 
     body.swal2-toast-shown .swal2-container.swal2-top-end,
-    body.swal2-toast-shown .swal2-container.swal2-top-right {
+    body.swal2-toast-shown .swal2-container.swal2-top-right,
+    .swal2-container.swal2-center>.swal2-popup {
         width: 55vw !important;
     }
+
 
     .swal2-popup.swal2-toast.swal2-show {
         font-size: smaller;

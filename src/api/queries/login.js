@@ -130,7 +130,7 @@ const validateUsuario = async (req, res) => {
                 // Calcular la diferencia en días
                 let deltadias = deltamls / (1000 * 60 * 60 * 24);
                 // calculando diferencia
-                (Math.round(deltadias) > 80) ? modif = true : modif = false;
+                (Math.round(deltadias) > 1) ? modif = true : modif = false;
 
                 // verificar sí han pasado los días establecidos para cambiar la contraseña
                 // 

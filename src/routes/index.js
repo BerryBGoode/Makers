@@ -512,6 +512,7 @@ ROUTER.beforeEach(async (to, from, next) => {
     }
     // verificar cuando se quiere ir a recuperacion y de otra página
     else if (to.name === 'Recuperacion' && from.path !== '/') {
+        console.log(store.state.cambio_clave)
         // verificar sucursales son 0 para redireccionar a primer uso
         if (store.state.sucursales <= 0) {
             next('/primer/sucursal');
