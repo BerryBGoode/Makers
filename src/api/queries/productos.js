@@ -36,7 +36,7 @@ const get = async (req, response) => {
         // arreglo vacío para guardar la data
         let data = [];
         // realizar sentencia (una promesa)
-        execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, existencias, id_tipo_servicio,estado FROM productos_view')
+        execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, existencias, id_tipo_servicio,estado, imagen FROM productos_view')
             .then(res => {
                 // obtener y convertir a binario
                 // los ids recuperados
@@ -54,6 +54,7 @@ const get = async (req, response) => {
                         descripcion: element.descripcion,
                         precio: element.precio,
                         existencias: element.existencias,
+                        img: element.imagen
                     }
                     // agregar objeto al arreglo
                     data.push(element);
@@ -81,10 +82,11 @@ const store = async (req, res) => {
             // verificar sí se obtuvo
             if (tipo) {
                 // obtener los datos de la petición
-                const { descripcion, precio, existencias, nombre } = req.body;
+                const { descripcion, precio, existencias, nombre, img } = req.body;
+                let unique = Date.now().toString().substring(0, 9);
                 // realizar query o inserción y enviadole los parametros
-                execute('INSERT INTO servicios(id_servicio, id_tipo_servicio, descripcion, precio, existencias, estado, nombre_servicio) VALUES (UUID(), ?, ?, ?, ?, ?, ?)',
-                    [tipo, descripcion, precio, existencias, estado, nombre])
+                execute('INSERT INTO servicios(id_servicio, id_tipo_servicio, descripcion, precio, existencias, estado, nombre_servicio, imagen) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?)',
+                    [tipo, descripcion, precio, existencias, estado, nombre, unique + '-' + img])
                     .then(() => {
                         res.status(201).send('Producto agregado')
                     }).catch(rej => { res.status(500).send(getError(rej)) })

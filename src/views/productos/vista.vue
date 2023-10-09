@@ -25,13 +25,15 @@
                 <div class="card fadeIn " v-for="(producto, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <h5 class="card-title bold mb-1">{{ producto.nombre_servicio }}</h5>
                                 <span class="card-text mb-0 smaller">{{ '$ ' + producto.precio }}</span>
                                 <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
-                                <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                             </div>
-                            <div class="col-md-4 existencias">
+                            <div class="col-md-2">
+                                <img :src="path + producto.img" class="img-producto" />
+                            </div>
+                            <div class="col-md-3 existencias">
                                 <span>Existencias: </span>
                                 <span class="bold">
                                     {{ producto.existencias }}
@@ -115,7 +117,8 @@ export default {
             productos: [],
             filters: [],
             // propiedad para determinar sí la petición se termino de realizar
-            isload: false
+            isload: false,
+            path: 'http://localhost:3000/'
         }
     },
     methods: {

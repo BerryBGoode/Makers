@@ -383,6 +383,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     position: absolute;
 }
 
+.img-producto {
+    width: 10vw;
+}
+
 .h-91,
 .h-100 {
     overflow-x: hidden;
@@ -454,6 +458,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
     div.form-data>span.bold {
         display: none;
+    }
+
+    .img-producto {
+        width: 9vw;
     }
 }
 
@@ -600,6 +608,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
     .fila {
         flex-direction: column;
+    }
+
+    .img-producto {
+        width: 25vw;
     }
 }
 

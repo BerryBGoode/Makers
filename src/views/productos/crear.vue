@@ -18,7 +18,7 @@
         </div>
         <hr>
         <div class="container">
-            <form @submit.prevent="agregarProducto">
+            <form @submit.prevent="agregarProducto" enctype="multipart/form-data">
                 <div class="form-data ">
                     <div class="form-1">
                         <div class="load">
@@ -45,7 +45,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="formFile" class="form-label">Producto</label>
-                            <input class="form-control" autocomplete="off" type="file" id="formFile"
+                            <input class="form-control" autocomplete="off" type="file" id="formFile" name="productoimg"
                                 accept=".jpg,.png, .jpeg" @change="loadFile">
                             <span>*.jpg .png .jpeg</span>
                         </div>
@@ -82,6 +82,7 @@ export default {
                 img: '',
 
             },
+            productoimg: '',
             format: [
                 'image/png',
                 'image/jpeg',
@@ -93,16 +94,28 @@ export default {
     methods: {
         loadFile(e) {
             // cargando el archivo a la propiedad que requiere un archivo
-            this.producto.img = e.target.files[0];
+            this.productoimg = e.target.files[0];
+        },
+        uploadFile() {
+            // instanciando clase para empaquetar imagen
+            let form = new FormData();
+            // empaquetando imagen juntos con su nombre para guardarla en la api
+            form.append('productoimg', this.productoimg)
+            axios.post('http://localhost:3000/api/upload/imgproducto', form)
+                .then(res => { console.log(res) })
+                .catch(rej => { console.log(rej) })
         },
         agregarProducto() {
 
             // validando el formato de la imagen
-            if (!this.format.includes(this.producto.img.type)) {
-                notificationInfo('Formato de imagen inabilidatado');
+            if (!this.format.includes(this.productoimg.type)) {
+                notificationInfo('Formato de imagen no permitido');
             }
             // verificar sí no hay campos vacíos
             else if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
+                // obteniendo el nombre de la imagen para guardar el nombre de la imagen
+                this.producto.img = this.productoimg.name
+                this.uploadFile();
                 // realizar petición
                 axios.post('http://localhost:3000/api/productos', this.producto, store.state.config)
                     .then(res => {

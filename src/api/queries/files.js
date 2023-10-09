@@ -1,17 +1,23 @@
+// requiriendo multer para el manejo de archivos
 const multer = require('multer');
+// requiriendo path para definir ruta donde guardar se quiere guardar el archivo
+const path = require('path');
 
+
+const dir = path.join(__dirname, '../audios')
+// configurando multer
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, '../audios');
+    // definiendo ruta donde se guardarán los archivos
+    destination: (req, res, cb) => {
+        cb(null, dir);
     },
+    // definiendo el nombre con el que se guardarán
     filename: (req, file, cb) => {
-        cb(null, file.originalname);
+        let unique = Date.now().toString().substring(0, 9);
+        cb(null, `${unique}-${file.originalname}`)
     }
-});
+})
 
-const handledAudio = (req, res) => {
-    res.json('Archivo subido');
-}
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-module.exports = { upload, handledAudio }
+module.exports = { upload }

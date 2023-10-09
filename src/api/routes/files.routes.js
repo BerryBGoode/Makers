@@ -1,7 +1,17 @@
 const { Router } = require('express');
 
-const { upload, handledAudio } = require('../queries/files');
+const file = Router();
 
-const audio = Router();
+const { upload } = require('../queries/files');
 
-audio.post('/audio', upload.single('file'), handledAudio);
+file.post('/imgproducto', upload.single('productoimg'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json('No se encontrado la imagen')
+    }
+
+    res.json('Imgen subida').status(201);
+})
+
+
+
+module.exports = file
