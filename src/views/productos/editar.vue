@@ -23,7 +23,7 @@
         <hr>
         <div class="container">
             <form @submit.prevent="modificarProducto">
-                <div class="form-data mb-40vh">
+                <div class="form-data">
                     <div class="form-1">
                         <div class="load">
                             <div class="mb-3 input-container">
@@ -47,6 +47,12 @@
                             <input v-model="producto.descripcion" autocomplete="off" type="text" class="form-control"
                                 id="descripcion" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">Producto</label>
+                            <input class="form-control" autocomplete="off" type="file" id="formFile" name="productoimg"
+                                accept=".jpg,.png, .jpeg" @change="loadFile">
+                            <span>*.jpg .png .jpeg</span>
+                        </div>
                     </div>
                     <hr>
                 </div>
@@ -65,7 +71,7 @@
 <script>
 import axios from 'axios'
 import store from '../../store'
-import { notificationError, notificationSuccess } from '../../components/alert.vue'
+import { notificationError, notificationSuccess, notificationInfo } from '../../components/alert.vue'
 // definir componente 
 export default {
     name: "crearProducto",
@@ -77,12 +83,42 @@ export default {
                 descripcion: '',
                 precio: '',
                 existencias: '',
-
+                img: ''
             },
+            productoimg: '',
+            format: [
+                'image/png',
+                'image/jpeg',
+                'image/jpg'
+            ],
             msg: ''
         }
     },
     methods: {
+        loadFile(e) {
+            // cargando el archivo seleccionado
+            this.productoimg = e.target.files[0];
+        },
+        uploadFile() {
+            // instanciando clase para empaquetar imagen
+            let form = new FormData();
+            // empaquetando imagen juntos con su nombre para guardarla en la api
+            form.append('productoimg', this.productoimg)
+            axios.post('http://localhost:3000/api/upload/imgproducto', form)
+                .then(res => { console.log(res) })
+                .catch(rej => { console.log(rej) })
+        },
+        unlinkImg(img) {
+            if (img != 0) {
+                // instanciando clase para empaquetar imagen
+                let form = new FormData();
+                // empaquetando imagen juntos con su nombre para guardarla en la api
+                form.append('productoimg', img)
+                axios.delete('http://localhost:3000/api/upload/imgproducto/' + img)
+                    .then(res => { console.log(res) })
+                    .catch(rej => { console.log(rej) })
+            }
+        },
         getProducto() {
             // realizar petición            
             axios.get('http://localhost:3000/api/productos/' + this.$route.params.id, store.state.config)
@@ -92,16 +128,25 @@ export default {
                         nombre: res.data.nombre_servicio,
                         descripcion: res.data.descripcion,
                         existencias: res.data.existencias,
-                        precio: res.data.precio
+                        precio: res.data.precio,
+                        img: res.data.imagen
                     }
                 })
                 .catch(e => notificationError(e.response.data))
 
         },
         modificarProducto() {
-
+            // validando el formato de la imagen
+            if (!this.format.includes(this.productoimg.type)) {
+                notificationInfo('Formato de imagen no permitido');
+            }
             // verificar sí no hay campos vacíos
             if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {
+                // eliminar imagen
+                this.unlinkImg(this.producto.img);
+                // obteniendo el nombre de la imagen para guardar el nombre de la imagen
+                this.producto.img = this.productoimg.name
+                this.uploadFile();
                 // realizar petición
                 axios.put('http://localhost:3000/api/productos/' + this.$route.params.id, this.producto, store.state.config)
                     .then(res => {

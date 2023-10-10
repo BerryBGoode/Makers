@@ -384,9 +384,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .img-producto {
+    aspect-ratio: 2/2;
+    object-fit: contain;
     width: 6vw;
     border-radius: 7px;
     border: solid 1px #b4b0af;
+}
+
+.img {
+    display: block !important;
 }
 
 .h-91,

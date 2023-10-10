@@ -105,6 +105,17 @@ export default {
                 .then(res => { console.log(res) })
                 .catch(rej => { console.log(rej) })
         },
+        unlinkImg(img) {
+            if (img != 0) {
+                // instanciando clase para empaquetar imagen
+                let form = new FormData();
+                // empaquetando imagen juntos con su nombre para guardarla en la api
+                form.append('productoimg', img)
+                axios.delete('http://localhost:3000/api/upload/imgproducto/' + img)
+                    .then(res => { console.log(res) })
+                    .catch(rej => { console.log(rej) })
+            }
+        },
         agregarProducto() {
 
             // validando el formato de la imagen

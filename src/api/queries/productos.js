@@ -111,7 +111,7 @@ const one = async (req, res) => {
                 // obtener el id del producto por medio de la url
                 const ID = req.params.id;
                 // realizar consulta
-                const PRODUCTO = await execute('SELECT descripcion, precio, existencias, nombre_servicio FROM servicios WHERE id_tipo_servicio = ? AND id_servicio = ?',
+                const PRODUCTO = await execute('SELECT descripcion, precio, existencias, nombre_servicio, imagen FROM servicios WHERE id_tipo_servicio = ? AND id_servicio = ?',
                     [tipo, ID]);
                 (PRODUCTO) ? res.status(200).send(PRODUCTO[0]) : res.status(500).send(getError(PRODUCTO))
                 // verificar estado satisfactorio, para enviar los datos
@@ -133,10 +133,11 @@ const change = (req, res) => {
             // obtener el id del producto a modificar
             const ID = req.params.id;
             // obtener los datos de la petición
-            const { descripcion, precio, existencias, nombre } = req.body;
+            const { descripcion, precio, existencias, nombre, img } = req.body;
+            let unique = Date.now().toString().substring(0, 9);
             // realizar actualización
-            execute('UPDATE servicios SET descripcion = ?, precio = ?, existencias = ?, nombre_servicio = ? WHERE id_servicio = ?',
-                [descripcion, precio, existencias, nombre, ID])
+            execute('UPDATE servicios SET descripcion = ?, precio = ?, existencias = ?, nombre_servicio = ?, imagen = ? WHERE id_servicio = ?',
+                [descripcion, precio, existencias, nombre, unique + '-' + img, ID])
                 .then(() => {
                     res.status(201).send('Producto modificado');
                 }).catch(rej => { res.status(500).send(getError(rej)) })

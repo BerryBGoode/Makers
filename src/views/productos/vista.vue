@@ -30,7 +30,7 @@
                                 <span class="card-text mb-0 smaller">{{ '$ ' + producto.precio }}</span>
                                 <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1 img">
                                 <img :src="path + producto.img" class="img-producto" />
                             </div>
                             <div class="col-md-3 existencias">
