@@ -464,7 +464,7 @@ ROUTER.beforeEach(async (to, from, next) => {
                 (!localStorage.getItem('auth')) ? next('/login') : next(from.path)
             }
             else {
-                (localStorage.getItem('auth')) ? next() : next('/login');
+                (localStorage.getItem('auth')) ? next('/inicio') : next('/login');
             }
         }
         // verificar, no importa la ruta que se quiera acceder, pero no hay sucursales registradas
