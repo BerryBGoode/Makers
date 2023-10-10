@@ -2,7 +2,8 @@
 const multer = require('multer');
 // requiriendo path para definir ruta donde guardar se quiere guardar el archivo
 const path = require('path');
-
+// requiriendo fs para poder eliminar los archivos
+const fs = require('fs');
 
 const dir = path.join(__dirname, '../audios')
 // configurando multer

@@ -58,8 +58,9 @@
                                         </svg>
                                     </router-link>
 
-                                    <svg @click.prevent="eliminarProducto(producto.id_servicio)" width="40" height="40"
-                                        class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg @click.prevent="eliminarProducto(producto.id_servicio, producto.img)" width="40"
+                                        height="40" class="button" viewBox="0 0 40 40" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                             stroke="white" stroke-width="2" stroke-linecap="round"
@@ -122,6 +123,17 @@ export default {
         }
     },
     methods: {
+        unlinkImg(img) {
+            if (img != 0) {
+                // instanciando clase para empaquetar imagen
+                let form = new FormData();
+                // empaquetando imagen juntos con su nombre para guardarla en la api
+                form.append('productoimg', img)
+                axios.delete('http://localhost:3000/api/upload/imgproducto/' + img)
+                    .then(res => { console.log(res) })
+                    .catch(rej => { console.log(rej) })
+            }
+        },
         // método para obtener los productos
         getProductos() {
             // realizar petición
@@ -133,13 +145,17 @@ export default {
                 .catch(e => notificationError(e.response.data))
                 .finally(() => { this.isload = true });
         },
-        async eliminarProducto(producto) {
+        async eliminarProducto(producto, img) {
+
             // esperar confirmación
             if (await notificationQuestion('Desea eliminar este producto?', 7500)) {
                 // realizar petición
                 axios.delete('http://localhost:3000/api/productos/' + producto, store.state.config)
                     .then(res => {
                         notificationSuccess(res.data);
+                        // eliminando imagen
+                        this.unlinkImg(img);
+
                         // cargar
                         this.getProductos();
                     })
