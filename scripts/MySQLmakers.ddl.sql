@@ -52,6 +52,7 @@ CREATE TABLE servicios(
     precio NUMERIC(5,2) NOT NULL,
     existencias INT NOT NULL DEFAULT 1,
   	estado INT NOT NULL DEFAULT 1,
+    imagen VARCHAR(100) DEFAULT 0,
     CONSTRAINT u_nombre_servicio UNIQUE (nombre_servicio),
     CONSTRAINT fk_servicio_tipo FOREIGN KEY (id_tipo_servicio) REFERENCES tipos_servicios(id_tipo_servicio),
     CONSTRAINT chk_existencias CHECK (servicios.existencias > -1)
@@ -247,3 +248,33 @@ FROM ordenes o
 WHERE MONTH(o.fecha) = '08'
 GROUP BY YEAR(o.fecha), MONTH(o.fecha), DAY(o.fecha)
 ORDER BY o.fecha DESC;
+
+ALTER TABLE empleados 
+ADD COLUMN intentos INT DEFAULT 0,
+ADD COLUMN suplantaciones INT DEFAULT 0 
+ADD COLUMN PIN VARCHAR(100) NOT NULL DEFAULT 0,
+ALTER TABLE empleados ADD COLUMN fecha_ingreso DATE DEFAULT CURRENT_DATE
+
+CREATE VIEW productos_view AS 
+SELECT
+    servicios.id_servicio AS id_servicio,
+    servicios.nombre_servicio AS nombre_servicio,
+    servicios.id_tipo_servicio AS id_tipo_servicio,
+    servicios.descripcion AS descripcion,
+    servicios.precio AS precio,
+    servicios.existencias AS existencias,
+    servicios.estado AS estado,
+    servicios.imagen AS imagen
+FROM
+    servicios
+WHERE
+    servicios.id_tipo_servicio =(
+    SELECT
+        tipos_servicios.id_tipo_servicio
+    FROM
+        tipos_servicios
+    WHERE
+        tipos_servicios.tipo_servicio = 'Producto'
+)
+ORDER BY
+    servicios.id_servicio ASC;

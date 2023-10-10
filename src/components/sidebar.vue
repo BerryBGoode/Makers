@@ -18,6 +18,9 @@
     margin: 10% 0;
     width: 120%;
     border-radius: 7px 0 0 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .li-lista:hover {
@@ -41,51 +44,71 @@
 .logo-sidebar {
     margin: 0.5%;
 }
-
-@media screen and (max-width: 1280px) {
-    .li-lista {
-        width: 100%;
-    }
-}
 </style>
 
 <template>
     <div class="container-sidebar">
         <div class="logo-sidebar">
             <picture>
-                <source srcset="../assets/img/logos/logo_blanco.png" type="image/png">
-                <img :src="logo" srcset="../assets/img/logos/logo_blanco.png" draggable="false" />
+                <source type="image/png">
+                <img :src="logo" draggable="false" />
             </picture>
         </div>
         <ul class="ul-lista">
             <li class="li-lista" v-for="(item, index) in this.options" :key="index">
                 <!-- 
               <span class="item">{{ item }}</span> -->
-                <!-- <i>icon</i> -->
-                <router-link class="item" :to="item.route">{{ item.option }} </router-link>
+
+                <router-link v-if="width <= 930" class="item" :to="item.route">
+                    <img :src="item.icon" alt="">
+                </router-link>
+                <router-link v-else class="item" :to="item.route">
+                    <template v-if="icons">
+
+                        <img :src="item.icon" alt="">
+                    </template>
+                    <template v-else>
+                        <span> {{ item.option }} </span>
+
+                    </template>
+                </router-link>
             </li>
         </ul>
     </div>
 </template>
-
 <script>
 // importando componentes para enrutar
 import { RouterLink, RouterView } from 'vue-router';
 import store from '../store';
 import { notificationError } from '../components/alert.vue';
 import axios from 'axios';
+import { mapActions } from 'vuex';
+import { elements } from 'chart.js';
+
 // funcionalidades del componente
 export default {
     // nombre del componente
     name: 'sidebar',
     data() {
+        let width = window.innerWidth;
         return {
             // lista con las optiones que puede acceder el usuario
             options: [
-
+                // { option: 'Inicio', route: '/inicio' },
+                // { option: 'Servicios', route: '/servicios' },
+                // { option: 'Productos', route: '/productos' },
+                // { option: 'Clientes', route: '/clientes' },
+                // { option: 'Empleados', route: '/empleados' },
+                // { option: 'Reservaciones', route: '/reservaciones' },
+                // { option: 'Ordenes', route: '/ordenes' },
+                // { option: 'Sucursales', route: '/sucursales' },
+                // { option: 'Horarios', route: '/horarios' },
             ],
-            logo: './../src/assets/img/logos/logo_blanco.png',
-            cargo: ''
+            logo: '',
+            // logomin: './../src/assets/img/logos/logo_blanco_nav.png',
+            cargo: '',
+            width,
+            icons: '',
         };
     },
     methods: {
@@ -99,16 +122,17 @@ export default {
                     switch (store.state.cargo) {
                         case 'Gerente':
                             this.options = [
-                                { option: 'Inicio', route: '/inicio' },
-                                { option: 'Servicios', route: '/servicios' },
-                                { option: 'Productos', route: '/productos' },
-                                { option: 'Clientes', route: '/clientes' },
-                                { option: 'Empleados', route: '/empleados' },
-                                { option: 'Reservaciones', route: '/reservaciones' },
-                                { option: 'Ordenes', route: '/ordenes' },
-                                { option: 'Sucursales', route: '/sucursales' },
-                                { option: 'Horarios', route: '/horarios' },
-                            ]
+                                { option: 'Inicio', route: '/inicio', text: 'Inicio', icon: './../src/assets/icons/inicio.svg' },
+                                { option: 'Servicios', route: '/servicios', text: 'Servicios', icon: './../src/assets/icons/servicios.svg' },
+                                { option: 'Productos', route: '/productos', text: 'Productos', icon: './../src/assets/icons/productos.svg' },
+                                { option: 'Clientes', route: '/clientes', text: 'Clientes', icon: './../src/assets/icons/clientes.svg' },
+                                { option: 'Empleados', route: '/empleados', text: 'Empleados', icon: './../src/assets/icons/empleados.svg' },
+                                { option: 'Reservaciones', route: '/reservaciones', text: 'Reservaciones', icon: './../src/assets/icons/reservaciones.svg' },
+                                { option: 'Ordenes', route: '/ordenes', text: 'Ordenes', icon: './../src/assets/icons/ordenes.svg' },
+                                { option: 'Sucursales', route: '/sucursales', text: 'Sucursales', icon: './../src/assets/icons/sucursales.svg' },
+                                { option: 'Horarios', route: '/horarios', text: 'Horarios', icon: './../src/assets/icons/horarios.svg' },
+                            ];
+
 
                             break;
 
@@ -143,10 +167,50 @@ export default {
                 .catch(e => {
                     notificationError(e.response.data);
                 })
+        },
+        validateWindow(width) {
+            // verificar el width para asignar el valor a logo, iconos, lado del sidabar etc
+            if (width >= 1280) {
+                this.logo = './../src/assets/img/logos/logo_blanco.png';
+                // cambiando el contenido del sidebar por texto
+                this.options.forEach(elements => {
+                    elements.option = elements.text
+                })
+                this.icons = false;
+
+            } else if (width >= 1280 || width < 1280) {
+                this.logo = './../src/assets/img/logos/logo_blanco_nav.png';
+                // cambiando el contenido sidebar por iconos
+                this.options.forEach(elements => {
+                    elements.option = elements.icon;
+                })
+                this.icons = true;
+            }
+
+            if (width <= 930) {
+                // cambiando el contenido sidebar por iconos
+                this.options.forEach(elements => {
+                    elements.option = elements.icon;
+                })
+                this.icons = true;
+            }
+            if (width > 930) {
+                // cambiando el contenido del sidebar por texto
+                this.options.forEach(elements => {
+                    elements.option = elements.text
+                })
+                this.icons = false;
+            }
+
+            // eva
         }
     },
     created() {
-        this.getEmpleado();
+        // crear evento cuando se cambia de ancho la pantalla
+        window.addEventListener('resize', event => {
+            this.validateWindow(document.documentElement.clientWidth)
+        })
+        this.validateWindow(document.documentElement.clientWidth);
     },
     mounted() {
         this.getEmpleado();

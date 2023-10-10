@@ -1,3 +1,19 @@
+<style>
+@keyframes FadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    animation: FadeIn 1s ease 0s 1 normal forwards;
+}
+</style>
+
 <template>
     <div class="container servicios component-servicio h-100">
         <div class="top">
@@ -12,13 +28,13 @@
             </div>
         </div>
         <hr>
-        <templete v-if="!isload">
+        <template v-if="!isload">
             <load />
-        </templete>
-        <templete v-else>
+        </template>
+        <template v-else>
             <!-- Apartir de aquí verificar sí hay datos o servicios -->
             <div class="data p-2" v-if="cargos.length >= 0">
-                <div class="card" v-for="(cargo, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(cargo, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-6">
@@ -71,7 +87,7 @@
                 </div>
 
             </div>
-            <div class="data p-2" v-if="filters.length === 0 && cargos.length > 0">
+            <div class="data p-2" v-if="filters.length === 0">
                 <span class="bold">
                     No se encontraron resultados
                 </span>
@@ -81,7 +97,7 @@
                     No se encontraron existencias
                 </span>
             </div>
-        </templete>
+        </template>
 
 
     </div>
@@ -150,8 +166,6 @@ export default {
     },
     mounted() {
         this.getCargos();
-        // asignar los cargos a los datos del buscador
-        this.filters = this.cargos;
     },
     watch: {
         // detetar cuando se modifica el dato del input, para ello

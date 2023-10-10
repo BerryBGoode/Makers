@@ -20,7 +20,7 @@
             <div class="data p-2" v-if="horarios.length > 0">
                 <!-- recorrer los clientes encontrados -->
 
-                <div class="card" v-for="(horario, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(horario, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-5">

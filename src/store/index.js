@@ -16,7 +16,8 @@ const store = createStore({
             }
         },
         empleadosload: false,
-        sucursalesload: false
+        sucursalesload: false,
+        width: document.documentElement.clientWidth
 
     },
     mutations: {

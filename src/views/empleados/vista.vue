@@ -48,10 +48,10 @@
         <template v-else>
             <div class="data p-2" v-if="filters.length > 0">
 
-                <div class="card" v-for="empleado in filters" :key="empleado.id_empleado">
+                <div class="card fadeIn" v-for="empleado in filters" :key="empleado.id_empleado">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-4">
+                            <div class="col-md-4 empleado">
                                 <h5 class="card-title bold mb-1">{{ empleado.nombres }} {{ empleado.apellidos }}</h5>
                                 <span class="card-text mb-0 smaller">{{ empleado.correo }}</span>
                                 <p class="card-text mb-0 smaller">{{ empleado.dui }} </p>

@@ -18,7 +18,7 @@
         </template>
         <template v-else>
             <div class="data p-2" v-if="tipos.length > 0">
-                <div class="card" v-for="(tipo, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(tipo, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
                             <div class="col-md-6">

@@ -22,16 +22,18 @@
             <div class="data p-2" v-if="productos.length > 0">
                 <!-- recorrer los clientes encontrados -->
 
-                <div class="card" v-for="(producto, i) in filters" :key="i">
+                <div class="card fadeIn " v-for="(producto, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <h5 class="card-title bold mb-1">{{ producto.nombre_servicio }}</h5>
                                 <span class="card-text mb-0 smaller">{{ '$ ' + producto.precio }}</span>
                                 <p class="card-text mb-0 smaller">{{ producto.descripcion }} </p>
-                                <!-- <p class="card-text mb-0 smaller"> {{ cliente.telefono }} </p> -->
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-1 img">
+                                <img :src="path + producto.img" class="img-producto" />
+                            </div>
+                            <div class="col-md-3 existencias">
                                 <span>Existencias: </span>
                                 <span class="bold">
                                     {{ producto.existencias }}
@@ -56,8 +58,9 @@
                                         </svg>
                                     </router-link>
 
-                                    <svg @click.prevent="eliminarProducto(producto.id_servicio)" width="40" height="40"
-                                        class="button" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg @click.prevent="eliminarProducto(producto.id_servicio, producto.img)" width="40"
+                                        height="40" class="button" viewBox="0 0 40 40" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M15 36.6673H25C33.3333 36.6673 36.6667 33.334 36.6667 25.0007V15.0007C36.6667 6.66732 33.3333 3.33398 25 3.33398H15C6.66668 3.33398 3.33334 6.66732 3.33334 15.0007V25.0007C3.33334 33.334 6.66668 36.6673 15 36.6673Z"
                                             stroke="white" stroke-width="2" stroke-linecap="round"
@@ -115,10 +118,22 @@ export default {
             productos: [],
             filters: [],
             // propiedad para determinar sí la petición se termino de realizar
-            isload: false
+            isload: false,
+            path: 'http://localhost:3000/'
         }
     },
     methods: {
+        unlinkImg(img) {
+            if (img != 0) {
+                // instanciando clase para empaquetar imagen
+                let form = new FormData();
+                // empaquetando imagen juntos con su nombre para guardarla en la api
+                form.append('productoimg', img)
+                axios.delete('http://localhost:3000/api/upload/imgproducto/' + img)
+                    .then(res => { console.log(res) })
+                    .catch(rej => { console.log(rej) })
+            }
+        },
         // método para obtener los productos
         getProductos() {
             // realizar petición
@@ -130,13 +145,17 @@ export default {
                 .catch(e => notificationError(e.response.data))
                 .finally(() => { this.isload = true });
         },
-        async eliminarProducto(producto) {
+        async eliminarProducto(producto, img) {
+
             // esperar confirmación
             if (await notificationQuestion('Desea eliminar este producto?', 7500)) {
                 // realizar petición
                 axios.delete('http://localhost:3000/api/productos/' + producto, store.state.config)
                     .then(res => {
                         notificationSuccess(res.data);
+                        // eliminando imagen
+                        this.unlinkImg(img);
+
                         // cargar
                         this.getProductos();
                     })

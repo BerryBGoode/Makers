@@ -14,12 +14,12 @@
         <hr>
         <form @submit.prevent="agregar" class="container agg-servicio">
             <div class="form-data mb-50vh">
-                <form action="" class="form-1">
+                <div class="form-1">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Tipo de servicio</label>
                         <input type="text" class="form-control" id="tipo" v-model="tipos.tipo" required autocomplete="off">
                     </div>
-                </form>
+                </div>
                 <hr>
             </div>
             <hr>

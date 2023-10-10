@@ -12,6 +12,10 @@ body {
     overflow: hidden;
 }
 
+.w-25 {
+    width: 25%;
+}
+
 .content {
     height: 90%;
 }
@@ -19,6 +23,7 @@ body {
 .hide {
     display: none;
 }
+
 
 /* espacio para los estilos */
 aside {
@@ -43,10 +48,47 @@ main {
     z-index: 100;
 }
 
+.clientes-destacados {
+    margin: 5% 0;
+    height: 95% !important;
+}
+
 .container-main {
     width: 100vw;
     height: 98.7vh;
     padding: 1% 1% 1% 1%;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #b4b0af !important;
+    background-color: #393534;
+    /* box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color); */
+}
+
+.accordion-button::after {
+
+    background-image: url(../assets/img/arrow.png) !important;
+}
+
+.accordion-body {
+    padding: .5rem !important;
+}
+
+.accordion-button {
+    background-color: #393534 !important;
+    border-radius: 7px !important;
+}
+
+.accordion-item {
+    border-radius: 7px !important;
+    background-color: #b4b0af10 !important;
+}
+
+.accordion-button:focus {
+    border-color: #b4b0af !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.25rem rgba(84, 84, 84, 0.48) !important;
+
 }
 
 .container-top {
@@ -64,6 +106,8 @@ hr,
     margin: 0 1rem;
 }
 
+
+
 .form-data {
     padding: 1.5% 5%;
     display: flex;
@@ -73,7 +117,8 @@ hr,
 }
 
 .form-select {
-    background: transparent url(../../assets/img/arrow.png) no-repeat right 0.75rem center;
+    background-image: url(../assets/img/arrow.png) !important;
+    background: transparent no-repeat right 0.75rem center;
     color: white;
     border: solid 1px #767676;
 }
@@ -270,7 +315,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .component-servicio {
-    margin-top: 2.5%;
     border-radius: 7px;
 }
 
@@ -301,6 +345,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .items-center {
     align-items: center;
+}
+
+.content-center {
+    justify-content: center;
 }
 
 .wrap {
@@ -335,6 +383,24 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     position: absolute;
 }
 
+.img-producto {
+    aspect-ratio: 2/2;
+    object-fit: contain;
+    width: 6vw;
+    border-radius: 7px;
+    border: solid 1px #b4b0af;
+}
+
+.img {
+    display: block !important;
+}
+
+.h-91,
+.h-100 {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+
 #container-gif {
     width: 90%;
     height: 90%;
@@ -348,6 +414,31 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     width: 25%;
 }
 
+.container-restablecer {
+    width: 50%;
+}
+
+@keyframes FadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    animation: FadeIn .5s ease 0s 1 normal forwards;
+}
+
+.factura-pedidos {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 3%;
+}
+
 @media screen and (max-width: 725px) {
     .login {
         flex-direction: column;
@@ -357,6 +448,265 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     .form {
         height: 50%;
         width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 930px) {
+    main {
+        margin-left: 8vw;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        max-width: 100% !important;
+    }
+
+    div.form-data>span.bold {
+        display: none;
+    }
+
+    .img-producto {
+        width: 9vw;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .logo {
+        display: none;
+    }
+
+    .container>.buttons-reservacion {
+        gap: 2%;
+    }
+
+    .container-restablecer {
+        width: 100% !important;
+    }
+
+    .fila>.cliente {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .container-main {
+        padding: 1% !important;
+        height: 100%;
+    }
+
+    .container-sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+
+    .li-lista {
+        border-radius: 7px !important;
+    }
+
+    .container {
+        margin-bottom: -8%;
+    }
+
+    .content {
+        gap: 10vw !important;
+        margin-top: 8vh !important;
+        height: 90% !important;
+    }
+
+    .h-86 {
+        height: 89.8% !important;
+    }
+
+    aside {
+        top: 90%;
+        width: 100%;
+        height: 11%;
+        z-index: 500;
+        overflow: hidden;
+    }
+
+    .logo-sidebar {
+        display: none;
+    }
+
+    .ul-lista {
+        display: flex;
+        flex-direction: row;
+        gap: 20%;
+        margin: 0 20px;
+        width: 100%;
+        overflow: auto;
+    }
+
+    main {
+        width: 100%;
+        height: 90%;
+        margin: 1%;
+        border-radius: 30px;
+    }
+
+    .user-icon {
+        width: 30%;
+    }
+
+    .container-area-2-3,
+    .container-area-4-5,
+    .container-area-8-9 {
+        flex-direction: column;
+    }
+
+    .area-2,
+    .area-3,
+    .area-4,
+    .area-5,
+    .area-8,
+    .area-9 {
+        width: 100% !important;
+
+    }
+
+    body.swal2-toast-shown .swal2-container.swal2-top-end,
+    body.swal2-toast-shown .swal2-container.swal2-top-right,
+    .swal2-container.swal2-center>.swal2-popup {
+        width: 55vw !important;
+    }
+
+
+    .swal2-popup.swal2-toast.swal2-show {
+        font-size: smaller;
+    }
+
+    .btn-makers {
+        font-size: smaller !important;
+    }
+
+    .form-data {
+        margin: 0 !important;
+    }
+
+    .buttons-servicio {
+        position: relative !important;
+    }
+
+    .form-2 {
+        width: 100% !important;
+    }
+
+    .form-2>.load {
+        flex-direction: column;
+    }
+
+    .load>.input-container,
+    .load>.input-container-3,
+    .form-data>.w-70,
+    .width-32,
+    .input-container {
+        width: 100% !important;
+    }
+
+    .fila>.card-buttons {
+        width: 30% !important;
+    }
+
+    .fila {
+        flex-direction: column;
+    }
+
+    .img-producto {
+        width: 25vw;
+    }
+}
+
+@media screen and (max-width: 992px) {
+
+    .load>.input-container,
+    .load>.width-32,
+    .load>.input-container-3,
+    .load>.w-25,
+    .form-data>.w-70,
+    .form-data>.form-2 {
+        width: 100% !important;
+    }
+
+    .fila>.factura,
+    .fila>.productos {
+        display: block !important;
+    }
+
+    .fila>.sucursal {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+    }
+
+    .fila>.cliente {
+        width: 33%;
+    }
+
+
+    .fila>.fecha-orden {
+        width: 19%;
+    }
+
+    .component-servicio {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    body.swal2-toast-shown .swal2-container.swal2-top-end,
+    body.swal2-toast-shown .swal2-container.swal2-top-right {
+        width: 35vw !important;
+    }
+
+    .swal2-popup.swal2-toast.swal2-show {
+        font-size: smaller;
+    }
+
+    .content>.h-86 {
+        height: 91%;
+    }
+
+    .fila>.col-md-1 {
+        display: none;
+    }
+
+    .col-md-4>span.smaller {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .fila>.cliente {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 33%;
+    }
+
+    .fila>.col-md-2 {
+        width: 22%;
+    }
+
+    .fila>.more-info {
+        width: 33%;
+    }
+
+    .existencias {
+        width: 30%;
+    }
+
+    .buttons-top {
+        width: 28%;
     }
 }
 

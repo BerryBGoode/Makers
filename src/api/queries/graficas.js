@@ -129,7 +129,7 @@ const getServiciosVendidos = (req, res) => {
             .then(rows => {
                 res.status(200).json(rows)
             }).catch(rej => {
-                res.status(500).json({ error: getError(rej) })
+                res.status(500).json(getError(rej))
             })
     } else {
         res.status(401).json('Debe autenticarse antes');
@@ -153,7 +153,7 @@ const getProductosVendidos = (req, res) => {
             .then(rows => {
                 res.status(200).json(rows)
             }).catch(rej => {
-                res.status(500).json({ error: getError(rej) })
+                res.status(500).json(getError(rej))
             })
     } else {
         res.status(401).json('Debe autenticarse antes');
@@ -172,7 +172,7 @@ const reservacionesMes = (req, res) => {
             ORDER BY reservaciones DESC LIMIT 10
         `, [mes])
             .then(rows => { res.status(200).json(rows) })
-            .catch(rej => { res.status(500).send({ error: getError(rej) }) });
+            .catch(rej => { res.status(500).send(getError(rej)) });
     } else {
         res.status(401).json('Debe autenticarse antes');
     }
@@ -181,10 +181,10 @@ const reservacionesMes = (req, res) => {
 const getClienteporfecha = (req, res) => {
     if (req.headers.authorization) {
         execute('SELECT r.fecha, c.nombre AS nombre_cliente FROM reservaciones r JOIN clientes c ON r.id_cliente = c.id')
-            .then(row => {
-                es.status(200).json(rows)
+            .then(rows => {
+                res.status(200).json(rows)
             }).catch(rej => {
-                res.status(500).json({ error: getError(rej) })
+                res.status(500).json(getError(rej));
             })
     } else {
         res.status(401).json('Debe autenticarse antes');
@@ -202,14 +202,32 @@ const getEmpleadoCargos = (req, res) => {
                 ORDER BY count DESC`
         )
             .then(rows => {
-                res.status(200).json(rows)
+                res.status(200).json(rows);
             }).catch(rej => {
-                res.status(500).json({ error: getError(rej) })
+                res.status(500).json(getError(rej));
             })
     } else {
         res.status(401).json('Debe autenticarse antes');
     }
 
+}
+
+const getVentasBySucursal = (req, res) => {
+    if (req.headers.authorization) {
+        execute(`
+            SELECT s.nombre_sucursal as sucursal, COUNT(f.id_sucursal) as ventas
+            FROM sucursales s LEFT JOIN facturas f ON s.id_sucursal = f.id_sucursal 
+            GROUP BY s.id_sucursal 
+            ORDER BY COUNT(f.id_sucursal) DESC
+            `)
+            .then(rows => {
+                res.json(rows).status(200);
+            }).catch(rej => {
+                res.status(500).json(getError(rej));
+            })
+    } else {
+        res.status(401).json('Debe autenticarse antes');
+    }
 }
 
 const getHoraMes = (req, res) => {
@@ -226,7 +244,7 @@ const getHoraMes = (req, res) => {
         `, [mes]).then(rows => {
             res.status(200).json(rows)
         }).catch(rej => {
-            res.status(500).json({ error: getError(rej) });
+            res.status(500).json(getError(rej));
         })
     } else {
         res.status(401).json('Debe autenticarse antes');
@@ -238,5 +256,5 @@ const getHoraMes = (req, res) => {
 module.exports = {
     getVentas, ordenesByMes, getEmpleadoCantidad, getCliente,
     getEmpleadoCargos, getClienteporfecha, getFacturasSucursales, getServiciosVendidos,
-    getHoraMes, reservacionesMes, getProductosVendidos
+    getHoraMes, reservacionesMes, getProductosVendidos, getVentasBySucursal
 }; 

@@ -65,7 +65,7 @@
 
         <div class="container-area-2-3">
             <div class="container-graph area-2">
-                <canvas id="clientes"></canvas>
+                <canvas id="ventas-sucursal"></canvas>
             </div>
             <div class="container-graph area-3">
                 <canvas id="productos"></canvas>
@@ -77,14 +77,44 @@
                 <canvas id="cargos"></canvas>
             </div>
 
-            <div class="container-graph area-5">
-                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
-                    @change="getServiciosTop" v-model="tipo">
-                    <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}
-                    </option>
-                </select>
+            <div class="container-graph area-2">
 
-                <canvas id="servicios"></canvas>
+                <template v-if="!loadclientes">
+                    <load />
+                </template>
+                <template v-else>
+                    <div class="clientes-destacados data p-3" v-if="clientes.length > 0">
+                        <div class="accordion accordion-flush" id="accordionFlushExample">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                        aria-controls="flush-collapseOne">
+                                        Clientes destacados
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <div class="card fadeIn" v-for="(cliente, i) in clientes" :key="i">
+                                            <div class="card-body">
+                                                <div class="row fila">
+                                                    <div class="col-md-6">
+                                                        <h5 class="card-title bold mb-1">{{ cliente.cliente }}</h5>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <span>ordenes: </span>
+                                                        <span class="bold">{{ cliente.ordenes }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
 
@@ -114,50 +144,59 @@
                 <canvas id="horas"></canvas>
             </div>
 
-            <div class="container-graph area-9">
-                <div class="mb-3">
-                    <span>Próximas reservaciones</span>
-                    <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
-
-                </div>
-                <div class="mb-">
-                    <span>Reservaciones previas</span>
-                    <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
-                </div>
-                <div class="mb-3">
-                    <span>Productos a punto de agotarse</span>
-                    <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
-                </div>
-
-                <div class="mb-3">
-                    <span>Empleados</span>
-                    <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
-                </div>
-
-                <div class="mb-3 flex-col input-container">
-                    <input type="date" name="" id="" class="form-control" v-model="today">
-                    <div class="mb3">
-                        <span>Ventas del día </span>
-                        <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
-                    </div>
-                </div>
-                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                    v-model="mesreportventas">
-                    <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            <div class="container-graph area-5">
+                <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="tipos.length > 0"
+                    @change="getServiciosTop" v-model="tipo">
+                    <option v-for="(tipo, i) in tipos" :key="i" :value="tipo.id_tipo_servicio">{{ tipo.tipo_servicio }}
+                    </option>
                 </select>
+
+                <canvas id="servicios"></canvas>
+            </div>
+        </div>
+        <div class="container-graph area-1">
+            <div class="mb-3">
+                <span>Próximas reservaciones</span>
+                <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
+
+            </div>
+            <div class="mb-">
+                <span>Reservaciones previas</span>
+                <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
+            </div>
+            <div class="mb-3">
+                <span>Productos a punto de agotarse</span>
+                <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
+            </div>
+
+            <div class="mb-3">
+                <span>Empleados</span>
+                <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
+            </div>
+
+            <div class="mb-3 flex-col input-container">
+                <input type="date" name="" id="" class="form-control" v-model="today">
                 <div class="mb3">
-                    <span>Ventas del mes</span>
-                    <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+                    <span>Ventas del día </span>
+                    <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
                 </div>
+            </div>
+            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
+                v-model="mesreportventas">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
+            <div class="mb3">
+                <span>Ventas del mes</span>
+                <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
+            </div>
 
-                <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
-                    <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-                </select>
+            <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
+                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+            </select>
 
-                <div class="mb-3">
-                    <span>Reservaciones del mes</span>
-                    <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
-                </div>
+            <div class="mb-3">
+                <span>Reservaciones del mes</span>
+                <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
             </div>
         </div>
 
@@ -170,8 +209,10 @@ import { formatDateToYYYYMMDD } from '../validator';
 import { lineGraph, barGraph, doughnutGraph, pieGraph, linealGraph } from './charts';
 import store from '../store';
 import { notificationError } from '../components/alert.vue';
+import load from '../components/load.vue';
 
 export default {
+    components: { load },
     name: 'inicio',
     created() {
         let month = new Date().getMonth();
@@ -199,7 +240,9 @@ export default {
             mesgraphora: '',
             mesgraphreserv: '',
             tipos: [],
-            tipo: 0
+            tipo: 0,
+            loadclientes: false,
+            clientes: []
         }
     },
     methods: {
@@ -307,19 +350,25 @@ export default {
         getClientesTop() {
             axios.get('http://localhost:3000/api/graficas/clientestop', store.state.config)
                 .then(rows => {
-                    let ordenes = [], clientes = [], data = rows.data;
+                    this.clientes = rows.data
+                })
+                .catch(e => { notificationError(e.response.data) })
+                .finally(this.loadclientes = true)
+        },
+        getVentasSucursal() {
+            axios.get('http://localhost:3000/api/graficas/ventassucursales', store.state.config)
+                .then(res => {
+                    let data = res.data, ventas = [], sucursales = [];
                     for (let i = 0; i < data.length; i++) {
-                        ordenes.push(data[i].ordenes);
-                        clientes.push(data[i].cliente);
+                        ventas.push(data[i].ventas);
+                        sucursales.push(data[i].sucursal);
                     }
-                    if (ordenes.length > 0 && clientes.length > 0) {
-                        doughnutGraph('clientes', 'Clientes frecuentes', 'Frecuencia', clientes, ordenes);
-
+                    if (data.length > 0) {
+                        doughnutGraph('ventas-sucursal', 'Ventas totales en cada sucursal', 'Ventas', sucursales, ventas);
                     } else {
                         notificationError('No se encontraron resultados', 5000)
                     }
-                })
-                .catch(e => { notificationError(e.response.data) })
+                }).catch(e => { notificationError(e.response.data) })
         },
         getHoraMes() {
             if (this.mesgraphora <= 11) {
@@ -551,6 +600,7 @@ export default {
         this.getHoraMes();
         this.productosMasVendidos();
         this.reservacionesMes();
+        this.getVentasSucursal();
     }
 }
 </script>

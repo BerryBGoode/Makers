@@ -1,8 +1,4 @@
 <style scoped>
-.more-info {
-    justify-content: center;
-}
-
 .btn-table {
     background: #231F1E;
 }
@@ -24,17 +20,17 @@
             <div class="data p-2" v-if="sucursales.length > 0">
                 <!-- recorrer los clientes encontrados -->
 
-                <div class="card" v-for="(sucursal, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(sucursal, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-8">
+                            <div class="col-md-8 sucursal">
                                 <h5 class="card-title bold mb-1">{{ sucursal.nombre_sucursal }}</h5>
                                 <p class="card-text mb-0 smaller"> {{ sucursal.direccion }} </p>
                                 <span class="card-text mb-0 smaller">{{ sucursal.inicio }} - {{ sucursal.cierre }}</span>
                                 <p class="card-text mb-0 smaller">{{ sucursal.telefono }} </p>
                                 <p class="card-text mb-0 smaller"> {{ sucursal.nit }} </p>
                             </div>
-                            <div class="col-md-1 more-info">
+                            <div class="col-md-1 productos">
 
                                 <router-link class="btn btn-makers btn-table"
                                     :to="{ path: '/sucursales/' + sucursal.id_sucursal + '/productos' }">

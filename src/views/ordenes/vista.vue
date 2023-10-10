@@ -10,6 +10,12 @@
 .data {
     gap: 5px !important;
 }
+
+@media screen and (max-width: 600px) {
+    .fila>.fecha-orden {
+        width: 50%;
+    }
+}
 </style>
 <template>
     <div class="container servicios component-servicio h-100">
@@ -25,26 +31,22 @@
         </template>
         <template v-else>
             <div class="data p-2" v-if="ordenes.length > 0">
-                <div class="card" v-for="(orden, i) in filters" :key="i">
+                <div class="card fadeIn" v-for="(orden, i) in filters" :key="i">
                     <div class="card-body">
                         <div class="row fila">
-                            <div class="col-md-5">
+                            <div class="col-md-4 cliente">
                                 <h5 class="card-title bold mb-1">{{ orden.nombres }} {{ orden.apellidos }}</h5>
                                 <span class="card-text mb-0 smaller">{{ orden.dui }}</span>
                             </div>
-                            <div class="col-md-3">
+                            <div class="fecha-orden col-md-3">
                                 <span>{{ orden.fecha }}</span>
                             </div>
-                            <div class="col-md-1 more-info">
-
+                            <div class="col-md-2 factura-pedidos">
                                 <router-link class="btn btn-makers btn-table"
                                     :to="{ path: '/ordenes/' + orden.id_orden + '/detalles/' }">
 
                                     Pedidos
                                 </router-link>
-
-                            </div>
-                            <div class="col-md-1 more-info">
 
                                 <!-- editar -->
                                 <div v-if="orden.factura">
