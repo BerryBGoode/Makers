@@ -71,7 +71,7 @@
                         Especificaciones
                     </span>
 
-                    <form action="" class="form-2 w-70">
+                    <form action="" class="w-70">
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="sucursales" class="form-label">Sucursal</label>
@@ -255,38 +255,50 @@ export default {
             let idempleado = this.$route.params.id;
             // TODO: validar datos
 
+            // verificando sí siguen la longitud esperada
+            if (!onlyLtrs(this.model.empleado.alias) || !onlyLtrs(this.model.empleado.apellidos) || !onlyLtrs(this.model.empleado.nombres)) {
+                notificationInfo('Solo se permiten letras');
+            }
+            else if (!onlyNumb(this.model.empleado.planilla)) {
+                notificationInfo('Solo se permiten números para la planilla');
+            }
+            else if (this.model.empleado.alias && this.model.empleado.apellidos && this.model.empleado.telefono &&
+                this.model.empleado.cargo !== 'Seleccionar' && this.model.empleado.sucursal !== 'Seleccionar' && this.model.empleado.horario !== 'Seleccionar'
+                && this.model.empleado.dui && this.model.empleado.correo &&
+                this.model.empleado.planilla) {
 
-            // realizar petición al servidor
-            axios.put('http://localhost:3000/api/empleados/' + idempleado, this.model.empleado, store.state.config)
-                .then(res => {
-                    // cuando hay un error 400 que no realizo lo que se debía
-                    if (res.data.error) {
-                        this.msg = res.data.error;
+                // realizar petición al servidor
+                axios.put('http://localhost:3000/api/empleados/' + idempleado, this.model.empleado, store.state.config)
+                    .then(res => {
+                        // cuando hay un error 400 que no realizo lo que se debía
+                        if (res.data.error) {
+                            this.msg = res.data.error;
 
-                        // console.log(res.data)
-                    }
-                    // cuando si se realizo la tarea deceada y se creo algo 
-                    // 201 es usado en método post y put
-                    if (res.status === 201 && !res.data.error) {
-                        // limpiar valores 
-                        this.model.empleado = {
-                            nombres: '',
-                            apellidos: '',
-                            dui: '',
-                            planilla: '',
-                            telefono: '',
-                            correo: '',
-                            sucursal: 'Seleccionar',
-                            cargo: 'Seleccionar',
-                            horario: 'Seleccionar',
+                            // console.log(res.data)
                         }
-                        // redireccionar
-                        notificationSuccess('Empleado modificado', 3500)
-                        this.msg = '';
-                        this.$router.push('/empleados');
-                    }
-                })
-                .catch(e => { notificationError(e.response.data); console.log(e) });
+                        // cuando si se realizo la tarea deceada y se creo algo 
+                        // 201 es usado en método post y put
+                        if (res.status === 201 && !res.data.error) {
+                            // limpiar valores 
+                            this.model.empleado = {
+                                nombres: '',
+                                apellidos: '',
+                                dui: '',
+                                planilla: '',
+                                telefono: '',
+                                correo: '',
+                                sucursal: 'Seleccionar',
+                                cargo: 'Seleccionar',
+                                horario: 'Seleccionar',
+                            }
+                            // redireccionar
+                            notificationSuccess('Empleado modificado', 3500)
+                            this.msg = '';
+                            this.$router.push('/empleados');
+                        }
+                    })
+                    .catch(e => { notificationError(e.response.data); console.log(e) });
+            }
         }
     }
 } 

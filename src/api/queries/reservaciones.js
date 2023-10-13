@@ -131,24 +131,37 @@ const get = async (req, res) => {
     }
 }
 
+const getValidateReservacion = async (cliente, empleado, fecha, hora) => {
+
+    let hreservacion = await execute('SELECT hora FROM reservaciones WHERE id_cliente = ? AND id_empleado = ? AND fecha = ?', [cliente, empleado, fecha]);
+    console.log(hreservacion)
+    let reservacion = await execute('SELECT id_reservacion FROM reservaciones WHERE id_cliente = ?  AND id_empleado = ? AND fecha = ? AND hora = ?',
+        [cliente, empleado, fecha, hora]);
+    console.log(reservacion)
+    return reservacion;
+}
+
 /* Método que cuarga los datos de las reservaciones
     req, datos enviados desde el front
     res, respuesta del servidor
 */
 const store = async (req, res) => {
     if (req.headers.authorization) {
-
         try {
             //se asigna un arreglo a los valores del req
             const { cliente, empleado, fecha, hora } = req.body;
             let estado = 1;
+            if (await getValidateReservacion(cliente, empleado, fecha, hora).length >= 1) {
+                res.status(400).json('Empleado ocupado');
+                return
+            }
             //preparando query con los datos
             execute('INSERT INTO reservaciones(id_reservacion, id_cliente, id_empleado, fecha, hora, estado) VALUES (UUID(), ?, ?, ?, ?, ?)'
                 , [cliente, empleado, fecha, hora, estado])
                 .then(() => { res.status(201).send('Reservación agregada') })
                 .catch(rej => { res.status(500).send(getError(rej)) })
         } catch (error) {
-            res.status(500).send(getError(rej))
+            res.status(500).send(getError(error))
         }
     } else {
         res.status(401).send('Debe autenticarse antes');

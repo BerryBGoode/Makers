@@ -178,9 +178,13 @@ export default {
         crearCliente() {
             // obtener los valores
             let cliente = this.model.cliente;
+
             // validando q las contraseñas coincidan
             if (cliente.clave !== cliente.confirmar) {
                 notificationInfo('Las contraseñas deben coincidir');
+            }
+            else if (!onlyLtrs(cliente.nombres) || !onlyLtrs(cliente.apellidos)) {
+                notificationInfo('Solo se perimten letras');
             }
             // validando la longitud de la clave
             else if (cliente.clave.length < 8) { notificationInfo('Longitud mínima superada') }

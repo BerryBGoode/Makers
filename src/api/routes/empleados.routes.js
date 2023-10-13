@@ -1,5 +1,5 @@
 // requerir del ruteados para activar los métodos 
-const { Router} = require('express');
+const { Router } = require('express');
 // requerir los métodos de los queries
 const { get, getSucursales, getHorarios, getCargos, store, one, change, destroy } = require('../queries/empleados');
 
@@ -11,7 +11,7 @@ EMPLEADO.get('/', get);
 EMPLEADO.get('/sucursales', getSucursales);
 EMPLEADO.get('/horarios', getHorarios);
 EMPLEADO.get('/cargos', getCargos);
-EMPLEADO.post('/', store); 
+EMPLEADO.post('/', store);
 EMPLEADO.get('/:id', one);
 EMPLEADO.put('/:id', change);
 EMPLEADO.delete('/:id', destroy);

@@ -12,7 +12,8 @@
                 <div class="form-1">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Cargo</label>
-                        <input type="text" autocomplete="off" class="form-control" id="nombre" v-model="cargo.cargo" required>
+                        <input type="text" autocomplete="off" class="form-control" id="nombre" v-model="cargo.cargo"
+                            required>
                     </div>
                 </div>
                 <hr>
@@ -31,7 +32,7 @@
 import axios from 'axios'
 import { onlyLtrs } from '../../validator';
 import store from '../../store';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // definir componente 
 export default {
     name: "crearCargo",
@@ -46,7 +47,7 @@ export default {
     methods: {
         agregar() {
             if (!onlyLtrs(this.cargo.cargo)) {
-                this.msg = 'Solo se permiten letras'
+                notificationInfo('Solo se permiten letras');
             } else {
                 axios.post('http://localhost:3000/api/cargos', this.cargo, store.state.config)
                     .then(res => {

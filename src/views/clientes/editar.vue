@@ -23,13 +23,13 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="nombres" class="form-label">Nombres</label>
-                            <input type="text" autocomplete="off" class="form-control" id="nombres" v-model="model.cliente.nombres"
-                                @keyup="validInputText(model.cliente.nombres)" required>
+                            <input type="text" autocomplete="off" class="form-control" id="nombres"
+                                v-model="model.cliente.nombres" @keyup="validInputText(model.cliente.nombres)" required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="apellidos" class="form-label">Apellidos</label>
-                            <input type="text" autocomplete="off" class="form-control" id="apellidos" v-model="model.cliente.apellidos"
-                                @keyup="validInputText(model.cliente.apellidos)" required>
+                            <input type="text" autocomplete="off" class="form-control" id="apellidos"
+                                v-model="model.cliente.apellidos" @keyup="validInputText(model.cliente.apellidos)" required>
                         </div>
                     </div>
                     <label for="dui">DUI</label>
@@ -45,11 +45,13 @@
                     <div class="load">
                         <div class="mb-3 input-container">
                             <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="text" autocomplete="off" class="form-control" id="telefono" v-model="model.cliente.telefono" required>
+                            <input type="text" autocomplete="off" class="form-control" id="telefono"
+                                v-model="model.cliente.telefono" required>
                         </div>
                         <div class="mb-3 input-container">
                             <label for="correo" class="form-label">Correo</label>
-                            <input type="email" autocomplete="off" class="form-control" id="correo" v-model="model.cliente.correo">
+                            <input type="email" autocomplete="off" class="form-control" id="correo"
+                                v-model="model.cliente.correo">
                         </div>
                     </div>
                 </div>
@@ -70,7 +72,7 @@
 import axios from 'axios';
 // importando validador de datos
 import { onlyLtrs, formatDui, formatEmail } from '../../validator.js';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 import store from '../../store/index.js';
 
 // exportando el componente principal
@@ -127,7 +129,7 @@ export default {
             if ((cliente.nombres && cliente.apellidos && cliente.telefono) !== '') {
                 // validar campos alphabeticos
                 if (!onlyLtrs(cliente.nombres) || !onlyLtrs(cliente.apellidos)) {
-                    this.msg = 'No se permiten números en los nombres'
+                    notificationInfo('Solo se permiten letras');
                 }
                 // la secuencia que siguen las validaciones es
                 // verificar sí no es nulo el valor 

@@ -242,7 +242,8 @@ const destroy = (req, res) => {
         // obtener el idempleado
         const IDEMPLEADO = req.params.id;
         // realizar transferencia sql o delete en este caso
-        execute('DELETE FROM empleados WHERE id_empleado = ?', [IDEMPLEADO])
+        // execute('DELETE FROM empleados WHERE id_empleado = ?', [IDEMPLEADO])
+        execute('UPDATE empleados SET estado = ? WHERE id_empleado = ?', [2, IDEMPLEADO])
             .then(() => {
                 res.status(201).json('Empleado eliminado');
             }).catch(rej => {

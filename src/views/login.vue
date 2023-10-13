@@ -227,8 +227,7 @@ export default {
 
                 }, html);
             } else {
-                let confirm = await alertRequest(null, null, html);
-                console.log(confirm)
+                this.$router.push('/recognition')
             }
 
         },

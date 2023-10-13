@@ -15,7 +15,7 @@ let clave = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}$/;
  * Método para validar que la cadena de texto solamente tenga letras
  */
 export const onlyLtrs = value => {
-    // verificar sí el valor es una cadena de texto
+    // verificar sí el valor es una cadena de texto  
     return (ltrs.test(value));
 }
 /**
@@ -83,7 +83,6 @@ export const convertToBin = bin => {
  */
 export const getBinary = (data, col = null) => {
     let id = [];
-    console.log(data)
     // recorrer los datos obtenidos
     if (col) {
         data.forEach(element => {

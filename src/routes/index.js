@@ -88,11 +88,11 @@ const ROUTER = createRouter({
             path: '/',
             // component: () => import('../views/login.vue'),
         },
-        {
-            name: 'recognition',
-            path: '/recognition',
-            component: () => import('../views/recognition.vue')
-        },
+        // {
+        //     name: 'recognition',
+        //     path: '/recognition',
+        //     component: () => import('../views/recuperacion/face.vue')
+        // },
         {
             name: 'Recuperacion',
             path: '/restablecer=:id',
