@@ -54,6 +54,7 @@ CREATE TABLE servicios(
   	estado INT NOT NULL DEFAULT 1,
     imagen VARCHAR(100) DEFAULT 0,
     CONSTRAINT u_nombre_servicio UNIQUE (nombre_servicio),
+    CONSTRAINT fk_servicio_tipo FOREIGN KEY (id_tipo_servicio) REFERENCES tipos_servicios(id_tipo_servicio),
     CONSTRAINT chk_existencias CHECK (servicios.existencias > -1)
 );
 
@@ -85,6 +86,7 @@ CREATE TABLE empleados(
     intentos INT DEFAULT 0,
     suplantaciones INT DEFAULT 0,
     PIN VARCHAR(100) DEFAULT 0,
+    fecha_ingreso DATE DEFAULT CURRENT_DATE,
     CONSTRAINT fk_empleado_sucursal FOREIGN KEY (id_sucursal) REFERENCES sucursales(id_sucursal),
     CONSTRAINT fk_empleado_horario FOREIGN KEY (id_horario) REFERENCES horarios(id_horario),
     CONSTRAINT fk_empleado_cargo FOREIGN KEY (id_cargo) REFERENCES cargos(id_cargo),
@@ -151,7 +153,7 @@ SELECT c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo, count(
 FROM clientes c
 LEFT JOIN ordenes o ON o.id_cliente = c.id_cliente
 GROUP BY c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo
-ORDER BY count(o.id_orden) DESC
+ORDER BY count(o.id_orden) DESC;
 
 CREATE VIEW empleados_view AS 
 SELECT e.id_empleado, e.nombres, e.apellidos, e.alias, e.dui, e.telefono, e.correo, e.planilla, s.nombre_sucursal, s.id_sucursal, 
@@ -165,7 +167,7 @@ CREATE VIEW productos_sucursales_view AS
 SELECT s.nombre_servicio, s.id_servicio, tp.tipo_servicio, s.existencias, ds.cantidad, ds.id_detalle, ds.id_sucursal
 FROM detalles_servicios_sucursales ds
 INNER JOIN servicios s ON s.id_servicio = ds.id_servicio
-INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio
+INNER JOIN tipos_servicios tp ON tp.id_tipo_servicio = s.id_tipo_servicio;
 
 CREATE VIEW detalle_view AS
 SELECT d.id_detalle, s.id_servicio, s.nombre_servicio, t.id_tipo_servicio, t.tipo_servicio, d.descuento, d.cantidad, s.precio,
@@ -174,12 +176,12 @@ FROM detalles_ordenes d
 INNER JOIN detalles_servicios_sucursales dts ON dts.id_detalle = d.id_detalle_servicio
 INNER JOIN servicios s ON s.id_servicio = dts.id_servicio
 INNER JOIN tipos_servicios t ON t.id_tipo_servicio = s.id_tipo_servicio
-INNER JOIN sucursales sc ON sc.id_sucursal = dts.id_sucursal
+INNER JOIN sucursales sc ON sc.id_sucursal = dts.id_sucursal;
 
 CREATE VIEW horarios_view AS
 SELECT h.id_horario, time_format(h.hora_apertura, '%h:%i') as inicio, time_format(h.hora_cierre, '%h:%i') as cierre
 FROM horarios h
-ORDER BY h.id_horario ASC
+ORDER BY h.id_horario ASC;
 
 CREATE VIEW ordenes_view AS
 SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, null) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
@@ -187,7 +189,7 @@ FROM ordenes o
 LEFT JOIN facturas f ON o.id_orden = f.id_orden
 LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
 GROUP BY o.id_orden, o.id_cliente, o.fecha, f.id_factura, o.id_cliente, c.nombres, c.apellidos, c.dui
-ORDER BY o.id_orden ASC
+ORDER BY o.id_orden ASC;
 
 CREATE VIEW reservaciones_view AS
 SELECT r.id_reservacion,date_format(r.fecha, '%Y-%m-%d') as fecha, time_format(r.hora, '%l:%i') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
@@ -195,13 +197,13 @@ SELECT r.id_reservacion,date_format(r.fecha, '%Y-%m-%d') as fecha, time_format(r
 		e.nombres as empleado_n, e.apellidos empleado_a, e.dui as empleado_d
 FROM reservaciones r
 INNER JOIN clientes c ON c.id_cliente = r.id_cliente
-INNER JOIN empleados e ON e.id_empleado = r.id_empleado
+INNER JOIN empleados e ON e.id_empleado = r.id_empleado;
 
 CREATE VIEW servicios_view AS
 SELECT s.id_servicio, s.nombre_servicio, s.descripcion, s.precio, tp.tipo_servicio, tp.id_tipo_servicio
 FROM servicios s
 INNER JOIN tipos_servicios tp ON s.id_tipo_servicio = tp.id_tipo_servicio
-ORDER BY s.id_servicio ASC
+ORDER BY s.id_servicio ASC;
 
 -- vista que obtiene los de datos de las sucursales y las horas las convierte a formato de 12 hrs con A.M y P.M
 CREATE VIEW sucursales_view AS
@@ -216,7 +218,7 @@ SELECT s.id_sucursal, s.telefono,
     CONCAT(times.h_cierre, ' ', IF(SUBSTRING_INDEX(s.horario, '-', -1) < 12, 'AM', 'PM') )as cierre,
     s.nombre_sucursal, s.direccion 
 FROM times
-INNER JOIN sucursales s ON s.horario = times.horario
+INNER JOIN sucursales s ON s.horario = times.horario;
 
 -- Vista para obtener las ventas según año actual, los ordena por meses del año y sí no tiene pone 0
 -- y verifíca sí hay ventas según la año actual y según los meses del año

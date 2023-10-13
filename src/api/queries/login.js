@@ -234,6 +234,7 @@ const getCargo = async (req, res) => {
         let cargo = await execute('SELECT cargo FROM empleados_view WHERE id_empleado = ?', [ID])
         // verificar sí realizo la petición
         if (cargo) {
+            console.log(cargo)
             // retornar respuesta
             res.status(200).json(cargo[0].cargo)
         }
@@ -409,7 +410,6 @@ const getToken = async (dui, correo, clave) => {
             Object.assign(EMPLEADO[i], id);
             // obtener id del empleado encontrado
         }
-        // convertir id a base 64
         id = EMPLEADO[0]['id_empleado'];
         token = jwt.sign(id, process.env.SECRET, { algorithm: 'HS512' })
         return token
@@ -599,7 +599,6 @@ const getInfo = async (req, res) => {
     const TOKEN = req.headers.authorization;
     if (TOKEN) {
         try {
-            // obtener id del empleado (deficando base64)
             const ID = jwt.decode(TOKEN);
             // realizar query
             execute('SELECT alias,cargo FROM empleados_view WHERE id_empleado = ?', [ID])
