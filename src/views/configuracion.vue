@@ -188,7 +188,7 @@ export default {
                     else if (!password(this.empleado.clave)) {
                         notificationInfo(`La contraseña no cumple con los requisitos.
                                         Debe contenter al menos una letra mayúscula, una letra minúscula,
-                                        un número, un carácter especial y ningún espacio`, 9500);
+                                          un número, un carácter especial y ningún espacio`, 9500);
                     }
                     // verificar campos vacíos
                     else if (!this.empleado.alias || !this.empleado.apellidos || !this.empleado.correo || !this.empleado.dui ||

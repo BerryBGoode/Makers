@@ -11,6 +11,8 @@ let dui = /^[0-9]{8}[-][0-9]{1}$/;
 let mail = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
 // variable con la expresión regular para contraseña
 let clave = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}$/;
+
+let decimal = /^([0-9]{1,10}(\.[0-9]{1,2})?)$/
 /**
  * Método para validar que la cadena de texto solamente tenga letras
  */
@@ -27,6 +29,10 @@ export const onlyLtrs = value => {
 export const password = value => {
     // verificar sí la contraseña coincide
     return (clave.test(value));
+}
+
+export const onlyDecimal = value => {
+    return (decimal.test(value))
 }
 
 export const onlyNumb = value => {

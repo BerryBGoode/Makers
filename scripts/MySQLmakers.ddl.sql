@@ -149,14 +149,14 @@ CREATE TABLE detalles_ordenes(
 
 -- vistas
 CREATE VIEW clientes_view AS
-SELECT c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo, count(o.id_orden) as consumo
+SELECT c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo, count(o.id_orden) as consumo, c.estado
 FROM clientes c
 LEFT JOIN ordenes o ON o.id_cliente = c.id_cliente
 GROUP BY c.id_cliente, c.nombres, c.apellidos, c.dui, c.telefono, c.correo
 ORDER BY count(o.id_orden) DESC;
 
 CREATE VIEW empleados_view AS 
-SELECT e.id_empleado, e.nombres, e.apellidos, e.alias, e.dui, e.telefono, e.correo, e.planilla, s.nombre_sucursal, s.id_sucursal, 
+SELECT e.id_empleado, e.nombres, e.apellidos, e.alias, e.dui, e.telefono, e.correo, e.planilla, s.nombre_sucursal, s.id_sucursal, e.estado,
         CONCAT(time_format(h.hora_apertura, '%l:%i'), ' - ', time_format(h.hora_cierre, '%l:%i')) as horario, h.id_horario, c.id_cargo, c.cargo 
 FROM empleados e 
 INNER JOIN sucursales s ON s.id_sucursal = e.id_sucursal 
@@ -184,7 +184,7 @@ FROM horarios h
 ORDER BY h.id_horario ASC;
 
 CREATE VIEW ordenes_view AS
-SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, null) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui
+SELECT o.id_orden, date_format(o.fecha, '%Y-%m-%d') as fecha, COALESCE(f.id_factura, null) as factura, o.id_cliente, c.nombres, c.apellidos, c.dui ,c.estado
 FROM ordenes o
 LEFT JOIN facturas f ON o.id_orden = f.id_orden
 LEFT JOIN clientes c ON o.id_cliente = c.id_cliente
@@ -193,7 +193,7 @@ ORDER BY o.id_orden ASC;
 
 CREATE VIEW reservaciones_view AS
 SELECT r.id_reservacion,date_format(r.fecha, '%Y-%m-%d') as fecha, time_format(r.hora, '%l:%i') as hora, r.id_cliente, r.id_empleado, c.nombres as cliente_n,
-		c.apellidos as cliente_a, c.dui as cliente_d,
+		c.apellidos as cliente_a, c.dui as cliente_d, r.estado
 		e.nombres as empleado_n, e.apellidos empleado_a, e.dui as empleado_d
 FROM reservaciones r
 INNER JOIN clientes c ON c.id_cliente = r.id_cliente

@@ -68,6 +68,7 @@
 import axios from 'axios'
 import store from '../../store';
 import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
+import { onlyLtrs, onlyNumb } from '../../validator';
 // definir componente 
 export default {
     name: "crearProducto",
@@ -121,6 +122,11 @@ export default {
             // validando el formato de la imagen
             if (!this.format.includes(this.productoimg.type)) {
                 notificationInfo('Formato de imagen no permitido');
+            } else if (!onlyLtrs(this.producto.descripcion) || !onlyLtrs(this.producto.nombre)) {
+                notificationInfo('Solo se permiten letras');
+            }
+            else if (!onlyNumb(this.producto.existencias)) {
+                notificationInfo('Solo se permiten número para existencias');
             }
             // verificar sí no hay campos vacíos
             else if (this.producto.nombre && this.producto.descripcion && this.producto.precio && this.producto.existencias) {

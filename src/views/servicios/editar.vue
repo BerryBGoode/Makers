@@ -32,11 +32,13 @@
                         <div class="load">
                             <div class="mb-3 input-container-3">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input v-model="servicio.nombre" autocomplete="off" type="text" class="form-control" id="nombre" required>
+                                <input v-model="servicio.nombre" autocomplete="off" type="text" class="form-control"
+                                    id="nombre" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="precio" class="form-label">Precio</label>
-                                <input v-model="servicio.precio" autocomplete="off" type="text" class="form-control" id="precio" required>
+                                <input v-model="servicio.precio" autocomplete="off" type="text" class="form-control"
+                                    id="precio" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="" class="form-label">Tipo de servicio</label>
@@ -55,8 +57,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="descripcion" class="form-label">Descripción</label>
-                            <input v-model="servicio.descripcion" autocomplete="off" type="text" class="form-control" id="descripcion"
-                                required>
+                            <input v-model="servicio.descripcion" autocomplete="off" type="text" class="form-control"
+                                id="descripcion" required>
                         </div>
                     </div>
                     <hr>
@@ -113,7 +115,13 @@ export default {
         },
         modificarServicio() {
             // validar datos 
-            if (this.servicio.descripcion && this.servicio.nombre &&
+            if (!onlyLtrs(this.servicio.descripcion) || !onlyLtrs(this.servicio.nombre)) {
+                notificationInfo('Solo se permiten letras');
+            }
+            else if (!onlyNumb(this.servicio.existencias)) {
+                notificationInfo('Solo se permiten número para existencias');
+            }
+            else if (this.servicio.descripcion && this.servicio.nombre &&
                 this.servicio.precio && (this.servicio.tipo !== 'Seleccionar')) {
                 // realizar petición
                 axios.put('http://localhost:3000/api/servicios/' + this.$route.params.id, this.servicio, store.state.config)

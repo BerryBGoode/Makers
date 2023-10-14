@@ -27,7 +27,7 @@ const get = async (req, res) => {
         let data = [];
         let i = 0;
         // realizar consulta
-        execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE id_empleado NOT LIKE ?', [ID])
+        execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, planilla, nombre_sucursal, id_sucursal, horario, id_cargo, cargo, alias FROM empleados_view WHERE estado = ? AND id_empleado NOT LIKE ?', [1, ID])
             .then(filled => {
                 // convertir ids a binario
                 let id = getBinary(filled, 'id_empleado');

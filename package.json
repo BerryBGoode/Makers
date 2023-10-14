@@ -1,67 +1,53 @@
 {
-  "name": "makers",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "serve": "nodemon src/api/index.js"
-  },
-  "dependencies": {
-    "@sweetalert2/theme-dark": "^5.0.15",
-    "@tensorflow/tfjs-core": "^4.11.0",
-    "axios": "^1.5.0",
-    "bcryptjs": "^2.4.3",
-    "bootstrap": "^5.3.1",
-<<<<<<< HEAD
-    "bootstrap-vue": "^2.23.1",
-    "canvas": "^2.11.2",
-=======
->>>>>>> 9df718caefc3b2762664b1352392ae7d5c6e3c1d
-    "chart.js": "^4.4.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-fileupload": "^1.4.1",
-    "express-validator": "^7.0.1",
-<<<<<<< HEAD
-    "face-api.js": "^0.20.0",
-    "flatpickr": "^4.6.13",
-=======
->>>>>>> 9df718caefc3b2762664b1352392ae7d5c6e3c1d
-    "fs": "^0.0.1-security",
-    "jsonwebtoken": "^9.0.2",
-    "jspdf": "^2.5.1",
-    "jspdf-autotable": "^3.6.0",
-    "md5": "^2.3.0",
-    "mysql": "^2.18.1",
-    "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.5",
-    "nodemon": "^3.0.1",
-    "path": "^0.12.7",
-<<<<<<< HEAD
-    "pg": "^8.11.0",
-    "postgres": "^3.3.5",
-    "sweetalert2": "^11.6.13",
-=======
-    "sweetalert2": "^11.7.27",
->>>>>>> 9df718caefc3b2762664b1352392ae7d5c6e3c1d
-    "vue": "^3.3.4",
-    "vue-chartjs": "^5.2.0",
-    "vue-router": "^4.2.4",
-    "vue-sweetalert2": "^5.0.5",
-<<<<<<< HEAD
-    "vue3-cookies": "^1.0.6",
-    "vuex": "^4.1.0",
-    "weights": "^0.0.4"
-=======
-    "vuex": "^4.1.0"
->>>>>>> 9df718caefc3b2762664b1352392ae7d5c6e3c1d
-  },
-  "devDependencies": {
-    "@types/js-cookie": "^3.0.3",
-    "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.9"
-  }
+    "name": "makers",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "serve": "nodemon src/api/index.js"
+    },
+    "dependencies": {
+        "@sweetalert2/theme-dark": "^5.0.15",
+        "@tensorflow/tfjs-core": "^4.11.0",
+        "axios": "^1.5.0",
+        "bcryptjs": "^2.4.3",
+        "bootstrap": "^5.3.1",
+        "bootstrap-vue": "^2.23.1",
+        "canvas": "^2.11.2",
+        "chart.js": "^4.4.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-fileupload": "^1.4.1",
+        "express-validator": "^7.0.1",
+        "face-api.js": "^0.20.0",
+        "flatpickr": "^4.6.13",
+        "fs": "^0.0.1-security",
+        "jsonwebtoken": "^9.0.2",
+        "jspdf": "^2.5.1",
+        "jspdf-autotable": "^3.6.0",
+        "md5": "^2.3.0",
+        "mysql": "^2.18.1",
+        "node-fetch": "^3.3.2",
+        "nodemailer": "^6.9.5",
+        "nodemon": "^3.0.1",
+        "path": "^0.12.7",
+        "pg": "^8.11.0",
+        "postgres": "^3.3.5",
+        "sweetalert2": "^11.6.13",
+        "vue": "^3.3.4",
+        "vue-chartjs": "^5.2.0",
+        "vue-router": "^4.2.4",
+        "vue-sweetalert2": "^5.0.5",
+        "vue3-cookies": "^1.0.6",
+        "vuex": "^4.1.0",
+        "weights": "^0.0.4"
+    },
+    "devDependencies": {
+        "@types/js-cookie": "^3.0.3",
+        "@vitejs/plugin-vue": "^4.2.3",
+        "vite": "^4.4.9"
+    }
 }

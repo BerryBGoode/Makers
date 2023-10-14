@@ -234,7 +234,6 @@ const getCargo = async (req, res) => {
         let cargo = await execute('SELECT cargo FROM empleados_view WHERE id_empleado = ?', [ID])
         // verificar sí realizo la petición
         if (cargo) {
-            console.log(cargo)
             // retornar respuesta
             res.status(200).json(cargo[0].cargo)
         }

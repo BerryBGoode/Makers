@@ -15,7 +15,7 @@ const { convertToBin } = require('../helpers/encrypt');
  */
 const get = async (req, res) => {
     if (req.headers.authorization) {
-        execute('SELECT * FROM ordenes_view ORDER BY fecha DESC')
+        execute('SELECT * FROM ordenes_view WHERE estado = ? ORDER BY fecha DESC', [1])
             .then(filled => {
                 // convertir ids a binario
                 let _orden = getBinary(filled, 'id_orden');
@@ -149,7 +149,7 @@ const destroy = (req, res) => {
             // obtener el idorden
             const IDORDEN = req.params.id;
             // realizar transferencia sql o delete en este caso
-            execute('DELETE FROM ordenes WHERE id_orden = ?', [IDORDEN])
+            execute('UPDATE ordenes SET estado = ? WHERE id_orden = ?', [2, IDORDEN])
                 .then(() => {
                     res.status(201).send('Orden eliminada');
                 }).catch(rej => {

@@ -36,7 +36,7 @@
 import axios from 'axios'
 import { onlyLtrs } from '../../validator'
 import store from '../../store'
-import { notificationError, notificationSuccess } from '../../components/alert.vue'
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue'
 // definir componente 
 export default {
     name: "crearTipoServicio",
@@ -51,7 +51,7 @@ export default {
     methods: {
         modificar() {
             if (!onlyLtrs(this.tipos.tipo)) {
-                this.msg = 'Solo se permiten letras'
+                notificationInfo('Solo se permiten letras');
             } else {
                 axios.put('http://localhost:3000/api/tipos/' + this.$route.params.id, this.tipos, store.state.config)
                     .then(res => {
