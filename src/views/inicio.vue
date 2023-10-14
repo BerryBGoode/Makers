@@ -154,48 +154,52 @@
                 <canvas id="servicios"></canvas>
             </div>
         </div>
-        <div class="container-graph area-1">
-            <div class="mb-3">
+        <div class="container-graph area-1 container-reports">
+            <div class="mb-3 report">
                 <span>Próximas reservaciones</span>
                 <button @click="proxReservaciones" class="btn btn-makers">Generar pdf</button>
 
             </div>
-            <div class="mb-">
+            <div class="mb-3 report">
                 <span>Reservaciones previas</span>
                 <button @click="prevReservaciones" class="btn btn-makers">Generar pdf</button>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 report">
                 <span>Productos a punto de agotarse</span>
                 <button @click="lessProductos" class="btn btn-makers">Generar pdf</button>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 report">
                 <span>Empleados</span>
                 <button class="btn btn-makers" @click="EmpleadosCargos">Generar pdf</button>
             </div>
 
-            <div class="mb-3 flex-col input-container">
-                <input type="date" name="" id="" class="form-control" v-model="today">
+            <div class="mb-3 report">
                 <div class="mb3">
                     <span>Ventas del día </span>
-                    <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
+                    <input type="date" name="" id="" class="form-control" v-model="today">
                 </div>
+                <button class="btn btn-makers" @click="getVentasDia">Generar pdf</button>
             </div>
-            <select class="form-select mb-3" aria-label="Default select example" id="meses" v-if="meses.length > 0"
-                v-model="mesreportventas">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
-            <div class="mb3">
-                <span>Ventas del mes</span>
+            <div class="mb3 report">
+                <div class="mb-3">
+                    <span>Ventas del mes</span>
+                    <select class="form-select mb-3 report" aria-label="Default select example" id="meses"
+                        v-if="meses.length > 0" v-model="mesreportventas">
+                        <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+                    </select>
+                </div>
                 <button class="btn btn-makers" @click="getVentasMes">Generar pdf</button>
             </div>
 
-            <select class="form-select mb-3" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
-                <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
-            </select>
 
-            <div class="mb-3">
-                <span>Reservaciones del mes</span>
+            <div class="mb-3 report">
+                <div class="mb-3">
+                    <span>Reservaciones del mes</span>
+                    <select class="form-select mb-3 report" id="meses" v-if="meses.length > 0" v-model="mesreportreserv">
+                        <option v-for="(mesgraph, i) in meses" :key="i" :value="i">{{ mesgraph }}</option>
+                    </select>
+                </div>
                 <button class="btn btn-makers" @click="getReservacionesMes">Generar pdf</button>
             </div>
         </div>

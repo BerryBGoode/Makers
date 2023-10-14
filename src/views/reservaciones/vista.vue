@@ -153,7 +153,6 @@ export default {
                 axios.delete('http://localhost:3000/api/reservaciones/' + reservacion, store.state.config)
                     .then(res => {
                         notificationSuccess(res.data);
-                        //cargar
                         this.getReservaciones();
                     })
                     .catch(e => { notificationError(e.response.data) })
@@ -176,6 +175,7 @@ export default {
             })
             // asignar a los del filters
             this.filters = RESREVACIONES;
+            console.log('buscar')
         },
 
     },

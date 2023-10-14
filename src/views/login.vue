@@ -145,7 +145,7 @@ import { alertRequest } from './recuperacion/form.vue';
 import store from '../store';
 import Swal from 'sweetalert2';
 import empleadoVue from './primerUso/empleado.vue';
-import { getBinary } from '../validator';
+import { formatDui, getBinary } from '../validator';
 import { convertToBin } from '../validator';
 
 export default {
@@ -227,8 +227,7 @@ export default {
 
                 }, html);
             } else {
-                let confirm = await alertRequest(null, null, html);
-                console.log(confirm)
+                this.$router.push('/recognition')
             }
 
         },
@@ -266,7 +265,6 @@ export default {
             // validar datos vacios
             if (!this.model.empleado.correo && !this.model.empleado.clave && !this.model.empleado.dui) {
                 notificationInfo('No se permite campos vacíos');
-
             } else {
                 (await alertQuestion('Desea aplicar segunda autenticación?', null, 'Aceptar', true, 'Cancelar', false)) ? this.model.empleado.autenticacion = true : this.model.empleado.autenticacion = false;
                 try {

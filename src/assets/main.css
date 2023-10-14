@@ -415,7 +415,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .container-restablecer {
-    width: 50%;
+    width: 50% !important;
 }
 
 @keyframes FadeIn {
@@ -437,6 +437,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     align-items: center;
     flex-direction: row;
     gap: 3%;
+}
+
+.report {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.container-reports {
+    display: flex;
+    flex-direction: column;
 }
 
 @media screen and (max-width: 725px) {

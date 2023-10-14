@@ -112,7 +112,7 @@ const get = async (req, res) => {
         let data = [];
         let i = 0;
         let ids = {};
-        execute('SELECT id_reservacion, fecha, hora, cliente_n, cliente_a, cliente_d, empleado_n, empleado_a, empleado_d FROM reservaciones_view')
+        execute('SELECT id_reservacion, fecha, hora, cliente_n, cliente_a, cliente_d, empleado_n, empleado_a, empleado_d FROM reservaciones_view WHERE estado = ?', [1])
             .then(filled => {
                 let id = getBinary(filled, 'id_reservacion');
                 filled.forEach(element => {
@@ -131,24 +131,85 @@ const get = async (req, res) => {
     }
 }
 
+const getValidateReservacion = async (cliente, empleado, fecha, hora) => {
+
+
+    let hreservacion = await execute('SELECT hora FROM reservaciones WHERE id_cliente = ? AND id_empleado = ? AND fecha = ? AND estado = ?', [cliente, empleado, fecha, 1]);
+
+
+    // calcular la deiferencia entre cada hora
+    const difHorarios = (horacliente, horadb) => {
+        // obtenener valor númerico de la hora obtenida de la db
+        const [h1, m1] = horacliente.split(':').map(Number);
+        // obteniendo la hora ingresada por el cliente
+        const [h2, m2] = horadb.split(':').map(Number);
+        return Math.abs((h2 - h1) * 60 + (m2 - m1));
+    }
+    // obteniendo una inicalización de los horarios
+    let horacercana = hreservacion[0];
+    let lessdif = difHorarios(hora, hreservacion[0].hora);
+
+    // calculando la hora más cercana obtenida del método difHorarios
+    hreservacion.forEach(obj => {
+        let diferencia = difHorarios(hora, obj.hora);
+        if (diferencia < lessdif) {
+            lessdif = diferencia;
+            horacercana = obj;
+        }
+    })
+
+    // convertir la hora cercana a string
+    horacercana = JSON.stringify(horacercana.hora)
+    // extraera las horas y los minutos de la hora más cerca
+    let [horas, min] = horacercana.split(':');
+
+    // convetir a entero las horas y min(minustos)
+    horas = horas.substring(1)
+    let horasint = parseInt(horas, 10);
+    let minint = parseInt(min, 10);
+
+    // sumar 30 min para 
+    minint += 30;
+    // ajustando hora sí los min son más de 59
+    if (minint > 59) {
+        // restar 60 minutos
+        minint -= 60;
+        // agregar 1 hora
+        horasint += 1;
+    }
+    // ajustar horas sí son más de 24
+    horasint = horasint % 24;
+
+    let deltahoras = horasint - parseInt(hora, 10);
+    // comparar sí al sumar 
+    if (!deltahoras || deltahoras === 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 /* Método que cuarga los datos de las reservaciones
     req, datos enviados desde el front
     res, respuesta del servidor
 */
 const store = async (req, res) => {
     if (req.headers.authorization) {
-
         try {
             //se asigna un arreglo a los valores del req
             const { cliente, empleado, fecha, hora } = req.body;
             let estado = 1;
+            if (!await getValidateReservacion(cliente, empleado, fecha, hora)) {
+                res.status(400).json('Empleado ocupado');
+                return
+            }
             //preparando query con los datos
             execute('INSERT INTO reservaciones(id_reservacion, id_cliente, id_empleado, fecha, hora, estado) VALUES (UUID(), ?, ?, ?, ?, ?)'
                 , [cliente, empleado, fecha, hora, estado])
                 .then(() => { res.status(201).send('Reservación agregada') })
                 .catch(rej => { res.status(500).send(getError(rej)) })
         } catch (error) {
-            res.status(500).send(getError(rej))
+            res.status(500).send(getError(error))
         }
     } else {
         res.status(401).send('Debe autenticarse antes');
@@ -225,7 +286,7 @@ const destroy = async (req, res) => {
             //obtener el idreser del parametro de la ruta
             const idreser = req.params.id;
             //resalizar consulta, se envia un array con los parametros y método para capturar error
-            execute('DELETE FROM reservaciones WHERE id_reservacion = ?', [idreser])
+            execute('UPDATE reservaciones SET estado = ? WHERE id_reservacion = ?', [2, idreser])
                 .then(() => { res.status(201).send('Reservación eliminada') })
                 .catch(rej => { res.status(500).send(getError(rej)) })
         } catch (error) {

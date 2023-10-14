@@ -100,6 +100,7 @@ export default {
                 this.empleado.clave.includes(this.empleado.sucursal) || this.empleado.clave.includes(this.empleado.telefono)) {
                 notificationInfo(`Por motivos de seguridad recomendamos que la contraseña
                                 no contenga datos personales o información fácil de identificar`);
+
             }
             // verificando sí siguen con el formato adecuando
             else if (!password(this.empleado.clave)) {
@@ -123,6 +124,7 @@ export default {
             // validar empleado que decea restablecer constraseña
             axios.get('http://localhost:3000/api/auth/usuario-bloqueado', this.config)
                 .then(res => {
+                    console.log
                     // verificar sí se encontró un usuario bloqueado con el id establecido
                     // para redireccionar al login
                     if (res.data.found === false) {
@@ -147,11 +149,10 @@ export default {
         }
     },
     created() {
-        // cuando recarga página el valor de este estado vuelve a false
-        console.log(store.state.cambio_clave)
-        if (!store.state.cambio_clave) {
-            this.usuarioBloqueado();
-        }
+
+        this.usuarioBloqueado();
+
+
     }
 }
 </script>

@@ -83,7 +83,8 @@
 <script>
 import axios from 'axios';
 import store from '../../store';
-import { notificationError, notificationSuccess } from '../../components/alert.vue';
+import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
+import { onlyLtrs, onlyNumb } from '../../validator';
 
 // definir componente 
 export default {
@@ -110,7 +111,13 @@ export default {
         },
         agregarServicio() {
             // validar datos 
-            if (this.servicio.descripcion && this.servicio.existencias && this.servicio.nombre &&
+            if (!onlyLtrs(this.servicio.descripcion) || !onlyLtrs(this.servicio.nombre)) {
+                notificationInfo('Solo se permiten letras');
+            }
+            else if (!onlyNumb(this.servicio.existencias)) {
+                notificationInfo('Solo se permiten número para existencias');
+            }
+            else if (this.servicio.descripcion && this.servicio.existencias && this.servicio.nombre &&
                 this.servicio.precio && (this.servicio.tipo !== 'Seleccionar')) {
                 // realizar petición
                 axios.post('http://localhost:3000/api/servicios/', this.servicio, store.state.config)

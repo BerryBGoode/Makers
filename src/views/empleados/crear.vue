@@ -19,29 +19,30 @@
                         <div class="load">
                             <div class="mb-3 input-container">
                                 <label for="nombres" class="form-label">Nombres</label>
-                                <input type="text" autocomplete="off" v-model="this.model.empleado.nombres" class="form-control" id="nombres"
-                                    required>
+                                <input type="text" autocomplete="off" v-model="this.model.empleado.nombres"
+                                    class="form-control" id="nombres" required>
                             </div>
                             <div class="mb-3 input-container">
                                 <label for="apellidos" class="form-label">Apellidos</label>
-                                <input type="text" autocomplete="off" class="form-control" v-model="this.model.empleado.apellidos"
-                                    id="apellidos" required>
+                                <input type="text" autocomplete="off" class="form-control"
+                                    v-model="this.model.empleado.apellidos" id="apellidos" required>
                             </div>
                         </div>
                         <div class="load">
                             <div class="mb-3 input-container-3">
                                 <label for="dui" class="form-label">DUI</label>
-                                <input type="text" autocomplete="off" class="form-control" id="dui" v-model="this.model.empleado.dui" required>
+                                <input type="text" autocomplete="off" class="form-control" id="dui"
+                                    v-model="this.model.empleado.dui" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="correo" class="form-label">Correo</label>
-                                <input type="email" autocomplete="off" class="form-control" id="correo" v-model="this.model.empleado.correo"
-                                    required>
+                                <input type="email" autocomplete="off" class="form-control" id="correo"
+                                    v-model="this.model.empleado.correo" required>
                             </div>
                             <div class="mb-3 input-container-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="text" autocomplete="off" class="form-control" id="telefono" v-model="this.model.empleado.telefono"
-                                    required>
+                                <input type="text" autocomplete="off" class="form-control" id="telefono"
+                                    v-model="this.model.empleado.telefono" required>
                             </div>
                         </div>
                     </div>
@@ -104,20 +105,20 @@
                             </div>
                             <div class="mb-3 width-35 input-container">
                                 <label for="planilla" class="form-label">Planilla</label>
-                                <input type="text" autocomplete="off" class="form-control" id="planilla" v-model="this.model.empleado.planilla"
-                                    required>
+                                <input type="text" autocomplete="off" class="form-control" id="planilla"
+                                    v-model="this.model.empleado.planilla" required>
                             </div>
                         </div>
                         <div class="load">
                             <div class="mb-3 width-32">
                                 <label for="alias" class="form-label">Alias</label>
-                                <input type="text" autocomplete="off" class="form-control" id="alias" v-model="this.model.empleado.alias"
-                                    maxlength="50" required>
+                                <input type="text" autocomplete="off" class="form-control" id="alias"
+                                    v-model="this.model.empleado.alias" maxlength="50" required>
                             </div>
                             <div class="mb-3 width-32">
                                 <label for="clave" class="form-label">Contraseña</label>
-                                <input type="password" autocomplete="off" class="form-control" id="clave" v-model="this.model.empleado.clave"
-                                    required>
+                                <input type="password" autocomplete="off" class="form-control" id="clave"
+                                    v-model="this.model.empleado.clave" required>
                             </div>
                             <div class="mb-3 width-32">
                                 <label for="confirmar" class="form-label">Confirmar contraseña</label>
@@ -143,7 +144,7 @@
 <script>
 // importar axios para realizar peticiones
 import axios from 'axios';
-import { password } from '../../validator'
+import { onlyLtrs, onlyNumb, password } from '../../validator'
 import store from '../../store';
 import { notificationError, notificationInfo, notificationSuccess } from '../../components/alert.vue';
 // exportar componente
@@ -223,6 +224,12 @@ export default {
                 notificationInfo('Las contraseñas deben coincidir')
             }
             // verificando sí siguen la longitud esperada
+            else if (!onlyLtrs(this.model.empleado.alias) || !onlyLtrs(this.model.empleado.apellidos) || !onlyLtrs(this.model.empleado.nombres)) {
+                notificationInfo('Solo se permiten letras');
+            }
+            else if (!onlyNumb(this.model.empleado.planilla)) {
+                notificationInfo('Solo se permiten números para la planilla');
+            }
             else if (this.model.empleado.clave.length < 8) { notificationInfo('Longitud mínima superada') }
             else if (this.model.empleado.clave.length > 72) { notificationInfo('Longitud máxima superada') }
             // verificando sí la contraseña contiene datos del usuario

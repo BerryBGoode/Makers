@@ -16,7 +16,7 @@ const get = async (req, res) => {
     if (req.headers.authorization) {
         let data = [];
         let i = 0;
-        execute('SELECT * FROM clientes_view ORDER BY id_cliente DESC')
+        execute('SELECT * FROM clientes_view WHERE estado = ? ORDER BY id_cliente DESC', [1])
             .then(ful => {
                 // obtener y convertir a binario ids recuperados
                 let id = getBinary(ful, 'id_cliente');
@@ -153,7 +153,7 @@ const destroy = (req, res) => {
             // obtener el idcliente del parametro de la ruta
             const IDCLIENTE = req.params.id;
             // realizar consulta, enviar un array con los parametros y metodo para capturar error
-            execute('DELETE FROM clientes WHERE id_cliente = ?', [IDCLIENTE])
+            execute('UPDATE clientes SET estado = ? WHERE id_cliente = ?', [2, IDCLIENTE])
                 .then(() => {
                     res.status(200).json('Cliente eliminado');
                 }).catch(rej => {

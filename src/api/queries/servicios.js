@@ -46,7 +46,7 @@ const get = (req, response) => {
         // realizar query
         let producto = 'Producto';
 
-        execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, tipo_servicio, id_tipo_servicio FROM servicios_view WHERE tipo_servicio NOT LIKE ?', [producto])
+        execute('SELECT id_servicio, nombre_servicio, descripcion, format(precio, 2) as precio, tipo_servicio, id_tipo_servicio FROM servicios_view WHERE estado = ? AND tipo_servicio NOT LIKE ?', [1, producto])
             .then(res => {
                 // obtener ids y convertirlos a binario
                 let id = getBinary(res, 'id_servicio');
@@ -160,7 +160,7 @@ const destroy = (req, res) => {
             // obtener id del servicio
             const ID = req.params.id;
             // realizar query
-            execute('DELETE FROM servicios WHERE id_servicio = ?', [ID])
+            execute('UPDATE servicios SET estado = ? WHERE id_servicio = ?', [2, ID])
                 .then(() => {
                     res.status(201).send('Servicio eliminado')
                 }).catch(rej => { res.status(500).send(getError(rej)) })

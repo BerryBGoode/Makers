@@ -130,7 +130,7 @@ const validateUsuario = async (req, res) => {
                 // Calcular la diferencia en días
                 let deltadias = deltamls / (1000 * 60 * 60 * 24);
                 // calculando diferencia
-                (Math.round(deltadias) > 1) ? modif = true : modif = false;
+                (Math.round(deltadias) > 90) ? modif = true : modif = false;
 
                 // verificar sí han pasado los días establecidos para cambiar la contraseña
                 // 
@@ -234,7 +234,6 @@ const getCargo = async (req, res) => {
         let cargo = await execute('SELECT cargo FROM empleados_view WHERE id_empleado = ?', [ID])
         // verificar sí realizo la petición
         if (cargo) {
-            console.log(cargo)
             // retornar respuesta
             res.status(200).json(cargo[0].cargo)
         }
@@ -462,10 +461,12 @@ const cambiarClave = async (req, res) => {
     let { clave, id } = req.body;
     // verificar sí se ha enviado algo para autenticarse
     if (req.headers.authorization) {
+        // console.log(req.body)
         // decodficar id
         id = convertToBinary(id)
         if (!compareSync(clave, await getClaveDB(id))) {
             clave = encrypt(clave);
+            console.log(id)
             // modificar datos del empleado
             //  * nueva clave
             //  * nueva fecha de contraseña
@@ -494,7 +495,7 @@ const validateUsuarioBloqueado = async (req, res) => {
     // verificar sí se obtiene el token
     if (req.headers.authorization) {
         // obtener los ids de los empleados que estan bloqueados
-        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias, fecha_ingreso, estado FROM empleados', [2])
+        let empleados = await execute('SELECT id_empleado, nombres, apellidos, dui, telefono, correo, alias, fecha_ingreso, estado FROM empleados')
         // verificar sí existen empleados bloqueados
         if (empleados.length > 0) {
             //      verificar por cada id encontrado sí coincide con el obtenido del frontend
@@ -508,11 +509,12 @@ const validateUsuarioBloqueado = async (req, res) => {
                 // guardando en otra propieda el valor del id del empleado para no enviar la col de manera cruda
                 empleados[i].GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC = empleados[i].id_empleado;
                 // eliminando la propiedad id de objeto con los empleados encontrados con estado bloqueado
-                delete empleados[i].id_empleado;
+                // delete empleados[i].id_empleado;
                 // asginando id a esta variable para que sea un string y 'compaseSync' no generé conflictos
                 // verificando la coincidencia de id de la db con el obtenido del frontend
                 // asignando el encontrado a la variable q busca
                 found = compareSync(id[i].toString(), token.toString())
+                // console.log(found)
                 // vericar sí se encontró usuario bloqueado y con el id que viene del request
                 if (found === true) {
                     // al objeto vacío asignar los datos que tiene el objeto que coincidio la comparación
@@ -535,10 +537,14 @@ const validateUsuarioBloqueado = async (req, res) => {
             // (Math.round(deltadias) > 1) ? modif = true : modif = false;
 
             // verificar el estado del empleado es bloqueado o que la fecha para cambio de contraseña pasé la fecha establecida
-            ($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.estado === 2 || Math.round(deltadias >= 1)) ?
-                res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC)
-                :
-                res.status(200).json({ msg: 'Usuario no encontrado', found: false });
+            console.log($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC)
+            // convertir de hexc. a binario
+            let idfound = convertToBinary($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.id_empleado)
+            $2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.id_empleado = idfound
+            // console.log($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC.GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC);
+            // (Math.round(deltadias >= 1)) ?
+            res.status(200).json($2a$10$$2a$10$GyJH60Pu2zB42dQQDtVq5OzWprfImpzcw5lSqaNvoQgaQLs4KNkfC)
+
 
             // verificar sí se encontró un usuario con ese id y que este bloqueado
             // para mandar respuesta para mandar a otro lado o dejar que restablezca la contraseña
